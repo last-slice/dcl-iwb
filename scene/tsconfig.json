@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "strict": true,
-    "moduleResolution": "node"
+    "strict": true
   },
   "include": [
     "src/**/*.ts",
