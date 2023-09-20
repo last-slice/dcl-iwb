@@ -10,8 +10,8 @@
     "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.3.16-6254208613.commit-694446b",
-    "@dcl/sdk": "^7.3.16-6253385478.commit-dea8a53"
+    "@dcl/js-runtime": "7.3.15",
+    "@dcl/sdk": "^7.3.15"
   },
   "engines": {
     "node": ">=16.0.0",
@@ -24,8 +24,9 @@
     "trailingComma": "none"
   },
   "dependencies": {
+    "colyseus.js": "^0.15.10",
+    "core-js": "^3.31.0",
     "@dcl-sdk/utils": "^1.1.2",
-    "colyseus.js": "^0.14.15-alpha.0",
     "eth-connect": "^6.2.1",
     "mitt": "^3.0.1"
   }
