@@ -4,6 +4,7 @@ import { IWBRoomState } from "./schema/IWBRoomState";
 export class IWBRoom extends Room<IWBRoomState> {
 
   async onAuth (client:Client, options:any, request:any) {
+    return true
   }
 
   onCreate (options: any) {
