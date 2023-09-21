@@ -5,6 +5,9 @@ import {
 } from '@dcl/sdk/ecs'
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
+import { createCatalogPanel } from './CatalogPanel'
+import { createNotificationPanel } from './NotificationPanel'
+import { createToolPanel } from './ToolPanel'
 
 export let dimensions:any = {
   width:0,
@@ -22,6 +25,10 @@ const uiComponent = () => [
    * TODO
    * create ui panels
    */
+
+  createCatalogPanel(),
+  createNotificationPanel(),
+  createToolPanel()
   
 ]
 

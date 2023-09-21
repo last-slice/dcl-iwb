@@ -15,7 +15,7 @@ export function initIWB(){
             //build IWB HQ
             createHQ()
 
-            colyseusConnect(data)
+            // colyseusConnect(data)//
         })
     })
 }
