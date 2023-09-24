@@ -11,6 +11,7 @@ export let cubeSelect = false
 export let triSelect = false 
 export let sphereSelect = false
 export let itemSelect = false
+export let customSelect = false
 export let itemCode = 0
 
 export function createCatalogPanel(){
@@ -30,7 +31,7 @@ export function createCatalogPanel(){
     uiBackground={{color:Color4.Red()}}
   >
          <Button
-        uiTransform={{ width: 100, height: 50,  position: {top: -300, left: 20},  alignSelf: 'flex-start'}}
+        uiTransform={{ width: 100, height: 50,  position: {top: -200, left: 20},  alignSelf: 'flex-start'}}
         value='Cube'
         variant='primary'
         fontSize={14}
@@ -41,6 +42,7 @@ export function createCatalogPanel(){
           itemSelect = true
           triSelect = false
           sphereSelect = false
+          customSelect = false
           itemCode = 1
          
         
@@ -48,7 +50,7 @@ export function createCatalogPanel(){
         }}
       />
               <Button
-        uiTransform={{ width: 100, height: 50,  position: {top: -200, left: 20},  alignSelf: 'flex-start'}}
+        uiTransform={{ width: 100, height: 50,  position: {top: -150, left: 20},  alignSelf: 'flex-start'}}
         value='Cylinder'
         variant='primary'
         fontSize={14}
@@ -59,6 +61,7 @@ export function createCatalogPanel(){
             itemSelect = true
             triSelect = true
             sphereSelect = false
+            customSelect = false
             itemCode= 2
          
         
@@ -76,7 +79,26 @@ export function createCatalogPanel(){
             itemSelect = true
             triSelect = false
             sphereSelect = true
+            customSelect = false
             itemCode = 3
+
+        
+        }}
+      />
+        <Button
+        uiTransform={{ width: 100, height: 50,  position: {top: -50, left: 20},  alignSelf: 'flex-start'}}
+        value='Model'
+        variant='primary'
+        fontSize={14}
+        uiBackground={{ color: Color4.create(0.063, 0.118, 0.31, .5) }}
+        onMouseDown={() => {
+         
+            cubeSelect = false
+            itemSelect = true
+            triSelect = false
+            sphereSelect = false
+            customSelect = true
+            itemCode = 4
 
         
         }}

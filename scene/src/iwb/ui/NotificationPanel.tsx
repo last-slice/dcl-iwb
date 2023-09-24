@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgro
 import { dimensions } from './ui'
 import { Color4 } from '@dcl/sdk/math'
 import { Transform, engine } from '@dcl/ecs'
-import { cubeSelect, sphereSelect, triSelect } from './CatalogPanel'
+import { cubeSelect, customSelect, sphereSelect, triSelect } from './CatalogPanel'
 
 export let showNotificationPanel = true
 
@@ -59,6 +59,9 @@ function getShape(){
   }
   if(cubeSelect){
     return 'Cube'
+  }
+  if(customSelect){
+    return 'Custom Model'
   }
   else{
     return 'No Object Selected'

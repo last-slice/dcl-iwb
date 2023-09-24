@@ -1,8 +1,10 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { dimensions } from './ui'
-import { Color4 } from '@dcl/sdk/math'
-import { cubeSelect, itemSelect, sphereSelect, triSelect } from './CatalogPanel'
+import { Color4, Vector3 } from '@dcl/sdk/math'
+import { cubeSelect, customSelect, itemSelect, sphereSelect, triSelect } from './CatalogPanel'
 import { Entity, engine, Transform, MeshRenderer, MeshCollider, Material, PointerEvents, PointerEventType, InputAction } from '@dcl/ecs'
+import { createObject } from '../helpers/selectedObject'
+import { getPlayerPosition } from '@dcl-sdk/utils'
 
 export let showToolPanel = true
 
@@ -37,14 +39,18 @@ export function createToolPanel() {
           console.log("Sphere"+sphereSelect)
           console.log("Cone"+triSelect)
 
-          if (itemSelect && cubeSelect) {
+          if (itemSelect && cubeSelect){
             placeObject(1)
           }
-          if (itemSelect && triSelect) {
+          if (itemSelect && triSelect){
             placeObject(2)
           }
-          if (itemSelect && sphereSelect) {
+          if (itemSelect && sphereSelect){
             placeObject(3)
+          }
+          if (itemSelect && customSelect){
+            // createObject("",Vector3.create(getPlayerPosition().x,getPlayerPosition().y,getPlayerPosition().z),Vector3.create(1,1,1))
+
           }
           if (!itemSelect){
             return
@@ -63,13 +69,13 @@ export function placeObject(Objectcode: any) {
     case 0:
       break;
     case 1:
-      createCube(1 + Math.random() * 8, Math.random() * 8, 1 + Math.random() * 8)
+      createCube(getPlayerPosition().x - 1,getPlayerPosition().y,getPlayerPosition().z)
       break;
     case 2:
-      createCone(1 + Math.random() * 8, Math.random() * 8, 1 + Math.random() * 8)
+      createCone(getPlayerPosition().x - 1,getPlayerPosition().y,getPlayerPosition().z)
       break;
     case 3:
-      createSphere(1 + Math.random() * 8, Math.random() * 8, 1 + Math.random() * 8)
+      createSphere(getPlayerPosition().x - 1,getPlayerPosition().y,getPlayerPosition().z)
       break;
   }
 
