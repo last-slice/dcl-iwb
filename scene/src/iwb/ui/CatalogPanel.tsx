@@ -12,6 +12,7 @@ export function displayCatalogPanel(value: boolean) {
 export let itemSelect = false
 export let customSelect = false
 export let itemCode = 0
+export let objName = ''
 let currentPage = 0;
 const itemsPerPage = 6;
 
@@ -40,6 +41,7 @@ export function createCatalogPanel() {
                     itemSelect = true
                     customSelect = false
                     itemCode = itemData.code
+                    objName = itemName
                 }}
             />
         );

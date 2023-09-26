@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgro
 import { dimensions } from './ui'
 import { Color4 } from '@dcl/sdk/math'
 import { Transform, engine } from '@dcl/ecs'
-import { customSelect } from './CatalogPanel'
+import { objName } from './CatalogPanel'
 
 export let showNotificationPanel = true
 
@@ -29,7 +29,7 @@ export function createNotificationPanel(){
       <Label
         onMouseDown={() => {console.log('Player Position clicked !')}}
         // value={`Shape: ${getShape()}`}
-        value = {''}
+        value = {`Object: ${objName}`}
         fontSize={18}
         uiTransform={{ width: '100%', height: 30 } }
       />
