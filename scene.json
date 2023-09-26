@@ -479,5 +479,8 @@
     "ALLOW_TO_TRIGGER_AVATAR_EMOTE",
     "ALLOW_MEDIA_HOSTNAMES"
   ],
-  "featureToggles": {}
+  "featureToggles": {},
+  "worldConfiguration":{
+    "name":"BuilderWorld.dcl.eth"
+  }
 }
