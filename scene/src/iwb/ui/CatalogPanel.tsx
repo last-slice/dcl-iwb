@@ -22,7 +22,7 @@ export function createCatalogPanel() {
     const itemsToShow = Array.from(items.entries()).slice(startIndex, endIndex);
 
 
-    for (const [itemName, itemData] of items.entries()) {
+    for (const [itemName, itemData] of itemsToShow) {
         buttons.push(
             <Button
                 key={itemName}
