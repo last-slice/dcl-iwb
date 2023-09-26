@@ -2,6 +2,7 @@ import { MessageBus } from '@dcl/sdk/message-bus'
 import { setupMessageBus } from './messageBus'
 import { connect } from '../../helpers/connection'
 import { log } from '../../functions'
+import { initiateMessageListeners } from './serverListeners'
 
 export let data:any
 export let realm:any
@@ -22,6 +23,8 @@ export function colyseusConnect(data:any){
         cRoom = room
         sessionId = room.sessionId
         connected = true
+
+        initiateMessageListeners(room)
     }).catch((err) => {
         console.error('colyseus connection error', err)
     });

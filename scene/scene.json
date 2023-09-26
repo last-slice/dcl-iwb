@@ -465,9 +465,9 @@
       "name": "spawn-0",
       "default": true,
       "position": {
-        "x": 3,
+        "x": 16,
         "y": 3,
-        "z": 3
+        "z": 16
       }
     }
   ],
