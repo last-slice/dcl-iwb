@@ -1,7 +1,7 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { dimensions } from './ui'
 import { Color4, Vector3 } from '@dcl/sdk/math'
-import { cubeSelect, customSelect, itemSelect, sphereSelect, triSelect } from './CatalogPanel'
+import { customSelect, itemSelect } from './CatalogPanel'
 import { Entity, engine, Transform, MeshRenderer, MeshCollider, Material, PointerEvents, PointerEventType, InputAction } from '@dcl/ecs'
 import { createObject } from '../helpers/selectedObject'
 import { getPlayerPosition } from '@dcl-sdk/utils'
@@ -35,26 +35,38 @@ export function createToolPanel() {
         fontSize={14}
         uiBackground={{ color: Color4.create(0.063, 0.118, 0.31, .5) }}
         onMouseDown={() => {
-          console.log("CUBE"+cubeSelect)
-          console.log("Sphere"+sphereSelect)
-          console.log("Cone"+triSelect)
+     
 
-          if (itemSelect && cubeSelect){
-            placeObject(1)
-          }
-          if (itemSelect && triSelect){
-            placeObject(2)
-          }
-          if (itemSelect && sphereSelect){
-            placeObject(3)
-          }
-          if (itemSelect && customSelect){
-            // createObject("",Vector3.create(getPlayerPosition().x,getPlayerPosition().y,getPlayerPosition().z),Vector3.create(1,1,1))
+          // if (itemSelect && cubeSelect) {
+          //   placeObject(1)
+          // }
+          // if (itemSelect && triSelect) {
+          //   placeObject(2)
+          // }
+          // if (itemSelect && sphereSelect) {
+          //   placeObject(3)
+          // }
+          // if (itemSelect && customSelect) {
+          //   // createObject("",Vector3.create(getPlayerPosition().x,getPlayerPosition().y,getPlayerPosition().z),Vector3.create(1,1,1))
 
-          }
-          if (!itemSelect){
+          // }
+          if (!itemSelect) {
             return
           }
+
+
+        }}
+      />
+         <Button
+        uiTransform={{ width: 100, height: 50, position: { top: 0, left: 150 }, alignSelf: 'flex-start' }}
+        value='Rotate'
+        variant='primary'
+        fontSize={14}
+        uiBackground={{ color: Color4.create(0.063, 0.118, 0.31, .5) }}
+        onMouseDown={() => {
+          // console.log("CUBE" + cubeSelect)
+          // console.log("Sphere" + sphereSelect)
+          // console.log("Cone" + triSelect)
 
 
         }}
@@ -69,13 +81,13 @@ export function placeObject(Objectcode: any) {
     case 0:
       break;
     case 1:
-      createCube(getPlayerPosition().x - 1,getPlayerPosition().y,getPlayerPosition().z)
+      createCube(getPlayerPosition().x - 1, getPlayerPosition().y, getPlayerPosition().z)
       break;
     case 2:
-      createCone(getPlayerPosition().x - 1,getPlayerPosition().y,getPlayerPosition().z)
+      createCone(getPlayerPosition().x - 1, getPlayerPosition().y, getPlayerPosition().z)
       break;
     case 3:
-      createSphere(getPlayerPosition().x - 1,getPlayerPosition().y,getPlayerPosition().z)
+      createSphere(getPlayerPosition().x - 1, getPlayerPosition().y, getPlayerPosition().z)
       break;
   }
 

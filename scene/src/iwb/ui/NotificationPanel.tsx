@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgro
 import { dimensions } from './ui'
 import { Color4 } from '@dcl/sdk/math'
 import { Transform, engine } from '@dcl/ecs'
-import { cubeSelect, customSelect, sphereSelect, triSelect } from './CatalogPanel'
+import { customSelect } from './CatalogPanel'
 
 export let showNotificationPanel = true
 
@@ -28,7 +28,8 @@ export function createNotificationPanel(){
   >
       <Label
         onMouseDown={() => {console.log('Player Position clicked !')}}
-        value={`Shape: ${getShape()}`}
+        // value={`Shape: ${getShape()}`}
+        value = {''}
         fontSize={18}
         uiTransform={{ width: '100%', height: 30 } }
       />
@@ -50,21 +51,21 @@ function getPlayerPosition() {
   return `{X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, z: ${z.toFixed(2)} }`
 }
 
-function getShape(){
-  if(sphereSelect){
-    return 'Sphere'
-  }
-  if(triSelect){
-    return 'Cylinder'
-  }
-  if(cubeSelect){
-    return 'Cube'
-  }
-  if(customSelect){
-    return 'Custom Model'
-  }
-  else{
-    return 'No Object Selected'
-  }
+// function getShape(){
+//   if(sphereSelect){
+//     return 'Sphere'
+//   }
+//   if(triSelect){
+//     return 'Cylinder'
+//   }
+//   if(cubeSelect){
+//     return 'Cube'
+//   }
+//   if(customSelect){
+//     return 'Custom Model'
+//   }
+//   else{
+//     return 'No Object Selected'
+//   }
 
-}
+// }

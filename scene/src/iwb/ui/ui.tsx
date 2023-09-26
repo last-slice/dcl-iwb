@@ -27,9 +27,9 @@ const uiComponent = () => [
    * create ui panels
    */
 
-  // createCatalogPanel(),
-  // createNotificationPanel(),
-  // createToolPanel(),
+  createCatalogPanel(),
+  createNotificationPanel(),
+  createToolPanel(),
   createNewScenePanel()
 ]
 
