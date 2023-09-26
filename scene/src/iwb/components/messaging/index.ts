@@ -3,6 +3,7 @@ import { setupMessageBus } from './messageBus'
 import { connect } from '../../helpers/connection'
 import { log } from '../../functions'
 import { initiateMessageListeners } from './serverListeners'
+import { createSceneListeners } from './createSceneListeners'
 
 export let data:any
 export let realm:any
@@ -25,7 +26,13 @@ export function colyseusConnect(data:any){
         connected = true
 
         initiateMessageListeners(room)
+        createSceneListeners(room)
+        
     }).catch((err) => {
         console.error('colyseus connection error', err)
     });
+}
+
+export function sendServerMessage(type:string, data:any){
+    cRoom.send(type, data)
 }

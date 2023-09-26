@@ -8,6 +8,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/re
 import { createCatalogPanel } from './CatalogPanel'
 import { createNotificationPanel } from './NotificationPanel'
 import { createToolPanel } from './ToolPanel'
+import { createNewScenePanel } from './CreateScenePanel'
 
 export let dimensions:any = {
   width:0,
@@ -26,12 +27,11 @@ const uiComponent = () => [
    * create ui panels
    */
 
-  createCatalogPanel(),
-  createNotificationPanel(),
-  createToolPanel()
-  
+  // createCatalogPanel(),
+  // createNotificationPanel(),
+  // createToolPanel(),
+  createNewScenePanel()
 ]
-
 
 
 let timer = 0   
