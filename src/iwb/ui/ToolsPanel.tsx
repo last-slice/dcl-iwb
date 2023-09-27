@@ -2,10 +2,12 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { calculateSquareImageDimensions, dimensions, getImageAtlasMapping } from './helpers'
 import { displayCatalogPanel, showCatalogPanel } from './CatalogPanel'
+import { bottomTools, topTools } from './uiConfig'
+import { log } from '../functions'
 
 export let showToolsPanel = true
 
-export let displayControls:any = {}
+// export let displayControls:any = {}
 
 export function displayToolsPanel(value: boolean) {
     showToolsPanel = value
@@ -67,9 +69,6 @@ function createTopToolIcons(data:any){
     }else{
         let count = 0
         for (let i = 0; i < data.length; i++) {
-            displayControls[data[i].name] ={
-                enabled:data[i].enabled
-            }
             arr.push(<CreateToolIcon data={data[i]} rowNum={count} /> ) 
             count++
         }
@@ -84,10 +83,7 @@ function createBottomToolIcons(data:any){
     }else{
         let count = 0
         for (let i = 0; i < data.length; i++) {
-            displayControls[data[i].name] ={
-                enabled:data[i].enabled
-            }
-            arr.push(<CreateToolIcon data={data[i]} rowNum={count} /> ) 
+            arr.push(<CreateToolIcon data={data[i]} rowNum={count} toggle={true} /> ) 
             count++
         }
     }
@@ -120,7 +116,7 @@ function CreateToolIcon(data:any){
     return ( <UiEntity
     key={config.name}//
     uiTransform={{
-        display: displayControls[config.name].enabled ? 'flex' : 'none',
+        display: config.visible ? 'flex' : 'none',
         width: calculateSquareImageDimensions(4).width,
         height: calculateSquareImageDimensions(4).height,
         flexDirection:'row',
@@ -131,9 +127,14 @@ function CreateToolIcon(data:any){
         texture: {
         src: config.atlas,
         },
-        uvs:getImageAtlasMapping(config.uv)
+        uvs:getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
     }}
     onMouseDown={()=>{
+        if(data.toggle){
+            log('need to toggle button state')
+            config.enabled = !config.enabled
+        }
+
         if(config.fn){
             config.fn()
         }
@@ -142,226 +143,3 @@ function CreateToolIcon(data:any){
     </UiEntity>  
     )
 }
-
-let topTools:any[]= [
-    {
-        name:"GodMode",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 3,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Box",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 2,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true,
-        fn:()=>{
-            if(showCatalogPanel){
-                displayCatalogPanel(false)
-            }
-            else{
-                displayCatalogPanel(true)
-            }
-            
-        }
-    },
-    {
-        name:"Image",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 3,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Position",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 4,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Rotation",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 5,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Scale",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 6,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Orbit",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 7,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Duplicate",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 0,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Undo",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-]
-
-let bottomTools:any[]=[
-    {
-        name:"Save",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 5,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Refresh",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 6,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Trash",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 7,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Magnify",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 4,
-            sourceLeft:128 * 0,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Share",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 4,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Settings",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 4,
-            sourceLeft:128 * 2,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-    {
-        name:"Info",
-        atlas:"assets/atlas1.png",
-        uv:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true
-    },
-]
