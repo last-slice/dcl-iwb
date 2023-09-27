@@ -6,8 +6,8 @@ import { SERVER_MESSAGE_TYPES } from "../../helpers/types";
 import { player } from "../player/player";
 
 let scenesToCreate:Map<string, any> = new Map()
-let greenBeam = "assets/catalog/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
-let redBeam = "assets/catalog/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
+let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
+let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
 
 export function createHQ(){
   let floor = engine.addEntity()

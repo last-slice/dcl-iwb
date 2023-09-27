@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SDK7 Template scene
 
 ## Try it out
@@ -263,3 +264,6 @@ To fetch the mutable version of a component, call it via `ComponentDefinition.ge
 ```ts
 const mutableTransform = Transform.getMutable(myEntity)
 ```
+=======
+######
+>>>>>>> iwb-deploy

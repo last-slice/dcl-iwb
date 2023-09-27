@@ -12,7 +12,7 @@ export async function connect(roomName: string, userData:any) {
     options.realm = realm?.realmInfo?.realmName;
     options.userData = userData
 
-    const client = new Client(DEBUG ? resources.endpoints.wsTest : resources.endpoints.wsProd);
+    const client = new Client(resources.DEBUG ? resources.endpoints.wsTest : resources.endpoints.wsProd);
 
     try {
         const room = await client.joinOrCreate<any>(roomName, options);

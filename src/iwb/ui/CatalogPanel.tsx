@@ -83,8 +83,6 @@ export function createCatalogPanel() {
         uiBackground={{ color: Color4.create(0.063, 0.118, 0.31, .5) }}
         onMouseDown={() => {
          currentPage -= 1
-
-
         }}
       />
         </UiEntity>
