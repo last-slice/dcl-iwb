@@ -1,0 +1,405 @@
+import { displayBlockPanel, showBlockPanel } from "./BlockPanel"
+import { displayCatalogPanel, showCatalogPanel } from "./CatalogPanel"
+import { displayPillPanel, showPillPanel } from "./PillPanel"
+import { displayRectanglePanel, showRectanglePanel } from "./RectanglePanel"
+
+export let topTools:any[]= [
+    {
+        name:"GodMode",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 3,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 3,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            displayPillPanel(!showPillPanel)
+        }
+    },
+    {
+        name:"Box",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 2,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 2,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            if(showCatalogPanel){
+                displayCatalogPanel(false)
+            }
+            else{
+                displayCatalogPanel(true)
+            }
+            
+        }
+    },
+    {
+        name:"Image",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 3,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 3,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            displayRectanglePanel(!showRectanglePanel)
+        }
+    },
+    {
+        name:"Position",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 4,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 4,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            displayBlockPanel(!showBlockPanel)
+        }
+    },
+    {
+        name:"Rotation",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 5,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 5,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Scale",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 6,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 6,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Orbit",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 7,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 7,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Duplicate",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 0,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 0,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Undo",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 1,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 1,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+]
+
+export let bottomTools:any[]=[
+    {
+        name:"Upload",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 4,
+            sourceLeft:128 * 7,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 5,
+            sourceLeft:128 * 7,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            displayCatalogPanel(!showCatalogPanel)
+        }
+    },
+    {
+        name:"Save",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 5,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 3,
+            sourceLeft:128 * 5,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Refresh",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 6,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 3,
+            sourceLeft:128 * 6,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Trash",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 2,
+            sourceLeft:128 * 7,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 3,
+            sourceLeft:128 * 7,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Magnify",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 4,
+            sourceLeft:128 * 0,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 5,
+            sourceLeft:128 * 0,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Share",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 4,
+            sourceLeft:128 * 1,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 5,
+            sourceLeft:128 * 1,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Settings",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 4,
+            sourceLeft:128 * 2,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 5,
+            sourceLeft:128 * 2,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+    {
+        name:"Info",
+        atlas:"assets/atlas1.png",
+        enabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 0,
+            sourceLeft:128 * 1,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        disabledUV:{
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:128 * 1,
+            sourceLeft:128 * 1,
+            sourceWidth:128,
+            sourceHeight:128
+        },
+        enabled:true,
+        visible:true
+    },
+]
