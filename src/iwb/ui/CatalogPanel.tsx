@@ -1,9 +1,10 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { dimensions } from './ui'
 import { Color4 } from '@dcl/sdk/math'
 import { items } from '../components/catalog/index';
+import { calculateImageDimensions, dimensions, getImageAtlasMapping } from './helpers';
+import resources from '../helpers/resources';
 
-export let showCatalogPanel = true
+export let showCatalogPanel = false
 
 export function displayCatalogPanel(value: boolean) {
     showCatalogPanel = value
@@ -55,14 +56,27 @@ export function createCatalogPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: dimensions.width * .15,
-                height: '100%',
+                width: calculateImageDimensions(25, 345 / 511).width,
+                height: calculateImageDimensions(25, 345 / 511).height,
                 positionType: 'absolute',
-                position: { right: 0, top: 0 }
+                position: { right: '3%', bottom: '3%' }
             }}
-            uiBackground={{ color: Color4.Red() }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                src: 'assets/atlas1.png',
+                },
+                uvs:getImageAtlasMapping({
+                    atlasHeight:1024,
+                    atlasWidth:1024,
+                    sourceTop:514,
+                    sourceLeft:384,
+                    sourceWidth:345,
+                    sourceHeight:511
+                })
+            }}
         >
-            {buttons}
+            {/* {buttons}
             <Button
         uiTransform={{ width: 100, height: 50, position: { top: 50, left: 150 }, alignSelf: 'flex-start' }}
         value='Nxt Page'
@@ -84,7 +98,7 @@ export function createCatalogPanel() {
         onMouseDown={() => {
          currentPage -= 1
         }}
-      />
+      /> */}
         </UiEntity>
     )
 }

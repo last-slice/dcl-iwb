@@ -1,8 +1,8 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { dimensions } from './ui'
 import { Color4 } from '@dcl/sdk/math'
 import { utils } from '../helpers/libraries'
 import { attemptParcelSelection } from '../components/hq'
+import { dimensions } from './helpers'
 
 export let showCreateScenePanel = true
 

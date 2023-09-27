@@ -1,10 +1,10 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { dimensions } from './ui'
 import { Color4 } from '@dcl/sdk/math'
 import { Transform, engine } from '@dcl/ecs'
 import { objName } from './CatalogPanel'
+import { dimensions } from './helpers'
 
-export let showNotificationPanel = true
+export let showNotificationPanel = false
 
 export function displayNotificationPanel(value:boolean){
     showNotificationPanel = value

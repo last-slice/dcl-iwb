@@ -2,7 +2,7 @@ import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 
 export default {
 
-    DEBUG: false,
+    DEBUG: true,//
 
     endpoints:{
         validateTest:"http://localhost:2751",

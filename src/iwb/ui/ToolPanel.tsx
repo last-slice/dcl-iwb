@@ -1,10 +1,10 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { dimensions } from './ui'
 import { Color4, Vector3 } from '@dcl/sdk/math'
 import { customSelect, itemSelect } from './CatalogPanel'
 import { Entity, engine, Transform, MeshRenderer, MeshCollider, Material, PointerEvents, PointerEventType, InputAction } from '@dcl/ecs'
 import { createObject } from '../helpers/selectedObject'
 import { getPlayerPosition } from '@dcl-sdk/utils'
+import { dimensions } from './helpers'
 
 export let showToolPanel = true
 
