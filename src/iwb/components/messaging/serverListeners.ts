@@ -22,5 +22,9 @@ export function initiateMessageListeners(room:any){
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_LEAVE, (info:any)=>{
       log(SERVER_MESSAGE_TYPES.PLAYER_LEAVE +' received', info)
       playerLeftDuringCreation(info.player)
-  })//
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.CATALOG_UPDATED, (info:any)=>{
+      log(SERVER_MESSAGE_TYPES.CATALOG_UPDATED +' received', info)
+    })
 }
