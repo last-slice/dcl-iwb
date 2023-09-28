@@ -1,4 +1,4 @@
-import { log } from "../../functions"
+import { log } from "../../helpers/functions"
 import { SERVER_MESSAGE_TYPES } from "../../helpers/types"
 import { items } from "../catalog"
 import { playerLeftDuringCreation } from "../hq"

@@ -3,7 +3,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { calculateSquareImageDimensions, dimensions, getImageAtlasMapping } from './helpers'
 import { displayCatalogPanel, showCatalogPanel } from './CatalogPanel'
 import { bottomTools, topTools } from './uiConfig'
-import { log } from '../functions'
+import { log } from '../helpers/functions'
 
 export let showToolsPanel = true
 

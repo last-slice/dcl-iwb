@@ -1,9 +1,9 @@
 import { GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs";
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math";
-import { log } from "../../functions";
 import { sendServerMessage } from "../messaging";
 import { SERVER_MESSAGE_TYPES } from "../../helpers/types";
 import { player } from "../player/player";
+import { log } from "../../helpers/functions";
 
 let scenesToCreate:Map<string, any> = new Map()
 let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"

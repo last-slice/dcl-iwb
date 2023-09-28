@@ -1,4 +1,4 @@
-import { log } from "../../functions"
+import { log } from "../../helpers/functions"
 import { SERVER_MESSAGE_TYPES } from "../../helpers/types"
 import { selectParcel } from "../hq"
 import { player } from "../player/player"

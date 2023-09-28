@@ -2,7 +2,7 @@ import { getRealm } from "~system/Runtime";
 import { Animator, Entity, Transform } from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
-import { eth } from "./helpers/libraries";
+import { eth } from "./libraries";
 
 export function formatDollarAmount(amount: number): string {
   return amount.toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -40,7 +40,7 @@ export function getDistance(pos1:any, pos2:any){
 export let isPreview = false
 export async function getPreview(){
     const realm = await getRealm({});
-    isPreview = realm.realmInfo!.isPreview
+    isPreview = realm.realmInfo?.isPreview || false
 }
 
 export function log(...args:any){

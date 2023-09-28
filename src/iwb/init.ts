@@ -1,9 +1,9 @@
 import { getUserData } from "~system/UserIdentity";
-import { getPreview, log } from "./functions";
 import { setupUi } from "./ui/ui";
 import { colyseusConnect } from "./components/messaging";
 import { createHQ } from "./components/hq";
 import { player } from "./components/player/player";
+import { getPreview, log } from "./helpers/functions";
 
 
 export function initIWB(){

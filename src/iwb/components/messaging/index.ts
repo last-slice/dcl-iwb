@@ -1,9 +1,9 @@
 import { MessageBus } from '@dcl/sdk/message-bus'
 import { setupMessageBus } from './messageBus'
 import { connect } from '../../helpers/connection'
-import { log } from '../../functions'
 import { initiateMessageListeners } from './serverListeners'
 import { createSceneListeners } from './createSceneListeners'
+import { log } from '../../helpers/functions'
 
 export let data:any
 export let realm:any

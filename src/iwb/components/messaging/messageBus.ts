@@ -1,5 +1,5 @@
 import { sceneMessageBus } from "."
-import { log } from "../../functions"
+import { log } from "../../helpers/functions"
 
 export function setupMessageBus(){
     sceneMessageBus.on("message", (info:any)=>{
