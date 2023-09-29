@@ -3,6 +3,13 @@ import { Animator, Entity, Transform } from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { eth } from "./libraries";
+import { localUserId, players } from "../components/player/player";
+
+export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
+
+export function atHQ(){
+  return players.has(localUserId) ? HQParcels.find((p)=> p === players.get(localUserId).currentParcel) : true
+}
 
 export function formatDollarAmount(amount: number): string {
   return amount.toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -68,8 +75,6 @@ export function addAnimator(entity:Entity, animations:any[], playings:boolean[],
     Animator.createOrReplace(entity, {
         states:states
     })
-
-    // angzaarLog('animator', Animator.get(entity))
 }
 
 export function playAnimation(ent:Entity, anim:string, reset?:boolean, loop?:boolean){

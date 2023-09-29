@@ -2,10 +2,12 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { calculateSquareImageDimensions, dimensions, getImageAtlasMapping } from './helpers'
 import { displayCatalogPanel, showCatalogPanel } from './CatalogPanel'
-import { bottomTools, topTools } from './uiConfig'
-import { log } from '../helpers/functions'
+import { bottomTools, topTools, uiModes } from './uiConfig'
+import { atHQ, log } from '../helpers/functions'
+import { localUserId, players, setPlayMode } from '../components/player/player'
+import { SCENE_MODES } from '../helpers/types'
 
-export let showToolsPanel = true
+export let showToolsPanel = false
 
 // export let displayControls:any = {}
 
@@ -18,7 +20,7 @@ export function createToolsPanel() {
         <UiEntity
             key={"toolpanel"}
             uiTransform={{
-                display: showToolsPanel ? 'flex' : 'none',
+                display: !atHQ() && players.has(localUserId) && players.get(localUserId).mode !== SCENE_MODES.CREATE_SCENE_MODE ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -29,11 +31,13 @@ export function createToolsPanel() {
             }}
             // uiBackground={{ color: Color4.Red() }}
         >
+
+            {/* top tool container */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'flex-end',
+                justifyContent: 'flex-start',
                 alignSelf:'flex-start',
                 width: '100%',
                 height: '50%',
@@ -41,6 +45,35 @@ export function createToolsPanel() {
             }}
             // uiBackground={{ color: Color4.Green() }}
         >
+
+            {/* mode icon */}
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                flexDirection:'row',
+                margin: { top: '5', bottom: '5'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                src: players.has(localUserId) ? uiModes[players.get(localUserId).mode].atlas : ''
+                },
+                uvs: players.has(localUserId) ? getImageAtlasMapping(uiModes[players.get(localUserId).mode].uvs) : getImageAtlasMapping()
+            }}
+            onMouseDown={()=>{
+                if(players.has(localUserId)){
+                   let mode = players.get(localUserId).mode
+                   if(mode == 0){
+                    setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
+                   }else{
+                    setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
+                   }
+                }
+            }}
+            />  
+
             {createTopToolIcons(topTools)}
         </UiEntity>
 
@@ -116,7 +149,7 @@ function CreateToolIcon(data:any){
     return ( <UiEntity
     key={config.name}//
     uiTransform={{
-        display: config.visible ? 'flex' : 'none',
+        display: players.has(localUserId) && players.get(localUserId).mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
         width: calculateSquareImageDimensions(4).width,
         height: calculateSquareImageDimensions(4).height,
         flexDirection:'row',

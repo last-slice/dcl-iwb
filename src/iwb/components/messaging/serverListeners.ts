@@ -1,7 +1,7 @@
 import { log } from "../../helpers/functions"
 import { SERVER_MESSAGE_TYPES } from "../../helpers/types"
 import { items } from "../catalog"
-import { playerLeftDuringCreation } from "../hq"
+import { removePlayer } from "../player/player"
 
 
 export function initiateMessageListeners(room:any){
@@ -21,7 +21,7 @@ export function initiateMessageListeners(room:any){
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_LEAVE, (info:any)=>{
       log(SERVER_MESSAGE_TYPES.PLAYER_LEAVE +' received', info)
-      playerLeftDuringCreation(info.player)
+      removePlayer(info.player)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.CATALOG_UPDATED, (info:any)=>{
