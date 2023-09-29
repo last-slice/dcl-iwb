@@ -1,21 +1,23 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 import { utils } from '../helpers/libraries'
-import { attemptParcelSelection } from '../components/hq'
 import { dimensions } from './helpers'
+import { sendServerMessage } from '../components/messaging'
+import { SCENE_MODES, SERVER_MESSAGE_TYPES } from '../helpers/types'
+import { localUserId, players } from '../components/player/player'
 
-export let showCreateScenePanel = true
+export let showCreateScenePanel = false
 
 export function displayCreateScenePanel(value:boolean){
-    showCreateScenePanel = value//
-}
+    showCreateScenePanel = value
+}//
 
 export function createNewScenePanel(){
     return (
       <UiEntity
     key={"createscenepanel"}
     uiTransform={{
-      display: showCreateScenePanel ? 'flex' :'none',
+      display: players.has(localUserId) && players.get(localUserId).mode === SCENE_MODES.CREATE_SCENE_MODE ? 'flex' :'none',
       flexDirection:'column',
       alignItems:'center',
       justifyContent:'center',
@@ -27,7 +29,7 @@ export function createNewScenePanel(){
     uiBackground={{color:Color4.Blue()}}
     onMouseDown={()=>{
         utils.timers.setTimeout(()=>{
-            attemptParcelSelection()
+          sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {player:localUserId, parcel:players.get(localUserId).currentParcel})
         }, 500)
     }}
   >

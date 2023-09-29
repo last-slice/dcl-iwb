@@ -6,7 +6,7 @@ import { createObject } from '../helpers/selectedObject'
 import { getPlayerPosition } from '@dcl-sdk/utils'
 import { dimensions } from './helpers'
 
-export let showToolPanel = true
+export let showToolPanel = false
 
 export function displayToolPanel(value: boolean) {
   showToolPanel = value

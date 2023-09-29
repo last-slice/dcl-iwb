@@ -2,7 +2,7 @@
 import { Client, Room } from "colyseus.js";
 import { getRealm } from "~system/Runtime";
 import resources from "./resources";
-import { log } from "../functions";
+import { log } from "./functions";
 
 export async function connect(roomName: string, userData:any) {
 

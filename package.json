@@ -29,5 +29,9 @@
     "@dcl-sdk/utils": "^1.1.2",
     "eth-connect": "^6.2.1",
     "mitt": "^3.0.1"
-  }
+  },
+  "bundledDependencies": [
+    "colyseus.js",
+    "eth-connect"
+  ]
 }
