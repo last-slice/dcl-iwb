@@ -1,7 +1,4 @@
 import { GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
-import { log } from "../../../helpers/functions"
-import { sendServerMessage } from "../../messaging"
-import { SERVER_MESSAGE_TYPES } from "../../../helpers/types"
 import { localUserId } from "../../player/player"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 
@@ -19,16 +16,15 @@ export function selectParcel(info:any){
        * 
        */
       if(!scene.parcels.find((p:string)=> p === info.parcel)){
-        scene.parcels.push(info.parcel)
+        scene.parcels.push({parcel:info.parcel, entities:[]})
         addSelectedBoundaries(info)
       }
     }
     else{
       let data:any = {
-        parcels:[info.parcel],
+        parcels:[{parcel:info.parcel, entities:[]}],
         name:"test",
         size:[1,1],
-        entities:[]
       }
       scenesToCreate.set(info.player, data)
       addSelectedBoundaries(info)
@@ -37,6 +33,8 @@ export function selectParcel(info:any){
   
   function addSelectedBoundaries(info:any){
     let scene = scenesToCreate.get(info.player)
+    let parcel = scene.parcels.find((p:any)=> p.parcel === info.parcel)
+    let entities:any[] = []
   
     let local = true
     if(info.player !== localUserId){
@@ -55,15 +53,17 @@ export function selectParcel(info:any){
   
     let floor = engine.addEntity()
   
-    scene.entities.push(left)
-    scene.entities.push(leftFloor)
-    scene.entities.push(right)
-    scene.entities.push(rightFloor)
-    scene.entities.push(front)
-    scene.entities.push(frontFloor)
-    scene.entities.push(back)
-    scene.entities.push(backFloor)
-    scene.entities.push(floor)
+    entities.push(left)
+    entities.push(leftFloor)
+    entities.push(right)
+    entities.push(rightFloor)
+    entities.push(front)
+    entities.push(frontFloor)
+    entities.push(back)
+    entities.push(backFloor)
+    entities.push(floor)
+
+    parcel.entities = entities
   
     let [x1,y1] = info.parcel.split(",")
     let x = parseInt(x1)
@@ -101,12 +101,24 @@ export function selectParcel(info:any){
     Transform.create(backFloor, {position: Vector3.create(x * 16, 0, y * 16), rotation:Quaternion.fromEulerDegrees(90,90,0), scale: Vector3.create(1,9,1)})
     GltfContainer.create(backFloor, {src:local ? greenBeam : redBeam})
   }
+
+  export function deleteParcelEntities(info:any){
+    let scene = scenesToCreate.get(info.player)
+    if(scene){
+      let parcel = scene.parcels.find((p:any)=> p.parcel === info.parcel)
+      if(parcel){
+        parcel.entities.forEach((entity:any) => {
+          engine.removeEntity(entity)
+        });
+      }
+    }
+  }
   
   export function deleteCreationEntities(player:string){
     let scene = scenesToCreate.get(player)
     if(scene){
-      scene.entities.forEach((entity:any)=>{
-        engine.removeEntity(entity)
+      scene.parcels.forEach((parcel:any)=>{
+        deleteParcelEntities({player:player, parcel:parcel})
       })
     }
   }
