@@ -18,8 +18,9 @@ export function createMessageManager(){
    setupMessageBus()
 }
 
-export function colyseusConnect(data:any){
-    connect("iwb-world", data).then((room) => {
+export function colyseusConnect(data:any, token:string){
+
+    connect("iwb-world", data, token).then((room) => {
         log("Connected!");
         cRoom = room
         sessionId = room.sessionId
