@@ -12,9 +12,10 @@ import { createNewScenePanel } from './CreateScenePanel'
 import { createToolsPanel } from './ToolsPanel'
 import { uiSizer } from './helpers'
 import { createUploadConfirmPanel } from './uploadConfirmPanel'
-import { createPillPanel } from './PillPanel'
 import { createRectanglePanel } from './RectanglePanel'
 import { createBlockPanel } from './BlockPanel'
+import { createAssetUploadUI } from './assetUploadUI'
+import { createNotificationUI } from './notificationUI'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -30,6 +31,7 @@ const uiComponent = () => [
    * create ui panels
    */
 
+  createNotificationUI(),
   createCatalogPanel(),
   createNotificationPanel(),
   // createToolPanel(),
@@ -38,7 +40,8 @@ const uiComponent = () => [
 
   //temp panels, this will become components called by larger UI
   createUploadConfirmPanel(),
-  createPillPanel(),
+  // createPillPanel(),
   createRectanglePanel(),
-  createBlockPanel()
+  createBlockPanel(),
+  createAssetUploadUI()
 ]
