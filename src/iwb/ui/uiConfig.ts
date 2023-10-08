@@ -1,7 +1,9 @@
+import { NOTIFICATION_TYPES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./BlockPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./CatalogPanel"
-import { displayPillPanel, showPillPanel } from "./PillPanel"
 import { displayRectanglePanel, showRectanglePanel } from "./RectanglePanel"
+import { displayAssetUploadUI } from "./assetUploadUI"
+import { showNotification } from "./notificationUI"
 
 export let uiModes:any = {
     0://playmode
@@ -67,7 +69,6 @@ export let topTools:any[]= [
         enabled:true,
         visible:true,
         fn:()=>{
-            displayPillPanel(!showPillPanel)
         }
     },
     {
@@ -286,7 +287,7 @@ export let bottomTools:any[]=[
         enabled:true,
         visible:true,
         fn:()=>{
-            displayCatalogPanel(!showCatalogPanel)
+            displayAssetUploadUI(true)
         }
     },
     {

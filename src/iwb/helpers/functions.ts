@@ -2,8 +2,14 @@ import { getRealm } from "~system/Runtime";
 import { Animator, Entity, Transform } from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
-import { eth } from "./libraries";
+import { eth, utils } from "./libraries";
 import { localUserId, players } from "../components/player/player";
+import { openExternalUrl } from "~system/RestrictedActions";
+import { displayAssetUploadUI } from "../ui/assetUploadUI";
+import resources from "./resources";
+import { response } from "express";//
+import { iwbEvents } from "../components/messaging";
+import { IWB_MESSAGE_TYPES } from "./types";
 
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
@@ -143,4 +149,30 @@ export function setUVs(rows: number, cols: number) {
     cols, // upper-right corner
     rows,
   ]
+}
+
+export async function getAssetUploadToken(){
+  let player = players.get(localUserId)
+  // if(player.dclData.hasConnectedWeb3){
+    log('web3 user, we can get token')
+    let response = await fetch((resources.DEBUG ? resources.endpoints.deploymentTest : resources.endpoints.deploymentProd) + resources.endpoints.assetSign +  "/" + localUserId)
+    let json = await response.json()
+    console.log('asset upload token is', json)
+    if(json.valid){
+      player.uploadToken = json.token//
+    }
+  // }else{
+  //   log('non web3 user, we should not do anything')
+  // }
+}
+
+export function attemptAssetUploader(){
+  displayAssetUploadUI(false)
+  let player = players.get(localUserId)
+  // if(player.dclData.hasConnectedWeb3 && player.uploadToken){
+    log('we have web3 and access token')
+    openExternalUrl({url:(resources.DEBUG ? resources.endpoints.toolsetTest : resources.endpoints.toolsetProd) + "/" + localUserId + "/" + player.uploadToken})
+  // }else{
+  //   log('we dont have web3 or access token')
+  // }
 }

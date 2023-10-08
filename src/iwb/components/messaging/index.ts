@@ -1,9 +1,12 @@
 import { MessageBus } from '@dcl/sdk/message-bus'
+import mitt from 'mitt'
 import { setupMessageBus } from './messageBus'
 import { connect } from '../../helpers/connection'
 import { initiateMessageListeners } from './serverListeners'
-import { createSceneListeners } from './createSceneListeners'
-import { log } from '../../helpers/functions'
+import { createSceneListeners } from './sceneListeners'
+import { getAssetUploadToken, log } from '../../helpers/functions'
+import { createPlayeListeners } from './PlayerListeners'
+import { createIWBEventListeners } from './iwbEvents'
 
 export let data:any
 export let realm:any
@@ -12,6 +15,7 @@ export let cRoom:any
 export let connected:boolean = false
 export let sessionId:any
 export let sceneMessageBus:any
+export const iwbEvents = mitt()
 
 export function createMessageManager(){
    sceneMessageBus = new MessageBus()
@@ -20,13 +24,16 @@ export function createMessageManager(){
 
 export function colyseusConnect(data:any){
     connect("iwb-world", data).then((room) => {
-        log("Connected!");
         cRoom = room
         sessionId = room.sessionId
         connected = true
 
+        getAssetUploadToken()
+        createMessageManager()
+        createIWBEventListeners()
         initiateMessageListeners(room)
         createSceneListeners(room)
+        createPlayeListeners(room)
         
     }).catch((err) => {
         console.error('colyseus connection error', err)
