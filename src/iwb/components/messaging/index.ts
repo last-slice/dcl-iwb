@@ -5,8 +5,7 @@ import { connect } from '../../helpers/connection'
 import { initiateMessageListeners } from './serverListeners'
 import { createSceneListeners } from './sceneListeners'
 import { getAssetUploadToken, log } from '../../helpers/functions'
-import { createPlayeListeners } from './PlayerListeners'
-import { createIWBEventListeners } from './iwbEvents'
+import { createrPlayerListeners } from './playerListeners'
 
 export let data:any
 export let realm:any
@@ -30,10 +29,9 @@ export function colyseusConnect(data:any){
 
         getAssetUploadToken()
         createMessageManager()
-        createIWBEventListeners()
         initiateMessageListeners(room)
         createSceneListeners(room)
-        createPlayeListeners(room)
+        createrPlayerListeners(room)
         
     }).catch((err) => {
         console.error('colyseus connection error', err)
