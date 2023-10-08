@@ -7,9 +7,6 @@ import { localUserId, players } from "../components/player/player";
 import { openExternalUrl } from "~system/RestrictedActions";
 import { displayAssetUploadUI } from "../ui/assetUploadUI";
 import resources from "./resources";
-import { response } from "express";//
-import { iwbEvents } from "../components/messaging";
-import { IWB_MESSAGE_TYPES } from "./types";
 
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
