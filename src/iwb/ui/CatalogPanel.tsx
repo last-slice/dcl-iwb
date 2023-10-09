@@ -76,7 +76,7 @@ export function createCatalogPanel() {
                 })
             }}
         >
-            {/* {buttons}
+            {buttons}
             <Button
         uiTransform={{ width: 100, height: 50, position: { top: 50, left: 150 }, alignSelf: 'flex-start' }}
         value='Nxt Page'
@@ -98,7 +98,7 @@ export function createCatalogPanel() {
         onMouseDown={() => {
          currentPage -= 1
         }}
-      /> */}
+      />
         </UiEntity>
     )
 }

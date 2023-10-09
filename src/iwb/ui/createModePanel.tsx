@@ -64,7 +64,7 @@ export function createModePanel() {
                    }
                 }
             }}
-            />     
+            /> 
         </UiEntity>
 
         </UiEntity>

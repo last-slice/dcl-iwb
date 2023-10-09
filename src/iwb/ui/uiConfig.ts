@@ -1,9 +1,10 @@
 import { NOTIFICATION_TYPES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./BlockPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./CatalogPanel"
+import { displayNotificationPanel, showNotificationPanel } from "./NotificationPanel"
 import { displayRectanglePanel, showRectanglePanel } from "./RectanglePanel"
 import { displayAssetUploadUI } from "./assetUploadUI"
-import { showNotification } from "./notificationUI"
+import { displayNotification, showNotification } from "./notificationUI"
 
 export let uiModes:any = {
     0://playmode
@@ -420,7 +421,8 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        
     },
     {
         name:"Info",
@@ -442,6 +444,15 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn:()=>{
+            if(showNotificationPanel){
+                displayNotificationPanel(false)
+            }
+            else{
+                displayNotificationPanel(true)
+            }
+            
+        }
     },
 ]

@@ -24,7 +24,7 @@ export function createNotificationPanel(){
       positionType:'absolute',
       position:{right:(dimensions.width - (dimensions.width * .4)) / 2,top:"1%"}
     }}
-    uiBackground={{color:Color4.Red()}}
+    uiBackground={{color: Color4.create(0.063, 0.118, 0.31, .5) }}
   >
       <Label
         onMouseDown={() => {console.log('Player Position clicked !')}}
