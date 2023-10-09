@@ -1,9 +1,9 @@
 import { NOTIFICATION_TYPES } from "../helpers/types"
-import { displayBlockPanel, showBlockPanel } from "./BlockPanel"
-import { displayCatalogPanel, showCatalogPanel } from "./CatalogPanel"
-import { displayRectanglePanel, showRectanglePanel } from "./RectanglePanel"
-import { displayAssetUploadUI } from "./assetUploadUI"
-import { showNotification } from "./notificationUI"
+import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
+import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
+import { displayRectanglePanel, showRectanglePanel } from "./Panels/RectanglePanel"
+import { displayAssetUploadUI } from "./Panels/assetUploadUI"
+import { showNotification } from "./Panels/notificationUI"
 
 export let uiModes:any = {
     0://playmode

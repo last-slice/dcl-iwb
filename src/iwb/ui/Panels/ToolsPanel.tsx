@@ -1,11 +1,11 @@
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { Color4 } from '@dcl/sdk/math'
-import { calculateSquareImageDimensions, dimensions, getImageAtlasMapping } from './helpers'
-import { displayCatalogPanel, showCatalogPanel } from './CatalogPanel'
-import { bottomTools, topTools, uiModes } from './uiConfig'
-import { atHQ, log } from '../helpers/functions'
-import { localUserId, players, setPlayMode } from '../components/player/player'
-import { SCENE_MODES } from '../helpers/types'
+import { Color4 } from "@dcl/sdk/math"
+import ReactEcs, { UiEntity, Label } from "@dcl/sdk/react-ecs"
+import { players, localUserId, setPlayMode } from "../../components/player/player"
+import { atHQ, log } from "../../helpers/functions"
+import { SCENE_MODES } from "../../helpers/types"
+import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
+import { uiModes, topTools, bottomTools } from "../uiConfig"
+
 
 export let showToolsPanel = false
 

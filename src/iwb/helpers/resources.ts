@@ -2,7 +2,7 @@ import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 
 export default {
 
-    DEBUG: false,//
+    DEBUG: true,
 
     endpoints:{
         wsTest: "ws://localhost:2751",
@@ -22,6 +22,7 @@ export default {
     },
 
     textures:{
+        atlas1:"assets/atlas1.png",
         atlas2:"assets/atlas2.png"
     }
 }

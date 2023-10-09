@@ -5,8 +5,8 @@ import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { eth, utils } from "./libraries";
 import { localUserId, players } from "../components/player/player";
 import { openExternalUrl } from "~system/RestrictedActions";
-import { displayAssetUploadUI } from "../ui/assetUploadUI";
 import resources from "./resources";
+import { displayAssetUploadUI } from "../ui/Panels/assetUploadUI";
 
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 

@@ -1,8 +1,7 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { items } from '../components/catalog/index';
-import { calculateImageDimensions, dimensions, getImageAtlasMapping } from './helpers';
-import resources from '../helpers/resources';
+import { items } from '../../components/catalog'
+import { calculateImageDimensions, getImageAtlasMapping } from '../helpers'
 
 export let showCatalogPanel = false
 

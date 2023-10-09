@@ -27,7 +27,7 @@ export function colyseusConnect(data:any){
         sessionId = room.sessionId
         connected = true
 
-        getAssetUploadToken()
+        // getAssetUploadToken()
         createMessageManager()
         initiateMessageListeners(room)
         createSceneListeners(room)

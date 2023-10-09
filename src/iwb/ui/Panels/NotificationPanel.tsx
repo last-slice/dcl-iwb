@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgro
 import { Color4 } from '@dcl/sdk/math'
 import { Transform, engine } from '@dcl/ecs'
 import { objName } from './CatalogPanel'
-import { dimensions } from './helpers'
+import { dimensions } from '../helpers'
 
 export let showNotificationPanel = false
 
