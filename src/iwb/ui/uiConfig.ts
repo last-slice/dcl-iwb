@@ -288,13 +288,13 @@ export let bottomTools:any[]=[
         },
         enabled:true,
         visible:true,
-        fn:()=>{
-            if(players.get(localUserId).dclData.hasConnectedWeb3){
-                displayAssetUploadUI(true)
-            }else{
-                displayNoWeb3(true)
-            }
-        }
+        // fn:()=>{
+        //     if(players.get(localUserId).dclData.hasConnectedWeb3){
+        //         displayAssetUploadUI(true)
+        //     }else{
+        //         displayNoWeb3(true)
+        //     }
+        // }
     },
     {
         name:"Save",

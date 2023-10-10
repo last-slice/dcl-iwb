@@ -3,7 +3,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { items } from '../../components/catalog'
 import { calculateImageDimensions, getImageAtlasMapping } from '../helpers'
 
-export let showCatalogPanel = false
+export let showCatalogPanel =  false
 
 export function displayCatalogPanel(value: boolean) {
     showCatalogPanel = value
