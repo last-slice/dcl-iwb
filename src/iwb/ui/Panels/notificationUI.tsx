@@ -1,11 +1,11 @@
 import * as utils from '@dcl-sdk/utils'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { InputAction, MeshCollider, MeshRenderer, Texture, Transform, engine, pointerEventsSystem } from '@dcl/sdk/ecs'
-import { NOTIFICATION_DETAIL, NOTIFICATION_TYPES } from '../helpers/types'
-import { log } from '../helpers/functions'
-import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from './helpers'
-import resources from '../helpers/resources'
 import { Color4 } from '@dcl/sdk/math'
+import { NOTIFICATION_DETAIL, NOTIFICATION_TYPES } from '../../helpers/types'
+import { log } from '../../helpers/functions'
+import resources from '../../helpers/resources'
+import { calculateImageDimensions, dimensions, getImageAtlasMapping, addLineBreak, sizeFont, calculateSquareImageDimensions } from '../helpers'
 
 export let queue:any[] = []
 export let showingNotification = false

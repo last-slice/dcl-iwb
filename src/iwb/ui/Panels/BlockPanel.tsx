@@ -1,6 +1,6 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping } from './helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping } from '../helpers'
 
 export let showBlockPanel = false
 

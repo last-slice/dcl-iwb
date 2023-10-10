@@ -1,11 +1,10 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { calculateSquareImageDimensions, dimensions, getImageAtlasMapping } from './helpers'
-import { bottomTools, topTools, uiModes } from './uiConfig'
-import { localUserId, players, setPlayMode } from '../components/player/player'
-import { SCENE_MODES } from '../helpers/types'
-import { atHQ } from '../helpers/functions'
-
+import { atHQ } from '../../helpers/functions'
+import { players, localUserId, setPlayMode } from '../../components/player/player'
+import { SCENE_MODES } from '../../helpers/types'
+import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from '../helpers'
+import { uiModes } from '../uiConfig'
 export let showModePanel = true
 
 export function displayModePanel(value: boolean) {
@@ -64,7 +63,7 @@ export function createModePanel() {
                    }
                 }
             }}
-            />     
+            /> 
         </UiEntity>
 
         </UiEntity>

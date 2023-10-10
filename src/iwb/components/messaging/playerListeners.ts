@@ -1,6 +1,6 @@
 import { log } from "../../helpers/functions"
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from "../../helpers/types"
-import { showNotification } from "../../ui/notificationUI"
+import { showNotification } from "../../ui/Panels/notificationUI"
 
 export function createrPlayerListeners(room:any){
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED, (info:any)=>{

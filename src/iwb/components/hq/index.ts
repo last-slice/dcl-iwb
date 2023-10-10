@@ -17,7 +17,7 @@ export function createHQ(){
 
   pointerEventsSystem.onPointerDown({
     entity: createSceneBox,
-    opts:{hoverText: "Create Scene", maxDistance:3, button:InputAction.IA_POINTER},
+    opts:{hoverText: "Create Scene", maxDistance:10, button:InputAction.IA_POINTER},
   },
   function () {
       log('create scene mode')

@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgro
 import { Color4 } from '@dcl/sdk/math'
 import { Transform, engine } from '@dcl/ecs'
 import { objName } from './CatalogPanel'
-import { dimensions } from './helpers'
+import { dimensions } from '../helpers'
 
 export let showNotificationPanel = false
 
@@ -24,7 +24,7 @@ export function createNotificationPanel(){
       positionType:'absolute',
       position:{right:(dimensions.width - (dimensions.width * .4)) / 2,top:"1%"}
     }}
-    uiBackground={{color:Color4.Red()}}
+    uiBackground={{color: Color4.create(0.063, 0.118, 0.31, .5) }}
   >
       <Label
         onMouseDown={() => {console.log('Player Position clicked !')}}

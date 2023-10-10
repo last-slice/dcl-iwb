@@ -24,7 +24,6 @@ export enum SCENE_MODES {
 export type PlayerData = {
     dclData:any | null,
     mode: SCENE_MODES,
-    buildMode:number | null,
 }
 
 export enum NOTIFICATION_TYPES {

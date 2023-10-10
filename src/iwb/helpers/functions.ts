@@ -5,8 +5,8 @@ import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { eth, utils } from "./libraries";
 import { localUserId, players } from "../components/player/player";
 import { openExternalUrl } from "~system/RestrictedActions";
-import { displayAssetUploadUI } from "../ui/assetUploadUI";
 import resources from "./resources";
+import { displayAssetUploadUI } from "../ui/Panels/assetUploadUI";
 
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
@@ -156,7 +156,7 @@ export async function getAssetUploadToken(){
     let json = await response.json()
     console.log('asset upload token is', json)
     if(json.valid){
-      player.uploadToken = json.token//
+      player.uploadToken = json.token
     }
   // }else{
   //   log('non web3 user, we should not do anything')
@@ -164,12 +164,14 @@ export async function getAssetUploadToken(){
 }
 
 export function attemptAssetUploader(){
-  displayAssetUploadUI(false)
   let player = players.get(localUserId)
-  // if(player.dclData.hasConnectedWeb3 && player.uploadToken){
+  if(player.dclData.hasConnectedWeb3 && player.uploadToken){
     log('we have web3 and access token')
     openExternalUrl({url:(resources.DEBUG ? resources.endpoints.toolsetTest : resources.endpoints.toolsetProd) + "/" + localUserId + "/" + player.uploadToken})
-  // }else{
-  //   log('we dont have web3 or access token')
-  // }
+  }else{
+    log('we dont have web3 or access token')
+    if(!player.dclData.hasConnectedWeb3){
+      log('not web3')
+    }
+  }
 }
