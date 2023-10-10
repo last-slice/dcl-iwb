@@ -1,8 +1,10 @@
+import { localUserId, players } from "../components/player/player"
 import { NOTIFICATION_TYPES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
 import { displayRectanglePanel, showRectanglePanel } from "./Panels/RectanglePanel"
 import { displayAssetUploadUI } from "./Panels/assetUploadUI"
+import { displayNoWeb3 } from "./Panels/noWeb3Panel"
 import { showNotification } from "./Panels/notificationUI"
 
 export let uiModes:any = {
@@ -287,7 +289,11 @@ export let bottomTools:any[]=[
         enabled:true,
         visible:true,
         fn:()=>{
-            displayAssetUploadUI(true)
+            if(players.get(localUserId).dclData.hasConnectedWeb3){
+                displayAssetUploadUI(true)
+            }else{
+                displayNoWeb3(true)
+            }
         }
     },
     {

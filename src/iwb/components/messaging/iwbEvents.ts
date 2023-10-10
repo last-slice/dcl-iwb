@@ -3,7 +3,7 @@ import { iwbEvents } from ".";
 import { log } from "../../helpers/functions";
 import { IWB_MESSAGE_TYPES } from "../../helpers/types";
 import resources from "../../helpers/resources";
-import { localUserId } from "../player/player";
+import { localUserId } from "../player/player";//
 
 
 export function createIWBEventListeners(){

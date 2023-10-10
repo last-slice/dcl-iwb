@@ -11,7 +11,7 @@ export default {
         deploymentTest: "http://localhost:3525/dcl/deployment",
         deploymentProd: "https://dcl-iwb.co/dcl/deployment",
 
-        toolsetTest: "http://localhost:2751/toolset",
+        toolsetTest: "http://localhost:2751",
         toolsetProd: "https://dcl-iwb.co/toolset",
 
         assetSign: "/scene/sign"

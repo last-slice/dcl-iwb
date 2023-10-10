@@ -13,7 +13,8 @@ export function addPlayer(userId:string, data?:any[], local?:boolean){
     let pData:any = {
         dclData:null,
         mode: SCENE_MODES.PLAYMODE,
-        buildMode:null,
+        scenes:[],
+        buildingAllowed:[]
     }
 
     if(data){

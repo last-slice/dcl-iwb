@@ -1,8 +1,12 @@
 import { GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
-import { localUserId } from "../../player/player"
+import { localUserId, players, setPlayMode } from "../../player/player"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
+import { log } from "../../../helpers/functions"
+import { SCENE_MODES } from "../../../helpers/types"
+import { displayCreateScenePanel } from "../../../ui/Panels/CreateScenePanel"
+import { scenes } from "../../scenes"
 
-let scenesToCreate:Map<string, any> = new Map()
+export let scenesToCreate:Map<string, any> = new Map()
 let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
 let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
 
@@ -110,6 +114,8 @@ export function selectParcel(info:any){
         parcel.entities.forEach((entity:any) => {
           engine.removeEntity(entity)
         });
+        let index = scene.parcels.findIndex((p:any)=> p.parcel === info.parcel)
+        scene.parcels.splice(index,1)
       }
     }
   }
@@ -120,5 +126,22 @@ export function selectParcel(info:any){
       scene.parcels.forEach((parcel:any)=>{
         deleteParcelEntities({player:player, parcel:parcel})
       })
+      scenesToCreate.delete(player)
     }
   }
+
+export function saveNewScene(){
+  displayCreateScenePanel(false)
+
+  let player = players.get(localUserId)
+  let scenes = scenesToCreate.get(localUserId)
+  scenes.parcels.forEach((parcel:any)=>{
+    player.buildingAllowed.push(parcel)
+  })
+
+  player.scenes.push(scenesToCreate.get(localUserId))
+
+  //need to delete scene from scenestoCreate()...either here or round trip server side and back to scene
+
+  setPlayMode(localUserId, SCENE_MODES.PLAYMODE)//
+}

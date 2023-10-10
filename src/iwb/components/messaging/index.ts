@@ -4,8 +4,8 @@ import { setupMessageBus } from './messageBus'
 import { connect } from '../../helpers/connection'
 import { initiateMessageListeners } from './serverListeners'
 import { createSceneListeners } from './sceneListeners'
-import { getAssetUploadToken, log } from '../../helpers/functions'
 import { createrPlayerListeners } from './playerListeners'
+import { createIWBEventListeners } from './iwbEvents'
 
 export let data:any
 export let realm:any
@@ -27,7 +27,7 @@ export function colyseusConnect(data:any){
         sessionId = room.sessionId
         connected = true
 
-        // getAssetUploadToken()
+        createIWBEventListeners()
         createMessageManager()
         initiateMessageListeners(room)
         createSceneListeners(room)

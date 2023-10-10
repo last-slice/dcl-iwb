@@ -20,7 +20,8 @@ export function createToolsPanel() {
         <UiEntity
             key={"toolpanel"}
             uiTransform={{
-                display: !atHQ() && players.has(localUserId) && players.get(localUserId).mode !== SCENE_MODES.CREATE_SCENE_MODE ? 'flex' : 'none',
+                display: checkModeAndPermissions(),
+                // display:'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -175,4 +176,24 @@ function CreateToolIcon(data:any){
     >     
     </UiEntity>  
     )
+}
+
+
+function checkModeAndPermissions(){
+    let player = players.get(localUserId)
+    if(!atHQ() && localUserId && player.mode !== SCENE_MODES.CREATE_SCENE_MODE){
+         if(player.buildingAllowed.length > 0){
+            console.log('player building parcels allowed', player.buildingAllowed)
+            if(player.buildingAllowed.find((b:any)=> b.parcel === player.currentParcel)){
+                return "flex"
+            }else{
+                return "none"
+            }
+         }else{
+            return "none"
+         }
+    }
+    else{
+        return "none"
+    }
 }

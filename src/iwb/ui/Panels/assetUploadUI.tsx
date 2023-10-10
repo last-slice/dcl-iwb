@@ -1,7 +1,7 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { attemptAssetUploader } from '../../helpers/functions'
 import { PillPanel } from '../PillPanel'
-import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, getImageAtlasMapping } from '../helpers'
+import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import { Color4 } from '@dcl/sdk/math'
 
 export let showAssetUI = false
@@ -12,7 +12,35 @@ export function displayAssetUploadUI(value: boolean) {
 
 export function createAssetUploadUI() {
     return (
-        <PillPanel show={showAssetUI} hide={()=>{displayAssetUploadUI(false)}} accept={()=>{attemptAssetUploader()}}>
+        <UiEntity
+            key={"pillpanel"}
+            uiTransform={{
+                display: showAssetUI ? "flex" : "none",
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(45, 824/263).width,
+                height: calculateImageDimensions(45, 824/263).height,
+                positionType: 'absolute',
+                position:{left:(dimensions.width - calculateImageDimensions(45, 824/263).width) / 2, top:(dimensions.height - calculateImageDimensions(45, 824/263).height) / 2}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                src: 'assets/atlas2.png'
+                },
+                uvs:getImageAtlasMapping({
+                    atlasHeight:1024,
+                    atlasWidth:1024,
+                    sourceTop:0,
+                    sourceLeft:0,
+                    sourceWidth:824,
+                    sourceHeight:263
+                })
+            }}
+        >
+
+        {/* <PillPanel show={showAssetUI} hide={()=>{displayAssetUploadUI(false)}} accept={()=>{attemptAssetUploader()}}> */}
 
                     {/* x button */}
         <UiEntity
@@ -75,6 +103,8 @@ export function createAssetUploadUI() {
             // uiBackground={{color:Color4.Blue()}}
             >
 
+
+            {/* close popup button */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -101,9 +131,19 @@ export function createAssetUploadUI() {
             onMouseDown={()=>{
                 displayAssetUploadUI(false)
             }}
-        />
+        >
+            <Label
+                value="Close"
+                color={Color4.White()}
+                fontSize={sizeFont(30,20)}
+                font="serif"
+                textAlign="middle-center"
+                />
+        </UiEntity>
 
 
+
+         {/* load asset loader button */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -128,11 +168,23 @@ export function createAssetUploadUI() {
                 })
             }}
             onMouseDown={()=>{
+                displayAssetUploadUI(false)
                 attemptAssetUploader()
             }}
-        />
+        >
+            <Label
+                value="Open Asset Loader"
+                color={Color4.White()}
+                fontSize={sizeFont(30,20)}
+                font="serif"
+                textAlign="middle-center"
+
+                />
+    </UiEntity>
 
         </UiEntity>
-        </PillPanel>
+        
+        </UiEntity>
+       
     )
 }

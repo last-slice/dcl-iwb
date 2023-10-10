@@ -16,6 +16,7 @@ import { createRectanglePanel } from './Panels/RectanglePanel'
 import { createBlockPanel } from './Panels/BlockPanel'
 import { createAssetUploadUI } from './Panels/assetUploadUI'
 import { createNotificationUI } from './Panels/notificationUI'
+import { createNoWeb3Panel } from './Panels/noWeb3Panel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -31,6 +32,7 @@ const uiComponent = () => [
    * create ui panels
    */
 
+  createNoWeb3Panel(),
   createNotificationUI(),
   createCatalogPanel(),
   createNotificationPanel(),
