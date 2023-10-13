@@ -11,7 +11,7 @@ export function displaySaveBuildPanel(value: boolean) {
 export function createSaveBuildPanel() {
     return (
         <UiEntity
-            key={"blockpanel"}
+            key={"savebuildpanel"}
             uiTransform={{
                 display: showSaveBuildPanel ? 'flex' : 'none',
                 flexDirection: 'column',

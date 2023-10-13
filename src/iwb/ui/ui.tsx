@@ -44,7 +44,6 @@ const uiComponent = () => [
   createRPPPanel(),
   createSaveBuildPanel(),
   createLoadBuildPanel(),
-  // createToolPanel(),
   createNewScenePanel(),
   createToolsPanel(),
 

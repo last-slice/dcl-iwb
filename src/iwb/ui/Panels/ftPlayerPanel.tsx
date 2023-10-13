@@ -11,7 +11,7 @@ export function displayFTPPanel(value: boolean) {
 export function createFTPPanel() {
     return (
         <UiEntity
-            key={"blockpanel"}
+            key={"ftppanel"}
             uiTransform={{
                 display: showFTPPanel ? 'flex' : 'none',
                 flexDirection: 'column',

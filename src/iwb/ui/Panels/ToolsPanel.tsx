@@ -7,7 +7,7 @@ import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from
 import { uiModes, topTools, bottomTools } from "../uiConfig"
 
 
-export let showToolsPanel = false
+export let showToolsPanel = true
 
 // export let displayControls:any = {}
 
@@ -20,8 +20,8 @@ export function createToolsPanel() {
         <UiEntity
             key={"toolpanel"}
             uiTransform={{
-                display: checkModeAndPermissions(),
-                // display:'flex',
+                // display: checkModeAndPermissions(),
+                display:'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -183,7 +183,7 @@ function checkModeAndPermissions(){
     let player = players.get(localUserId)
     if(!atHQ() && localUserId && player.mode !== SCENE_MODES.CREATE_SCENE_MODE){
          if(player.buildingAllowed.length > 0){
-            console.log('player building parcels allowed', player.buildingAllowed)
+            // console.log('player building parcels allowed', player.buildingAllowed)
             if(player.buildingAllowed.find((b:any)=> b.parcel === player.currentParcel)){
                 return "flex"
             }else{

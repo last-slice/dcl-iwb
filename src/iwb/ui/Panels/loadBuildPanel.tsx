@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 
-export let showLoadBuildPanel = true
+export let showLoadBuildPanel = false
 
 export function displayLoadBuildPanel(value: boolean) {
     showLoadBuildPanel = value
@@ -11,7 +11,7 @@ export function displayLoadBuildPanel(value: boolean) {
 export function createLoadBuildPanel() {
     return (
         <UiEntity
-            key={"blockpanel"}
+            key={"loadbuildpanel"}
             uiTransform={{
                 display: showLoadBuildPanel ? 'flex' : 'none',
                 flexDirection: 'column',

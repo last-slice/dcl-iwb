@@ -1,10 +1,8 @@
 import { GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
 import { localUserId, players, setPlayMode } from "../../player/player"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
-import { log } from "../../../helpers/functions"
 import { SCENE_MODES } from "../../../helpers/types"
 import { displayCreateScenePanel } from "../../../ui/Panels/CreateScenePanel"
-import { scenes } from "../../scenes"
 
 export let scenesToCreate:Map<string, any> = new Map()
 let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
@@ -18,7 +16,7 @@ export function selectParcel(info:any){
        * check if selected parcel is adjacent to at least 1 other parcel in the scene
        * check which direction the selected parcel is and update the size accordingly (1x1, 2x1, etc)
        * 
-       */
+       *///
       if(!scene.parcels.find((p:string)=> p === info.parcel)){
         scene.parcels.push({parcel:info.parcel, entities:[]})
         addSelectedBoundaries(info)

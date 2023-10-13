@@ -1,4 +1,5 @@
 import { localUserId, players } from "../components/player/player"
+import resources from "../helpers/resources"
 import { NOTIFICATION_TYPES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
@@ -288,13 +289,13 @@ export let bottomTools:any[]=[
         },
         enabled:true,
         visible:true,
-        // fn:()=>{
-        //     if(players.get(localUserId).dclData.hasConnectedWeb3){
-        //         displayAssetUploadUI(true)
-        //     }else{
-        //         displayNoWeb3(true)
-        //     }
-        // }
+        fn:()=>{
+            if(players.get(localUserId).dclData.hasConnectedWeb3 || resources.allowNoWeb3){
+                displayAssetUploadUI(true)
+            }else{
+                displayNoWeb3(true)
+            }
+        }
     },
     {
         name:"Save",

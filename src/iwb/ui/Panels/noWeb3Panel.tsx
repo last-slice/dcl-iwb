@@ -1,6 +1,5 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { attemptAssetUploader } from '../../helpers/functions'
-import { PillPanel } from '../PillPanel'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import { Color4 } from '@dcl/sdk/math'
 

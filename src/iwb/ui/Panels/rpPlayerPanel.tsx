@@ -11,7 +11,7 @@ export function displayRPPPanel(value: boolean) {
 export function createRPPPanel() {
     return (
         <UiEntity
-            key={"blockpanel"}
+            key={"rpppanel"}
             uiTransform={{
                 display: showRPPPanel ? 'flex' : 'none',
                 flexDirection: 'column',
