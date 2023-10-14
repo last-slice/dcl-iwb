@@ -2,8 +2,8 @@ import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 
 export default {
 
-    DEBUG: true,
-    allowNoWeb3:true,
+    DEBUG: false,
+    allowNoWeb3:false,
 
     endpoints:{
         wsTest: "ws://localhost:2751",
