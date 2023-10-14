@@ -4,9 +4,9 @@ import { items } from '../../components/catalog'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
-import { selectCatalogItem } from '../../components/modes/build'
+import { selectCatalogItem, useSelectedItem } from '../../components/modes/build'
 
-export let showCatalogPanel =  true
+export let showCatalogPanel =  false
 
 export function displayCatalogPanel(value: boolean) {
     showCatalogPanel = value
@@ -24,38 +24,10 @@ let currentPage = 0;
 const itemsPerPage = 9;
 
 export function createCatalogPanel() {
-    const buttons = [];
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const itemsToShow = [...items.values()].slice(startIndex, endIndex); //Array.from(items.entries()).slice(startIndex, endIndex);
-    // console.log('items to show', itemsToShow)
-//
+    const itemsToShow = [...items.values()].slice(startIndex, endIndex);
     const totalPages = Math.ceil(itemsToShow.length / (columns * rows));
-
-
-    // for (const [itemName, itemData] of itemsToShow) {
-    //     buttons.push(
-    //         <Button
-    //             key={itemName}
-    //             uiTransform={{
-    //                 width: 100,
-    //                 height: 50,
-    //                 position: { top: -50, left: 20 },
-    //                 alignSelf: 'flex-start'
-    //             }}
-    //             value={itemName}
-    //             variant='primary'
-    //             fontSize={14}
-    //             uiBackground={{ color: Color4.create(0.063, 0.118, 0.31, .5) }}
-    //             onMouseDown={() => {
-    //                 itemSelect = true
-    //                 customSelect = false
-    //                 itemCode = itemData.code
-    //                 objName = itemName
-    //             }}
-    //         />
-    //     );
-    // }//
 
     return (
         <UiEntity
@@ -108,7 +80,7 @@ export function createCatalogPanel() {
                 width: '90%',
                 height: '8%',
             }}
-            // uiBackground={{color:Color4.Blue()}}//
+            // uiBackground={{color:Color4.Blue()}}
         >
 
         <UiEntity
@@ -118,7 +90,7 @@ export function createCatalogPanel() {
                 width: '10%',
                 height: '20%',
             }}
-            uiText={{value:"Page " + (currentPage + 1)}}
+            uiText={{value:"Page " + (currentPage + 1) + " / " + totalPages}}
         />
 
             </UiEntity>
@@ -129,7 +101,7 @@ export function createCatalogPanel() {
             {/* paginate container */}
             <UiEntity
             uiTransform={{
-                display:'flex',
+                display: totalPages > 1 ? 'flex' : 'none',
                 flexDirection: 'row',
                 justifyContent:'flex-end',
                 alignContent:'center',
@@ -243,7 +215,7 @@ function CatalogItem(data:any){
                 width: '33%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Teal()}}
+            // uiBackground={{color:Color4.Teal()}}//
             >
 
                 {/* item image */}
@@ -271,6 +243,7 @@ function CatalogItem(data:any){
                     }}
                     onMouseDown={()=>{
                         selectCatalogItem(data.item.id)
+                        useSelectedItem()
                     }}
                     />
 

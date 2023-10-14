@@ -7,9 +7,7 @@ import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from
 import { uiModes, topTools, bottomTools } from "../uiConfig"
 
 
-export let showToolsPanel = true
-
-// export let displayControls:any = {}
+export let showToolsPanel = false
 
 export function displayToolsPanel(value: boolean) {
     showToolsPanel = value
@@ -20,8 +18,8 @@ export function createToolsPanel() {
         <UiEntity
             key={"toolpanel"}
             uiTransform={{
-                // display: checkModeAndPermissions(),
-                display:'flex',
+                display: checkModeAndPermissions(),
+                // display:'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
