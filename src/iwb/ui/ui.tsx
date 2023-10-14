@@ -17,6 +17,10 @@ import { createBlockPanel } from './Panels/BlockPanel'
 import { createAssetUploadUI } from './Panels/assetUploadUI'
 import { createNotificationUI } from './Panels/notificationUI'
 import { createNoWeb3Panel } from './Panels/noWeb3Panel'
+import { createFTPPanel } from './Panels/ftPlayerPanel'
+import { createRPPPanel } from './Panels/rpPlayerPanel'
+import { createSaveBuildPanel } from './Panels/saveBuildPanel'
+import { createLoadBuildPanel } from './Panels/loadBuildPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -36,7 +40,10 @@ const uiComponent = () => [
   createNotificationUI(),
   createCatalogPanel(),
   createNotificationPanel(),
-  // createToolPanel(),
+  createFTPPanel(),
+  createRPPPanel(),
+  createSaveBuildPanel(),
+  createLoadBuildPanel(),
   createNewScenePanel(),
   createToolsPanel(),
 

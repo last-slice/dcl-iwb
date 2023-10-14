@@ -1,5 +1,4 @@
 import { InputAction, PointerEventType, engine, inputSystem } from "@dcl/sdk/ecs";
-import { log } from "../../helpers/functions";
 import { checkShortCuts } from "./shortcuts";
 
 export let buttonsPressed:Map<number, any> = new Map()

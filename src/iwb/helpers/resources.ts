@@ -2,7 +2,8 @@ import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 
 export default {
 
-    DEBUG: false,
+    DEBUG: true,
+    allowNoWeb3:true,
 
     endpoints:{
         wsTest: "ws://localhost:2751",
@@ -11,10 +12,12 @@ export default {
         deploymentTest: "http://localhost:3525/dcl/deployment",
         deploymentProd: "https://dcl-iwb.co/dcl/deployment",
 
-        toolsetTest: "http://localhost:2751",
+        toolsetTest: "http://localhost:3000/toolset",
         toolsetProd: "https://dcl-iwb.co/toolset",
 
-        assetSign: "/scene/sign"
+        assetSign: "/scene/sign",
+
+        proxy: "https://lkdcl.co/proxy?url=",
     },
     colors:{
         transparent: Color4.create(0,0,0,0),

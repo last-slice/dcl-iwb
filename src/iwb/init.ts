@@ -19,12 +19,10 @@ export function initIWB(){
                 addPlayer(data.data.userId, [{dclData:data.data}], true)
                 engine.addSystem(PlayerTrackingSystem)
 
-                if(data.data.hasConnectedWeb3){
-                    getAssetUploadToken()
-                }
+                getAssetUploadToken()
             }
 
-            //build IWB HQ
+            //build IWB HQ//
             createHQ()
 
             //add input listeners

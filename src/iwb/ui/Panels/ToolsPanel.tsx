@@ -9,8 +9,6 @@ import { uiModes, topTools, bottomTools } from "../uiConfig"
 
 export let showToolsPanel = false
 
-// export let displayControls:any = {}
-
 export function displayToolsPanel(value: boolean) {
     showToolsPanel = value
 }
@@ -183,7 +181,7 @@ function checkModeAndPermissions(){
     let player = players.get(localUserId)
     if(!atHQ() && localUserId && player.mode !== SCENE_MODES.CREATE_SCENE_MODE){
          if(player.buildingAllowed.length > 0){
-            console.log('player building parcels allowed', player.buildingAllowed)
+            // console.log('player building parcels allowed', player.buildingAllowed)
             if(player.buildingAllowed.find((b:any)=> b.parcel === player.currentParcel)){
                 return "flex"
             }else{

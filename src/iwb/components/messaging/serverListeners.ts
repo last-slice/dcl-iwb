@@ -1,7 +1,7 @@
 import { log } from "../../helpers/functions"
 import { SERVER_MESSAGE_TYPES } from "../../helpers/types"
 import { items } from "../catalog"
-import { removePlayer } from "../player/player"
+import { localUserId, players, removePlayer } from "../player/player"
 
 
 export function initiateMessageListeners(room:any){
@@ -17,6 +17,9 @@ export function initiateMessageListeners(room:any){
             }
           }
         log('catalog size is', items.size)
+
+        //set deployed iwb version
+        players.get(localUserId).version = info.iwb.v
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_LEAVE, (info:any)=>{

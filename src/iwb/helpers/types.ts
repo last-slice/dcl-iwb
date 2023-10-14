@@ -7,7 +7,9 @@ export enum SERVER_MESSAGE_TYPES {
     REMOVE_PARCEL = "remove_parcel",
     CATALOG_UPDATED = 'catalog_updated',
     PLAY_MODE_CHANGED = 'play_mode_changed',
-    PLAYER_ASSET_UPLOADED = 'player_asset_uploaded'
+    PLAYER_ASSET_UPLOADED = 'player_asset_uploaded',
+    PLAYER_ASSET_CATALOG = 'player_asset_catalog',
+    PLAYER_CATALOG_DEPLOYED = 'player_catalog_deployed',
 }
 
 export enum IWB_MESSAGE_TYPES {
