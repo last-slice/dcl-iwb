@@ -10,6 +10,7 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_ASSET_UPLOADED = 'player_asset_uploaded',
     PLAYER_ASSET_CATALOG = 'player_asset_catalog',
     PLAYER_CATALOG_DEPLOYED = 'player_catalog_deployed',
+    PLAYER_RECEIVED_MESSAGE = 'player_received_message',
 }
 
 export enum IWB_MESSAGE_TYPES {
