@@ -21,6 +21,7 @@ import { createFTPPanel } from './Panels/ftPlayerPanel'
 import { createRPPPanel } from './Panels/rpPlayerPanel'
 import { createSaveBuildPanel } from './Panels/saveBuildPanel'
 import { createLoadBuildPanel } from './Panels/loadBuildPanel'
+import { createInfoPanel } from './Panels/infoPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -37,6 +38,7 @@ const uiComponent = () => [
    */
 
   createNoWeb3Panel(),
+  createInfoPanel(),
   createNotificationUI(),
   createCatalogPanel(),
   createNotificationPanel(),

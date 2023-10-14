@@ -28,6 +28,9 @@ export function createrPlayerListeners(room:any){
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_CATALOG_DEPLOYED, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_CATALOG_DEPLOYED +' received', info)
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your latest asset uploads have been deployed. Refresh to use them.", animate:{enabled:true, return:true, time:10}})
+    })
 
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info:any)=>{
+        log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE +' received', info)
     })
 }
