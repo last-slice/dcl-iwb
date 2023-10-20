@@ -4,8 +4,7 @@ import { prevBuilds } from '../../components/builds'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import resources from '../../helpers/resources'
 
-export let showLoadBuildPanel = true
-
+export let showLoadBuildPanel = false
 
 export let buildSelect = false
 export let buildCode = 0
