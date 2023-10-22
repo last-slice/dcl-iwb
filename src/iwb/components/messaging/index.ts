@@ -6,6 +6,7 @@ import { initiateMessageListeners } from './serverListeners'
 import { createSceneListeners } from './sceneListeners'
 import { createrPlayerListeners } from './playerListeners'
 import { createIWBEventListeners } from './iwbEvents'
+import {log} from "../../helpers/functions";
 
 export let data:any
 export let realm:any
@@ -21,8 +22,9 @@ export function createMessageManager(){
    setupMessageBus()
 }
 
-export function colyseusConnect(data:any){
-    connect("iwb-world", data).then((room) => {
+export function colyseusConnect(data:any, token:string){
+    connect("iwb-world", data, token).then((room) => {
+        log("Connected!");
         cRoom = room
         sessionId = room.sessionId
         connected = true
@@ -32,7 +34,7 @@ export function colyseusConnect(data:any){
         initiateMessageListeners(room)
         createSceneListeners(room)
         createrPlayerListeners(room)
-        
+
     }).catch((err) => {
         console.error('colyseus connection error', err)
     });
