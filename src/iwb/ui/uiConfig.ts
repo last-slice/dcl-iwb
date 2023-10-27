@@ -3,10 +3,17 @@ import resources from "../helpers/resources"
 import { NOTIFICATION_TYPES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
+import { showNotificationPanel, displayNotificationPanel } from "./Panels/NotificationPanel"
 import { displayRectanglePanel, showRectanglePanel } from "./Panels/RectanglePanel"
 import { displayAssetUploadUI } from "./Panels/assetUploadUI"
+import { displayDeleteBuildPanel, showDeleteBuildPanel } from "./Panels/deleteBuildPanel"
+import { showInfoPanel, displayInfoPanel } from "./Panels/infoPanel"
+import { showLoadBuildPanel, displayLoadBuildPanel } from "./Panels/loadBuildPanel"
 import { displayNoWeb3 } from "./Panels/noWeb3Panel"
 import { showNotification } from "./Panels/notificationUI"
+import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBuildConfirmPanel"
+import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
+import { showSettingsPanel, displaySettingsPanel } from "./Panels/settingsPanel"
 
 export let uiModes:any = {
     0://playmode
@@ -317,7 +324,16 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn: ()=>{
+            if(showSaveBuildPanel){
+                displaySaveBuildPanel(false)
+            }
+            else{
+                displaySaveBuildPanel(true)
+            }
+
+        }
     },
     {
         name:"Refresh",
@@ -339,7 +355,16 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn: ()=>{
+            if(showLoadBuildPanel){
+                displayLoadBuildPanel(false)
+            }
+            else{
+                displayLoadBuildPanel(true)
+            }
+
+        }
     },
     {
         name:"Trash",
@@ -361,7 +386,16 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn: ()=>{
+            if(showDeleteBuildPanel){
+                displayDeleteBuildPanel(false)
+            }
+            else{
+                displayDeleteBuildPanel(true)
+            }
+
+        }
     },
     {
         name:"Magnify",
@@ -383,7 +417,16 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn: ()=>{
+            if(showNotificationPanel){
+                displayNotificationPanel(false)
+            }
+            else{
+                displayNotificationPanel(true)
+            }
+
+        }
     },
     {
         name:"Share",
@@ -405,7 +448,16 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn: ()=>{
+            if(showPBuildConfirmPanel){
+                displayPBuildConfirmPanel(false)
+            }
+            else{
+                displayPBuildConfirmPanel(true)
+            }
+
+        }
     },
     {
         name:"Settings",
@@ -427,7 +479,16 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn: ()=>{
+            if(showSettingsPanel){
+                displaySettingsPanel(false)
+            }
+            else{
+                displaySettingsPanel(true)
+            }
+
+        }
     },
     {
         name:"Info",
@@ -449,6 +510,15 @@ export let bottomTools:any[]=[
             sourceHeight:128
         },
         enabled:true,
-        visible:true
+        visible:true,
+        fn: ()=>{
+            if(showInfoPanel){
+                displayInfoPanel(false)
+            }
+            else{
+                displayInfoPanel(true)
+            }
+
+        }
     },
 ]
