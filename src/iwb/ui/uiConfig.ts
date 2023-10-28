@@ -290,7 +290,7 @@ export let bottomTools:any[]=[
         enabled:true,
         visible:true,
         fn:()=>{
-            if(players.get(localUserId).dclData.hasConnectedWeb3 || resources.allowNoWeb3){
+            if(players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3){
                 displayAssetUploadUI(true)
             }else{
                 displayNoWeb3(true)

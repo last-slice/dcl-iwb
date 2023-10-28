@@ -1,5 +1,5 @@
 import { getRealm } from "~system/Runtime";
-import { Animator, Entity, Transform } from "@dcl/sdk/ecs";
+import {Animator, engine, Entity, Transform} from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { eth, utils } from "./libraries";
@@ -11,7 +11,7 @@ import { displayAssetUploadUI } from "../ui/Panels/assetUploadUI";
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
 export function atHQ(){
-  return players.has(localUserId) ? HQParcels.find((p)=> p === players.get(localUserId).currentParcel) : true
+  return players.has(localUserId) ? HQParcels.find((p)=> p === players.get(localUserId)!.currentParcel) : true
 }
 
 export function formatDollarAmount(amount: number): string {
@@ -150,13 +150,13 @@ export function setUVs(rows: number, cols: number) {
 
 export async function getAssetUploadToken(){
   let player = players.get(localUserId)
-  if(player.dclData.hasConnectedWeb3 || resources.allowNoWeb3){
+  if(player && player.dclData.hasConnectedWeb3 || resources.allowNoWeb3){
     log('web3 user, we can get token')
     let response = await fetch((resources.DEBUG ? resources.endpoints.deploymentTest : resources.endpoints.deploymentProd) + resources.endpoints.assetSign +  "/" + localUserId)
     let json = await response.json()
     console.log('asset upload token is', json)
     if(json.valid){
-      player.uploadToken = json.token
+      player!.uploadToken = json.token
     }
   }else{
     log('non web3 user, we should not do anything')
@@ -165,6 +165,8 @@ export async function getAssetUploadToken(){
 
 export function attemptAssetUploader(){
   let player = players.get(localUserId)
+  if(!player) return
+
   if((player.dclData.hasConnectedWeb3 && player.uploadToken) || resources.allowNoWeb3){
     log('we have web3 and access token')
     openExternalUrl({url:(resources.DEBUG ? resources.endpoints.toolsetTest : resources.endpoints.toolsetProd) + "/" + localUserId + "/" + player.uploadToken})
@@ -174,4 +176,10 @@ export function attemptAssetUploader(){
       log('not web3')
     }
   }
+}
+
+export function getFrontOfPlayerPosition() {
+  const playerPosition = Transform.get(engine.PlayerEntity)
+  const cameraPosition = Transform.get(engine.PlayerEntity)
+  return Vector3.add(playerPosition!.position, Vector3.rotate(Vector3.create(0, -1, 1), cameraPosition!.rotation))
 }

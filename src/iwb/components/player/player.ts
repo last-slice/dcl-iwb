@@ -1,9 +1,37 @@
 import { PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
 import { sendServerMessage } from "../messaging";
 import { deleteCreationEntities } from "../modes/create";
+import {Entity} from "@dcl/sdk/ecs";
+import {CatalogItemType} from "../catalog";
+
+export interface Player {
+    dclData:any,
+    mode:SCENE_MODES,
+    scenes:PlayerScene[],
+    buildingAllowed:string[],
+    currentParcel:string,
+    uploadToken:string,
+    version: number
+    activeScene: PlayerScene
+}
+
+export interface PlayerScene {
+    parcels:string[],
+    baseParcel:string,
+    parentEntity:Entity,
+    assets: SceneItem[],
+}
+
+export interface SceneItem extends CatalogItemType{
+    position: {x:number, y:number, z:number},
+    rotation: {x:number, y:number, z:number, w:number},
+    scale: {x:number, y:number, z:number}
+}
 
 export let localUserId:string
-export let players:Map<string, any> = new Map()
+export let players:Map<string, Player> = new Map<string, Player>()
+
+
 
 export function addPlayer(userId:string, data?:any[], local?:boolean){
     if(local){
@@ -18,6 +46,7 @@ export function addPlayer(userId:string, data?:any[], local?:boolean){
     }
 
     if(data){
+
         data.forEach((item:any)=>{
             for(let key in item){
                 pData[key] = item[key]
@@ -25,6 +54,8 @@ export function addPlayer(userId:string, data?:any[], local?:boolean){
         })
     }
     players.set(userId, pData)
+
+    console.log("Player *** ", players.get(userId))
 }
 
 export function removePlayer(user:string){
