@@ -1,22 +1,22 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
-import { displayMyBuildsPanel } from './myBuilds'
-import { displayLoadBuildPanel } from './loadBuildPanel'
 import { displayAcessPanel } from './acessPanel'
+import { displayLoadBuildPanel } from './loadBuildPanel'
+import { displaySettingsPanel } from './settingsPanel'
 
-export let showSettingsPanel = false
+export let showMyBuildsPanel = false
 
-export function displaySettingsPanel(value: boolean) {
-    showSettingsPanel = value
+export function displayMyBuildsPanel(value: boolean) {
+    showMyBuildsPanel = value
 }
 
-export function createSettingsPanel() {
+export function createMyBuildsPanel() {
     return (
         <UiEntity
-            key={"settingspanel"}
+            key={"mybuildspanel"}
             uiTransform={{
-                display: showSettingsPanel ? 'flex' : 'none',
+                display: showMyBuildsPanel ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -62,7 +62,7 @@ export function createSettingsPanel() {
                 }}>
                     
                   <Label
-                        value={addLineBreak("Settings", true, 50)}
+                        value={addLineBreak("Builds", true, 50)}
                         color={Color4.Black()}
                         fontSize={29}
                         font="serif"//
@@ -96,7 +96,7 @@ export function createSettingsPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                        displaySettingsPanel(false)
+                        displayMyBuildsPanel(false)
                     }}
                 >
 
@@ -126,10 +126,6 @@ export function createSettingsPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                        displaySettingsPanel(false)
-                        displayMyBuildsPanel(true)
-                        displayLoadBuildPanel(true)
-                        displayAcessPanel(false)
 
                     }}
                 >
@@ -168,8 +164,8 @@ export function createSettingsPanel() {
                     onMouseDown={() => {
                         displaySettingsPanel(false)
                         displayMyBuildsPanel(false)
-                       displayAcessPanel(true)
-
+                        displayLoadBuildPanel(false)
+                        displayAcessPanel(true)
 
                     }}
                 >
@@ -280,7 +276,7 @@ export function createSettingsPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                        displaySettingsPanel(false)
+                        displayMyBuildsPanel(false)
 
                     }}
                 >

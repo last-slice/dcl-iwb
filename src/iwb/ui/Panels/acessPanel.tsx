@@ -1,22 +1,19 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
-import { displayMyBuildsPanel } from './myBuilds'
-import { displayLoadBuildPanel } from './loadBuildPanel'
-import { displayAcessPanel } from './acessPanel'
 
-export let showSettingsPanel = false
+export let showAcessPanel = false
 
-export function displaySettingsPanel(value: boolean) {
-    showSettingsPanel = value
+export function displayAcessPanel(value: boolean) {
+    showAcessPanel = value
 }
 
-export function createSettingsPanel() {
+export function createAcessPanel() {
     return (
         <UiEntity
-            key={"settingspanel"}
+            key={"acesspanel"}
             uiTransform={{
-                display: showSettingsPanel ? 'flex' : 'none',
+                display: showAcessPanel ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -62,7 +59,7 @@ export function createSettingsPanel() {
                 }}>
                     
                   <Label
-                        value={addLineBreak("Settings", true, 50)}
+                        value={addLineBreak("Access", true, 50)}
                         color={Color4.Black()}
                         fontSize={29}
                         font="serif"//
@@ -96,7 +93,7 @@ export function createSettingsPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                        displaySettingsPanel(false)
+                        displayAcessPanel(false)
                     }}
                 >
 
@@ -126,10 +123,6 @@ export function createSettingsPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                        displaySettingsPanel(false)
-                        displayMyBuildsPanel(true)
-                        displayLoadBuildPanel(true)
-                        displayAcessPanel(false)
 
                     }}
                 >
@@ -166,10 +159,6 @@ export function createSettingsPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                        displaySettingsPanel(false)
-                        displayMyBuildsPanel(false)
-                       displayAcessPanel(true)
-
 
                     }}
                 >
@@ -280,7 +269,7 @@ export function createSettingsPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                        displaySettingsPanel(false)
+                        displayAcessPanel(false)
 
                     }}
                 >
