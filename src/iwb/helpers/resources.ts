@@ -29,4 +29,3 @@ export default {
         atlas2:"assets/atlas2.png"
     }
 }
-

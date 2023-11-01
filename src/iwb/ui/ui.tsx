@@ -22,6 +22,9 @@ import { createRPPPanel } from './Panels/rpPlayerPanel'
 import { createSaveBuildPanel } from './Panels/saveBuildPanel'
 import { createLoadBuildPanel } from './Panels/loadBuildPanel'
 import { createInfoPanel } from './Panels/infoPanel'
+import { createDeleteBuildPanel } from './Panels/deleteBuildPanel'
+import { createPBuildConfirmPanel } from './Panels/pBuildConfirmPanel'
+import { createSettingsPanel } from './Panels/settings/settingsIndex'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -38,6 +41,9 @@ const uiComponent = () => [
    */
 
   createNoWeb3Panel(),
+  createSettingsPanel(),
+  createPBuildConfirmPanel(),
+  createDeleteBuildPanel(),
   createInfoPanel(),
   createNotificationUI(),
   createCatalogPanel(),

@@ -14,6 +14,7 @@ export function addPlayer(userId:string, data?:any[], local?:boolean){
         dclData:null,
         mode: SCENE_MODES.PLAYMODE,
         scenes:[],
+        objects:[],
         buildingAllowed:[]
     }
 
@@ -45,6 +46,15 @@ export function removePlayer(user:string){
 
 
         players.delete(user)
+    }
+}
+
+export function addPlayerScenes(user:string, scenes:any[]){
+    let player = players.get(user)
+    if(player){
+        scenes.forEach((scene)=>{
+            player.scenes.push(scene)
+        })
     }
 }
 

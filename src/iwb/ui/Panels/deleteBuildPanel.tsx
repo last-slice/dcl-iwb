@@ -2,30 +2,31 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
+import { displaySettingsPanel } from './settings/settingsIndex'
 
-export let showFTPPanel = true
+export let showDeleteBuildPanel = false
 
-export function displayFTPPanel(value: boolean) {
-    showFTPPanel = value
+export function displayDeleteBuildPanel(value: boolean) {
+    showDeleteBuildPanel = value
 }
 
-export function createFTPPanel() {
+export function createDeleteBuildPanel() {
     return (
         <UiEntity
-            key={"ftppanel"}
+            key={"DeleteBuildpanel"}
             uiTransform={{
-                display: showFTPPanel ? 'flex' : 'none',
+                display: showDeleteBuildPanel ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(35, getAspect(uiSizes.vertRectangle)).width,
-                height: calculateImageDimensions(35,getAspect(uiSizes.vertRectangle)).height,
+                width: calculateImageDimensions(25, getAspect(uiSizes.vertRectangle)).width,
+                height: calculateImageDimensions(25,  getAspect(uiSizes.vertRectangle)).height,
                 positionType: 'absolute',
-                position: { left: (dimensions.width - calculateImageDimensions(35, getAspect(uiSizes.vertRectangle)).width) / 2, top: (dimensions.height - calculateImageDimensions(35, getAspect(uiSizes.vertRectangle)).height) / 2 }
+                position: { left: (dimensions.width - calculateImageDimensions(25, getAspect(uiSizes.vertRectangle)).width) / 2, top: (dimensions.height - calculateImageDimensions(25,  getAspect(uiSizes.vertRectangle)).height) / 2 }
             }}
         // uiBackground={{ color: Color4.Red() }}//
         >
-           <UiEntity
+            <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -55,7 +56,7 @@ export function createFTPPanel() {
                         margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"First Time User", fontSize: sizeFont(45,30), color: Color4.Black()}}
+                uiText={{value:"Delete Build", fontSize: sizeFont(45,30), color: Color4.Black()}}
                 />
 
                     {/* popup text */}
@@ -67,7 +68,7 @@ export function createFTPPanel() {
                             width: '100%',
                             height: '30%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Welcome to the In-World Builder! The Tutorial is recommended for first time users. It only takes a couple minutes to go through it all.", true, 40)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Are you sure you want to delete this build? Any builders who have not saved will lose ALL progress!", true, 30)}}
                     />
 
         <UiEntity
@@ -84,12 +85,12 @@ export function createFTPPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.normalButton)
+                uvs: getImageAtlasMapping(uiSizes.dangerButton)
             }}
             onMouseDown={() => {
-                displayFTPPanel(false)
+                displayDeleteBuildPanel(false)
             }}
-            uiText={{value: "New Build", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Delete", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity
@@ -109,31 +110,10 @@ export function createFTPPanel() {
                 uvs: getImageAtlasMapping(uiSizes.normalButton)
             }}
             onMouseDown={() => {
-                displayFTPPanel(false)
+                displayDeleteBuildPanel(false)
+                displaySettingsPanel(true)
             }}
-            uiText={{value: "Tutorial", color:Color4.Black(), fontSize:sizeFont(30,20)}}//
-            />
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
-                margin:{top:"1%", bottom:'1%'},
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.normalButton)
-            }}
-            onMouseDown={() => {
-                displayFTPPanel(false)
-            }}
-            uiText={{value: "Explore", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Cancel", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />
 
         </UiEntity>
@@ -141,5 +121,3 @@ export function createFTPPanel() {
         </UiEntity>
     )
 }
-
-
