@@ -1,6 +1,8 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
+import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
+import { uiSizes } from '../uiConfig'
+import { displaySettingsPanel } from './settings/settingsIndex'
 
 export let showDeleteBuildPanel = false
 
@@ -17,10 +19,10 @@ export function createDeleteBuildPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(45, 580 / 403).width,
-                height: calculateImageDimensions(45, 580 / 403).height,
+                width: calculateImageDimensions(25, getAspect(uiSizes.vertRectangle)).width,
+                height: calculateImageDimensions(25,  getAspect(uiSizes.vertRectangle)).height,
                 positionType: 'absolute',
-                position: { left: (dimensions.width - calculateImageDimensions(45, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(45, 580 / 403).height) / 2 }
+                position: { left: (dimensions.width - calculateImageDimensions(25, getAspect(uiSizes.vertRectangle)).width) / 2, top: (dimensions.height - calculateImageDimensions(25,  getAspect(uiSizes.vertRectangle)).height) / 2 }
             }}
         // uiBackground={{ color: Color4.Red() }}//
         >
@@ -30,203 +32,91 @@ export function createDeleteBuildPanel() {
                     alignItems: 'center',
                     width: '100%',
                     height: '100%',
+                    display:'flex',
+                    justifyContent:'flex-start'
                 }}
                 uiBackground={{
                     textureMode: 'stretch',
                     texture: {
                         src: 'assets/atlas2.png'
                     },
-                    uvs: getImageAtlasMapping({
-                        atlasHeight: 1024,
-                        atlasWidth: 1024,
-                        sourceTop: 495,
-                        sourceLeft: 2,
-                        sourceWidth: 570,
-                        sourceHeight: 403
-                    })
+                    uvs: getImageAtlasMapping(uiSizes.vertRectangle)
                 }}
             >
                 
+                {/* header label */}
                 <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '90%',
-                        height: '30%',
+                        width: '100%',
+                        height: '15%',
+                        display:'flex',
+                        margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                >
+                uiText={{value:"Delete Build", fontSize: sizeFont(45,30), color: Color4.Black()}}
+                />
 
-                    <Label
-                        value={addLineBreak("Delete Build", true, 50)}
-                        color={Color4.Black()}
-                        fontSize={29}
-                        font="serif"//
-                        textAlign="middle-center"
-                    />
+                    {/* popup text */}
                     <UiEntity
                         uiTransform={{
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: '90%',
+                            width: '100%',
                             height: '30%',
-                            position: { top: 40 }
                         }}
-                    // uiBackground={{color:Color4.Green()}}
-                    >
-
-                        <Label
-                            value={addLineBreak("Are you sure you want to delete this build? Any builders who have not saved will lose ALL progress!", true, 50)}
-                            color={Color4.Black()}
-                            fontSize={15}
-                            font="serif"//
-                            textAlign="middle-center"
-                        />
-                    </UiEntity>
-                    <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(3, 111 / 41).width,
-                        height: calculateImageDimensions(4, 111 / 41).height,
-                        margin: { right: "2%" },
-                        position: { top: -25, left: -225 }
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping({
-                            atlasHeight: 1024,
-                            atlasWidth: 1024,
-                            sourceTop: 60,
-                            sourceLeft: 844,
-                            sourceWidth: 30,
-                            sourceHeight: 30
-                        })
-                    }}
-                    onMouseDown={() => {
-                        displayDeleteBuildPanel(false)
-                    }}
-                >
-                </UiEntity>
-                </UiEntity>
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(13, 223 / 41).width,
-                        height: calculateImageDimensions(13, 223 / 41).height,
-                        margin: { right: "2%" },
-                        position: { top: 40 }
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping({
-                            atlasHeight: 1024,
-                            atlasWidth: 1024,
-                            sourceTop: 841,
-                            sourceLeft: 579,
-                            sourceWidth: 223,
-                            sourceHeight: 41
-                        })
-                    }}
-                    onMouseDown={() => {
-                      
-                    }}
-                >
-                    <Label
-                        value="Delete Build"
-                        color={Color4.Black()}
-                        fontSize={sizeFont(30, 20)}
-                        font="serif"
-                        textAlign="middle-center"
-                    />
-                </UiEntity>
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(13, 223 / 41).width,
-                        height: calculateImageDimensions(13, 223 / 41).height,
-                        margin: { right: "2%" },
-                        position: { top: 60 }
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping({
-                            atlasHeight: 1024,
-                            atlasWidth: 1024,
-                            sourceTop: 801,
-                            sourceLeft: 802,
-                            sourceWidth: 223,
-                            sourceHeight: 41
-                        })
-                    }}
-                    onMouseDown={() => {
-                      
-                    }}
-                >
-                    <Label
-                        value="Save Build"
-                        color={Color4.Black()}
-                        fontSize={sizeFont(30, 20)}
-                        font="serif"
-                        textAlign="middle-center"
-                    />
-                </UiEntity>
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(13, 223 / 41).width,
-                        height: calculateImageDimensions(13, 223 / 41).height,
-                        margin: { right: "2%" },
-                        position: { top: 80 }
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping({
-                            atlasHeight: 1024,
-                            atlasWidth: 1024,
-                            sourceTop: 801,
-                            sourceLeft: 802,
-                            sourceWidth: 223,
-                            sourceHeight: 41
-                        })
-                    }}
-                    onMouseDown={() => {
-                        displayDeleteBuildPanel(false)
-                    
-                    }}
-                >
-                    <Label
-                        value="Cancel"
-                        color={Color4.Black()}
-                        fontSize={sizeFont(30, 20)}
-                        font="serif"
-                        textAlign="middle-center"
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Are you sure you want to delete this build? Any builders who have not saved will lose ALL progress!", true, 30)}}
                     />
 
-                </UiEntity>
-              
-            </UiEntity>
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+            }}
+            onMouseDown={() => {
+                displayDeleteBuildPanel(false)
+            }}
+            uiText={{value: "Delete", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.normalButton)
+            }}
+            onMouseDown={() => {
+                displayDeleteBuildPanel(false)
+                displaySettingsPanel(true)
+            }}
+            uiText={{value: "Cancel", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            />
+
+        </UiEntity>
 
         </UiEntity>
     )

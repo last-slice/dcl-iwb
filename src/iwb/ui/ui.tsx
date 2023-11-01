@@ -24,9 +24,7 @@ import { createLoadBuildPanel } from './Panels/loadBuildPanel'
 import { createInfoPanel } from './Panels/infoPanel'
 import { createDeleteBuildPanel } from './Panels/deleteBuildPanel'
 import { createPBuildConfirmPanel } from './Panels/pBuildConfirmPanel'
-import { createSettingsPanel } from './Panels/settingsPanel'
-import { createMyBuildsPanel } from './Panels/myBuilds'
-import { createAcessPanel } from './Panels/acessPanel'
+import { createSettingsPanel } from './Panels/settings/settingsIndex'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -42,9 +40,6 @@ const uiComponent = () => [
    * create ui panels
    */
 
-
-  createMyBuildsPanel(),
-  createAcessPanel(),
   createNoWeb3Panel(),
   createSettingsPanel(),
   createPBuildConfirmPanel(),

@@ -13,7 +13,7 @@ import { displayNoWeb3 } from "./Panels/noWeb3Panel"
 import { showNotification } from "./Panels/notificationUI"
 import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBuildConfirmPanel"
 import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
-import { showSettingsPanel, displaySettingsPanel } from "./Panels/settingsPanel"
+import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
 
 export let uiModes:any = {
     0://playmode
@@ -460,37 +460,6 @@ export let bottomTools:any[]=[
         }
     },
     {
-        name:"Settings",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 4,
-            sourceLeft:128 * 2,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 5,
-            sourceLeft:128 * 2,
-            sourceWidth:128,
-            sourceHeight:128
-        },
-        enabled:true,
-        visible:true,
-        fn: ()=>{
-            if(showSettingsPanel){
-                displaySettingsPanel(false)
-            }
-            else{
-                displaySettingsPanel(true)
-            }
-
-        }
-    },
-    {
         name:"Info",
         atlas:"assets/atlas1.png",
         enabledUV:{
@@ -522,3 +491,144 @@ export let bottomTools:any[]=[
         }
     },
 ]
+
+export let settingsIconData:any =
+{
+    name:"Settings",
+    atlas:"assets/atlas1.png",
+    enabledUV:{
+        atlasHeight:1024,
+        atlasWidth:1024,
+        sourceTop:128 * 4,
+        sourceLeft:128 * 2,
+        sourceWidth:128,
+        sourceHeight:128
+    },
+    disabledUV:{
+        atlasHeight:1024,
+        atlasWidth:1024,
+        sourceTop:128 * 5,
+        sourceLeft:128 * 2,
+        sourceWidth:128,
+        sourceHeight:128
+    },
+    enabled:true,
+    visible:true,
+    fn: ()=>{
+        if(showSettingsPanel){
+            displaySettingsPanel(false)
+        }
+        else{
+            displaySettingsPanel(true)
+        }
+    }
+}
+
+export let uiSizes:any ={
+    toggleOn:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    toggleOff:{        
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+
+    dangerButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 841,
+        sourceLeft: 579,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    normalButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 801,
+        sourceLeft: 802,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    normalLighterButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 841,
+        sourceLeft: 802,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    normalLightestButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 841 + 41,
+        sourceLeft: 802,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    positiveButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 923,
+        sourceLeft: 579,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    rectangleButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 512,
+        sourceLeft: 802,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    horizRectangle:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 512,
+        sourceLeft: 0,
+        sourceWidth: 519,
+        sourceHeight: 365
+    },
+
+    vertRectangle:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 266,
+        sourceLeft: 577,
+        sourceWidth: 447,
+        sourceHeight: 431
+    },
+
+    smallPill:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 263,
+        sourceLeft: 0,
+        sourceWidth: 578,
+        sourceHeight: 232
+    },
+
+    largePill:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 0,
+        sourceWidth: 824,
+        sourceHeight: 263
+    },
+}

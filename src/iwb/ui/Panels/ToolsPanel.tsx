@@ -4,7 +4,7 @@ import { players, localUserId, setPlayMode } from "../../components/player/playe
 import { atHQ, log } from "../../helpers/functions"
 import { SCENE_MODES } from "../../helpers/types"
 import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
-import { uiModes, topTools, bottomTools } from "../uiConfig"
+import { uiModes, topTools, bottomTools, settingsIconData } from "../uiConfig"
 
 
 export let showToolsPanel = false
@@ -18,8 +18,8 @@ export function createToolsPanel() {
         <UiEntity
             key={"toolpanel"}
             uiTransform={{
-                display: checkModeAndPermissions(),
-                // display:'flex',
+                // display: checkModeAndPermissions(),
+                display:'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -82,14 +82,16 @@ export function createToolsPanel() {
                 alignItems: 'center',
                 justifyContent: 'flex-end',
                 width: '100%',
-                height: '50%',
-                margin:{top:"5%"}
+                height: '40%',
+                margin:{top:"5%"},
+                display:'flex'
             }}
             // uiBackground={{ color: Color4.Blue() }}
         >
             {createBottomToolIcons(bottomTools)}
         </UiEntity>
 
+        <CreateToolIcon data={settingsIconData} rowNum={'settings-icon'} toggle={true} />
         </UiEntity>
     )
 }
@@ -144,11 +146,12 @@ export function CreateEmptyRow(props: {}) {
   }
 
 function CreateToolIcon(data:any){
+
     let config = data.data
     return ( <UiEntity
-    key={config.name}//
+    key={config.name}
     uiTransform={{
-        display: players.has(localUserId) && players.get(localUserId).mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
+        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId).mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
         width: calculateSquareImageDimensions(4).width,
         height: calculateSquareImageDimensions(4).height,
         flexDirection:'row',
