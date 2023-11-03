@@ -4,7 +4,7 @@ import {localUserId, players, setPlayMode} from "../../components/player/player"
 import {atHQ, log} from "../../helpers/functions"
 import {SCENE_MODES} from "../../helpers/types"
 import {calculateSquareImageDimensions, dimensions, getImageAtlasMapping} from "../helpers"
-import {bottomTools, topTools, uiModes} from "../uiConfig"
+import {bottomTools, settingsIconData, topTools, uiModes} from "../uiConfig"
 
 
 export let showToolsPanel = false
@@ -18,8 +18,8 @@ export function createToolsPanel() {
         <UiEntity
             key={"toolpanel"}
             uiTransform={{
-                display: checkModeAndPermissions(),
-                // display:'flex',
+                // display: checkModeAndPermissions(),
+                display:'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -76,20 +76,22 @@ export function createToolsPanel() {
                 {createTopToolIcons(topTools)}
             </UiEntity>
 
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    width: '100%',
-                    height: '50%',
-                    margin: {top: "5%"}
-                }}
-                // uiBackground={{ color: Color4.Blue() }}
-            >
-                {createBottomToolIcons(bottomTools)}
-            </UiEntity>
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                width: '100%',
+                height: '40%',
+                margin:{top:"5%"},
+                display:'flex'
+            }}
+            // uiBackground={{ color: Color4.Blue() }}
+        >
+            {createBottomToolIcons(bottomTools)}
+        </UiEntity>
 
+        <CreateToolIcon data={settingsIconData} rowNum={'settings-icon'} toggle={true} />
         </UiEntity>
     )
 }
@@ -145,27 +147,27 @@ export function CreateEmptyRow(props: {}) {
 
 function CreateToolIcon(data: any) {
     let config = data.data
-    return (<UiEntity
-            key={config.name}//
-            uiTransform={{
-                display: players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
-                width: calculateSquareImageDimensions(4).width,
-                height: calculateSquareImageDimensions(4).height,
-                flexDirection: 'row',
-                margin: {top: '5', bottom: '5'},
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: config.atlas,
-                },
-                uvs: getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
-            }}
-            onMouseDown={() => {
-                if (data.toggle) {
-                    log('need to toggle button state')
-                    config.enabled = !config.enabled
-                }
+    return ( <UiEntity
+    key={config.name}
+    uiTransform={{
+        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
+        width: calculateSquareImageDimensions(4).width,
+        height: calculateSquareImageDimensions(4).height,
+        flexDirection:'row',
+        margin: { top: '5', bottom: '5'},
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+        src: config.atlas,
+        },
+        uvs:getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
+    }}
+    onMouseDown={()=>{
+        if(data.toggle){
+            log('need to toggle button state')
+            config.enabled = !config.enabled
+        }
 
                 if (config.fn) {
                     config.fn()

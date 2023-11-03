@@ -1,4 +1,5 @@
 import { UiCanvasInformation, engine } from "@dcl/sdk/ecs"
+import { uiSizes } from "./uiConfig"
 
 export let dimensions:any = {
     width:0,
@@ -13,7 +14,7 @@ export function uiSizer(dt:number){
   else{
     timer = 3
     let canvas = UiCanvasInformation.get(engine.RootEntity)
-    console.log("CANVAS DIMENSIONS: ", canvas.width, canvas.height)
+    // console.log("CANVAS DIMENSIONS: ", canvas.width, canvas.height)
     dimensions.width = canvas.width
     dimensions.height = canvas.height
   }
@@ -32,8 +33,8 @@ export function calculateSquareImageDimensions(percentage: number): any {
   return { width: squareSize, height: squareSize };
 }
 
-export function addLineBreak(text:string, bubble?:boolean, lineCount?:number){
-  return lineBreak(text,lineCount ? lineCount : 20)
+export function addLineBreak(text:string, bubble?:boolean, lineCount?:number, large?:number){
+  return lineBreak(text, large? large : lineCount ? lineCount : 20)
 }
 
 function lineBreak(text: string, maxLineLength: number): string {
@@ -85,3 +86,7 @@ export function getImageAtlasMapping(data?: ImageAtlasData): number[] {
     sourceLeft: number;
     sourceTop: number;
   };
+
+  export function getAspect(panel:any){
+      return panel.sourceWidth / panel.sourceHeight
+  }

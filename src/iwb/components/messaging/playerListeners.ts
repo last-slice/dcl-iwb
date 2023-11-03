@@ -3,7 +3,7 @@ import { log } from "../../helpers/functions"
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from "../../helpers/types"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { Vector3 } from "@dcl/sdk/math"
-import { localUserId, players } from "../player/player"
+import { addPlayerScenes, localUserId, players } from "../player/player"
 import { items } from "../catalog"
 
 export function createrPlayerListeners(room:any){
@@ -23,6 +23,11 @@ export function createrPlayerListeners(room:any){
                 items.set(asset.id, asset)
             })
         }
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG, (info:any)=>{
+        log(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG +' received', info)
+        addPlayerScenes(info.user, info.scenes)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_CATALOG_DEPLOYED, (info:any)=>{

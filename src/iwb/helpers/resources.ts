@@ -3,7 +3,7 @@ import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 export default {
 
     DEBUG: true,
-    allowNoWeb3:true,//
+    allowNoWeb3:true,
 
     endpoints:{
         wsTest: "ws://localhost:2751",
@@ -31,4 +31,3 @@ export default {
         atlas2:"assets/atlas2.png"
     }
 }
-
