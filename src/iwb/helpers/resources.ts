@@ -15,6 +15,8 @@ export default {
         toolsetTest: "http://localhost:3000/toolset",
         toolsetProd: "https://dcl-iwb.co/toolset",
 
+        validateTest: "http://localhost:2751",
+
         assetSign: "/scene/sign",
 
         proxy: "https://lkdcl.co/proxy?url=",

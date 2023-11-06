@@ -40,8 +40,8 @@ let shortcutDefinitions:any[] = [
         name:"AddParcel",
         buttons:[InputAction.IA_SECONDARY],
         fn:()=>{
-            if(players.get(localUserId).mode === SCENE_MODES.CREATE_SCENE_MODE){
-                sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {player:localUserId, parcel:players.get(localUserId).currentParcel})
+            if(players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.CREATE_SCENE_MODE){
+                sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {player:localUserId, parcel:players.get(localUserId)!.currentParcel})
             }
             clearShortcut('AddParcel')
         }

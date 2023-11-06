@@ -1,22 +1,21 @@
-
-import { Client, Room } from "colyseus.js";
-import { getRealm } from "~system/Runtime";
+import {Client} from "colyseus.js";
+//import {getRealm} from "~system/Runtime";
 import resources from "./resources";
-import { log } from "./functions";
+import {log} from "./functions";
 
-export async function connect(roomName: string, userData:any) {
+export async function connect(roomName: string, userData: any, token: string) {
 
-    const realm = await getRealm({});
+    let options: any = {token, userData}
 
-    let options:any = {}
-    options.realm = realm?.realmInfo?.realmName;
-    options.userData = userData
+    // realm info is in token, we can probably remove it here
+    //const realm = await getRealm({});
+    // options.realm = realm?.realmInfo?.realmName;
+    // options.userData = userData
 
     const client = new Client(resources.DEBUG ? resources.endpoints.wsTest : resources.endpoints.wsProd);
 
     try {
-        const room = await client.joinOrCreate<any>(roomName, options);
-        return room;
+        return await client.joinOrCreate<any>(roomName, options);
 
     } catch (e) {
         log('error connecting colyseus', e)
