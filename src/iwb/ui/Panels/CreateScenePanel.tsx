@@ -1,6 +1,6 @@
 import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
-import {calculateImageDimensions, dimensions, getImageAtlasMapping, sizeFont} from '../helpers'
+import {calculateImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont} from '../helpers'
 import {utils} from '../../helpers/libraries'
 import {sendServerMessage} from '../../components/messaging'
 import {SCENE_MODES, SERVER_MESSAGE_TYPES} from '../../helpers/types'
@@ -8,8 +8,9 @@ import {localUserId, players, setPlayMode} from '../../components/player/player'
 import {SmallOpaqueRectangle} from '../Objects/SmallOpaqueRectangle'
 import {MediumOpaqueRectangle} from '../Objects/MediumOpaqueRectangle'
 import resources from '../../helpers/resources'
-import {saveNewScene, scenesToCreate} from '../../components/modes/create'
+import {saveNewScene, scenesToCreate, validateScene} from '../../components/modes/create'
 import {log} from '../../helpers/functions'
+import { uiSizes } from '../uiConfig'
 
 export let showCreateScenePanel = false
 
@@ -29,8 +30,8 @@ export function createNewScenePanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent: 'center',
-                width: calculateImageDimensions(15, 345 / 511).width,
-                height: calculateImageDimensions(15, 345 / 511).height,
+                width: calculateImageDimensions(15, getAspect(uiSizes.vertRectangleOpaque)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.vertRectangleOpaque)).height,
                 positionType: 'absolute',
                 position: {right: '.5%', bottom: '1%'}
             }}
@@ -39,14 +40,7 @@ export function createNewScenePanel() {
                 texture: {
                     src: resources.textures.atlas1
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 514,
-                    sourceLeft: 384,
-                    sourceWidth: 345,
-                    sourceHeight: 511
-                })
+                uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
             }}
         >
 
@@ -268,23 +262,16 @@ export function createNewScenePanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(13, 223 / 41).width,
-                        height: calculateImageDimensions(13, 223 / 41).height,
-                        margin: {top: "2%"}
+                        width: calculateImageDimensions(13, getAspect(uiSizes.positiveButton)).width,
+                        height: calculateImageDimensions(13,getAspect(uiSizes.positiveButton)).height,
+                        margin: {top: "5%"}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping({
-                            atlasHeight: 1024,
-                            atlasWidth: 1024,
-                            sourceTop: 923,
-                            sourceLeft: 579,
-                            sourceWidth: 223,
-                            sourceHeight: 41
-                        })
+                        uvs: getImageAtlasMapping(uiSizes.positiveButton)
                     }}
                     onMouseDown={() => {
                         sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
@@ -292,14 +279,8 @@ export function createNewScenePanel() {
                             parcel: players.get(localUserId)!.currentParcel
                         })
                     }}
+                    uiText={{value: "Toggle Parcel", fontSize:sizeFont(30,20), color:Color4.White()}}
                 >
-                    <Label
-                        value="Toggle Parcel"
-                        color={Color4.White()}
-                        fontSize={sizeFont(30, 20)}
-                        font="serif"
-                        textAlign="middle-center"
-                    />
                 </UiEntity>
 
 
@@ -309,8 +290,8 @@ export function createNewScenePanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(13, 223 / 41).width,
-                        height: calculateImageDimensions(13, 223 / 41).height,
+                        width: calculateImageDimensions(13, getAspect(uiSizes.positiveButton)).width,
+                        height: calculateImageDimensions(13, getAspect(uiSizes.positiveButton)).height,
                         margin: {top: "2%"}
                     }}
                     uiBackground={{
@@ -318,26 +299,13 @@ export function createNewScenePanel() {
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping({
-                            atlasHeight: 1024,
-                            atlasWidth: 1024,
-                            sourceTop: 718,
-                            sourceLeft: 802,
-                            sourceWidth: 223,
-                            sourceHeight: 41
-                        })
+                        uvs: getImageAtlasMapping(uiSizes.blackButton)
                     }}
+                    uiText={{value: "Save Scene", fontSize:sizeFont(30,20), color:Color4.White()}}
                     onMouseDown={() => {
-                        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {})
+                        validateScene()
                     }}
                 >
-                    <Label
-                        value="Save Scene"
-                        color={Color4.White()}
-                        fontSize={sizeFont(30, 20)}
-                        font="serif"
-                        textAlign="middle-center"
-                    />
                 </UiEntity>
             </UiEntity>
         </UiEntity>

@@ -6,20 +6,24 @@ import { BuildsPanel } from './buildsPanel'
 import { AccessPanel } from './accessPanel'
 import { ExplorePanel } from './explorePanel'
 import { SettingsPanel } from './settingsPanel'
+import { CreateScenePanel } from './createPanel'
+import { world } from '../../../components/messaging'
+import { log } from '../../../helpers/functions'
 
 export let showSettingsPanel = false
-export let showSetting = "Builds"
+export let showSetting = "Explore"
 
 export let buttons:any[] = [
-    {label:"Builds", pressed:false},
+    {label:"Create", pressed:false},
     {label:"Access", pressed:false},
     {label:"Explore", pressed:false},
+    {label:"Builds", pressed:false},
     {label:"Settings", pressed:false},
     {label:"Close", pressed:false},
 ]
 
 export function displaySettingsPanel(value: boolean) {
-    showSettingsPanel = value
+    showSettingsPanel = value//
 }
 
 export function displaySetting(value:string){
@@ -122,6 +126,7 @@ export function createSettingsPanel() {
                     // uiBackground={{color:Color4.Blue()}}
                     >
 
+                    <CreateScenePanel/>
                     <BuildsPanel/>
                     <AccessPanel/>
                     <ExplorePanel/>
@@ -152,7 +157,8 @@ function generateSettingsButtons(buttons:any[]){
             height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
             margin:{top:"1%", bottom:'1%'},
             positionType: button.label === "Close" ? "absolute" : undefined,
-            position: button.label === "Close" ? {bottom:0} : undefined
+            position: button.label === "Close" ? {bottom:0} : undefined,
+            display: getButtonDisplay(button.label)
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -175,6 +181,14 @@ function generateSettingsButtons(buttons:any[]){
     return arr
 }
 
+function getButtonDisplay(button:string){
+    if(button === "Create" || button === "Access"){
+        return world && world.world === "main" ? "none" : 'flex'
+    }else{
+        return 'flex'
+    }
+}
+
 function getButtonState(button:string){
     if(button === "Close"){
         return getImageAtlasMapping({
@@ -188,14 +202,7 @@ function getButtonState(button:string){
     }
     else{
         if(showSetting === button || buttons.find((b:any)=> b.label === button).pressed){
-            return getImageAtlasMapping({
-                atlasHeight: 1024,
-                atlasWidth: 1024,
-                sourceTop: 923,
-                sourceLeft: 579,
-                sourceWidth: 223,
-                sourceHeight: 41
-            })
+            return getImageAtlasMapping(uiSizes.blueButton)
         }else{
             return getImageAtlasMapping({
                 atlasHeight: 1024,

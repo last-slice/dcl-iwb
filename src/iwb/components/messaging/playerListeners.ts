@@ -7,6 +7,7 @@ import { addPlayerScenes, localUserId, players } from "../player/player"
 import { items } from "../catalog"
 
 export function createrPlayerListeners(room:any){
+    log('creating player listeners for room', room.roomId)
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED +' received', info)
         showNotification({type:NOTIFICATION_TYPES.IMAGE, image:info.im, message:"Your asset " + info.n + " is uploading and pending deployment. A placeholder object is temporarily available.", animate:{enabled:true, return:true, time:10}})
@@ -38,4 +39,4 @@ export function createrPlayerListeners(room:any){
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE +' received', info)
     })
-}
+}//

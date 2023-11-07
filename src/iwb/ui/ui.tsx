@@ -25,6 +25,8 @@ import { createInfoPanel } from './Panels/infoPanel'
 import { createDeleteBuildPanel } from './Panels/deleteBuildPanel'
 import { createPBuildConfirmPanel } from './Panels/pBuildConfirmPanel'
 import { createSettingsPanel } from './Panels/settings/settingsIndex'
+import { createRealmTravelPanel } from './Panels/realmTravelPanel'
+import { createDebugPanel } from './Panels/debugPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -52,13 +54,16 @@ const uiComponent = () => [
   createRPPPanel(),
   createSaveBuildPanel(),
   createLoadBuildPanel(),
+  //createToolPanel(),
   createNewScenePanel(),
   createToolsPanel(),
+  createRealmTravelPanel(),
 
   //temp panels, this will become components called by larger UI
   createUploadConfirmPanel(),
   // createPillPanel(),
   createRectanglePanel(),
   createBlockPanel(),
-  createAssetUploadUI()
+  createAssetUploadUI(),
+  createDebugPanel()
 ]

@@ -1,39 +1,16 @@
-import { PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
-import { sendServerMessage } from "../messaging";
+import { Player, PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
+import { joinWorld, sendServerMessage, world } from "../messaging";
 import { deleteCreationEntities } from "../modes/create";
 import {Entity} from "@dcl/sdk/ecs";
-import {CatalogItemType} from "../catalog";
-
-export interface Player {
-    dclData:any,
-    mode:SCENE_MODES,
-    scenes:PlayerScene[],
-    buildingAllowed:string[],
-    currentParcel:string,
-    uploadToken:string,
-    version: number
-    activeScene: PlayerScene
-}
-
-export interface PlayerScene {
-    parcels:string[],
-    baseParcel:string,
-    parentEntity:Entity,
-    assets: SceneItem[],
-}
-
-export interface SceneItem extends CatalogItemType{
-    position: {x:number, y:number, z:number},
-    rotation: {x:number, y:number, z:number, w:number},
-    scale: {x:number, y:number, z:number}
-}
+import { displayRealmTravelPanel } from "../../ui/Panels/realmTravelPanel";
+import { utils } from "../../helpers/libraries";
+import { displaySettingsPanel } from "../../ui/Panels/settings/settingsIndex";
+import { movePlayerTo } from "~system/RestrictedActions";
 
 export let localUserId:string
 export let players:Map<string, Player> = new Map<string, Player>()
 
-
-
-export function addPlayer(userId:string, data?:any[], local?:boolean){
+export async function addPlayer(userId:string, data?:any[], local?:boolean){
     if(local){
         localUserId = userId
     }
@@ -47,7 +24,6 @@ export function addPlayer(userId:string, data?:any[], local?:boolean){
     }
 
     if(data){
-
         data.forEach((item:any)=>{
             for(let key in item){
                 pData[key] = item[key]
@@ -76,7 +52,7 @@ export function removePlayer(user:string){
         }
 
 
-        players.delete(user)
+        players.delete(user)//
     }
 }
 
@@ -96,3 +72,14 @@ export function setPlayMode(user:string, mode:SCENE_MODES){
         sendServerMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode:mode})
     }
 }
+
+export function worldTravel(w:any){
+    displaySettingsPanel(false)
+    displayRealmTravelPanel(true)
+    movePlayerTo({newRelativePosition:{x:16, y:0, z:16}})
+    utils.timers.setTimeout(()=>{
+        world.world !== w.world ? joinWorld(w.world) : null
+        displayRealmTravelPanel(false)
+    }, 2000)
+}
+//
