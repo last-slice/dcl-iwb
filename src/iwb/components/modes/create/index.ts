@@ -1,14 +1,35 @@
-import {engine, GltfContainer, Material, MeshRenderer, Transform} from "@dcl/sdk/ecs"
-import {localUserId, players, PlayerScene, setPlayMode} from "../../player/player"
+import {engine, GltfContainer, Material, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
+import {localUserId, players, setPlayMode} from "../../player/player"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
-import {SCENE_MODES} from "../../../helpers/types"
+import {PlayerScene, SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types"
 import {displayCreateScenePanel} from "../../../ui/Panels/CreateScenePanel"
+import { log } from "../../../helpers/functions"
+import { sendServerMessage } from "../../messaging"
 
 export let scenesToCreate: Map<string, any> = new Map()
 let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
 let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
 
-export const SelectedFloor = engine.defineComponent("selectedFloorComponent", {})
+export const SelectedFloor = engine.defineComponent("iwb::selected::FloorComponent", {})
+export const BuildModeVisibilty = engine.defineComponent("iwb::buildmode::visibility", {})
+
+export function validateScene(){
+    let scene = scenesToCreate.get(localUserId)
+    if(scene && scene.parcels.length > 0){
+        log('we have valid scene, send to server')
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: scene.name, desc:scene.description})
+    }
+}
+
+export function createTempScene(name:string, desc:string){
+    let data: any = {
+        parcels: [],
+        name: name,
+        description:desc,
+        size: [1, 1],
+    }
+    scenesToCreate.set(localUserId, data)
+}
 
 export function selectParcel(info: any) {
     let scene = scenesToCreate.get(info.player)
@@ -34,29 +55,30 @@ export function selectParcel(info: any) {
     }
 }
 
-export function addBoundariesForParcel(parcel:string, local:boolean) {
+export function addBoundariesForParcel(parcel:string, local:boolean, playMode?:boolean) {
     let entities: any[] = []
 
+    let parent = engine.addEntity()
     let left = engine.addEntity()
     let right = engine.addEntity()
     let front = engine.addEntity()
     let back = engine.addEntity()
 
-    let leftFloor = engine.addEntity()
-    let rightFloor = engine.addEntity()
-    let frontFloor = engine.addEntity()
-    let backFloor = engine.addEntity()
+    // let leftFloor = engine.addEntity()
+    // let rightFloor = engine.addEntity()
+    // let frontFloor = engine.addEntity()
+    // let backFloor = engine.addEntity()
 
     let floor = engine.addEntity()
 
     entities.push(left)
-    entities.push(leftFloor)
+    // entities.push(leftFloor)
     entities.push(right)
-    entities.push(rightFloor)
+    // entities.push(rightFloor)
     entities.push(front)
-    entities.push(frontFloor)
+    // entities.push(frontFloor)
     entities.push(back)
-    entities.push(backFloor)
+    // entities.push(backFloor)
     entities.push(floor)
 
     let [x1, y1] = parcel.split(",")
@@ -65,10 +87,13 @@ export function addBoundariesForParcel(parcel:string, local:boolean) {
     let centerx = (x * 16) + 8
     let centery = (y * 16) + 8
 
+    Transform.create(parent)
+
     Transform.create(floor, {
         position: Vector3.create(centerx, 0, centery),
         rotation: Quaternion.fromEulerDegrees(90, 0, 0),
-        scale: Vector3.create(16, 16, 1)
+        scale: Vector3.create(16, 16, 1),
+        parent:parent
     })
     MeshRenderer.setPlane(floor)
     Material.setPbrMaterial(floor, {
@@ -80,57 +105,77 @@ export function addBoundariesForParcel(parcel:string, local:boolean) {
     Transform.create(left, {
         position: Vector3.create(x * 16, 0, y * 16),
         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1)
+        scale: Vector3.create(1, 20, 1),
+        parent:parent
     })
     GltfContainer.create(left, {src: local ? greenBeam : redBeam})
-    Transform.create(leftFloor, {
-        position: Vector3.create(x * 16, 0, y * 16),
-        rotation: Quaternion.fromEulerDegrees(90, 0, 0),
-        scale: Vector3.create(1, 9, 1)
-    })
-    GltfContainer.create(leftFloor, {src: local ? greenBeam : redBeam})
+    // Transform.create(leftFloor, {
+    //     position: Vector3.create(x * 16, 0, y * 16),
+    //     rotation: Quaternion.fromEulerDegrees(90, 0, 0),
+    //     scale: Vector3.create(1, 9, 1),
+    //     parent:parent
+    // })
+    // GltfContainer.create(leftFloor, {src: local ? greenBeam : redBeam})
 
     //right
     Transform.create(right, {
         position: Vector3.create(x * 16 + 16, 0, y * 16),
         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1)
+        scale: Vector3.create(1, 20, 1),
+        parent:parent
     })
     GltfContainer.create(right, {src: local ? greenBeam : redBeam})
-    Transform.create(rightFloor, {
-        position: Vector3.create(x * 16 + 16, 0, y * 16),
-        rotation: Quaternion.fromEulerDegrees(90, 0, 0),
-        scale: Vector3.create(1, 9, 1)
-    })
-    GltfContainer.create(rightFloor, {src: local ? greenBeam : redBeam})
+    // Transform.create(rightFloor, {
+    //     position: Vector3.create(x * 16 + 16, 0, y * 16),
+    //     rotation: Quaternion.fromEulerDegrees(90, 0, 0),
+    //     scale: Vector3.create(1, 9, 1),
+    //     parent:parent
+    // })
+    // GltfContainer.create(rightFloor, {src: local ? greenBeam : redBeam})
 
     // front
     Transform.create(front, {
         position: Vector3.create(x * 16, 0, y * 16 + 16),
         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1)
+        scale: Vector3.create(1, 20, 1),
+        parent:parent
     })
     GltfContainer.create(front, {src: local ? greenBeam : redBeam})
-    Transform.create(frontFloor, {
-        position: Vector3.create(x * 16, 0, y * 16 + 16),
-        rotation: Quaternion.fromEulerDegrees(90, 90, 0),
-        scale: Vector3.create(1, 9, 1)
-    })
-    GltfContainer.create(frontFloor, {src: local ? greenBeam : redBeam})
+    // Transform.create(frontFloor, {
+    //     position: Vector3.create(x * 16, 0, y * 16 + 16),
+    //     rotation: Quaternion.fromEulerDegrees(90, 90, 0),
+    //     scale: Vector3.create(1, 9, 1),
+    //     parent:parent
+    // })
+    // GltfContainer.create(frontFloor, {src: local ? greenBeam : redBeam})
 
     // back
     Transform.create(back, {
         position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1)
+        scale: Vector3.create(1, 20, 1),
+        parent:parent
     })
     GltfContainer.create(back, {src: local ? greenBeam : redBeam})
-    Transform.create(backFloor, {
-        position: Vector3.create(x * 16, 0, y * 16),
-        rotation: Quaternion.fromEulerDegrees(90, 90, 0),
-        scale: Vector3.create(1, 9, 1)
-    })
-    GltfContainer.create(backFloor, {src: local ? greenBeam : redBeam})
+    // Transform.create(backFloor, {
+    //     position: Vector3.create(x * 16, 0, y * 16),
+    //     rotation: Quaternion.fromEulerDegrees(90, 90, 0),
+    //     scale: Vector3.create(1, 9, 1),
+    //     parent:parent
+    // })
+    // GltfContainer.create(backFloor, {src: local ? greenBeam : redBeam})
+
+    VisibilityComponent.create(floor, {visible:playMode ? false : true})
+    VisibilityComponent.create(left, {visible:playMode ? false : true})
+    VisibilityComponent.create(front, {visible:playMode ? false : true})
+    VisibilityComponent.create(right, {visible:playMode ? false : true})
+    VisibilityComponent.create(back, {visible:playMode ? false : true})
+
+    BuildModeVisibilty.create(floor)
+    BuildModeVisibilty.create(left)
+    BuildModeVisibilty.create(front)
+    BuildModeVisibilty.create(right)
+    BuildModeVisibilty.create(back)
 
     return entities
 }
@@ -174,22 +219,21 @@ export function deleteCreationEntities(player: string) {
 
 export function saveNewScene(userId:string, scene:PlayerScene) {
     // only save if local user saved
-    if(userId != localUserId) return
+    if(userId !== localUserId) return
 
     displayCreateScenePanel(false)
     setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
 
     let player = players.get(localUserId)
-    let scenes = scenesToCreate.get(localUserId)
 
     // allow building for each parcel
-    scenes.parcels.forEach((parcel: any) => {
+    scene.pcls.forEach((parcel: any) => {
         player!.buildingAllowed.push(parcel)
     })
     scenesToCreate.delete(localUserId)
 
-    // create parent entity for scene
-    const [x1, y1] = scene.baseParcel.split(",")
+    // create parent entity for scene//
+    const [x1, y1] = scene.bpcl.split(",")
     let x = parseInt(x1)
     let y = parseInt(y1)
     const sceneParent = engine.addEntity()
@@ -206,7 +250,7 @@ export function saveNewScene(userId:string, scene:PlayerScene) {
     // change floor color
     for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
         Material.setPbrMaterial(entity, {
-            albedoColor: Color4.Green()
+            albedoColor: Color4.create(.2, .9, .1, 1)
         })
     }
 }

@@ -6,7 +6,7 @@ import { SCENE_MODES } from "../../helpers/types"
 import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
 import { uiModes, topTools, bottomTools, settingsIconData } from "../uiConfig"
 
-
+//
 export let showToolsPanel = false
 
 export function displayToolsPanel(value: boolean) {
@@ -30,6 +30,9 @@ export function createToolsPanel() {
             }}
             // uiBackground={{ color: Color4.Red() }}
         >
+
+        {/* settings icon */}
+        <CreateToolIcon data={settingsIconData} rowNum={'settings-icon'} toggle={true} />
 
             {/* top tool container */}
             <UiEntity
@@ -76,6 +79,7 @@ export function createToolsPanel() {
             {createTopToolIcons(topTools)}
         </UiEntity>
 
+            {/* bottom tool container */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -90,8 +94,6 @@ export function createToolsPanel() {
         >
             {createBottomToolIcons(bottomTools)}
         </UiEntity>
-
-        <CreateToolIcon data={settingsIconData} rowNum={'settings-icon'} toggle={true} />
         </UiEntity>
     )
 }

@@ -22,8 +22,8 @@ export let uiModes:any = {
         uvs:{
             atlasHeight:1024,
             atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 0,
+            sourceTop:128 * 6,
+            sourceLeft:128 * 6,
             sourceWidth:128,
             sourceHeight:128
         },
@@ -48,8 +48,8 @@ export let uiModes:any = {
         uvs:{
             atlasHeight:1024,
             atlasWidth:1024,
-            sourceTop:128 * 3,
-            sourceLeft:128 * 3,
+            sourceTop:128 * 6,
+            sourceLeft:128 * 7,
             sourceWidth:128,
             sourceHeight:128
         },
@@ -551,6 +551,24 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
+    blackButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 718,
+        sourceLeft: 802,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    whiteButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 759,
+        sourceLeft: 802,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
     normalButton:{
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -574,6 +592,33 @@ export let uiSizes:any ={
         atlasWidth: 1024,
         sourceTop: 841 + 41,
         sourceLeft: 802,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    blueLightestButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 718,
+        sourceLeft: 579,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    blueButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 718,
+        sourceLeft: 579,
+        sourceWidth: 223,
+        sourceHeight: 41
+    },
+
+    blueDarkestButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 718,
+        sourceLeft: 579,
         sourceWidth: 223,
         sourceHeight: 41
     },
@@ -612,6 +657,15 @@ export let uiSizes:any ={
         sourceLeft: 577,
         sourceWidth: 447,
         sourceHeight: 431
+    },
+
+    vertRectangleOpaque:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 514,
+        sourceLeft: 384,
+        sourceWidth: 345,
+        sourceHeight: 511
     },
 
     smallPill:{

@@ -80,7 +80,7 @@ function addBuildAttachHandler(ent:Entity){
 
             sendServerMessage(
                 SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
-                {baseParcel: curScene.baseParcel, item: {id: selectedCatalogItem.id, position: t.position, rotation: t.rotation, scale: t.scale}})
+                {baseParcel: curScene.bpcl, item: {id: selectedCatalogItem.id, position: t.position, rotation: t.rotation, scale: t.scale}})
 
         }
     )

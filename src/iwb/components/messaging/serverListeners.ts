@@ -3,11 +3,16 @@ import {SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {items} from "../catalog"
 import {localUserId, players, removePlayer} from "../player/player"
 import {addBoundariesForParcel} from "../modes/create";
+import { updateWorld } from ".";
+import { setScenes } from "../scenes";
 
 
 export function initiateMessageListeners(room: any) {
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, (info: any) => {
         log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
+
+        //set world
+        updateWorld(info.world)
 
         //set initial catalog
         let catalog = info.catalog
@@ -22,10 +27,21 @@ export function initiateMessageListeners(room: any) {
         //set deployed iwb version
         players.get(localUserId)!.version = info.iwb.v
 
+        //set scene list
+        setScenes(info.scenes)
+
         //set occupied parcels
-        for (const p of info.occupiedParcels) {
-            //log('occupied parcel', p)
-            addBoundariesForParcel(p, false)
+        // for (const p of info.occupiedParcels) {
+        //     //log('occupied parcel', p)
+        //     addBoundariesForParcel(p, false)
+        // }//
+
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD + ' received', info)
+        if(info){
+            updateWorld(info)
         }
     })
 
