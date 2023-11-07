@@ -46,7 +46,7 @@ export function createSaveBuildPanel() {
                     })
                 }}
             >
-                
+
                 <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
@@ -57,6 +57,18 @@ export function createSaveBuildPanel() {
                     }}
                 // uiBackground={{color:Color4.Green()}}
                 >
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            width: '80%',
+                            height: '200%',
+                            positionType: 'absolute',
+                            position: { left: (dimensions.width - calculateImageDimensions(92, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(60, 580 / 403).height) / 2 }
+                        }}
+                        uiBackground={{ color: Color4.Gray() }}
+                    />
 
                     <Label
                         value={addLineBreak("Save Build", true, 50)}
@@ -86,34 +98,34 @@ export function createSaveBuildPanel() {
                         />
                     </UiEntity>
                     <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(3, 111 / 41).width,
-                        height: calculateImageDimensions(4, 111 / 41).height,
-                        margin: { right: "2%" },
-                        position: { top: -25, left: -225 }
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping({
-                            atlasHeight: 1024,
-                            atlasWidth: 1024,
-                            sourceTop: 60,
-                            sourceLeft: 844,
-                            sourceWidth: 30,
-                            sourceHeight: 30
-                        })
-                    }}
-                    onMouseDown={() => {
-                        displaySaveBuildPanel(false)
-                    }}
-                >
-                </UiEntity>
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateImageDimensions(3, 111 / 41).width,
+                            height: calculateImageDimensions(4, 111 / 41).height,
+                            margin: { right: "2%" },
+                            position: { bottom: 25, right: 280 }
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping({
+                                atlasHeight: 1024,
+                                atlasWidth: 1024,
+                                sourceTop: 60,
+                                sourceLeft: 844,
+                                sourceWidth: 30,
+                                sourceHeight: 30
+                            })
+                        }}
+                        onMouseDown={() => {
+                            displaySaveBuildPanel(false)
+                        }}
+                    >
+                    </UiEntity>
                 </UiEntity>
                 <UiEntity
                     uiTransform={{
@@ -140,7 +152,7 @@ export function createSaveBuildPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                      
+
                     }}
                 >
                     <Label
@@ -176,7 +188,7 @@ export function createSaveBuildPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                      
+
                     }}
                 >
                     <Label
@@ -212,7 +224,7 @@ export function createSaveBuildPanel() {
                         })
                     }}
                     onMouseDown={() => {
-                    
+
                     }}
                 >
                     <Label
@@ -224,7 +236,7 @@ export function createSaveBuildPanel() {
                     />
 
                 </UiEntity>
-              
+
             </UiEntity>
 
         </UiEntity>
