@@ -53,7 +53,7 @@ export async function joinWorld(world?:any){
         connected = false
     }
     console.log('croom is', cRoom, world)
-    await colyseusConnect(players.get(localUserId)?.dclData, "", world)
+    await colyseusConnect(players.get(localUserId)?.dclData, players.get(localUserId)!.wsToken, world)
 }
 
 export function sendServerMessage(type:string, data:any){

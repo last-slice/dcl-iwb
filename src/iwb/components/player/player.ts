@@ -33,6 +33,8 @@ export async function addPlayer(userId:string, data?:any[], local?:boolean){
     players.set(userId, pData)
 
     console.log("Player *** ", players.get(userId))
+
+    return players.get(userId)
 }
 
 export function removePlayer(user:string){
@@ -60,7 +62,7 @@ export function addPlayerScenes(user:string, scenes:any[]){
     let player = players.get(user)
     if(player){
         scenes.forEach((scene)=>{
-            player.scenes.push(scene)
+            player!.scenes.push(scene)
         })
     }
 }

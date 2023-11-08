@@ -7,7 +7,7 @@ export let worlds:any[] = []
 export function setScenes(info:any){
     log('server scene list', info)
 
-    //set creator worlds
+    // set creator worlds
     info.forEach((scene:any)=>{
         scenes.push({owner:scene.owner, builds:1, updated:scene.updated, scna:scene.scna, name:scene.name, id:scene.id})
 

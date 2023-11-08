@@ -253,117 +253,136 @@ function getButtonState(button:string){
 }
 
 function generateBuildRows(){
-    let arr:any[] = []
-    if(localUserId){
+    let arr: any[] = []
+    if (localUserId && players.has(localUserId)) {
         let player = players.get(localUserId)
-        player.scenes.forEach((scene:any, i:number)=>{
+        player!.scenes.forEach((scene: any, i: number) => {
             arr.push(
-            <UiEntity
-            key={"build row - " + scene.id}
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '15%',
-                display:'flex'
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
+                <UiEntity
+                    key={"build row - " + scene.id}
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '15%',
+                        display: 'flex'
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
 
-                : //
+                            : //
 
-                getImageAtlasMapping(uiSizes.normalLightestButton)
-            }}
-            >
+                            getImageAtlasMapping(uiSizes.normalLightestButton)
+                    }}
+                >
 
-            {/* scene name */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent:'flex-start',
-                width: '30%',
-                height: '100%',
-                display:'flex'
-            }}
-            uiText={{value: scene.n, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
-            />
+                    {/* scene name */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            alignContent: 'flex-start',
+                            width: '30%',
+                            height: '100%',
+                            display: 'flex'
+                        }}
+                        uiText={{
+                            value: scene.n,
+                            fontSize: sizeFont(20, 15),
+                            textAlign: 'middle-left',
+                            color: Color4.Black()
+                        }}
+                    />
 
-            {/* scene parcel count */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-                display:'flex'
-            }}
-            uiText={{value: "" + scene.pcnt, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
+                    {/* scene parcel count */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '20%',
+                            height: '100%',
+                            display: 'flex'
+                        }}
+                        uiText={{
+                            value: "" + scene.pcnt,
+                            fontSize: sizeFont(20, 15),
+                            textAlign: 'middle-center',
+                            color: Color4.Black()
+                        }}
+                    />
 
-            {/* scene parcel size */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-                display:'flex'
-            }}
-            uiText={{value: "" + scene.si + "MB", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
+                    {/* scene parcel size */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '20%',
+                            height: '100%',
+                            display: 'flex'
+                        }}
+                        uiText={{
+                            value: "" + scene.si + "MB",
+                            fontSize: sizeFont(20, 15),
+                            textAlign: 'middle-center',
+                            color: Color4.Black()
+                        }}
+                    />
 
-            {/* scene poly count */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-                display:'flex'
-            }}
-            uiText={{value: "" + formatDollarAmount(scene.pc), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
+                    {/* scene poly count */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '20%',
+                            height: '100%',
+                            display: 'flex'
+                        }}
+                        uiText={{
+                            value: "" + formatDollarAmount(scene.pc),
+                            fontSize: sizeFont(20, 15),
+                            textAlign: 'middle-center',
+                            color: Color4.Black()
+                        }}
+                    />
 
-            {/* save button */}
-            <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '10%',
-            height: '80%',
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
-        }}
-        onMouseDown={() => {
-            // pressed.Save = true
-        }}
-        onMouseUp={()=>{
-            // pressed.Save = false
-        }}
-        uiText={{value: "Go", color:Color4.Black(), fontSize:sizeFont(20,15)}}
-        />
-
+                    {/* save button */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '10%',
+                            height: '80%',
+                            margin: {right: "1%"},
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                        }}
+                        onMouseDown={() => {
+                            // pressed.Save = true
+                        }}
+                        onMouseUp={() => {
+                            // pressed.Save = false
+                        }}
+                        uiText={{value: "Go", color: Color4.Black(), fontSize: sizeFont(20, 15)}}
+                    />
 
 
                 </UiEntity>
-                )
+            )
         })
     }
 

@@ -79,6 +79,7 @@ export interface Player {
     buildingAllowed:string[],
     currentParcel:string,
     uploadToken:string,
+    wsToken:string,
     version: number
     activeScene: PlayerScene
 }

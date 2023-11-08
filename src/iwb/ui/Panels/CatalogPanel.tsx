@@ -1,6 +1,6 @@
 import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
 import {Color4, Vector3} from '@dcl/sdk/math'
-import {CatalogItemType, items} from '../../components/catalog'
+import {items} from '../../components/catalog'
 import {
     addLineBreak,
     calculateImageDimensions,
@@ -12,6 +12,7 @@ import {log} from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import {selectCatalogItem, useSelectedItem} from '../../components/modes/build'
 import {createObject} from "../../helpers/selectedObject";
+import {CatalogItemType} from "../../helpers/types";
 
 export let showCatalogPanel = false
 
