@@ -29,7 +29,10 @@ export enum SERVER_MESSAGE_TYPES {
 }
 
 export enum IWB_MESSAGE_TYPES {
-    OPEN_ASSET_UPLOAD_URL = 'open_asset_uploader_url'
+    OPEN_ASSET_UPLOAD_URL = 'open_asset_uploader_url',
+    USE_SELECTED_ASSET = 'use_asset',
+    PLACE_SELECTED_ASSET = 'place_asset',
+    REMOVE_SELECTED_ASSET = 'remove_asset'
 }
 
 export enum SCENE_MODES {
@@ -75,16 +78,17 @@ export interface CatalogItemType {
 export interface Player {
     dclData:any,
     mode:SCENE_MODES,
-    scenes:PlayerScene[],
+    scenes:IWBScene[],
     buildingAllowed:string[],
     currentParcel:string,
     uploadToken:string,
     wsToken:string,
     version: number
-    activeScene: PlayerScene
+    activeScene: IWBScene,
+    canBuild:boolean
 }
 
-export interface PlayerScene {
+export interface IWBScene {
     parentEntity:Entity,
     id:string,
     n:string, 

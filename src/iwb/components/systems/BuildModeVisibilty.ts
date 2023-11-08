@@ -11,11 +11,11 @@ export function BuildModeVisibiltyComponents(dt:number){
     }else{
         timer = .2
         for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
-            if(players.get(localUserId)?.mode === 2){
+            if(players.get(localUserId)?.mode !== 0){
                 VisibilityComponent.createOrReplace(entity).visible = true
             }else{
                 VisibilityComponent.createOrReplace(entity).visible = false
             }
-           }
+        }
     }
 }

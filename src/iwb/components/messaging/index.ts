@@ -15,7 +15,7 @@ export let cRoom:any
 
 export let connected:boolean = false
 export let sessionId:any
-export let sceneMessageBus:any
+export let sceneMessageBus:MessageBus
 export const iwbEvents = mitt()
 
 export function updateWorld(value:any){
@@ -27,7 +27,7 @@ export function createMessageManager(){
    setupMessageBus()
 }
 
-export async function colyseusConnect(data:any, token:string, world?:string){
+export async function colyseusConnect(data:any, token:string, world?:any){
 
     connect(world ? "user-world" : "iwb-world", data, token, world).then((room) => {
         log("Connected!");

@@ -11,10 +11,11 @@ import {
 import {log} from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import {selectCatalogItem, useSelectedItem} from '../../components/modes/build'
-import {createObject} from "../../helpers/selectedObject";
-import {CatalogItemType} from "../../helpers/types";
+import { CatalogItemType } from '../../helpers/types'
+import { uiSizes } from '../uiConfig'
+import { localUserId, players } from '../../components/player/player'
 
-export let showCatalogPanel = false
+export let showCatalogPanel = true
 
 export function displayCatalogPanel(value: boolean) {
     showCatalogPanel = value
@@ -82,7 +83,7 @@ export function createCatalogPanel() {
             <UiEntity
                 uiTransform={{
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     justifyContent: 'center',
                     alignContent: 'center',
                     width: '90%',
@@ -94,11 +95,38 @@ export function createCatalogPanel() {
                 <UiEntity
                     uiTransform={{
                         display: 'flex',
-                        flexDirection: 'column',
-                        width: '10%',
-                        height: '20%',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        width: "60%",
+                        height:'80%'
                     }}
-                    uiText={{value: "Page " + (currentPage + 1) + " / " + totalPages}}
+                    uiBackground={{color:Color4.Gray()}}
+                />
+
+                <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        width: calculateSquareImageDimensions(4).width,
+                        height: calculateSquareImageDimensions(4).height,
+                        margin: {right: '2%'}
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.opaqueSearchIcon)
+                    }}
+                    uiText={{value: "<", fontSize: sizeFont(20, 12)}}
+                    onMouseUp={() => {
+                        if (currentPage - 1 >= 0) {
+                            currentPage--
+                        }
+                    }}
                 />
 
             </UiEntity>
@@ -123,14 +151,31 @@ export function createCatalogPanel() {
                 <UiEntity
                     uiTransform={{
                         display: 'flex',
+                        flexDirection: 'column',
+                        width: '10%',
+                        height: '100%',
+                        margin:{right:'5%'}
+                    }}
+                    uiText={{value: "Page " + (currentPage + 1) + " / " + totalPages}}
+                />
+
+                <UiEntity
+                    uiTransform={{
+                        display: 'flex',
                         justifyContent: 'center',
                         alignContent: 'center',
                         flexDirection: 'row',
-                        width: '25%',
-                        height: '90%',
+                        width: calculateSquareImageDimensions(4).width,
+                        height: calculateSquareImageDimensions(4).height,
                         margin: {right: '2%'}
                     }}
-                    uiBackground={{color: Color4.Purple()}}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.opaqueArrowleft)
+                    }}
                     uiText={{value: "<", fontSize: sizeFont(20, 12)}}
                     onMouseUp={() => {
                         if (currentPage - 1 >= 0) {
@@ -145,11 +190,17 @@ export function createCatalogPanel() {
                         justifyContent: 'center',
                         alignContent: 'center',
                         flexDirection: 'row',
-                        width: '25%',
-                        height: '90%',
+                        width: calculateSquareImageDimensions(4).width,
+                        height: calculateSquareImageDimensions(4).height,
                         margin: {left: '2%'}
                     }}
-                    uiBackground={{color: Color4.Purple()}}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.opaqueArrowRight)
+                    }}
                     uiText={{value: ">", fontSize: sizeFont(20, 12)}}
                     onMouseUp={() => {
                         if ((currentPage + 1) * itemsPerPage + itemsPerPage <= items.size)
@@ -244,10 +295,6 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         sourceHeight: 256
                     })
                 }}
-                onMouseDown={() => {
-                    selectCatalogItem(item.id)
-                    useSelectedItem()
-                }}
             />
 
             <UiEntity
@@ -277,7 +324,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
 
                 <UiEntity
                     uiTransform={{
-                        display: 'flex',
+                        display: localUserId && players.get(localUserId)!.canBuild ? 'flex' : 'none',
                         justifyContent: 'center',
                         alignContent: 'center',
                         flexDirection: 'row',
@@ -285,10 +332,17 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         height: '100%',
                         margin: {right: '1%'}
                     }}
-                    uiBackground={{color: Color4.Purple()}}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.blueButton)
+                    }}
                     uiText={{value: "Use", fontSize: sizeFont(20, 12)}}
                     onMouseDown={() => {
-                        createObject(item.objName, {x: 0, y: -.88, z: 4}, Vector3.create(1, 1, 1))
+                        selectCatalogItem(item.id)
+                        useSelectedItem()
                     }}
                 />
 
@@ -302,7 +356,13 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         height: '100%',
                         margin: {left: '1%'}
                     }}
-                    uiBackground={{color: Color4.Purple()}}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.normalButton)
+                    }}
                     uiText={{value: "Info", fontSize: sizeFont(20, 12)}}
                 />
 

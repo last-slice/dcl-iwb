@@ -525,6 +525,30 @@ export let settingsIconData:any =
 }
 
 export let uiSizes:any ={
+    opaqueSearchIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueArrowRight:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueArrowleft:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
     toggleOn:{
         atlasHeight: 1024,
         atlasWidth: 1024,

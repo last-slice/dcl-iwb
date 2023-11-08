@@ -1,22 +1,25 @@
 import {engine, GltfContainer, Material, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import {localUserId, players, setPlayMode} from "../../player/player"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
-import {PlayerScene, SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types"
+import {SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types"
 import {displayCreateScenePanel} from "../../../ui/Panels/CreateScenePanel"
 import { log } from "../../../helpers/functions"
 import { sendServerMessage } from "../../messaging"
+import { displaySceneSavedPanel } from "../../../ui/Panels/sceneSavedPanel"
 
 export let scenesToCreate: Map<string, any> = new Map()
-let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
-let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
+export let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
+export let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
 
 export const SelectedFloor = engine.defineComponent("iwb::selected::FloorComponent", {})
 export const BuildModeVisibilty = engine.defineComponent("iwb::buildmode::visibility", {})
+export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
     let scene = scenesToCreate.get(localUserId)
     if(scene && scene.parcels.length > 0){
         log('we have valid scene, send to server')
+        setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
         sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: scene.name, desc:scene.description})
     }
 }
@@ -100,6 +103,7 @@ export function addBoundariesForParcel(parcel:string, local:boolean, playMode?:b
         albedoColor: local ? Color4.create(0, 1, 0, .5) : Color4.Red()
     })
     if(local) SelectedFloor.create(floor, {})
+    ParcelFloor.create(floor)
 
     //left
     Transform.create(left, {
@@ -217,40 +221,46 @@ export function deleteCreationEntities(player: string) {
     }
 }
 
-export function saveNewScene(userId:string, scene:PlayerScene) {
+export function saveNewScene(userId:string) {
     // only save if local user saved
     if(userId !== localUserId) return
 
+    displaySceneSavedPanel(true)
     displayCreateScenePanel(false)
-    setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
+    setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
 
-    let player = players.get(localUserId)
-
-    // allow building for each parcel
-    scene.pcls.forEach((parcel: any) => {
-        player!.buildingAllowed.push(parcel)
-    })
     scenesToCreate.delete(localUserId)
+    
 
-    // create parent entity for scene//
-    const [x1, y1] = scene.bpcl.split(",")
-    let x = parseInt(x1)
-    let y = parseInt(y1)
-    const sceneParent = engine.addEntity()
-    Transform.create(sceneParent, {
-        position: Vector3.create(x*16, 0, y*16)
-    })
-    MeshRenderer.setPlane(sceneParent)
-    scene.parentEntity = sceneParent
+    // let player = players.get(localUserId)
 
-    // add to player scenes
-    player!.scenes.push(scene)
-    player!.activeScene = scene
+    // // allow building for each parcel
+    // scene.pcls.forEach((parcel: any) => {
+    //     player!.buildingAllowed.push(parcel)
+    // })
+    // scenesToCreate.delete(localUserId)
 
-    // change floor color
-    for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
-        Material.setPbrMaterial(entity, {
-            albedoColor: Color4.create(.2, .9, .1, 1)
-        })
-    }
+    // // create parent entity for scene//
+    // const [x1, y1] = scene.bpcl.split(",")
+    // let x = parseInt(x1)
+    // let y = parseInt(y1)
+    // const sceneParent = engine.addEntity()
+    // Transform.create(sceneParent, {
+    //     position: Vector3.create(x*16, 0, y*16)
+    // })
+    // MeshRenderer.setPlane(sceneParent)
+    // scene.parentEntity = sceneParent
+
+    // // add to player scenes
+    // player!.scenes.push(scene)
+    // player!.activeScene = scene
+
+    // // change floor color
+    // for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
+    //     Material.setPbrMaterial(entity, {
+    //         albedoColor: Color4.create(.2, .9, .1, 1)
+    //     })
+    // }
+
+
 }

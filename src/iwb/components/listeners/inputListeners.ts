@@ -1,5 +1,7 @@
 import { InputAction, PointerEventType, engine, inputSystem } from "@dcl/sdk/ecs";
 import { checkShortCuts } from "./shortcuts";
+import { dropSelectedItem, removeSelectedItem, selectedCatalogItem } from "../modes/build";
+import { log } from "../../helpers/functions";
 
 export let buttonsPressed:Map<number, any> = new Map()
 
@@ -18,6 +20,7 @@ export function createInputListeners(){
     buttonsPressed.set(InputAction.IA_ACTION_6, {id:null})
     buttonsPressed.set(InputAction.IA_WALK, {id:null})
     buttonsPressed.set(InputAction.IA_SECONDARY, {id:null})
+    buttonsPressed.set(InputAction.IA_PRIMARY, {id:null})
 
     engine.addSystem(() => {
 
@@ -53,11 +56,30 @@ export function createInputListeners(){
             checkShortCuts()
         }
 
+        //E
+        if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)){
+            setButtonState(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
+            if(selectedCatalogItem !== null){
+                log('player has selected item, need to drop')
+                dropSelectedItem()
+            }else{
+                checkShortCuts()
+            }
+        }
+
         //F
         if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)){
             setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
-            checkShortCuts()
+            if(selectedCatalogItem !== null){
+                log('player has selected item, need to delete')
+                removeSelectedItem()
+            }else{
+                checkShortCuts()
+            }
         }
+
+        
+
 
 
         //BUTTONS UP
@@ -88,6 +110,11 @@ export function createInputListeners(){
         //Shift
         if (inputSystem.isTriggered(InputAction.IA_WALK, PointerEventType.PET_UP)){
             setButtonState(InputAction.IA_WALK, PointerEventType.PET_UP)
+        }
+
+        //E
+        if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_UP)){
+            setButtonState(InputAction.IA_PRIMARY, PointerEventType.PET_UP)
         }
 
         //F
