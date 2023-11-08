@@ -22,4 +22,3 @@ export async function connect(roomName: string, userData: any, token: string, wo
         throw e;
     }
 }
-//

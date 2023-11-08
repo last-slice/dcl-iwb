@@ -14,6 +14,7 @@ export function enableBuildMode(){
 
 export function selectCatalogItem(item:any){
     selectedCatalogItem = items.get(item)
+    //
 }
 
 export function useSelectedItem(){
