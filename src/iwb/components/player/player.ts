@@ -1,5 +1,5 @@
 import { Player, PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
-import { joinWorld, sendServerMessage, world } from "../messaging";
+import { iwbEvents, joinWorld, sendServerMessage, world } from "../messaging";
 import { deleteCreationEntities } from "../modes/create";
 import {Entity} from "@dcl/sdk/ecs";
 import { displayRealmTravelPanel } from "../../ui/Panels/realmTravelPanel";
@@ -69,6 +69,7 @@ export function setPlayMode(user:string, mode:SCENE_MODES){
     let player = players.get(user)
     if(player){
         player.mode = mode
+        iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode:mode})
         sendServerMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode:mode})
     }
 }
@@ -78,8 +79,7 @@ export function worldTravel(w:any){
     displayRealmTravelPanel(true)
     movePlayerTo({newRelativePosition:{x:16, y:0, z:16}})
     utils.timers.setTimeout(()=>{
-        world.world !== w.world ? joinWorld(w.world) : null
+        world.world !== w.world ? joinWorld(w) : null
         displayRealmTravelPanel(false)
     }, 2000)
 }
-//

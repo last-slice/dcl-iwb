@@ -32,7 +32,6 @@ export function createSceneListeners(room: any) {
     
         room.state.scenes.onAdd((scene:any, key:any) =>{
             log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', key, scene)
-            // loadScene(scene)
+            loadScene(scene)
         })
-        
 }

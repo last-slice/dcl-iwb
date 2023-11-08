@@ -20,7 +20,7 @@ export function createDebugPanel() {
                 positionType: 'absolute',
                 position: { left: (dimensions.width - calculateImageDimensions(35, getAspect(uiSizes.vertRectangle)).width) / 2, top: '2%' }
             }}
-        // uiBackground={{ color: Color4.Red() }}//
+        // uiBackground={{ color: Color4.Red() }}
         >
            <UiEntity
                 uiTransform={{

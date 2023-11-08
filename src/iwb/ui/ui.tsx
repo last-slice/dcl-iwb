@@ -27,6 +27,7 @@ import { createPBuildConfirmPanel } from './Panels/pBuildConfirmPanel'
 import { createSettingsPanel } from './Panels/settings/settingsIndex'
 import { createRealmTravelPanel } from './Panels/realmTravelPanel'
 import { createDebugPanel } from './Panels/debugPanel'
+import { createSceneSavedPanel } from './Panels/sceneSavedPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -65,5 +66,6 @@ const uiComponent = () => [
   createRectanglePanel(),
   createBlockPanel(),
   createAssetUploadUI(),
-  createDebugPanel()
+  createDebugPanel(),
+  createSceneSavedPanel(),
 ]

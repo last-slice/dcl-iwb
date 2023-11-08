@@ -5,18 +5,21 @@ import {PlayerScene, SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/t
 import {displayCreateScenePanel} from "../../../ui/Panels/CreateScenePanel"
 import { log } from "../../../helpers/functions"
 import { sendServerMessage } from "../../messaging"
+import { displaySceneSavedPanel } from "../../../ui/Panels/sceneSavedPanel"
 
 export let scenesToCreate: Map<string, any> = new Map()
-let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
-let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
+export let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
+export let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
 
 export const SelectedFloor = engine.defineComponent("iwb::selected::FloorComponent", {})
 export const BuildModeVisibilty = engine.defineComponent("iwb::buildmode::visibility", {})
+export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
     let scene = scenesToCreate.get(localUserId)
     if(scene && scene.parcels.length > 0){
         log('we have valid scene, send to server')
+        setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
         sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: scene.name, desc:scene.description})
     }
 }
@@ -100,6 +103,7 @@ export function addBoundariesForParcel(parcel:string, local:boolean, playMode?:b
         albedoColor: local ? Color4.create(0, 1, 0, .5) : Color4.Red()
     })
     if(local) SelectedFloor.create(floor, {})
+    ParcelFloor.create(floor)
 
     //left
     Transform.create(left, {
@@ -221,8 +225,10 @@ export function saveNewScene(userId:string, scene:PlayerScene) {
     // only save if local user saved
     if(userId !== localUserId) return
 
+
+    displaySceneSavedPanel(true)
     displayCreateScenePanel(false)
-    setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
+    setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
 
     let player = players.get(localUserId)
 
@@ -253,4 +259,6 @@ export function saveNewScene(userId:string, scene:PlayerScene) {
             albedoColor: Color4.create(.2, .9, .1, 1)
         })
     }
+
+
 }

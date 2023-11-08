@@ -26,7 +26,6 @@ export function setScenes(info:any){
 }
 
 export function loadScene(info:any){
-
     info.pcls.forEach((parcel:string)=>{
         addBoundariesForParcel(parcel, true, true)
     })
