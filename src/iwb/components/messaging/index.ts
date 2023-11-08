@@ -15,7 +15,7 @@ export let cRoom:any
 
 export let connected:boolean = false
 export let sessionId:any
-export let sceneMessageBus:any
+export let sceneMessageBus:MessageBus
 export const iwbEvents = mitt()
 
 export function updateWorld(value:any){
