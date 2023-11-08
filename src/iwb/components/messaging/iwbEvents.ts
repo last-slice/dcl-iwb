@@ -32,6 +32,26 @@ export function createIWBEventListeners(){
                     }
                 }
             }
+
+            // for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
+            //     if(players.get(localUserId)?.mode === 1){
+            //         if(ParcelFloor.has(entity)){
+            //             Material.setPbrMaterial(entity, {
+            //                 albedoColor: Color4.Red()
+            //             })
+            //         }else{
+            //             GltfContainer.createOrReplace(entity, {src: redBeam})
+            //         }
+            //     }else{
+            //         if(ParcelFloor.has(entity)){
+            //             Material.setPbrMaterial(entity, {
+            //                 albedoColor: Color4.create(0, 1, 0, .5)
+            //             })
+            //         }else{
+            //             GltfContainer.createOrReplace(entity, {src: greenBeam})
+            //         }
+            //     }
+            // }
         })
     }
 }

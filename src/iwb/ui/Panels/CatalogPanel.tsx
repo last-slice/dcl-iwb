@@ -11,11 +11,11 @@ import {
 import {log} from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import {selectCatalogItem, useSelectedItem} from '../../components/modes/build'
-import { CatalogItemType } from '../../helpers/types'
+import { CatalogItemType, SCENE_MODES } from '../../helpers/types'
 import { uiSizes } from '../uiConfig'
 import { localUserId, players } from '../../components/player/player'
 
-export let showCatalogPanel = true
+export let showCatalogPanel = false
 
 export function displayCatalogPanel(value: boolean) {
     showCatalogPanel = value
@@ -295,6 +295,12 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         sourceHeight: 256
                     })
                 }}
+                onMouseDown={() => {
+                    if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
+                        selectCatalogItem(item.id)
+                        useSelectedItem()
+                    }  
+                }}
             />
 
             <UiEntity
@@ -322,7 +328,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 // uiBackground={{color:Color4.Green()}}
             >
 
-                <UiEntity
+                {/* <UiEntity
                     uiTransform={{
                         display: localUserId && players.get(localUserId)!.canBuild ? 'flex' : 'none',
                         justifyContent: 'center',
@@ -344,7 +350,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         selectCatalogItem(item.id)
                         useSelectedItem()
                     }}
-                />
+                /> */}
 
                 <UiEntity
                     uiTransform={{
@@ -352,18 +358,19 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         justifyContent: 'center',
                         alignContent: 'center',
                         flexDirection: 'row',
-                        width: '50%',
-                        height: '100%',
+                        width: calculateSquareImageDimensions(4).width,
+                        height: calculateSquareImageDimensions(4).height,
                         margin: {left: '1%'}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
                         texture: {
-                            src: 'assets/atlas2.png'
+                            src: 'assets/atlas1.png'
                         },
-                        uvs: getImageAtlasMapping(uiSizes.normalButton)
+                        uvs: getImageAtlasMapping(uiSizes.infoButtonOpaque)
                     }}
-                    uiText={{value: "Info", fontSize: sizeFont(20, 12)}}
+
+                    // uiText={{value: "Info", fontSize: sizeFont(20, 12)}}
                 />
 
 

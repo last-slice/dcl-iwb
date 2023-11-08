@@ -73,6 +73,7 @@ export interface CatalogItemType {
     im: string // image
     n:  string
     objName: string
+    entity:Entity
 }
 
 export interface Player {
@@ -83,7 +84,7 @@ export interface Player {
     currentParcel:string,
     uploadToken:string,
     version: number
-    activeScene: IWBScene,
+    activeScene: IWBScene | null,
     canBuild:boolean
 }
 

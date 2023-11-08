@@ -1,4 +1,4 @@
-import { Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
+import { Material, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
 import { IWBScene } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
@@ -31,30 +31,44 @@ export function setScenes(info:any){
 }
 
 export function loadScene(info:any){
+
+    loadSceneBoundaries(info)
+    .then((res1)=> loadSceneAssets(res1))
+    .then((info)=>{
+        sceneBuilds.set(info.id, info)
+    })
+    
+}
+
+async function loadSceneBoundaries(info:any){
     info.pcls.forEach((parcel:string)=>{
         addBoundariesForParcel(parcel, true, true)
     })
 
-        // create parent entity for scene//
-        const [x1, y1] = info.bpcl.split(",")
-        let x = parseInt(x1)
-        let y = parseInt(y1)
+    // create parent entity for scene//
+    const [x1, y1] = info.bpcl.split(",")
+    let x = parseInt(x1)
+    let y = parseInt(y1)
 
-        const sceneParent = engine.addEntity()
-        Transform.create(sceneParent, {
-            position: Vector3.create(x*16, 0, y*16)
+    const sceneParent = engine.addEntity()
+    Transform.create(sceneParent, {
+        position: Vector3.create(x*16, 0, y*16)
+    })
+
+    MeshRenderer.setPlane(sceneParent)
+    info.parentEntity = sceneParent
+
+
+    // change floor color
+    for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
+        Material.setPbrMaterial(entity, {
+            albedoColor: Color4.create(.2, .9, .1, 1)
         })
+    }
 
-        MeshRenderer.setPlane(sceneParent)
-        info.parentEntity = sceneParent
-    
-    
-        // change floor color
-        for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
-            Material.setPbrMaterial(entity, {
-                albedoColor: Color4.create(.2, .9, .1, 1)
-            })
-        }
+    return info
+}
 
-    sceneBuilds.set(info.id, info)
+async function loadSceneAssets(info:any){
+    return info
 }
