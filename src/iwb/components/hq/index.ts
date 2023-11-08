@@ -16,7 +16,7 @@ export function createHQ(){
     emissiveIntensity: 1.2,
     emissiveTexture: texture
   })
-
+//
   // let createSceneBox = engine.addEntity()
   // MeshRenderer.setBox(createSceneBox)
   // MeshCollider.setBox(createSceneBox)

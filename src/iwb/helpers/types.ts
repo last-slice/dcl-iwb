@@ -75,15 +75,15 @@ export interface CatalogItemType {
 export interface Player {
     dclData:any,
     mode:SCENE_MODES,
-    scenes:PlayerScene[],
+    scenes:IWBScene[],
     buildingAllowed:string[],
     currentParcel:string,
     uploadToken:string,
     version: number
-    activeScene: PlayerScene
+    activeScene: IWBScene
 }
 
-export interface PlayerScene {
+export interface IWBScene {
     parentEntity:Entity,
     id:string,
     n:string, 

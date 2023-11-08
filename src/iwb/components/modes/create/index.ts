@@ -1,7 +1,7 @@
 import {engine, GltfContainer, Material, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import {localUserId, players, setPlayMode} from "../../player/player"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
-import {PlayerScene, SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types"
+import {SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types"
 import {displayCreateScenePanel} from "../../../ui/Panels/CreateScenePanel"
 import { log } from "../../../helpers/functions"
 import { sendServerMessage } from "../../messaging"
@@ -221,44 +221,46 @@ export function deleteCreationEntities(player: string) {
     }
 }
 
-export function saveNewScene(userId:string, scene:PlayerScene) {
+export function saveNewScene(userId:string) {
     // only save if local user saved
     if(userId !== localUserId) return
-
 
     displaySceneSavedPanel(true)
     displayCreateScenePanel(false)
     setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
 
-    let player = players.get(localUserId)
-
-    // allow building for each parcel
-    scene.pcls.forEach((parcel: any) => {
-        player!.buildingAllowed.push(parcel)
-    })
     scenesToCreate.delete(localUserId)
+    
 
-    // create parent entity for scene//
-    const [x1, y1] = scene.bpcl.split(",")
-    let x = parseInt(x1)
-    let y = parseInt(y1)
-    const sceneParent = engine.addEntity()
-    Transform.create(sceneParent, {
-        position: Vector3.create(x*16, 0, y*16)
-    })
-    MeshRenderer.setPlane(sceneParent)
-    scene.parentEntity = sceneParent
+    // let player = players.get(localUserId)
 
-    // add to player scenes
-    player!.scenes.push(scene)
-    player!.activeScene = scene
+    // // allow building for each parcel
+    // scene.pcls.forEach((parcel: any) => {
+    //     player!.buildingAllowed.push(parcel)
+    // })
+    // scenesToCreate.delete(localUserId)
 
-    // change floor color
-    for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
-        Material.setPbrMaterial(entity, {
-            albedoColor: Color4.create(.2, .9, .1, 1)
-        })
-    }
+    // // create parent entity for scene//
+    // const [x1, y1] = scene.bpcl.split(",")
+    // let x = parseInt(x1)
+    // let y = parseInt(y1)
+    // const sceneParent = engine.addEntity()
+    // Transform.create(sceneParent, {
+    //     position: Vector3.create(x*16, 0, y*16)
+    // })
+    // MeshRenderer.setPlane(sceneParent)
+    // scene.parentEntity = sceneParent
+
+    // // add to player scenes
+    // player!.scenes.push(scene)
+    // player!.activeScene = scene
+
+    // // change floor color
+    // for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
+    //     Material.setPbrMaterial(entity, {
+    //         albedoColor: Color4.create(.2, .9, .1, 1)
+    //     })
+    // }
 
 
 }

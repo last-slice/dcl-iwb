@@ -1,5 +1,5 @@
 import {log} from "../../helpers/functions"
-import {PlayerScene, SERVER_MESSAGE_TYPES} from "../../helpers/types"
+import {IWBScene, SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
 import { loadScene, setScenes } from "../scenes"
 
@@ -15,9 +15,9 @@ export function createSceneListeners(room: any) {
             deleteParcelEntities(info)
         })
     
-        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, ({userId, scene}: { userId: string, scene: PlayerScene }) => {
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, ({userId, scene}: { userId: string, scene: IWBScene }) => {
             log(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW + ' received', userId, scene)
-            saveNewScene(userId, scene)
+            saveNewScene(userId)
         })
     
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, (info:any) => {
@@ -25,10 +25,10 @@ export function createSceneListeners(room: any) {
             setScenes(info)
         })
     
-        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_LOAD, (info:any) => {
-            log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', info)
-            loadScene(info)
-        })
+        // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_LOAD, (info:any) => {
+        //     log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', info)
+        //     loadScene(info)
+        // })
     
         room.state.scenes.onAdd((scene:any, key:any) =>{
             log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', key, scene)

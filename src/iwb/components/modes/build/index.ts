@@ -5,6 +5,7 @@ import {localUserId, players} from "../../player/player"
 import {engine, Entity, GltfContainer, InputAction, MeshRenderer, pointerEventsSystem, Transform} from "@dcl/sdk/ecs"
 import {sendServerMessage} from "../../messaging";
 import {SERVER_MESSAGE_TYPES} from "../../../helpers/types";
+import { displayCatalogPanel } from "../../../ui/Panels/CatalogPanel"
 
 
 export let selectedCatalogItem:any = null
@@ -14,10 +15,10 @@ export function enableBuildMode(){
 
 export function selectCatalogItem(item:any){
     selectedCatalogItem = items.get(item)
-    //
 }
-
+//
 export function useSelectedItem(){
+    displayCatalogPanel(false)
     console.log(selectedCatalogItem)
     console.log(players.get(localUserId))
 
