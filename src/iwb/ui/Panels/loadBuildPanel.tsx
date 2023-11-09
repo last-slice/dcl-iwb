@@ -89,7 +89,7 @@ export function createLoadBuildPanel() {
                             justifyContent: 'center',
                             width: '90%',
                             height: '30%',
-                            position: { top: 40 }
+                            position: { left: (dimensions.width - calculateImageDimensions(105, 90 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(225, 90 / 30).height) / 2  }
                         }}
                     // uiBackground={{color:Color4.Green()}}
                     >
@@ -208,7 +208,7 @@ export function createLoadBuildPanel() {
                             width: calculateImageDimensions(3, 111 / 41).width,
                             height: calculateImageDimensions(4, 111 / 41).height,
                             margin: { right: "2%" },
-                            position: { bottom: 25, right: 500 }
+                            position: { left: (dimensions.width - calculateImageDimensions(168, 30 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(55, 30 / 30).height) / 2  }
                         }}
                         uiBackground={{
                             textureMode: 'stretch',
@@ -242,7 +242,7 @@ export function createLoadBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 227, left: -120 }
+                        position: { left: (dimensions.width - calculateImageDimensions(120, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(115, 223 / 41).height) / 2  }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -278,7 +278,7 @@ export function createLoadBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 190, left: 10 }
+                        position: {  left: (dimensions.width - calculateImageDimensions(100, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(140, 223 / 41).height) / 2  }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -314,7 +314,7 @@ export function createLoadBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 154, left: 140 }
+                        position: { left: (dimensions.width - calculateImageDimensions(80, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(166, 223 / 41).height) / 2  }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
