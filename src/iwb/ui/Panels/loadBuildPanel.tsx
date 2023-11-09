@@ -5,7 +5,7 @@ import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions,
 import resources from '../../helpers/resources'
 import { Color4Type } from '@dcl/sdk/ecs'
 
-export let showLoadBuildPanel = true
+export let showLoadBuildPanel = false
 
 export let buildSelect = false
 export let buildCode = 0
