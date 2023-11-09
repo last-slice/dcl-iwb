@@ -153,7 +153,7 @@ function CreateToolIcon(data:any){
     return ( <UiEntity
     key={config.name}
     uiTransform={{
-        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId).mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
+        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
         width: calculateSquareImageDimensions(4).width,
         height: calculateSquareImageDimensions(4).height,
         flexDirection:'row',
