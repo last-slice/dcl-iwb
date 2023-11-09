@@ -25,7 +25,8 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_SAVE_NEW = "scene_save_new",
     SCENE_ADD_ITEM = 'scene_add_item',
     SCENE_ADDED_NEW = "scene_added_new",
-    SCENE_LOAD = 'scene_load'
+    SCENE_LOAD = 'scene_load',
+    SCENE_UPDATE_ITEM = 'scene_update_item'
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -74,6 +75,7 @@ export interface CatalogItemType {
     n:  string
     objName: string
     entity:Entity
+    ty:string
 }
 
 export interface Player {
@@ -98,6 +100,7 @@ export interface IWBScene {
     cat:string,
     bpcl:string,
     ass:SceneItem[],
+    sceneEntities:Entity[],
     bps:string[],
     rat:string[],
     rev:string[],
@@ -114,7 +117,7 @@ export interface IWBScene {
 }
 
 export interface SceneItem extends CatalogItemType{
-    position: {x:number, y:number, z:number},
-    rotation: {x:number, y:number, z:number, w:number},
-    scale: {x:number, y:number, z:number}
+    p: {x:number, y:number, z:number},
+    r: {x:number, y:number, z:number, w:number},
+    s: {x:number, y:number, z:number}
 }

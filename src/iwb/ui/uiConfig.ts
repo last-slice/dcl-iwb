@@ -523,8 +523,88 @@ export let settingsIconData:any =
         }
     }
 }
-
+//
 export let uiSizes:any ={
+    positionIconPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128 * 6,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    positionIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128 * 6,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rightArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rightCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
     opaqueSearchIcon:{
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -690,6 +770,15 @@ export let uiSizes:any ={
         sourceLeft: 384,
         sourceWidth: 345,
         sourceHeight: 511
+    },
+
+    horzRectangleOpaque:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 774,
+        sourceLeft: 0,
+        sourceWidth: 331,
+        sourceHeight: 200
     },
 
     smallPill:{

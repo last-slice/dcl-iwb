@@ -10,8 +10,8 @@ export function createDebugPanel() {
         <UiEntity
             key={"debugpanel"}
             uiTransform={{
-                // display: DEBUG ? 'flex' : 'none',
-                display:'none',
+                display: DEBUG ? 'flex' : 'none',
+                // display:'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',

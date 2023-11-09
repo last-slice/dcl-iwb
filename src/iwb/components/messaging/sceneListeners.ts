@@ -24,14 +24,15 @@ export function createSceneListeners(room: any) {
             log(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW + ' received', info)
             setScenes(info)
         })
-    
-        // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_LOAD, (info:any) => {
-        //     log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', info)
-        //     loadScene(info)
-        // })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM + ' received', info)
+
+        })
     
         room.state.scenes.onAdd((scene:any, key:any) =>{
             log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', key, scene)
             loadScene(scene)
         })
 }
+//

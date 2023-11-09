@@ -28,6 +28,8 @@ import { createSettingsPanel } from './Panels/settings/settingsIndex'
 import { createRealmTravelPanel } from './Panels/realmTravelPanel'
 import { createDebugPanel } from './Panels/debugPanel'
 import { createSceneSavedPanel } from './Panels/sceneSavedPanel'
+import { createEditObjectPanel } from './Panels/EditObjectPanel'
+import { createGizmoPanel } from './GizmoPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -68,4 +70,6 @@ const uiComponent = () => [
   createAssetUploadUI(),
   createDebugPanel(),
   createSceneSavedPanel(),
+  createGizmoPanel(),
+  createEditObjectPanel(),
 ]

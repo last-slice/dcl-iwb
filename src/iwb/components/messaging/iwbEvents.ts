@@ -1,12 +1,14 @@
 import { openExternalUrl } from "~system/RestrictedActions";
 import { iwbEvents } from ".";
 import { log } from "../../helpers/functions";
-import { IWB_MESSAGE_TYPES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
+import { IWB_MESSAGE_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
 import resources from "../../helpers/resources";
 import { localUserId, players } from "../player/player";//
 import { GltfContainer, Material, engine } from "@dcl/sdk/ecs";
 import { BuildModeVisibilty, ParcelFloor, greenBeam, redBeam } from "../modes/create";
 import { Color4 } from "@dcl/sdk/math";
+import { sceneBuilds } from "../scenes";
+import { addBuildModePointers } from "../modes/build";
 
 let created = false
 export function createIWBEventListeners(){
@@ -33,6 +35,14 @@ export function createIWBEventListeners(){
                 }
             }
 
+            if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
+                sceneBuilds.forEach((scene,key)=>{
+                    scene.sceneEntities.forEach((entity)=>{
+                        addBuildModePointers(entity)
+                    })
+                })
+            }
+
             // for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
             //     if(players.get(localUserId)?.mode === 1){
             //         if(ParcelFloor.has(entity)){
@@ -55,3 +65,4 @@ export function createIWBEventListeners(){
         })
     }
 }
+//

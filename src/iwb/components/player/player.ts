@@ -7,6 +7,7 @@ import { utils } from "../../helpers/libraries";
 import { displaySettingsPanel } from "../../ui/Panels/settings/settingsIndex";
 import { movePlayerTo } from "~system/RestrictedActions";
 import { log } from "../../helpers/functions";
+import { deleteAllRealmObjects } from "../scenes";
 
 export let localUserId:string
 export let players:Map<string, Player> = new Map<string, Player>()
@@ -89,6 +90,9 @@ export function setPlayMode(user:string, mode:SCENE_MODES){
 }
 
 export function worldTravel(w:any){
+
+    deleteAllRealmObjects()
+
     displaySettingsPanel(false)
     displayRealmTravelPanel(true)
     movePlayerTo({newRelativePosition:{x:16, y:0, z:16}})
@@ -97,3 +101,4 @@ export function worldTravel(w:any){
         displayRealmTravelPanel(false)
     }, 2000)
 }
+//

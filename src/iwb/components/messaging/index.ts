@@ -8,10 +8,11 @@ import { createrPlayerListeners } from './playerListeners'
 import { createIWBEventListeners } from './iwbEvents'
 import {log} from "../../helpers/functions";
 import { localUserId, players } from '../player/player'
+import { Room } from 'colyseus.js'
 
 export let data:any
 export let world:any
-export let cRoom:any
+export let cRoom:Room
 
 export let connected:boolean = false
 export let sessionId:any
@@ -29,22 +30,25 @@ export function createMessageManager(){
 
 export async function colyseusConnect(data:any, token:string, world?:any){
 
-    connect(world ? "user-world" : "iwb-world", data, token, world).then((room) => {
+    connect(world && world.world !== "iwb" ? "user-world" : "iwb-world", data, token, world).then((room:Room) => {
         log("Connected!");
         cRoom = room
         sessionId = room.sessionId
         connected = true
+
+        
 
         createIWBEventListeners()
         !sceneMessageBus ? createMessageManager() : null
         initiateMessageListeners(room)
         createSceneListeners(room)
         createrPlayerListeners(room)
+        console.log(cRoom.serializer)
 
     }).catch((err) => {
         console.error('colyseus connection error', err)
     });
-}
+}//
 
 export async function joinWorld(world?:any){
     if(connected){
