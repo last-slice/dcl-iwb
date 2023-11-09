@@ -1,6 +1,8 @@
 import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
 import {Color4, Vector3} from '@dcl/sdk/math'
-import {CatalogItemType, items} from '../../components/catalog'
+import { items} from '../../components/catalog'
+import { CatalogItemType } from "../../helpers/types";
+
 import {
     addLineBreak,
     calculateImageDimensions,

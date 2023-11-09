@@ -60,7 +60,7 @@ export function addPlayerScenes(user:string, scenes:any[]){
     let player = players.get(user)
     if(player){
         scenes.forEach((scene)=>{
-            player.scenes.push(scene)
+            player!.scenes.push(scene)
         })
     }
 }
