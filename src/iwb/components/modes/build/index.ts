@@ -70,14 +70,14 @@ export function useSelectedItem(){
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_PRIMARY,
+                    button: InputAction.IA_SECONDARY,
                     hoverText: "Drop",
                 }
             },
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_SECONDARY,
+                    button: InputAction.IA_PRIMARY,
                     hoverText: "Cancel",
                 }
             }
@@ -108,55 +108,89 @@ export function useSelectedItem(){
 }
 
 export function dropSelectedItem(){
-    // get front of player position
-    const {position, rotation} = Transform.get(engine.PlayerEntity)
-    const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
-    const finalPosition = Vector3.add(position, forwardVector)
-
     // get current scene parent entity
     const curScene = players.get(localUserId)!.activeScene
-    const curSceneParent = curScene.parentEntity
-    const curSceneParentPosition = Transform.get(curSceneParent).position
+    if(curScene !== null){
+        PointerEvents.deleteFrom(selectedEntity)
 
-    // adjust position to parent offset
-    finalPosition.x = finalPosition.x - curSceneParentPosition.x
-    finalPosition.z = finalPosition.z - curSceneParentPosition.z
+        addBuildModePointers(selectedEntity)
+    
+        // get front of player position
+        const {position, rotation} = Transform.get(engine.PlayerEntity)
+        const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
+        const finalPosition = Vector3.add(position, forwardVector)
 
-    // update object transform
-    const t = Transform.getMutable(selectedEntity)
-    t.position = finalPosition
-    t.position.y = t.position.y - .88
-    t.rotation.y =  rotation.y
-    t.rotation.w = rotation.w
-    t.parent = curSceneParent
+        const curSceneParent = curScene.parentEntity
+        const curSceneParentPosition = Transform.get(curSceneParent).position
+    
+        // adjust position to parent offset
+        finalPosition.x = finalPosition.x - curSceneParentPosition.x
+        finalPosition.z = finalPosition.z - curSceneParentPosition.z
+    
+        // update object transform
+        const t = Transform.getMutable(selectedEntity)
+        t.position = finalPosition
+        t.position.y = t.position.y - .88
+        t.rotation.y =  rotation.y
+        t.rotation.w = rotation.w
+        t.parent = curSceneParent
+    
+        sendServerMessage(
+            SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
+            {baseParcel: curScene.bpcl, item: {id: selectedCatalogItem.id, position: t.position, rotation: t.rotation, scale: t.scale}})
+    
+        sceneMessageBus.emit(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, position: t.position, rotation: t.rotation, scale: t.scale})
+        selectedCatalogItem = null
 
-    sendServerMessage(
-        SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
-        {baseParcel: curScene.bpcl, item: {id: selectedCatalogItem.id, position: t.position, rotation: t.rotation, scale: t.scale}})
+    }
 
-    sceneMessageBus.emit(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, position: t.position, rotation: t.rotation, scale: t.scale})
-    selectedCatalogItem = null
 }
 
 export function removeSelectedItem(){
+    PointerEvents.deleteFrom(selectedEntity)
     engine.removeEntity(selectedEntity)
     selectedCatalogItem = null
+
     sceneMessageBus.emit(IWB_MESSAGE_TYPES.REMOVE_SELECTED_ASSET, {user:localUserId})
 }
 
 export function checkBuildPermissions(player:Player){
     let canbuild = false
+    let activeScene = null
     sceneBuilds.forEach((scene:IWBScene, key:string)=>{
         if(scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission)=> permission === localUserId)))){
             console.log('player is on current owned parcel')
-            player.activeScene = scene
             canbuild = true
+            activeScene = scene
         }
     })
 
     if(canbuild){
         player.canBuild = true
+        player.activeScene = activeScene
     }else{
         player.canBuild = false
+        player.activeScene = null
     }
+}
+
+export function addBuildModePointers(ent:Entity){
+    PointerEvents.createOrReplace(selectedEntity, {
+        pointerEvents: [
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_PRIMARY,
+                    hoverText: "Edit",
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_SECONDARY,
+                    hoverText: "Delete",
+                }
+            }
+        ]
+    })
 }

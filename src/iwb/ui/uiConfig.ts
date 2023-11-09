@@ -709,4 +709,22 @@ export let uiSizes:any ={
         sourceWidth: 824,
         sourceHeight: 263
     },
+
+    infoButtonBlack:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+
+    infoButtonOpaque:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    }
 }
