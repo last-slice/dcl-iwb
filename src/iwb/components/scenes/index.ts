@@ -1,16 +1,19 @@
-import { Material, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
+import { Entity, GltfContainer, Material, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
-import { IWBScene } from "../../helpers/types"
+import { IWBScene, SceneItem } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Vector3 } from "@dcl/sdk/math"
+import { items } from "../catalog"
+import { RealmEntityComponent } from "../../helpers/Components"
 
 export let scenes:any[] = []
 export let worlds:any[] = []
 
 export let sceneBuilds:Map<string, IWBScene> = new Map()
+export let itemIdsFromEntities:Map<number,any> = new Map()
 
 export function setScenes(info:any){
-    log('server scene list', info)
+    log('server scene list', info)//
 
     // set creator worlds
     info.forEach((scene:any)=>{
@@ -35,14 +38,19 @@ export function loadScene(info:any){
     loadSceneBoundaries(info)
     .then((res1)=> loadSceneAssets(res1))
     .then((info)=>{
+        log('loaded scene info is', info)
         sceneBuilds.set(info.id, info)
     })
     
 }
 
 async function loadSceneBoundaries(info:any){
+    info.entities = []
     info.pcls.forEach((parcel:string)=>{
-        addBoundariesForParcel(parcel, true, true)
+        let entities = addBoundariesForParcel(parcel, true, true)
+        entities.forEach((entity)=>{
+            RealmEntityComponent.create(entity)
+        })
     })
 
     // create parent entity for scene//
@@ -55,9 +63,7 @@ async function loadSceneBoundaries(info:any){
         position: Vector3.create(x*16, 0, y*16)
     })
 
-    MeshRenderer.setPlane(sceneParent)
     info.parentEntity = sceneParent
-
 
     // change floor color
     for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
@@ -67,8 +73,39 @@ async function loadSceneBoundaries(info:any){
     }
 
     return info
+}//
+
+async function loadSceneAssets(info:IWBScene){
+    info.ass.forEach(async (asset:SceneItem)=>{
+        info.entities.push(await loadSceneAsset(info.parentEntity, asset))
+    })
+    return info
 }
 
-async function loadSceneAssets(info:any){
-    return info
+async function loadSceneAsset(parent:Entity, item:SceneItem){
+    let ent = engine.addEntity()
+    RealmEntityComponent.create(ent)
+
+    let itemConfig = items.get(item.id)
+    log('loading item config for item', item, itemConfig)
+
+    if(itemConfig){
+        itemIdsFromEntities.set(ent, item.aid)
+        Transform.create(ent, {parent:parent, position:item.p, rotation:item.r, scale:item.s})
+        switch(itemConfig.ty){
+            case '3d':
+                GltfContainer.create(ent, {src: "assets/" + item.id + ".glb"})
+                break;
+
+            case 'prim':
+                break;
+        }
+    }
+    return ent
+}
+
+export function deleteAllRealmObjects(){
+    for (const [entity] of engine.getEntitiesWith(RealmEntityComponent)) {    
+        engine.removeEntity(entity)
+    }
 }

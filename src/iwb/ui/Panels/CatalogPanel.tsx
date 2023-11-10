@@ -10,8 +10,8 @@ import {
 } from '../helpers'
 import {log} from '../../helpers/functions'
 import resources from '../../helpers/resources'
-import {selectCatalogItem, useSelectedItem} from '../../components/modes/build'
-import { CatalogItemType, SCENE_MODES } from '../../helpers/types'
+import {selectCatalogItem} from '../../components/modes/build'
+import { CatalogItemType, EDIT_MODES, SCENE_MODES } from '../../helpers/types'
 import { uiSizes } from '../uiConfig'
 import { localUserId, players } from '../../components/player/player'
 
@@ -284,7 +284,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 uiBackground={{
                     textureMode: 'stretch',
                     texture: {
-                        src: resources.endpoints.proxy + item.im
+                        src: item.im
                     },
                     uvs: getImageAtlasMapping({
                         atlasHeight: 256,
@@ -297,8 +297,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 }}
                 onMouseDown={() => {
                     if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
-                        selectCatalogItem(item.id)
-                        useSelectedItem()
+                        selectCatalogItem(item.id, EDIT_MODES.GRAB)
                     }  
                 }}
             />

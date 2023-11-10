@@ -16,10 +16,10 @@ export const BuildModeVisibilty = engine.defineComponent("iwb::buildmode::visibi
 export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
+    displayCreateScenePanel(false)
     let scene = scenesToCreate.get(localUserId)
     if(scene && scene.parcels.length > 0){
         log('we have valid scene, send to server')
-        setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
         sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: scene.name, desc:scene.description})
     }
 }
@@ -32,6 +32,7 @@ export function createTempScene(name:string, desc:string){
         size: [1, 1],
     }
     scenesToCreate.set(localUserId, data)
+    setPlayMode(localUserId, SCENE_MODES.CREATE_SCENE_MODE)
 }
 
 export function selectParcel(info: any) {
@@ -227,9 +228,9 @@ export function saveNewScene(userId:string) {
 
     displaySceneSavedPanel(true)
     displayCreateScenePanel(false)
-    setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
 
     scenesToCreate.delete(localUserId)
+    //
     
 
     // let player = players.get(localUserId)

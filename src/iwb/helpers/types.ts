@@ -20,12 +20,15 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_RECEIVED_MESSAGE = 'player_received_message',
     PLAYER_SCENES_CATALOG = 'player_scenes_catalog',
     PLAYER_JOINED_USER_WORLD = 'player_joined_private_world',
+    PLAYER_EDIT_ASSET = 'player_edit_asset',
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
     SCENE_ADD_ITEM = 'scene_add_item',
     SCENE_ADDED_NEW = "scene_added_new",
-    SCENE_LOAD = 'scene_load'
+    SCENE_LOAD = 'scene_load',
+    SCENE_UPDATE_ITEM = 'scene_update_item',
+    SCENE_DELETE_ITEM = 'scene_delete_item'
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -39,6 +42,17 @@ export enum SCENE_MODES {
     PLAYMODE,
     CREATE_SCENE_MODE,
     BUILD_MODE
+}
+
+export enum EDIT_MODES {
+    GRAB,
+    EDIT
+}
+
+export enum EDIT_MODIFIERS {
+    POSITION,
+    ROTATION,
+    SCALE
 }
 
 export type PlayerData = {
@@ -65,15 +79,6 @@ export type NOTIFICATION_DETAIL = {
     label?:string,
     forceShow?:boolean,
     fn?:any
-}
-
-export interface CatalogItemType {
-    id: string
-    v:  number // version
-    im: string // image
-    n:  string
-    objName: string
-    entity:Entity
 }
 
 export interface Player {
@@ -111,11 +116,37 @@ export interface IWBScene {
     pc:number,
     pcnt:number,
     isdl:boolean,
-    e:boolean
+    e:boolean,
+    entities:Entity[]
+}
+
+export interface CatalogItemType {
+    id: string
+    aid:string
+    v:  number // version
+    im: string // image
+    n:  string
+    objName: string
+    entity:Entity
+    ty:string
+    si?:any
 }
 
 export interface SceneItem extends CatalogItemType{
-    position: {x:number, y:number, z:number},
-    rotation: {x:number, y:number, z:number, w:number},
-    scale: {x:number, y:number, z:number}
+    p: {x:number, y:number, z:number},
+    r: {x:number, y:number, z:number, w:number},
+    s: {x:number, y:number, z:number}
+}
+
+export interface SelectedItem {
+    mode:EDIT_MODES
+    modifier: EDIT_MODIFIERS
+    factor: number
+    entity:Entity
+    catalogId:string
+    sceneId:string
+    aid:string
+    itemData:SceneItem
+    enabled:boolean
+    already?:boolean
 }

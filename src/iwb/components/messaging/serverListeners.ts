@@ -5,9 +5,10 @@ import {localUserId, players, removePlayer} from "../player/player"
 import {addBoundariesForParcel} from "../modes/create";
 import { updateWorld } from ".";
 import { setScenes } from "../scenes";
+import { Room } from "colyseus.js";
 
 
-export function initiateMessageListeners(room: any) {
+export function initiateMessageListeners(room: Room) {
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, (info: any) => {
         log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 

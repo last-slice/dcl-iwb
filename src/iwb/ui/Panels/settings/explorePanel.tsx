@@ -76,6 +76,7 @@ export function ExplorePanel() {
         }}
         onMouseDown={() => {
             // pressed.Save = true
+            worldTravel({world:'iwb', label:"IWB Team"})
         }}
         uiText={{value: "IWB", color:Color4.Black(), fontSize:sizeFont(25,15)}}
         />

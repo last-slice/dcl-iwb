@@ -1,9 +1,12 @@
+import { engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
-import {IWBScene, SERVER_MESSAGE_TYPES} from "../../helpers/types"
+import {IWBScene, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
+import { removeItem, transformObject } from "../modes/build"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
-import { loadScene, setScenes } from "../scenes"
+import { localUserId, setPlayMode } from "../player/player"
+import { itemIdsFromEntities, loadScene, sceneBuilds, setScenes } from "../scenes"
 
-export function createSceneListeners(room: any) {
+export function createSceneListeners(room: any) {//
         log('creating scene listeners for room', room.roomId)
         room.onMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, (info: any) => {
             log(SERVER_MESSAGE_TYPES.SELECT_PARCEL + ' received', info)
@@ -22,16 +25,44 @@ export function createSceneListeners(room: any) {
     
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW + ' received', info)
-            setScenes(info)
+            setScenes(info.info)
+            loadScene(info.scene)
+            if(info.user === localUserId){
+                setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
+            }
         })
-    
-        // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_LOAD, (info:any) => {
-        //     log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', info)
-        //     loadScene(info)
-        // })
-    
-        room.state.scenes.onAdd((scene:any, key:any) =>{
-            log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', key, scene)
-            loadScene(scene)
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM + ' received', info)
+
+            if(info.userId !== localUserId){
+                console.log('need to change transform position of item from other user')
+            }
+            removeItem(info)
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM + ' received', info)
+
+            if(info.userId !== localUserId){
+                console.log('need to change transform position of item from other user')
+            }
+
+            let scene = sceneBuilds.get(info.sceneId)
+            console.log('scene is', scene)
+            if(scene){
+                scene.ass.push(info.item)
+                itemIdsFromEntities.set(info.entity, info.item.aid)
+            }
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET + ' received', info)
+            transformObject(info)
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_LOAD, (info:IWBScene) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_LOAD + ' received', info)
+            loadScene(info)
         })
 }

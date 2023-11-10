@@ -9,7 +9,7 @@ import {SmallOpaqueRectangle} from '../Objects/SmallOpaqueRectangle'
 import {MediumOpaqueRectangle} from '../Objects/MediumOpaqueRectangle'
 import resources from '../../helpers/resources'
 import {saveNewScene, scenesToCreate, validateScene} from '../../components/modes/create'
-import {log} from '../../helpers/functions'
+import {formatDollarAmount, log} from '../../helpers/functions'
 import { uiSizes } from '../uiConfig'
 
 export let showCreateScenePanel = false
@@ -185,7 +185,7 @@ export function createNewScenePanel() {
                         // uiBackground={{color:Color4.Teal()}}
                     >
                         <Label
-                            value={"" + (getParcels() * 10000)}
+                            value={"" + (formatDollarAmount(getParcels() * 10000))}
                             color={Color4.White()}
                             fontSize={sizeFont(30, 20)}
                             font="serif"

@@ -1,19 +1,144 @@
 import {Quaternion, Vector3} from "@dcl/sdk/math"
-import {log} from "../../../helpers/functions"
+import {getRandomString, log, roundQuaternion, roundVector} from "../../../helpers/functions"
 import {items} from "../../catalog"
 import {localUserId, players} from "../../player/player"
 import {engine, Entity, GltfContainer, InputAction, MeshRenderer, PointerEvents, pointerEventsSystem, PointerEventType, Transform} from "@dcl/sdk/ecs"
 import {sceneMessageBus, sendServerMessage} from "../../messaging";
-import {IWBScene, IWB_MESSAGE_TYPES, Player, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
+import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, IWB_MESSAGE_TYPES, Player, SERVER_MESSAGE_TYPES, SelectedItem} from "../../../helpers/types";
 import { displayCatalogPanel } from "../../../ui/Panels/CatalogPanel"
-import { sceneBuilds } from "../../scenes"
+import { itemIdsFromEntities, sceneBuilds } from "../../scenes"
+
+export let selectedItem:SelectedItem
+
+export function sendServerEdit(axis:string, direction:number){
+    sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, 
+        {   item: selectedItem.entity,
+            sceneId: selectedItem.sceneId,
+            modifier: selectedItem.modifier,
+            factor: selectedItem.factor,
+            axis: axis, 
+            direction: direction
+        }
+    )
+}
+
+export function transformObject(data:any){
+    let transform = Transform.getMutable(data.item)
+
+    switch(data.modifier){
+        case EDIT_MODIFIERS.POSITION:
+            let pos:any = transform.position
+            pos[data.axis] = pos[data.axis] + (data.direction * data.factor)
+            break;
+
+        case EDIT_MODIFIERS.ROTATION:
+            let rot:any = Quaternion.toEulerAngles(transform.rotation)
+            rot[data.axis] = rot[data.axis] + (data.direction * data.factor)
+            transform.rotation = Quaternion.fromEulerDegrees(rot.x ,rot.y, rot.z)
+            break;
+
+        case EDIT_MODIFIERS.SCALE:
+            let scale:any = transform.scale
+            scale[data.axis] =  scale[data.axis] + (data.direction * data.factor)
+            break;
+    }
+}
+
+export function toggleModifier(){
+    switch(selectedItem.modifier){
+        case EDIT_MODIFIERS.POSITION:
+            case EDIT_MODIFIERS.SCALE:
+                if(selectedItem.factor === 1){
+                    selectedItem.factor = 0.1
+                }else if(selectedItem.factor === 0.1){
+                    selectedItem.factor = 0.01
+                }else if(selectedItem.factor === 0.01){
+                    selectedItem.factor = 0.001
+                }
+                else if(selectedItem.factor === 0.001){
+                    selectedItem.factor = 1
+                }
+            break;
 
 
-export let selectedCatalogItem:any = null
-export let selectedEntity:Entity
+        case EDIT_MODIFIERS.ROTATION:
+            if(selectedItem.factor === 90){
+                selectedItem.factor = 45
+            }else if(selectedItem.factor === 45){
+                selectedItem.factor = 15
+            }else if(selectedItem.factor === 15){
+                selectedItem.factor = 5
+            }else if(selectedItem.factor === 5){
+                selectedItem.factor = 1
+            }
+            else if(selectedItem.factor === 1){
+                selectedItem.factor = 90
+            }
+            break;
+    }
+}
 
-export function selectCatalogItem(item:any){
-    selectedCatalogItem = items.get(item)
+export function toggleEditModifier(modifier?:EDIT_MODIFIERS){
+    if(modifier){
+        selectedItem.modifier = modifier
+    }else{
+        if(selectedItem.modifier === EDIT_MODIFIERS.POSITION){
+            selectedItem.modifier = EDIT_MODIFIERS.ROTATION
+            selectedItem.factor = 90
+        }
+        else if(selectedItem.modifier === EDIT_MODIFIERS.ROTATION){
+            selectedItem.modifier = EDIT_MODIFIERS.SCALE
+            selectedItem.factor = 1
+        }
+        else if(selectedItem.modifier === EDIT_MODIFIERS.SCALE){
+            selectedItem.modifier = EDIT_MODIFIERS.POSITION
+            selectedItem.factor = 1
+        }
+    }
+    console.log('modifier is now', selectedItem)
+}
+
+export function selectCatalogItem(id:any, mode:EDIT_MODES, already?:boolean){
+    displayCatalogPanel(false)
+
+    let itemData = items.get(id)
+    if(itemData){
+        selectedItem ={
+            mode:mode,
+            modifier:EDIT_MODIFIERS.POSITION,
+            factor:1,
+            entity: engine.addEntity(),
+            aid: getRandomString(6),
+            catalogId:id,
+            sceneId:"",
+            itemData: itemData,
+            enabled:true
+        }
+        addUseItemPointers(selectedItem.entity)
+
+        let scale:any
+        if(selectedItem.itemData.si){
+            scale = Vector3.create(selectedItem.itemData.si.x, selectedItem.itemData.si.y, selectedItem.itemData.si.z)
+        }else{
+            scale = Vector3.One()
+        }
+    
+        if(selectedItem.itemData.v && selectedItem.itemData.v > players.get(localUserId)!.version){
+            log('this asset is not ready for viewing, need to add temporary asset')
+            MeshRenderer.setBox(selectedItem.entity)
+        }else{
+            log('this asset is ready for viewing, place object in scene')
+    
+            //to do
+            //add different asset types here//
+    
+            GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
+        }
+        Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
+    }
+
+
+
 }
 
 export function otherUserPlaceditem(player:any, info:any){
@@ -58,100 +183,123 @@ export function otherUserRemovedSeletedItem(player:any){
    player.selectedEntity = null 
 }
 
-export function useSelectedItem(){
-    displayCatalogPanel(false)
-    console.log(selectedCatalogItem)
-    console.log(players.get(localUserId))
+export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
+    PointerEvents.deleteFrom(entity)
 
-    selectedEntity = engine.addEntity()
+    let assetId = itemIdsFromEntities.get(entity)
+    console.log('found asset id', assetId)
+    if(assetId){
+        sceneBuilds.forEach((scene:IWBScene)=>{
+            let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
+            console.log('scene item is', sceneItem)
+            if(sceneItem){
 
-    PointerEvents.createOrReplace(selectedEntity, {
-        pointerEvents: [
-            {
-                eventType: PointerEventType.PET_DOWN,
-                eventInfo: {
-                    button: InputAction.IA_SECONDARY,
-                    hoverText: "Drop",
+                selectedItem = {
+                    mode: mode,
+                    modifier:EDIT_MODIFIERS.POSITION,
+                    factor:1,
+                    entity: entity,
+                    aid: assetId,
+                    catalogId: sceneItem.id,
+                    sceneId: scene.id,
+                    itemData: sceneItem,
+                    enabled:true,
+                    already: false
                 }
-            },
-            {
-                eventType: PointerEventType.PET_DOWN,
-                eventInfo: {
-                    button: InputAction.IA_PRIMARY,
-                    hoverText: "Cancel",
+        
+                if(mode === EDIT_MODES.GRAB){
+                    addUseItemPointers(selectedItem.entity)
                 }
+                return
             }
-        ]
-    })
-
-    let scale:any
-    if(selectedCatalogItem.si){
-        scale = Vector3.create(selectedCatalogItem.si.x, selectedCatalogItem.si.y, selectedCatalogItem.si.z)
-    }else{
-        scale = Vector3.One()
+        })
     }
+}
 
-    if(selectedCatalogItem.v && selectedCatalogItem.v > players.get(localUserId)!.version){
-        log('this asset is not ready for viewing, need to add temporary asset')
-        MeshRenderer.setBox(selectedEntity)
-    }else{
-        log('this asset is ready for viewing, place object in scene')
+export function saveItem(){
 
-        //to do
-        //add different asset types here
+    PointerEvents.deleteFrom(selectedItem.entity)
+    addBuildModePointers(selectedItem.entity)
+    selectedItem.enabled = false
 
-        GltfContainer.create(selectedEntity, {src: 'assets/' + selectedCatalogItem.id + ".glb"})
-    }
-    Transform.create(selectedEntity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
-    // addBuildAttachHandler(ent)
-    sceneMessageBus.emit(IWB_MESSAGE_TYPES.USE_SELECTED_ASSET, {user:localUserId, item:selectedCatalogItem})
+    // let scene = sceneBuilds.get(selectedItem.sceneId)
+    // let t = Transform.get(selectedItem.entity)
+    // if(scene){
+    //     PointerEvents.deleteFrom(selectedItem.entity)
+    //     addBuildModePointers(selectedItem.entity)
+
+    //     // sendServerMessage(
+    //     //     SERVER_MESSAGE_TYPES.SCENE_UPDATE_ITEM,
+    //     //     {baseParcel: scene.bpcl, item: {sceneId:scene.id, id: selectedItem.catalogId, position: roundVector(t.position, 2), rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2), scale: roundVector(t.scale, 2)}})
+        
+    //     selectedItem.enabled = false
+    // }
 }
 
 export function dropSelectedItem(){
-    // get current scene parent entity
-    const curScene = players.get(localUserId)!.activeScene
-    if(curScene !== null){
-        PointerEvents.deleteFrom(selectedEntity)
+    const {position, rotation} = Transform.get(engine.PlayerEntity)
+    const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
+    const finalPosition = Vector3.add(position, forwardVector)
 
-        addBuildModePointers(selectedEntity)
-    
-        // get front of player position
-        const {position, rotation} = Transform.get(engine.PlayerEntity)
-        const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
-        const finalPosition = Vector3.add(position, forwardVector)
+    console.log('final position is', finalPosition)
 
-        const curSceneParent = curScene.parentEntity
-        const curSceneParentPosition = Transform.get(curSceneParent).position
-    
-        // adjust position to parent offset
-        finalPosition.x = finalPosition.x - curSceneParentPosition.x
-        finalPosition.z = finalPosition.z - curSceneParentPosition.z
-    
-        // update object transform
-        const t = Transform.getMutable(selectedEntity)
-        t.position = finalPosition
-        t.position.y = t.position.y - .88
-        t.rotation.y =  rotation.y
-        t.rotation.w = rotation.w
-        t.parent = curSceneParent
-    
-        sendServerMessage(
-            SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
-            {baseParcel: curScene.bpcl, item: {id: selectedCatalogItem.id, position: t.position, rotation: t.rotation, scale: t.scale}})
-    
-        sceneMessageBus.emit(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, position: t.position, rotation: t.rotation, scale: t.scale})
-        selectedCatalogItem = null
+    let parcel = "" + Math.floor(finalPosition.x/16) + "," + Math.floor(finalPosition.z/16)
 
-    }
+    sceneBuilds.forEach((scene,key)=>{
+        if(scene.pcls.find((sc)=> sc === parcel)){
+            log('we can drop item here')
 
+            PointerEvents.deleteFrom(selectedItem.entity)
+            addBuildModePointers(selectedItem.entity)
+
+            players.get(localUserId)!.activeScene = scene
+
+            const curSceneParent = scene.parentEntity
+            const curSceneParentPosition = Transform.get(curSceneParent).position
+        
+            // adjust position to parent offset
+            finalPosition.x = finalPosition.x - curSceneParentPosition.x
+            finalPosition.z = finalPosition.z - curSceneParentPosition.z
+        
+            // update object transform
+            const t = Transform.getMutable(selectedItem.entity)
+            t.position = finalPosition
+            t.position.y = t.position.y - .88
+            t.rotation.y =  rotation.y
+            t.rotation.w = rotation.w
+            t.parent = curSceneParent
+        
+            sendServerMessage(
+                selectedItem.already ? SERVER_MESSAGE_TYPES.SCENE_UPDATE_ITEM : SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
+                {baseParcel: scene.bpcl, 
+                    item: {
+                        entity:selectedItem.entity,
+                        sceneId:scene.id, 
+                        aid: selectedItem.aid,
+                        id: selectedItem.catalogId, 
+                        position: roundVector(t.position, 2), 
+                        rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2), 
+                        scale: roundVector(t.scale, 2)
+                    }
+                }
+            )
+
+            selectedItem.enabled = false
+            return
+        }
+    })
+}
+
+export function grabItem(entity:Entity){
+    editItem(entity, EDIT_MODES.GRAB, true)
+    addUseItemPointers(entity)
+    Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
 }
 
 export function removeSelectedItem(){
-    PointerEvents.deleteFrom(selectedEntity)
-    engine.removeEntity(selectedEntity)
-    selectedCatalogItem = null
-
-    sceneMessageBus.emit(IWB_MESSAGE_TYPES.REMOVE_SELECTED_ASSET, {user:localUserId})
+    PointerEvents.deleteFrom(selectedItem.entity)
+    engine.removeEntity(selectedItem.entity)
+    selectedItem.enabled = false
 }
 
 export function checkBuildPermissions(player:Player){
@@ -174,23 +322,79 @@ export function checkBuildPermissions(player:Player){
     }
 }
 
+function addUseItemPointers(ent:Entity){
+    PointerEvents.createOrReplace(ent, {
+        pointerEvents: [
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_SECONDARY,
+                    hoverText: "Drop",
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_PRIMARY,
+                    hoverText: "Cancel",
+                }
+            }
+        ]
+    })
+}
+
 export function addBuildModePointers(ent:Entity){
-    PointerEvents.createOrReplace(selectedEntity, {
+    PointerEvents.createOrReplace(ent, {
         pointerEvents: [
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
                     button: InputAction.IA_PRIMARY,
-                    hoverText: "Edit",
+                    hoverText: "Delete",
                 }
             },
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
                     button: InputAction.IA_SECONDARY,
-                    hoverText: "Delete",
+                    hoverText: "Edit",
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_ACTION_3,
+                    hoverText: "Grab",
                 }
             }
         ]
     })
+}
+
+export function sendServerDelete(entity:Entity){
+    let assetId = itemIdsFromEntities.get(entity)
+    console.log('found asset id', assetId)
+    if(assetId){
+        sceneBuilds.forEach((scene:IWBScene)=>{
+            let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
+            console.log('scene item is', sceneItem)
+            if(sceneItem){
+                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {aid: assetId, sceneId:scene.id, entity:entity})
+                return
+            }
+        })
+    }
+}
+
+export function removeItem(info:any){
+    let scene = sceneBuilds.get(info.sceneId)
+    console.log('scene is', scene)
+    if(scene){
+        let assetIndex = scene.ass.findIndex((ass)=> ass.aid === info.aid)
+        if(assetIndex >= 0){
+            scene.ass.splice(assetIndex,1)
+            engine.removeEntity(info.entity)
+            itemIdsFromEntities.delete(info.entity)
+        }
+    }
 }
