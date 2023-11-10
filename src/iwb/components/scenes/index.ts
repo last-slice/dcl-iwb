@@ -13,7 +13,7 @@ export let sceneBuilds:Map<string, IWBScene> = new Map()
 export let itemIdsFromEntities:Map<number,any> = new Map()
 
 export function setScenes(info:any){
-    log('server scene list', info)
+    log('server scene list', info)//
 
     //set creator worlds
     info.forEach((scene:any)=>{

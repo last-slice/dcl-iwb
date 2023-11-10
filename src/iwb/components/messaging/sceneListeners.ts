@@ -25,8 +25,9 @@ export function createSceneListeners(room: any) {//
     
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW + ' received', info)
-            setScenes(info)
-            if(info.owner === localUserId){
+            setScenes(info.info)
+            loadScene(info.scene)
+            if(info.user === localUserId){
                 setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
             }
         })
@@ -37,7 +38,6 @@ export function createSceneListeners(room: any) {//
             if(info.userId !== localUserId){
                 console.log('need to change transform position of item from other user')
             }
-
             removeItem(info)
         })
 

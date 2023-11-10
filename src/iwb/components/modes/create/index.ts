@@ -16,12 +16,13 @@ export const BuildModeVisibilty = engine.defineComponent("iwb::buildmode::visibi
 export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
+    displayCreateScenePanel(false)
     let scene = scenesToCreate.get(localUserId)
     if(scene && scene.parcels.length > 0){
         log('we have valid scene, send to server')
         sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: scene.name, desc:scene.description})
     }
-}//
+}
 
 export function createTempScene(name:string, desc:string){
     let data: any = {
@@ -229,6 +230,7 @@ export function saveNewScene(userId:string) {
     displayCreateScenePanel(false)
 
     scenesToCreate.delete(localUserId)
+    //
     
 
     // let player = players.get(localUserId)
