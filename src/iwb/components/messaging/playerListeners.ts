@@ -5,8 +5,10 @@ import { showNotification } from "../../ui/Panels/notificationUI"
 import { Vector3 } from "@dcl/sdk/math"
 import { addPlayerScenes, localUserId, players } from "../player/player"
 import { items } from "../catalog"
+import { Room } from "colyseus.js"
 
-export function createrPlayerListeners(room:any){
+export function createrPlayerListeners(room:Room){
+    log('creating player listeners for room', room.roomId)
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED +' received', info)
         showNotification({type:NOTIFICATION_TYPES.IMAGE, image:info.im, message:"Your asset " + info.n + " is uploading and pending deployment. A placeholder object is temporarily available.", animate:{enabled:true, return:true, time:10}})
@@ -23,7 +25,7 @@ export function createrPlayerListeners(room:any){
                 items.set(asset.id, asset)
             })
         }
-    })
+    })//
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG +' received', info)
@@ -38,4 +40,4 @@ export function createrPlayerListeners(room:any){
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE +' received', info)
     })
-}
+}//

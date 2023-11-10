@@ -39,6 +39,7 @@ export function createLoadBuildPanel() {
                 position: { left: (dimensions.width - calculateImageDimensions(45, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(45, 580 / 403).height) / 2 }
             }}
         // uiBackground={{ color: Color4.Red() }}//
+        
         >
             <UiEntity
                 uiTransform={{
@@ -92,15 +93,113 @@ export function createLoadBuildPanel() {
                         }}
                     // uiBackground={{color:Color4.Green()}}
                     >
-
-                        <Label
-                            value={addLineBreak("Build Name", true, 50)}
-                            color={Color4.Black()}
-                            fontSize={15}
-                            font="serif"//
-                            textAlign="middle-center"
-                        />
                     </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '80%',
+                height: '200%',
+                positionType:'absolute',
+                position: { left: (dimensions.width - calculateImageDimensions(92, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(60, 580 / 403).height) / 2 }
+            }}
+            uiBackground={{color:Color4.Gray()}}
+            />
+
+            {/* header row */}
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '80%',
+                height: '10%',
+            }}
+            // uiBackground={{color:Color4.Blue()}}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping({
+                    atlasHeight: 1024,
+                    atlasWidth: 1024,
+                    sourceTop: 801,
+                    sourceLeft: 802,
+                    sourceWidth: 223,
+                    sourceHeight: 41
+                })
+            }}
+            
+        >
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Parcel Count", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Size", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Poly Count", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Visit", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
+            />
+                    
                     <UiEntity
                         uiTransform={{
                             flexDirection: 'column',
@@ -109,7 +208,7 @@ export function createLoadBuildPanel() {
                             width: calculateImageDimensions(3, 111 / 41).width,
                             height: calculateImageDimensions(4, 111 / 41).height,
                             margin: { right: "2%" },
-                            position: { top: -25, left: -225 }
+                            position: { bottom: 25, right: 500 }
                         }}
                         uiBackground={{
                             textureMode: 'stretch',
@@ -131,6 +230,10 @@ export function createLoadBuildPanel() {
                     >
                     </UiEntity>
                 </UiEntity>
+
+
+
+        </UiEntity>
                 <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
@@ -303,9 +406,10 @@ export function createLoadBuildPanel() {
 
 
                 </UiEntity>
+                </UiEntity>
 
 
-            </UiEntity>
+
 
      
 
@@ -384,7 +488,7 @@ function CatalogItem(data: any) {
                 uiBackground={{
                     textureMode: 'stretch',
                     texture: {
-                        src: resources.endpoints.proxy + data.item.im
+                        src: data.item.im
                     },
                     uvs: getImageAtlasMapping({
                         atlasHeight: 256,

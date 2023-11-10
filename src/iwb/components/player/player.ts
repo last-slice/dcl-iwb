@@ -1,11 +1,18 @@
-import { PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
-import { sendServerMessage } from "../messaging";
+import { Player, PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
+import { iwbEvents, joinWorld, sendServerMessage, world } from "../messaging";
 import { deleteCreationEntities } from "../modes/create";
+import {AvatarAnchorPointType, AvatarAttach, Entity, engine} from "@dcl/sdk/ecs";
+import { displayRealmTravelPanel } from "../../ui/Panels/realmTravelPanel";
+import { utils } from "../../helpers/libraries";
+import { displaySettingsPanel } from "../../ui/Panels/settings/settingsIndex";
+import { movePlayerTo } from "~system/RestrictedActions";
+import { log } from "../../helpers/functions";
+import { deleteAllRealmObjects } from "../scenes";
 
 export let localUserId:string
-export let players:Map<string, any> = new Map()
+export let players:Map<string, Player> = new Map<string, Player>()
 
-export function addPlayer(userId:string, data?:any[], local?:boolean){
+export async function addPlayer(userId:string, local:boolean, data?:any[]){
     if(local){
         localUserId = userId
     }
@@ -15,7 +22,19 @@ export function addPlayer(userId:string, data?:any[], local?:boolean){
         mode: SCENE_MODES.PLAYMODE,
         scenes:[],
         objects:[],
-        buildingAllowed:[]
+        buildingAllowed:[],
+        selectedEntity:null,
+        canBuild:false
+    }
+
+    if(!local){
+        log('non local user')
+        let parent = engine.addEntity()
+        AvatarAttach.create(parent, {
+        avatarId:userId,
+        anchorPointId:AvatarAnchorPointType.AAPT_POSITION
+        })
+        pData.parent = parent
     }
 
     if(data){
@@ -25,7 +44,10 @@ export function addPlayer(userId:string, data?:any[], local?:boolean){
             }
         })
     }
+
     players.set(userId, pData)
+
+    console.log("Player *** ", players.get(userId))
 }
 
 export function removePlayer(user:string){
@@ -45,7 +67,7 @@ export function removePlayer(user:string){
         }
 
 
-        players.delete(user)
+        players.delete(user)//
     }
 }
 
@@ -62,6 +84,21 @@ export function setPlayMode(user:string, mode:SCENE_MODES){
     let player = players.get(user)
     if(player){
         player.mode = mode
+        iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode:mode})
         sendServerMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode:mode})
     }
 }
+
+export function worldTravel(w:any){
+
+    deleteAllRealmObjects()
+
+    displaySettingsPanel(false)
+    displayRealmTravelPanel(true)
+    movePlayerTo({newRelativePosition:{x:16, y:0, z:16}})
+    utils.timers.setTimeout(()=>{
+        world.world !== w.world ? joinWorld(w) : null
+        displayRealmTravelPanel(false)
+    }, 2000)
+}
+//

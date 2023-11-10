@@ -2,8 +2,10 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
+import { colyseusConnect, joinWorld } from '../../components/messaging'
+import { localUserId, players } from '../../components/player/player'
 
-export let showFTPPanel = true
+export let showFTPPanel = false
 
 export function displayFTPPanel(value: boolean) {
     showFTPPanel = value
@@ -88,6 +90,7 @@ export function createFTPPanel() {
             }}
             onMouseDown={() => {
                 displayFTPPanel(false)
+                joinWorld({world:localUserId, label:players.get(localUserId)?.dclData.displayName})
             }}
             uiText={{value: "New Build", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />

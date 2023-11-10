@@ -227,7 +227,7 @@ export function createNotificationUI(){
         }}
         uiBackground={{
             texture:{
-                src: resources.endpoints.proxy + currentNotification.image
+                src: currentNotification.image
             },
             textureMode: 'stretch',
             uvs:getImageAtlasMapping({
