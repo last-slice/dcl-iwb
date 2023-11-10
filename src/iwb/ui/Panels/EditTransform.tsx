@@ -1,10 +1,12 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { Color4, Vector3 } from '@dcl/sdk/math'
-import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
-import { selectedCatalogItem, selectedEntity } from '../../components/modes/build'
+import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
+import { getImageAtlasMapping, sizeFont } from '../helpers'
+import { saveItem, selectedItem } from '../../components/modes/build'
 import { Transform, engine } from '@dcl/sdk/ecs'
 import { localUserId, players } from '../../components/player/player'
+import { EDIT_MODES } from '../../helpers/types'
+import { uiSizes } from '../uiConfig'
 
 export function EditTransform() {
     return (
@@ -45,7 +47,7 @@ export function EditTransform() {
                 margin:{top:'1%'}
             }}
 
-        uiText={{value: "Position", fontSize:sizeFont(20,15), textAlign:'middle-left'}}
+        uiText={{value: "Position", fontSize:sizeFont(17,12), textAlign:'middle-left'}}
         />
 
 {/* position row */}
@@ -71,7 +73,7 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedCatalogItem !== null ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
          />
 
          {/* y cell */}
@@ -85,7 +87,7 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedCatalogItem !== null ? getRelativePosition("y") : ""), fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("y") : ""), fontSize:sizeFont(20,15)}}
          />
 
          {/* z cell */}
@@ -98,7 +100,7 @@ export function EditTransform() {
                 height: '100%',
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedCatalogItem !== null ? getRelativePosition("z") : ""), fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("z") : ""), fontSize:sizeFont(20,15)}}
          />
 
 
@@ -115,7 +117,7 @@ export function EditTransform() {
                 margin:{top:'2%'}
             }}
 
-        uiText={{value: "Rotation", fontSize:sizeFont(20,15), textAlign:'middle-left'}}
+        uiText={{value: "Rotation", fontSize:sizeFont(17,12), textAlign:'middle-left'}}
         />
 
 {/* rotation row */}
@@ -141,7 +143,7 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"0.00", fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).x.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
          />
 
          {/* y cell */}
@@ -155,7 +157,7 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"0.00", fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).y.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
          />
 
          {/* z cell */}
@@ -168,7 +170,7 @@ export function EditTransform() {
                 height: '100%',
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"0.00", fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).z.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
          />
 
 
@@ -185,7 +187,7 @@ export function EditTransform() {
                 margin:{top:'2%'}
             }}
 
-        uiText={{value: "Scale", fontSize:sizeFont(20,15), textAlign:'middle-left'}}
+        uiText={{value: "Scale", fontSize:sizeFont(17,12), textAlign:'middle-left'}}
         />
 
 {/* scale row */}
@@ -211,7 +213,7 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedCatalogItem !== null ? Transform.get(selectedEntity).scale.x : ""), fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem  && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.x : ""), fontSize:sizeFont(20,15)}}
          />
 
          {/* y cell */}
@@ -225,7 +227,7 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedCatalogItem !== null ? Transform.get(selectedEntity).scale.y : ""), fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.y : ""), fontSize:sizeFont(20,15)}}
          />
 
          {/* z cell */}
@@ -238,40 +240,86 @@ export function EditTransform() {
                 height: '100%',
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedCatalogItem !== null ? Transform.get(selectedEntity).scale.z : ""), fontSize:sizeFont(20,15)}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.z : ""), fontSize:sizeFont(20,15)}}
          />
 
 
         </UiEntity>
 
+
+{/* save button */}
+<UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '20%',
+                margin:{top:'1%'}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            }}
+            uiText={{value: "Save", fontSize:sizeFont(20,16)}}
+            onMouseDown={()=>{
+                saveItem()
+            }}
+        >
+
+        </UiEntity>
+
         </UiEntity>
     )
-}
+}//
 
 function getRelativePosition(type:string){
     if(players.get(localUserId)!.activeScene){
-        let scene = players.get(localUserId)!.activeScene!.parentEntity
-        let sceneTransform = Transform.get(scene).position
-        const {position, rotation} = Transform.get(engine.PlayerEntity)
 
-        const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
-        const finalPosition = Vector3.add(position, forwardVector)
+        switch(selectedItem.mode){
+            case EDIT_MODES.EDIT:
+                // console.log('objec position', selectedCatalogItem)
+                let transform = Transform.get(selectedItem.entity)
+        
+                switch(type){
+                    case 'x':
+                        return transform.position.x.toFixed(2)
+                    case 'y':
+                        return transform.position.y.toFixed(2)
+                    case 'z':
+                        return (transform.position.z).toFixed(2)
+                }
+            break;
 
-        finalPosition.x = finalPosition.x - sceneTransform.x
-        // finalPosition.y = finalPosition.y - sceneTransform.y
-        finalPosition.z = finalPosition.z - sceneTransform.z
-
-        console.log('scene position', sceneTransform)
-        console.log('objec position', finalPosition)
-
-        switch(type){
-            case 'x':
-                return finalPosition.x.toFixed(2)
-            case 'y':
-                return finalPosition.y.toFixed(2)
-            case 'z':
-                return (finalPosition.z + 4).toFixed(2)
+            case EDIT_MODES.GRAB:
+                let scene = players.get(localUserId)!.activeScene!.parentEntity
+                let sceneTransform = Transform.get(scene).position
+                const {position, rotation} = Transform.get(engine.PlayerEntity)
+        
+                const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
+                const finalPosition = Vector3.add(position, forwardVector)
+        
+                finalPosition.x = finalPosition.x - sceneTransform.x
+                // finalPosition.y = finalPosition.y - sceneTransform.y
+                finalPosition.z = finalPosition.z - sceneTransform.z
+        
+                // console.log('scene position', sceneTransform)
+                // console.log('objec position', finalPosition)
+        
+                switch(type){
+                    case 'x':
+                        return finalPosition.x.toFixed(2)
+                    case 'y':
+                        return finalPosition.y.toFixed(2)
+                    case 'z':
+                        return (finalPosition.z + 4).toFixed(2)
+                }
+                break;
         }
+
     }else{
         return ""
     }

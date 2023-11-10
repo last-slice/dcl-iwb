@@ -1,7 +1,4 @@
 import { InputAction, PointerEventType, engine, inputSystem } from "@dcl/sdk/ecs";
-import { checkShortCuts } from "./shortcuts";
-import { dropSelectedItem, removeSelectedItem, selectedCatalogItem } from "../modes/build";
-import { log } from "../../helpers/functions";
 import { InputListenSystem } from "../systems/InputListenSystem";
 
 export let buttonsPressed:Map<number, any> = new Map()

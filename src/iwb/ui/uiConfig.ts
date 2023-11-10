@@ -523,8 +523,56 @@ export let settingsIconData:any =
         }
     }
 }
-//
+
 export let uiSizes:any ={
+        magnifyPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128 * 4,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    magnifyIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128 * 5,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    scaleIconPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128 * 4,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    scaleIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128 * 4,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rotationIconPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128 * 5,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rotationIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128 * 5,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
     positionIconPressed:{
         atlasHeight: 1024,
         atlasWidth: 1024,

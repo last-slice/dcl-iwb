@@ -1,23 +1,17 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont, uiSizer } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { EditTransform } from './EditTransform'
-import { selectedCatalogItem } from '../../components/modes/build'
-
-export let showGizmoPanel = true
-
-export function displaySaveBuildPanel(value: boolean) {
-    showGizmoPanel = value
-}
+import { selectedItem } from '../../components/modes/build'
+import { EDIT_MODES } from '../../helpers/types'//
 
 export function createEditObjectPanel() {
     return (
         <UiEntity
             key={"editobjectpanel"}
             uiTransform={{
-                // display: selectedCatalogItem !== null ? 'flex' : 'none',
-                display: 'flex',
+                display: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT ? 'flex' : 'none',
+                // display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -26,7 +20,7 @@ export function createEditObjectPanel() {
                 positionType: 'absolute',
                 position: { right: '4%', top:'2%' }
             }}
-        // uiBackground={{ color: Color4.Red() }}//
+        // uiBackground={{ color: Color4.Red() }}
         >
             <UiEntity
                 uiTransform={{

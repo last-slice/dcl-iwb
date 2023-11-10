@@ -4,6 +4,7 @@ import { IWBScene, SceneItem } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
+import { RealmEntityComponent } from "../../helpers/Components"
 
 export let scenes:any[] = []
 export let worlds:any[] = []
@@ -44,8 +45,12 @@ export function loadScene(info:any){
 }
 
 async function loadSceneBoundaries(info:any){
+    info.entities = []
     info.pcls.forEach((parcel:string)=>{
-        addBoundariesForParcel(parcel, true, true)
+        let entities = addBoundariesForParcel(parcel, true, true)
+        entities.forEach((entity)=>{
+            RealmEntityComponent.create(entity)
+        })
     })
 
     // create parent entity for scene//
@@ -60,7 +65,6 @@ async function loadSceneBoundaries(info:any){
 
     info.parentEntity = sceneParent
 
-
     // change floor color
     for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)){
         Material.setPbrMaterial(entity, {
@@ -69,24 +73,24 @@ async function loadSceneBoundaries(info:any){
     }
 
     return info
-}
+}//
 
 async function loadSceneAssets(info:IWBScene){
-    info.sceneEntities = []
-
     info.ass.forEach(async (asset:SceneItem)=>{
-        info.sceneEntities.push(await loadSceneAsset(info.parentEntity, asset))
+        info.entities.push(await loadSceneAsset(info.parentEntity, asset))
     })
     return info
 }
 
 async function loadSceneAsset(parent:Entity, item:SceneItem){
     let ent = engine.addEntity()
+    RealmEntityComponent.create(ent)
+
     let itemConfig = items.get(item.id)
     log('loading item config for item', item, itemConfig)
 
     if(itemConfig){
-        itemIdsFromEntities.set(ent, item.id)
+        itemIdsFromEntities.set(ent, item.aid)
         Transform.create(ent, {parent:parent, position:item.p, rotation:item.r, scale:item.s})
         switch(itemConfig.ty){
             case '3d':
@@ -101,7 +105,7 @@ async function loadSceneAsset(parent:Entity, item:SceneItem){
 }
 
 export function deleteAllRealmObjects(){
-    itemIdsFromEntities.forEach((id, ent)=>{
-        engine.removeEntity(ent as Entity)
-    })
+    for (const [entity] of engine.getEntitiesWith(RealmEntityComponent)) {    
+        engine.removeEntity(entity)
+    }
 }

@@ -1,10 +1,10 @@
 import { Entity, InputAction, PointerEventType, inputSystem } from "@dcl/sdk/ecs"
 import { setButtonState } from "../listeners/inputListeners"
-import { dropSelectedItem, grabItem, removeSelectedItem, selectedCatalogItem } from "../modes/build"
+import { dropSelectedItem, editItem, grabItem, removeSelectedItem, saveItem, selectedItem, sendServerDelete } from "../modes/build"
 import { checkShortCuts } from "../listeners/shortcuts"
 import { log } from "../../helpers/functions"
 import { localUserId, players } from "../player/player"
-import { SCENE_MODES } from "../../helpers/types"
+import { EDIT_MODES, SCENE_MODES } from "../../helpers/types"
 
 
 export function InputListenSystem(dt:number){
@@ -52,23 +52,55 @@ export function InputListenSystem(dt:number){
           //E
           if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)){
               setButtonState(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
-              if(selectedCatalogItem !== null){
-                log('player has selected item, need to delete')
-                removeSelectedItem()
-            }else{
+              const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
+              if(result){
+                if(result.hit && result.hit.entityId){
+                    log('player pressed #E on an object')
+                    if(players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE){
+                        log('player pressed #E on an object in Build mode, need to edit')
+                        sendServerDelete(result.hit.entityId as Entity)
+                    }
+                 }
+              }
+              else{
                 checkShortCuts()
-            }
-          }//
+              }
+
+
+              if(selectedItem && selectedItem.enabled){
+                log('player has selected item, need to drop')
+                removeSelectedItem()
+                }else{
+                    checkShortCuts()
+                }
+          }
   
           //F
           if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)){
               setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
-              if(selectedCatalogItem !== null){
-                log('player has selected item, need to drop')
-                dropSelectedItem()
-            }else{
+              const result = inputSystem.getInputCommand(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
+              if(result){
+                if(result.hit && result.hit.entityId){
+                    log('player pressed #F on an object')
+                    if(players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE){
+                        log('player pressed #F on an object in Build mode, need to edit')
+                        if(selectedItem && selectedItem.enabled){
+                            log('player has selected item, need to delete')
+                            if(selectedItem.mode === EDIT_MODES.GRAB){
+                                dropSelectedItem()
+                            }else{
+                                saveItem()
+                            }
+                        }else{
+                            log('player does not have item selected, just edit it')
+                            editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
+                        }
+                    }
+                 }
+              }
+              else{
                 checkShortCuts()
-            }
+              }
           }
   
           
