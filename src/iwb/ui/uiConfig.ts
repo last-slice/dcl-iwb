@@ -2,6 +2,7 @@ import { localUserId, players } from "../components/player/player"
 import resources from "../helpers/resources"
 import { NOTIFICATION_TYPES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
+import { displayCatalogInfoPanel } from "./Panels/CatalogInfoPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
 import { showNotificationPanel, displayNotificationPanel } from "./Panels/NotificationPanel"
 import { displayRectanglePanel, showRectanglePanel } from "./Panels/RectanglePanel"
@@ -105,6 +106,7 @@ export let topTools:any[]= [
         fn:()=>{
             if(showCatalogPanel){
                 displayCatalogPanel(false)
+               
             }
             else{
                 displayCatalogPanel(true)
@@ -684,5 +686,13 @@ export let uiSizes:any ={
         sourceLeft: 0,
         sourceWidth: 824,
         sourceHeight: 263
+    },
+    backButton:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
     },
 }

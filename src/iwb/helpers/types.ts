@@ -70,6 +70,13 @@ export interface CatalogItemType {
     im: string // image
     n:  string
     objName: string
+    ty: string
+    cat: string
+    pc: number
+    on: string
+    si: number
+    d: string
+    tag: Array<string>
 }
 
 export interface Player {

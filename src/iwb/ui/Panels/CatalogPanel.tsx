@@ -1,19 +1,23 @@
-import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
-import {Color4, Vector3} from '@dcl/sdk/math'
-import { items} from '../../components/catalog'
+import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown } from '@dcl/sdk/react-ecs'
+import { Color4, Vector3 } from '@dcl/sdk/math'
+import { items } from '../../components/catalog'
 import { CatalogItemType } from "../../helpers/types";
 
 import {
     addLineBreak,
     calculateImageDimensions,
     calculateSquareImageDimensions,
+    dimensions,
     getImageAtlasMapping,
     sizeFont
 } from '../helpers'
-import {log} from '../../helpers/functions'
+import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
-import {selectCatalogItem, useSelectedItem} from '../../components/modes/build'
-import {createObject} from "../../helpers/selectedObject";
+import { selectCatalogItem, useSelectedItem } from '../../components/modes/build'
+import { createObject } from "../../helpers/selectedObject";
+import { Color4Type } from '@dcl/sdk/ecs';
+import { displayCatalogInfoPanel, setSelectedInfoItem } from './CatalogInfoPanel';
+
 
 export let showCatalogPanel = false
 
@@ -25,6 +29,13 @@ export let itemSelect = false
 export let customSelect = false
 export let itemCode = 0
 export let objName = ''
+let currentFilterType = 'All';
+
+
+let renderCount = 0;
+function triggerRerender() {
+    renderCount++;
+}
 
 const columns = 2;
 const rows = 3;
@@ -37,6 +48,11 @@ export function createCatalogPanel() {
     const endIndex = startIndex + itemsPerPage;
     const itemsToShow = [...items.values()].slice(startIndex, endIndex);
     const totalPages = Math.ceil(itemsToShow.length / (columns * rows));
+    const itemsArray = Array.from(items.values());
+
+    const filteredItems = itemsArray.filter(item => 
+        currentFilterType === 'All' || item.ty === currentFilterType
+    );
 
     return (
         <UiEntity
@@ -49,7 +65,7 @@ export function createCatalogPanel() {
                 width: calculateImageDimensions(25, 345 / 511).width,
                 height: calculateImageDimensions(25, 345 / 511).height,
                 positionType: 'absolute',
-                position: {right: '3%', bottom: '3%'}
+                position: { right: '3%', bottom: '3%' }
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -74,9 +90,34 @@ export function createCatalogPanel() {
                     width: '90%',
                     height: '10%',
                 }}
-                uiText={{value: "Asset Catalog", fontSize: sizeFont(30, 20)}}
-                // uiBackground={{color:Color4.Blue()}}
+                uiText={{ value: "Asset Catalog", fontSize: sizeFont(30, 20) }}
+            // uiBackground={{color:Color4.Blue()}}
             />
+                <Dropdown
+                    options={[`3D`, `2D`, `All`]}
+                    onChange={selectDimension}
+                    uiTransform={{
+                        width: '100px',
+                        height: '30px',
+                        position: { left: (dimensions.width - calculateImageDimensions(90, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(168, 100 / 30).height) / 2 }
+                    }}
+                    uiBackground={{color:Color4.Purple()}}
+                    color={Color4.White()}
+                    
+
+                />
+                <Dropdown
+                    options={[`Public`, `Private`, `All`]}
+                    onChange={selectDimension}
+                    uiTransform={{
+                        width: '100px',
+                        height: '30px',
+                        position: { left: (dimensions.width - calculateImageDimensions(110, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(180, 100 / 30).height) / 2 }
+                    }}
+                    uiBackground={{color:Color4.Purple()}}
+                    color={Color4.White()}
+                />
+    
 
 
             {/* placeholder for search bar */}
@@ -89,7 +130,7 @@ export function createCatalogPanel() {
                     width: '90%',
                     height: '8%',
                 }}
-                // uiBackground={{color:Color4.Blue()}}
+            // uiBackground={{color:Color4.Blue()}}
             >
 
                 <UiEntity
@@ -99,7 +140,7 @@ export function createCatalogPanel() {
                         width: '10%',
                         height: '20%',
                     }}
-                    uiText={{value: "Page " + (currentPage + 1) + " / " + totalPages}}
+                    uiText={{ value: "Page " + (currentPage + 1) + " / " + totalPages }}
                 />
 
             </UiEntity>
@@ -118,7 +159,7 @@ export function createCatalogPanel() {
                     width: '90%',
                     height: '8%',
                 }}
-                // uiBackground={{color:Color4.Blue()}}
+            // uiBackground={{color:Color4.Blue()}}
             >
 
                 <UiEntity
@@ -129,10 +170,10 @@ export function createCatalogPanel() {
                         flexDirection: 'row',
                         width: '25%',
                         height: '90%',
-                        margin: {right: '2%'}
+                        margin: { right: '2%' }
                     }}
-                    uiBackground={{color: Color4.Purple()}}
-                    uiText={{value: "<", fontSize: sizeFont(20, 12)}}
+                    uiBackground={{ color: Color4.Purple() }}
+                    uiText={{ value: "<", fontSize: sizeFont(20, 12) }}
                     onMouseUp={() => {
                         if (currentPage - 1 >= 0) {
                             currentPage--
@@ -148,10 +189,10 @@ export function createCatalogPanel() {
                         flexDirection: 'row',
                         width: '25%',
                         height: '90%',
-                        margin: {left: '2%'}
+                        margin: { left: '2%' }
                     }}
-                    uiBackground={{color: Color4.Purple()}}
-                    uiText={{value: ">", fontSize: sizeFont(20, 12)}}
+                    uiBackground={{ color: Color4.Purple() }}
+                    uiText={{ value: ">", fontSize: sizeFont(20, 12) }}
                     onMouseUp={() => {
                         if ((currentPage + 1) * itemsPerPage + itemsPerPage <= items.size)
                             currentPage++
@@ -171,7 +212,7 @@ function generateCatalogRows(itemsToShow: CatalogItemType[]) {
     let start = 0
     let end = 3
     for (let i = 0; i < Math.ceil(itemsToShow.length / 3); i++) {
-        arr.push(<CatalogRow row={start} items={itemsToShow.slice(start, end)}/>)
+        arr.push(<CatalogRow row={start} items={itemsToShow.slice(start, end)} />)
         start += 3
         end += 3
     }
@@ -180,11 +221,11 @@ function generateCatalogRows(itemsToShow: CatalogItemType[]) {
 
 function generateRowItems(row: number, items: CatalogItemType[]) {
     return items.map((item, index) => {
-        return <CatalogItem row={row + "-" + index} item={item}/>
+        return <CatalogItem row={row + "-" + index} item={item} />
     })
 }
 
-export const CatalogRow = ({row, items}: { row: number, items: CatalogItemType[] }) => {
+export const CatalogRow = ({ row, items }: { row: number, items: CatalogItemType[] }) => {
     // log('row is', data)
     return (
         <UiEntity
@@ -196,9 +237,9 @@ export const CatalogRow = ({row, items}: { row: number, items: CatalogItemType[]
                 justifyContent: 'flex-start',
                 width: '90%',
                 height: '23%',
-                margin: {top: '1%'}
+                margin: { top: '1%' }
             }}
-            // uiBackground={{color:Color4.Green()}}
+        // uiBackground={{color:Color4.Green()}}
         >
 
             {generateRowItems(row, items)}
@@ -207,7 +248,7 @@ export const CatalogRow = ({row, items}: { row: number, items: CatalogItemType[]
     )
 }
 
-function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
+function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
     return (
         <UiEntity
             key={"catalog-item-row" + row}
@@ -219,7 +260,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 width: '33%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Teal()}}//
+        // uiBackground={{color:Color4.Teal()}}//
         >
 
             {/* item image */}
@@ -258,8 +299,8 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                     width: '90%',
                     height: '20%',
                 }}
-                uiText={{value: addLineBreak(item.n, undefined, 15), fontSize: sizeFont(20, 12)}}
-                // uiBackground={{color:Color4.Blue()}}
+                uiText={{ value: addLineBreak(item.n, undefined, 15), fontSize: sizeFont(20, 12) }}
+            // uiBackground={{color:Color4.Blue()}}
             />
 
 
@@ -271,9 +312,9 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                     flexDirection: 'row',
                     width: '90%',
                     height: '15%',
-                    margin: {top: '2%'}
+                    margin: { top: '2%' }
                 }}
-                // uiBackground={{color:Color4.Green()}}
+            // uiBackground={{color:Color4.Green()}}
             >
 
                 <UiEntity
@@ -284,12 +325,12 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         flexDirection: 'row',
                         width: '50%',
                         height: '100%',
-                        margin: {right: '1%'}
+                        margin: { right: '1%' }
                     }}
-                    uiBackground={{color: Color4.Purple()}}
-                    uiText={{value: "Use", fontSize: sizeFont(20, 12)}}
+                    uiBackground={{ color: Color4.Purple() }}
+                    uiText={{ value: "Use", fontSize: sizeFont(20, 12) }}
                     onMouseDown={() => {
-                        createObject(item.objName, {x: 0, y: -.88, z: 4}, Vector3.create(1, 1, 1))
+                        createObject(item.objName, { x: 0, y: -.88, z: 4 }, Vector3.create(1, 1, 1))
                     }}
                 />
 
@@ -301,10 +342,17 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         flexDirection: 'row',
                         width: '50%',
                         height: '100%',
-                        margin: {left: '1%'}
+                        margin: { left: '1%' }
                     }}
-                    uiBackground={{color: Color4.Purple()}}
-                    uiText={{value: "Info", fontSize: sizeFont(20, 12)}}
+                    uiBackground={{ color: Color4.Purple() }}
+                    uiText={{ value: "Info", fontSize: sizeFont(20, 12) }}
+                    onMouseDown={() => {
+                        setSelectedInfoItem(item)
+                        console.log(item)
+                        displayCatalogInfoPanel(true)
+                        displayCatalogPanel(false)
+                        
+                    }}
                 />
 
 
@@ -313,4 +361,19 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
 
         </UiEntity>
     )
+}
+
+function selectDimension(index: number) {
+    switch (index) {
+        case 0:
+            currentFilterType = '3D';
+            break;
+        case 1:
+            currentFilterType = '2D';
+            break;
+        case 2:
+            currentFilterType = 'All';
+            break;
+    }
+    triggerRerender();
 }
