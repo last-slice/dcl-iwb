@@ -16,126 +16,126 @@ import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBui
 import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
 import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
 
-export let uiModes:any = {
+export let uiModes: any = {
     0://playmode
     {
-        atlas:"assets/atlas1.png",
-        uvs:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 6,
-            sourceLeft:128 * 6,
-            sourceWidth:128,
-            sourceHeight:128
+        atlas: "assets/atlas1.png",
+        uvs: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 6,
+            sourceLeft: 128 * 6,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
     },
 
     1://create scene mode
     {
-        atlas:"assets/atlas1.png",
-        uvs:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
+        atlas: "assets/atlas1.png",
+        uvs: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
     },
 
     2://build mode
     {
-        atlas:"assets/atlas1.png",
-        uvs:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 6,
-            sourceLeft:128 * 7,
-            sourceWidth:128,
-            sourceHeight:128
+        atlas: "assets/atlas1.png",
+        uvs: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 6,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
     },
 }
 
-export let topTools:any[]= [
+export let topTools: any[] = [
     {
-        name:"GodMode",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 3,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "GodMode",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 3,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 3,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 3,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn:()=>{
+        enabled: true,
+        visible: true,
+        fn: () => {
         }
     },
     {
-        name:"Box",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 2,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Box",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 2,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 2,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 2,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn:()=>{
-            if(showCatalogPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showCatalogPanel) {
                 displayCatalogPanel(false)
-               
+
             }
-            else{
+            else {
                 displayCatalogPanel(true)
             }
-            
+
         }
     },
     {
-        name:"Image",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 3,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Image",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 3,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 3,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 3,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn:()=>{
+        enabled: true,
+        visible: true,
+        fn: () => {
             displayRectanglePanel(!showRectanglePanel)
         }
     },
@@ -276,217 +276,217 @@ export let topTools:any[]= [
     // },
 ]
 
-export let bottomTools:any[]=[
+export let bottomTools: any[] = [
     {
-        name:"Upload",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 4,
-            sourceLeft:128 * 7,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Upload",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 5,
-            sourceLeft:128 * 7,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn:()=>{
-            if(players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) {
                 displayAssetUploadUI(true)
-            }else{
+            } else {
                 displayNoWeb3(true)
             }
         }
     },
     {
-        name:"Save",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 5,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Save",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 5,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 3,
-            sourceLeft:128 * 5,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 3,
+            sourceLeft: 128 * 5,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn: ()=>{
-            if(showSaveBuildPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showSaveBuildPanel) {
                 displaySaveBuildPanel(false)
             }
-            else{
+            else {
                 displaySaveBuildPanel(true)
             }
 
         }
     },
     {
-        name:"Refresh",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 6,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Refresh",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 6,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 3,
-            sourceLeft:128 * 6,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 3,
+            sourceLeft: 128 * 6,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn: ()=>{
-            if(showLoadBuildPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showLoadBuildPanel) {
                 displayLoadBuildPanel(false)
             }
-            else{
+            else {
                 displayLoadBuildPanel(true)
             }
 
         }
     },
     {
-        name:"Trash",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 2,
-            sourceLeft:128 * 7,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Trash",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 3,
-            sourceLeft:128 * 7,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 3,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn: ()=>{
-            if(showDeleteBuildPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showDeleteBuildPanel) {
                 displayDeleteBuildPanel(false)
             }
-            else{
+            else {
                 displayDeleteBuildPanel(true)
             }
 
         }
     },
     {
-        name:"Magnify",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 4,
-            sourceLeft:128 * 0,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Magnify",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 0,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 5,
-            sourceLeft:128 * 0,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 0,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn: ()=>{
-            if(showNotificationPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showNotificationPanel) {
                 displayNotificationPanel(false)
             }
-            else{
+            else {
                 displayNotificationPanel(true)
             }
 
         }
     },
     {
-        name:"Share",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 4,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Share",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 5,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn: ()=>{
-            if(showPBuildConfirmPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showPBuildConfirmPanel) {
                 displayPBuildConfirmPanel(false)
             }
-            else{
+            else {
                 displayPBuildConfirmPanel(true)
             }
 
         }
     },
     {
-        name:"Info",
-        atlas:"assets/atlas1.png",
-        enabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 0,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
+        name: "Info",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        disabledUV:{
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:128 * 1,
-            sourceLeft:128 * 1,
-            sourceWidth:128,
-            sourceHeight:128
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 1,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn: ()=>{
-            if(showInfoPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showInfoPanel) {
                 displayInfoPanel(false)
             }
-            else{
+            else {
                 displayInfoPanel(true)
             }
 
@@ -494,40 +494,40 @@ export let bottomTools:any[]=[
     },
 ]
 
-export let settingsIconData:any =
+export let settingsIconData: any =
 {
-    name:"Settings",
-    atlas:"assets/atlas1.png",
-    enabledUV:{
-        atlasHeight:1024,
-        atlasWidth:1024,
-        sourceTop:128 * 4,
-        sourceLeft:128 * 2,
-        sourceWidth:128,
-        sourceHeight:128
+    name: "Settings",
+    atlas: "assets/atlas1.png",
+    enabledUV: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128 * 4,
+        sourceLeft: 128 * 2,
+        sourceWidth: 128,
+        sourceHeight: 128
     },
-    disabledUV:{
-        atlasHeight:1024,
-        atlasWidth:1024,
-        sourceTop:128 * 5,
-        sourceLeft:128 * 2,
-        sourceWidth:128,
-        sourceHeight:128
+    disabledUV: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128 * 5,
+        sourceLeft: 128 * 2,
+        sourceWidth: 128,
+        sourceHeight: 128
     },
-    enabled:true,
-    visible:true,
-    fn: ()=>{
-        if(showSettingsPanel){
+    enabled: true,
+    visible: true,
+    fn: () => {
+        if (showSettingsPanel) {
             displaySettingsPanel(false)
         }
-        else{
+        else {
             displaySettingsPanel(true)
         }
     }
 }
 
-export let uiSizes:any ={
-    toggleOn:{
+export let uiSizes: any = {
+    toggleOn: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
@@ -535,7 +535,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    toggleOff:{        
+    toggleOff: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
@@ -544,7 +544,7 @@ export let uiSizes:any ={
         sourceHeight: 30
     },
 
-    dangerButton:{
+    dangerButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 841,
@@ -553,7 +553,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    blackButton:{
+    blackButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 718,
@@ -562,7 +562,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    whiteButton:{
+    whiteButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 759,
@@ -571,7 +571,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    normalButton:{
+    normalButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 801,
@@ -580,7 +580,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    normalLighterButton:{
+    normalLighterButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 841,
@@ -589,7 +589,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    normalLightestButton:{
+    normalLightestButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 841 + 41,
@@ -598,7 +598,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    blueLightestButton:{
+    blueLightestButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 718,
@@ -607,7 +607,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    blueButton:{
+    blueButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 718,
@@ -616,7 +616,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    blueDarkestButton:{
+    blueDarkestButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 718,
@@ -625,7 +625,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    positiveButton:{
+    positiveButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 923,
@@ -634,7 +634,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    rectangleButton:{
+    rectangleButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 512,
@@ -643,7 +643,7 @@ export let uiSizes:any ={
         sourceHeight: 41
     },
 
-    horizRectangle:{
+    horizRectangle: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 512,
@@ -652,7 +652,7 @@ export let uiSizes:any ={
         sourceHeight: 365
     },
 
-    vertRectangle:{
+    vertRectangle: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 266,
@@ -661,7 +661,7 @@ export let uiSizes:any ={
         sourceHeight: 431
     },
 
-    vertRectangleOpaque:{
+    vertRectangleOpaque: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 514,
@@ -670,7 +670,7 @@ export let uiSizes:any ={
         sourceHeight: 511
     },
 
-    smallPill:{
+    smallPill: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 263,
@@ -679,7 +679,7 @@ export let uiSizes:any ={
         sourceHeight: 232
     },
 
-    largePill:{
+    largePill: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -687,7 +687,7 @@ export let uiSizes:any ={
         sourceWidth: 824,
         sourceHeight: 263
     },
-    backButton:{
+    backButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 180,
@@ -695,4 +695,692 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
+    backButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 368,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    eyeTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    eyeClosed: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    info1Button: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    infoButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    assest3DButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 256,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    assestButton3DTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 256,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    image1Button: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 384,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    image1ButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 384,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    locationButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 512,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    locationButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 512,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rotateButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 640,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rotateButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 640,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    scaleButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 768,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    scaleButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 768,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    transformButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 2,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    transformButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 130,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    duplicateButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    duplicateButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    undoButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    undoButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    gridButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 256,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    gridButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 256,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    godModeButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 384,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    snapButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 512,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    noSnapButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 512,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    carpenterButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 384,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    saveButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 640,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    saveButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 640,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    refreshButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 768,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    refreshButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 768,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    trashButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 258,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    trashButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 386,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    inspectorButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 516,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    inspectorButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 646,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    shareButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 516,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    shareButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 646,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    settingsButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 516,
+        sourceLeft: 256,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    settingsButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 646,
+        sourceLeft: 256,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    loadButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 514,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    loadButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 642,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    playButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 768,
+        sourceLeft: 768,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    playButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 896,
+        sourceLeft: 768,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    buildButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 768,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    buildButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 896,
+        sourceLeft: 896,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    menuBox1: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 514,
+        sourceLeft: 384,
+        sourceWidth: 345,
+        sourceHeight: 511
+    },
+    menuBox3: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 774,
+        sourceLeft: 0,
+        sourceWidth: 331,
+        sourceHeight: 200
+    },
+    xButtonTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upArrowTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downArrowTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftArrowTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rightArrowTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    magnifyGlassTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    xButtonNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 30,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upArrowNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 30,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downArrowNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 30,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftArrowNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 30,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rightArrowNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 30,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    magnifyGlassNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 30,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    xButtonBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 60,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    toggleOnNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 60,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    toggleOffNoBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 60,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    toggleOffTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 60,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    toggleOnTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 60,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    magnifyGlassBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 60,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    toggleOffBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    toggleOnBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upArrowBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downArrowBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftArrowBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rightArrowBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upArrow2Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downArrow2Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftArrow2Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rightArrow2Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upArrow3Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downArrow3Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rotateRightArrowTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rotateLeftArrowTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rotateRightArrow2Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rotateLeftArrow2Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftArrow3Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rightArrow3Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rotateXArrowTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 210,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rotateXArrow2Trans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 210,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    }
+
+
+
+
+
+
+
+
 }
