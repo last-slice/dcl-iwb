@@ -16,7 +16,7 @@ export function createrPlayerListeners(room:Room){
         if(info){
             items.set(info.id, info)
         }
-    })//
+    })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG +' received', info)

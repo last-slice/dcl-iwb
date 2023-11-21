@@ -11,7 +11,7 @@ export function createSceneListeners(room: any) {
 
         room.state.temporaryParcels.onAdd(async(parcel:any, key:string)=>{
             log('temp parcel added', key, parcel)
-            selectParcel(parcel)//
+            selectParcel(parcel)
         })
 
         room.state.temporaryParcels.onRemove(async(parcel:any, key:string)=>{
@@ -20,7 +20,7 @@ export function createSceneListeners(room: any) {
         })
 
         room.state.scenes.onAdd(async(scene:any, key:string)=>{
-            log('Room Scene Added', key, scene)//
+            log('Room Scene Added', key, scene)
             await loadScene(scene)
 
             scene.ass.onAdd((asset:any, key:any)=>{

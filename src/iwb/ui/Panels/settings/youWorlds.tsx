@@ -7,6 +7,7 @@ import { localUserId, players, worldTravel } from '../../../components/player/pl
 import { displayInitalizeWorldPanel } from '../initaliteWorldPanel'
 import { worlds } from '../../../components/scenes'
 import { log } from '../../../helpers/functions'
+import { displayRealmTravelPanel } from '../realmTravelPanel'
 
 let visibleIndex = 0
 let visibleItems:any[] = []
@@ -407,11 +408,12 @@ function generateBuildRows(){
             if(scene.init){
                 displaySettingsPanel(false)
                 displaySetting("Explore")
+                displayRealmTravelPanel(true, scene)
             }else{
                 displaySettingsPanel(false)
                 displayInitalizeWorldPanel(true, scene)
             }
-        }}
+        }}//
         />
         </UiEntity>
 

@@ -2,6 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
+import { worldTravel } from '../../components/player/player'
 
 export let showWorldReadyPanel = false
 export let selectedWorld:any = {}
@@ -103,6 +104,7 @@ export function createWorldReadyPanel() {
                 uvs: getImageAtlasMapping(uiSizes.positiveButton)
             }}
             onMouseDown={() => {
+                worldTravel(selectedWorld)
                 displayWorldReadyPanel(false, {})
             }}
             uiText={{value: "Join World", color:Color4.Black(), fontSize:sizeFont(30,20)}}

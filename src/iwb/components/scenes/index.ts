@@ -133,7 +133,7 @@ export function loadSceneAsset(sceneId:string, item:SceneItem){
     
             Transform.create(entity, {parent:parent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
             switch(itemConfig.ty){
-                case '3d':
+                case '3D':
                     GltfContainer.create(entity, {src: "assets/" + item.id + ".glb"})
                     break;
     

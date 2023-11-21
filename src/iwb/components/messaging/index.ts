@@ -31,6 +31,10 @@ export async function colyseusConnect(data:any, token:string, world?:any){
         sessionId = room.sessionId
         connected = true
 
+        room.onLeave((code:number)=>{
+            log('left room with code', code)
+        })
+
         createIWBEventListeners()
         !sceneMessageBus ? createMessageManager() : null
         initiateMessageListeners(room)
