@@ -11,17 +11,12 @@ import { localUserId, players } from '../player/player'
 import { Room } from 'colyseus.js'
 
 export let data:any
-export let world:any
 export let cRoom:Room
 
 export let connected:boolean = false
 export let sessionId:any
 export let sceneMessageBus:MessageBus
 export const iwbEvents = mitt()
-
-export function updateWorld(value:any){
-    world = value
-}
 
 export function createMessageManager(){
    sceneMessageBus = new MessageBus()

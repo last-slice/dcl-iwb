@@ -17,15 +17,15 @@ export function initIWB() {
     setupUi()
 
     getPreview().then(()=>{
-        getRealm({}).then((realmData)=>{
-            log('realm is', realmData)
-            updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld" : realmData.realmInfo.realmName : "")
-        })
         
         getUserData({}).then(async ({data})=>{
             log("getuserdata is", data)
             if(data){
                 await addPlayer(data.userId, true, [{dclData:data}])
+                
+                let realmData = await getRealm({})
+                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld" : realmData.realmInfo.realmName : "")
+
                 engine.addSystem(PlayerTrackingSystem)
                 engine.addSystem(BuildModeVisibiltyComponents)
 

@@ -3,7 +3,6 @@ import {SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {items} from "../catalog"
 import {localUserId, players, removePlayer} from "../player/player"
 import {addBoundariesForParcel} from "../modes/create";
-import { updateWorld } from ".";
 import { setScenes, setWorlds } from "../scenes";
 import { Room } from "colyseus.js";
 import { displayWorldReadyPanel } from "../../ui/Panels/worldReadyPanel";
@@ -42,7 +41,7 @@ export function initiateMessageListeners(room: Room) {
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD + ' received', info)
         if(info){
-            updateWorld(info)
+            // updateWorld(info)
         }
     })
 

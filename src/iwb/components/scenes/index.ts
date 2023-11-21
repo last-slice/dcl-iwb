@@ -18,6 +18,18 @@ export let entitiesFromItemIds:Map<string,Entity> = new Map()
 
 export function updateRealm(value:string){
     realm = value
+
+    if(value !== "BuilderWorld"){
+        let player = players.get(localUserId)
+        if(player){
+            player.worlds.forEach((world)=>{
+                if((world.ens === value)){
+                    player!.homeWorld = true
+                    return
+                }
+            })
+        }
+    }
 }
 
 export function setWorlds(config:any){

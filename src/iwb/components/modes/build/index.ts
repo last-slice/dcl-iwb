@@ -130,15 +130,16 @@ export function selectCatalogItem(id:any, mode:EDIT_MODES, already?:boolean){
         addUseItemPointers(selectedItem.entity)
 
         let scale:any
-        if(selectedItem.itemData.si){
-            scale = Vector3.create(selectedItem.itemData.si.x, selectedItem.itemData.si.y, selectedItem.itemData.si.z)
-        }else{
-            scale = Vector3.One()
-        }
+        scale = Vector3.One()
     
         if(selectedItem.itemData.v && selectedItem.itemData.v > players.get(localUserId)!.version){
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
+
+            if(selectedItem.itemData.bb){
+                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.y, selectedItem.itemData.bb.z)
+            }
+
         }else{
             log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
     

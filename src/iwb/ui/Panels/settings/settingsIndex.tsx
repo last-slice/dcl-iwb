@@ -7,9 +7,10 @@ import { AccessPanel } from './accessPanel'
 import { ExplorePanel } from './explorePanel'
 import { SettingsPanel } from './settingsPanel'
 import { CreateScenePanel } from './createPanel'
-import { world } from '../../../components/messaging'
-import { log } from '../../../helpers/functions'
 import { YourWorlds, showWorlds } from './youWorlds'
+import { realm } from '../../../components/scenes'
+import { isPreview, log } from '../../../helpers/functions'
+import { localUserId, players } from '../../../components/player/player'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
@@ -17,8 +18,9 @@ export let showSetting = "Explore"
 export let buttons:any[] = [
     {label:"Explore", pressed:false},
     {label:"My Worlds", pressed:false},
-    // {label:"Access", pressed:false},
     {label:"Builds", pressed:false},
+    {label:"Access", pressed:false},
+    {label:"Create", pressed:false},
     {label:"Settings", pressed:false},
     {label:"Close", pressed:false},
 ]
@@ -132,6 +134,7 @@ export function createSettingsPanel() {
                     <BuildsPanel/>
                     <AccessPanel/>
                     <ExplorePanel/>
+                    <CreateScenePanel/>
                     <SettingsPanel/>
                         
 
@@ -160,7 +163,7 @@ function generateSettingsButtons(buttons:any[]){
             margin:{top:"1%", bottom:'1%'},
             positionType: button.label === "Close" ? "absolute" : undefined,
             position: button.label === "Close" ? {bottom:0} : undefined,
-            display: 'flex'// getButtonDisplay(button.label)
+            display: getButtonDisplay(button.label)
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -188,8 +191,8 @@ function generateSettingsButtons(buttons:any[]){
 }
 
 function getButtonDisplay(button:string){
-    if(button === "Create" || button === "Access"){
-        return world && world.world === "main" ? "none" : 'flex'
+    if(button === "Create" || button === "Access" || button === "Builds"){
+        return isPreview ? 'flex' :  (localUserId && players.get(localUserId)!.homeWorld) ?  'flex' : 'none'
     }else{
         return 'flex'
     }

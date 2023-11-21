@@ -4,8 +4,7 @@ import { displaySettingsPanel, showSetting } from './settingsIndex'
 import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { localUserId } from '../../../components/player/player'
-import { world } from '../../../components/messaging'
-import { scenes, worlds } from '../../../components/scenes'
+import { realm, scenes, worlds } from '../../../components/scenes'
 import { displayRealmTravelPanel } from '../realmTravelPanel'
 
 let pressed:any ={
@@ -53,7 +52,7 @@ export function ExplorePanel() {
                 width: '100%',
                 height: '100%',
             }}
-            uiText={{value:"Current Realm: " + (world ? world.label : ""),  textAlign:'middle-left', color:Color4.Black(), fontSize:sizeFont(20,15)}}
+            uiText={{value:"Current Realm: " + realm,  textAlign:'middle-left', color:Color4.Black(), fontSize:sizeFont(20,15)}}
             />
 
 

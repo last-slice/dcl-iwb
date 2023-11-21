@@ -1,4 +1,4 @@
-import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown} from '@dcl/sdk/react-ecs'
+import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown, Input} from '@dcl/sdk/react-ecs'
 import {Color4, Vector3} from '@dcl/sdk/math'
 import {items} from '../../components/catalog'
 
@@ -24,23 +24,19 @@ export function displayCatalogPanel(value: boolean) {
     showCatalogPanel = value
 }
 
-export let itemSelect = false
-export let customSelect = false
-export let itemCode = 0
 export let objName = ''
+
 let currentFilterType = 'All';
-
-
-let renderCount = 0;
-function triggerRerender() {
-    renderCount++;
-}
 
 const columns = 2;
 const rows = 3;
 
 let currentPage = 0;
 const itemsPerPage = 9;
+
+let settings:any[] = [
+    {label:"Public", enabled:true},
+]
 
 export function createCatalogPanel() {
     const startIndex = currentPage * itemsPerPage;
@@ -52,7 +48,7 @@ export function createCatalogPanel() {
     const itemsToShow = sorted.slice(startIndex, endIndex);
 
     // log('sorted is', itemsToShow)
-    const totalPages = Math.ceil(itemsToShow.length / (columns * rows));
+    const totalPages = Math.ceil(original.length / (columns * rows));
     const itemsArray = Array.from(items.values());
 
     const filteredItems = itemsArray.filter(item => 
@@ -68,7 +64,7 @@ export function createCatalogPanel() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: calculateImageDimensions(25, 345 / 511).width,
-                height: calculateImageDimensions(25, 345 / 511).height,
+                height: calculateImageDimensions(30, 345 / 511).height,
                 positionType: 'absolute',
                 position: { right: '3%', bottom: '3%' }
             }}
@@ -93,37 +89,11 @@ export function createCatalogPanel() {
                     display: 'flex',
                     flexDirection: 'column',
                     width: '90%',
-                    height: '10%',
+                    height: '8%',
                 }}
                 uiText={{ value: "Asset Catalog", fontSize: sizeFont(30, 20) }}
             // uiBackground={{color:Color4.Blue()}}
             />
-                <Dropdown
-                    options={[`3D`, `2D`, `All`]}
-                    onChange={selectDimension}
-                    uiTransform={{
-                        width: '100px',
-                        height: '30px',
-                        position: { left: (dimensions.width - calculateImageDimensions(90, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(168, 100 / 30).height) / 2 }
-                    }}
-                    uiBackground={{color:Color4.Purple()}}
-                    color={Color4.White()}
-                    
-
-                />
-                <Dropdown
-                    options={[`Public`, `Private`, `All`]}
-                    onChange={selectDimension}
-                    uiTransform={{
-                        width: '100px',
-                        height: '30px',
-                        position: { left: (dimensions.width - calculateImageDimensions(110, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(180, 100 / 30).height) / 2 }
-                    }}
-                    uiBackground={{color:Color4.Purple()}}
-                    color={Color4.White()}
-                />
-    
-
 
             {/* placeholder for search bar */}
             <UiEntity
@@ -133,7 +103,8 @@ export function createCatalogPanel() {
                     justifyContent: 'center',
                     alignContent: 'center',
                     width: '90%',
-                    height: '8%',
+                    height: '5%',
+                    margin:{bottom:'1%'}
                 }}
             // uiBackground={{color:Color4.Blue()}}
             >
@@ -144,11 +115,32 @@ export function createCatalogPanel() {
                         justifyContent: 'center',
                         alignContent: 'center',
                         flexDirection: 'row',
-                        width: "60%",
-                        height:'80%'
+                        width: "70%",
+                        height:'100%'
                     }}
-                    uiBackground={{color:Color4.Gray()}}
-                />
+                    // uiBackground={{color:Color4.Gray()}}
+                    // uiBackground={{
+                    //     textureMode: 'stretch',
+                    //     texture: {
+                    //         src: 'assets/atlas2.png'
+                    //     },
+                    //     uvs: getImageAtlasMapping(uiSizes.opaqueSearchBG)
+                    // }}
+                >
+                    <Input
+                        onSubmit={(value) => {
+                            console.log('submitted value: ' + value)
+                        }}
+                        fontSize={15}
+                        placeholder={'Search Assets'}
+                        placeholderColor={Color4.White()}
+                        uiTransform={{
+                            width: '100%',
+                            height: '120%',
+                        }}
+                        ></Input>
+
+                </UiEntity>
 
                 <UiEntity
                     uiTransform={{
@@ -167,15 +159,135 @@ export function createCatalogPanel() {
                         },
                         uvs: getImageAtlasMapping(uiSizes.opaqueSearchIcon)
                     }}
-                    uiText={{value: "<", fontSize: sizeFont(20, 12)}}
                     onMouseUp={() => {
                         if (currentPage - 1 >= 0) {
                             currentPage--
                         }
                     }}
                 />
+                <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '18%',
+                    height: '100%',
+                }}
+                    // uiBackground={{color:Color4.Teal()}}
+                    >
+                </UiEntity>
+
 
             </UiEntity>
+
+                    {/* dropdown containers */}
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '90%',
+                    height: '5%',
+                    margin:{bottom:'1%'}
+                }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+            <Dropdown
+                    options={[`3D`, `2D`, `All`]}
+                    onChange={selectDimension}
+                    uiTransform={{
+                        width: '70%',
+                        height: '120%',
+                    }}
+                    // uiBackground={{color:Color4.Purple()}}
+                    color={Color4.White()}
+                    fontSize={sizeFont(20,15)}
+                />
+
+
+                    {/* public / private toggle container */}
+                <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '30%',
+                    height: '100%',
+                }}
+                    // uiBackground={{color:Color4.Teal()}}
+                    >
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getButtonState(settings[0].label)
+        }}
+        onMouseDown={() => {
+            // settings.find((set:any)=>set.label === setting.label).enabled = !settings.find((set:any)=>set.label === setting.label).enabled 
+        }}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '80%',
+            height: '100%',
+            margin:{left:"1%",},
+        }}
+        uiText={{value: settings[0].label, color:Color4.White(), fontSize:sizeFont(20,15)}}
+        />
+
+
+                </UiEntity>
+
+                </UiEntity>
+
+
+ {/* style dropdown containers */}
+                <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '90%',
+                    height: '5%',
+                    margin:{bottom:'1%'}
+                }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+                <Dropdown
+                    options={[`Public`, `Private`, `All`]}
+                    onChange={selectDimension}
+                    uiTransform={{
+                        width: '100%',
+                        height: '120%',
+                    }}
+                    // uiBackground={{color:Color4.Purple()}}
+                    color={Color4.White()}
+                    fontSize={sizeFont(20,15)}
+                />
+
+                </UiEntity>
+    
+
+
+
 
             {generateCatalogRows(itemsToShow)}
 
@@ -202,7 +314,7 @@ export function createCatalogPanel() {
                         height: '100%',
                         margin:{right:'5%'}
                     }}
-                    uiText={{value: "Page " + (currentPage + 1) + " / " + totalPages}}
+                    uiText={{value: "Page " + (currentPage + 1) + " / " + totalPages, fontSize:sizeFont(20,15)}}
                 />
 
                 <UiEntity
@@ -291,7 +403,7 @@ export const CatalogRow = ({ row, items }: { row: number, items: CatalogItemType
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '90%',
-                height: '23%',
+                height: '21%',
                 margin: { top: '1%' }
             }}
         // uiBackground={{color:Color4.Green()}}
@@ -324,8 +436,8 @@ function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: calculateSquareImageDimensions(8).width,
-                    height: calculateSquareImageDimensions(8).height,
+                    width: calculateSquareImageDimensions(7).width,
+                    height: calculateSquareImageDimensions(7).height,
                 }}
                 uiBackground={{
                     textureMode: 'stretch',
@@ -355,7 +467,7 @@ function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
                     width: '90%',
                     height: '20%',
                 }}
-                uiText={{ value: addLineBreak(item.n, undefined, 15), fontSize: sizeFont(20, 12) }}
+                uiText={{ value: item.n.length > 15 ? item.n.substring(0,15) + "..." : item.n, fontSize: sizeFont(20, 12) }}
             // uiBackground={{color:Color4.Blue()}}
             />
 
@@ -372,30 +484,6 @@ function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
                 }}
             // uiBackground={{color:Color4.Green()}}
             >
-
-                {/* <UiEntity
-                    uiTransform={{
-                        display: localUserId && players.get(localUserId)!.canBuild ? 'flex' : 'none',
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        flexDirection: 'row',
-                        width: '50%',
-                        height: '100%',
-                        margin: { right: '1%' }
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.blueButton)
-                    }}
-                    uiText={{value: "Use", fontSize: sizeFont(20, 12)}}
-                    onMouseDown={() => {
-                        selectCatalogItem(item.id)
-                        useSelectedItem()
-                    }}
-                /> */}
 
                 <UiEntity
                     uiTransform={{
@@ -428,7 +516,7 @@ function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
 
         </UiEntity>
     )
-}
+}//
 
 function selectDimension(index: number) {
     switch (index) {
@@ -442,5 +530,13 @@ function selectDimension(index: number) {
             currentFilterType = 'All';
             break;
     }
-    triggerRerender();
+}
+
+
+function getButtonState(button:string){
+    if(settings.find((b:any)=> b.label === button).enabled){
+        return getImageAtlasMapping(uiSizes.toggleOnTrans)
+    }else{
+        return getImageAtlasMapping(uiSizes.toggleOffTrans)
+    }
 }

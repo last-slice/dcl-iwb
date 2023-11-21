@@ -1,5 +1,5 @@
 import { Player, PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
-import { iwbEvents, joinWorld, sendServerMessage, world } from "../messaging";
+import { iwbEvents, joinWorld, sendServerMessage } from "../messaging";
 import { deleteCreationEntities, tempParcels } from "../modes/create";
 import {AvatarAnchorPointType, AvatarAttach, Entity, engine} from "@dcl/sdk/ecs";
 import { displayRealmTravelPanel } from "../../ui/Panels/realmTravelPanel";
@@ -26,7 +26,8 @@ export async function addPlayer(userId:string, local:boolean, data?:any[]){
         objects:[],
         buildingAllowed:[],
         selectedEntity:null,
-        canBuild:false
+        canBuild:false,
+        homeWorld:false
     }
 
     if(!local){

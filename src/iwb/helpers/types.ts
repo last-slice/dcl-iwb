@@ -100,6 +100,7 @@ export interface Player {
     canBuild:boolean,
     objects:any[],
     selectedEntity:Entity | null
+    homeWorld:boolean
 }
 
 export interface IWBScene {
@@ -142,6 +143,7 @@ export interface CatalogItemType {
     si: number
     d: string
     tag: Array<string>
+    bb:any
 }
 
 export interface SceneItem extends CatalogItemType{

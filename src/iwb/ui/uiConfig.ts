@@ -114,31 +114,31 @@ export let topTools: any[] = [
 
         }
     },
-    {
-        name: "Image",
-        atlas: "assets/atlas1.png",
-        enabledUV: {
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 128 * 0,
-            sourceLeft: 128 * 3,
-            sourceWidth: 128,
-            sourceHeight: 128
-        },
-        disabledUV: {
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 128 * 0,
-            sourceLeft: 128 * 3,
-            sourceWidth: 128,
-            sourceHeight: 128
-        },
-        enabled: true,
-        visible: true,
-        fn: () => {
-            displayRectanglePanel(!showRectanglePanel)
-        }
-    },
+    // {
+    //     name: "Image",
+    //     atlas: "assets/atlas1.png",
+    //     enabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 0,
+    //         sourceLeft: 128 * 3,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     disabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 0,
+    //         sourceLeft: 128 * 3,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     enabled: true,
+    //     visible: true,
+    //     fn: () => {
+    //         displayRectanglePanel(!showRectanglePanel)
+    //     }
+    // },
     // {
     //     name:"Position",
     //     atlas:"assets/atlas1.png",
@@ -671,6 +671,22 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
+    opaqueSearchBG:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 898,
+        sourceLeft: 47,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueSearchTransparent:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 898,
+        sourceLeft: 288,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
     opaqueSearchIcon:{
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -695,6 +711,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
+    
     toggleOn:{
         atlasHeight: 1024,
         atlasWidth: 1024,
