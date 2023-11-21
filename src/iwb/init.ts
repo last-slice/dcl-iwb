@@ -10,11 +10,18 @@ import {PlayerTrackingSystem} from "./components/systems/playerTracking";
 import resources from "./helpers/resources";
 import {signedFetch} from "~system/SignedFetch";
 import { BuildModeVisibiltyComponents } from "./components/systems/BuildModeVisibilty";
+import { getRealm } from "~system/Runtime";
+import { realm, updateRealm } from "./components/scenes";
 
 export function initIWB() {
     setupUi()
 
     getPreview().then(()=>{
+        getRealm({}).then((realmData)=>{
+            log('realm is', realmData)
+            updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld" : realmData.realmInfo.realmName : "")
+        })
+        
         getUserData({}).then(async ({data})=>{
             log("getuserdata is", data)
             if(data){
@@ -26,7 +33,7 @@ export function initIWB() {
             }
 
             //build IWB HQ
-            createHQ()
+            createHQ()//
 
             //add input listeners
             createInputListeners()
@@ -44,7 +51,7 @@ export function initIWB() {
 
             // connect with userData and token
             // colyseusConnect(data, json.data.token)
-            joinWorld()
+            joinWorld(realm)
             // colyseusConnect(data, "")
         })
     })

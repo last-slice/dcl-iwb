@@ -256,7 +256,7 @@ function generateBuildRows(){
     let arr:any[] = []
     if(localUserId){
         let player = players.get(localUserId)
-        player.scenes.forEach((scene:any, i:number)=>{
+        player!.scenes.forEach((scene:any, i:number)=>{
             arr.push(
             <UiEntity
             key={"build row - " + scene.id}

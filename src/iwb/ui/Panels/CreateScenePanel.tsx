@@ -1,14 +1,11 @@
 import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
 import {calculateImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont} from '../helpers'
-import {utils} from '../../helpers/libraries'
 import {sendServerMessage} from '../../components/messaging'
 import {SCENE_MODES, SERVER_MESSAGE_TYPES} from '../../helpers/types'
 import {localUserId, players, setPlayMode} from '../../components/player/player'
-import {SmallOpaqueRectangle} from '../Objects/SmallOpaqueRectangle'
-import {MediumOpaqueRectangle} from '../Objects/MediumOpaqueRectangle'
 import resources from '../../helpers/resources'
-import {saveNewScene, scenesToCreate, validateScene} from '../../components/modes/create'
+import {tempParcels, validateScene} from '../../components/modes/create'
 import {formatDollarAmount, log} from '../../helpers/functions'
 import { uiSizes } from '../uiConfig'
 
@@ -313,13 +310,14 @@ export function createNewScenePanel() {
 }
 
 function getParcels() {
-    if (localUserId && players.has(localUserId) &&
-        players.get(localUserId)!.mode === SCENE_MODES.CREATE_SCENE_MODE &&
-        scenesToCreate.has(localUserId) &&
-        scenesToCreate.get(localUserId).parcels
-    ) {
-        return scenesToCreate.get(localUserId).parcels.length
-    } else {
-        return 0
-    }
+    // if (localUserId && players.has(localUserId) &&
+    //     players.get(localUserId)!.mode === SCENE_MODES.CREATE_SCENE_MODE &&
+    //     scenesToCreate.has(localUserId) &&
+    //     scenesToCreate.get(localUserId).parcels
+    // ) {
+    //     return scenesToCreate.get(localUserId).parcels.length
+    // } else {
+    //     return 0
+    // }
+    return tempParcels.size
 }

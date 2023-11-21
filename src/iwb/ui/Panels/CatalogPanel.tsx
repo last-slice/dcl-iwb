@@ -35,7 +35,13 @@ const itemsPerPage = 9;
 export function createCatalogPanel() {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const itemsToShow = [...items.values()].slice(startIndex, endIndex);
+    let original = [...items.values()]
+    // log('original is', original)
+    
+    const sorted = original.sort((a, b) => a.n.localeCompare(b.n));
+    const itemsToShow = sorted.slice(startIndex, endIndex);
+
+    // log('sorted is', itemsToShow)
     const totalPages = Math.ceil(itemsToShow.length / (columns * rows));
 
     return (

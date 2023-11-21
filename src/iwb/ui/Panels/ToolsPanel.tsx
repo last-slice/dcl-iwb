@@ -60,13 +60,13 @@ export function createToolsPanel() {
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
-                src: players.has(localUserId) ? uiModes[players.get(localUserId).mode].atlas : ''
+                src: players.has(localUserId) ? uiModes[players.get(localUserId)!.mode].atlas : ''
                 },
-                uvs: players.has(localUserId) ? getImageAtlasMapping(uiModes[players.get(localUserId).mode].uvs) : getImageAtlasMapping()
+                uvs: players.has(localUserId) ? getImageAtlasMapping(uiModes[players.get(localUserId)!.mode].uvs) : getImageAtlasMapping()
             }}
             onMouseDown={()=>{
                 if(players.has(localUserId)){
-                   let mode = players.get(localUserId).mode
+                   let mode = players.get(localUserId)!.mode
                    if(mode == 0){
                     setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
                    }else{
@@ -153,7 +153,7 @@ function CreateToolIcon(data:any){
     return ( <UiEntity
     key={config.name}
     uiTransform={{
-        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId).mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
+        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
         width: calculateSquareImageDimensions(4).width,
         height: calculateSquareImageDimensions(4).height,
         flexDirection:'row',
@@ -184,10 +184,10 @@ function CreateToolIcon(data:any){
 
 function checkModeAndPermissions(){
     let player = players.get(localUserId)
-    if(!atHQ() && localUserId && player.mode !== SCENE_MODES.CREATE_SCENE_MODE){
-         if(player.buildingAllowed.length > 0){
+    if(!atHQ() && localUserId && player!.mode !== SCENE_MODES.CREATE_SCENE_MODE){
+         if(player!.buildingAllowed.length > 0){
             // console.log('player building parcels allowed', player.buildingAllowed)
-            if(player.buildingAllowed.find((b:any)=> b.parcel === player.currentParcel)){
+            if(player!.buildingAllowed.find((b:any)=> b.parcel === player!.currentParcel)){
                 return "flex"
             }else{
                 return "none"

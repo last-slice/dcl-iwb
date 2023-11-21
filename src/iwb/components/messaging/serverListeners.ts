@@ -4,16 +4,15 @@ import {items} from "../catalog"
 import {localUserId, players, removePlayer} from "../player/player"
 import {addBoundariesForParcel} from "../modes/create";
 import { updateWorld } from ".";
-import { setScenes } from "../scenes";
+import { setScenes, setWorlds } from "../scenes";
 import { Room } from "colyseus.js";
+import { displayWorldReadyPanel } from "../../ui/Panels/worldReadyPanel";
 
 
 export function initiateMessageListeners(room: Room) {
+
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, (info: any) => {
         log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
-
-        //set world
-        updateWorld(info.world)
 
         //set initial catalog
         let catalog = info.catalog
@@ -29,13 +28,14 @@ export function initiateMessageListeners(room: Room) {
         players.get(localUserId)!.version = info.iwb.v
 
         //set scene list
-        setScenes(info.scenes)
+        // setScenes(info.scenes)
+        setWorlds(info.worlds)
 
         //set occupied parcels
         // for (const p of info.occupiedParcels) {
         //     //log('occupied parcel', p)
         //     addBoundariesForParcel(p, false)
-        // }//
+        // }
 
     })
 
@@ -53,5 +53,14 @@ export function initiateMessageListeners(room: Room) {
 
     room.onMessage(SERVER_MESSAGE_TYPES.CATALOG_UPDATED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.CATALOG_UPDATED + ' received', info)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
+        if(info.owner === localUserId){
+            displayWorldReadyPanel(true, info)
+        }
+
+        setWorlds([info])
     })
 }

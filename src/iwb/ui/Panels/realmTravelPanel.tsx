@@ -3,11 +3,21 @@ import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { displaySettingsPanel } from './settings/settingsIndex'
+import { showNotification } from './notificationUI'
+import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
+import { cRoom } from '../../components/messaging'
+import { localUserId, worldTravel } from '../../components/player/player'
+import { log } from '../../helpers/functions'
 
-export let showRealmTravelPanel = false
+export let showRealmTravel = false
 
-export function displayRealmTravelPanel(value: boolean) {
-    showRealmTravelPanel = value
+export let selectedWorld:any = {}
+
+export function displayRealmTravelPanel(value: boolean, world:any) {
+    showRealmTravel = value
+    selectedWorld = world
+
+    console.log('realm selected world is', selectedWorld)
 }
 
 export function createRealmTravelPanel() {
@@ -15,7 +25,7 @@ export function createRealmTravelPanel() {
         <UiEntity
             key={"realmtravelpanel"}
             uiTransform={{
-                display: showRealmTravelPanel ? 'flex' : 'none',
+                display: showRealmTravel ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -59,6 +69,19 @@ export function createRealmTravelPanel() {
                 uiText={{value:"Realm Travel", fontSize: sizeFont(45,30), color: Color4.Black()}}
                 />
 
+                        {/* world name */}
+                        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("" + selectedWorld.name, true, 30)}}
+        />
+
+
                     {/* popup text */}
                     <UiEntity
                         uiTransform={{
@@ -66,10 +89,56 @@ export function createRealmTravelPanel() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: '100%',
-                            height: '50%',
+                            height: '25%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Traveling to your Realm.... \nPlease Wait", true, 34)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Would you like to visit this creator world?", true, 30)}}
                     />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            }}
+            onMouseDown={() => {
+                worldTravel(selectedWorld)
+                displayRealmTravelPanel(false, {})
+            }}
+            uiText={{value: "Continue", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.normalButton)
+            }}
+            onMouseDown={() => {
+                displayRealmTravelPanel(false,{})
+                displaySettingsPanel(true)
+            }}
+            uiText={{value: "Cancel", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            />
 
         </UiEntity>
 

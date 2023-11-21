@@ -30,6 +30,8 @@ import { createDebugPanel } from './Panels/debugPanel'
 import { createSceneSavedPanel } from './Panels/sceneSavedPanel'
 import { createEditObjectPanel } from './Panels/EditObjectPanel'
 import { createGizmoPanel } from './GizmoPanel'
+import { createInitalizeWorldPanel } from './Panels/initaliteWorldPanel'
+import { createWorldReadyPanel } from './Panels/worldReadyPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -72,4 +74,6 @@ const uiComponent = () => [
   createSceneSavedPanel(),
   createGizmoPanel(),
   createEditObjectPanel(),
+  createInitalizeWorldPanel(),
+  createWorldReadyPanel(),//
 ]

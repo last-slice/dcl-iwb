@@ -9,14 +9,15 @@ import { SettingsPanel } from './settingsPanel'
 import { CreateScenePanel } from './createPanel'
 import { world } from '../../../components/messaging'
 import { log } from '../../../helpers/functions'
+import { YourWorlds, showWorlds } from './youWorlds'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
 
 export let buttons:any[] = [
-    {label:"Create", pressed:false},
-    {label:"Access", pressed:false},
     {label:"Explore", pressed:false},
+    {label:"My Worlds", pressed:false},
+    // {label:"Access", pressed:false},
     {label:"Builds", pressed:false},
     {label:"Settings", pressed:false},
     {label:"Close", pressed:false},
@@ -126,7 +127,8 @@ export function createSettingsPanel() {
                     // uiBackground={{color:Color4.Blue()}}
                     >
 
-                    <CreateScenePanel/>
+                    {/* <CreateScenePanel/> */}
+                    <YourWorlds/>
                     <BuildsPanel/>
                     <AccessPanel/>
                     <ExplorePanel/>
@@ -158,7 +160,7 @@ function generateSettingsButtons(buttons:any[]){
             margin:{top:"1%", bottom:'1%'},
             positionType: button.label === "Close" ? "absolute" : undefined,
             position: button.label === "Close" ? {bottom:0} : undefined,
-            display: getButtonDisplay(button.label)
+            display: 'flex'// getButtonDisplay(button.label)
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -171,7 +173,11 @@ function generateSettingsButtons(buttons:any[]){
             if(button.label === "Close"){
                 displaySettingsPanel(false)
                 displaySetting('Builds')
-            }else{
+            }else if(button.label === "My Worlds"){
+                showWorlds()
+                displaySetting(button.label)
+            }
+            else{
                 displaySetting(button.label)
             }
         }}

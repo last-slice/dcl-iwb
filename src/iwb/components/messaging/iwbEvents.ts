@@ -4,7 +4,7 @@ import { log } from "../../helpers/functions";
 import { IWB_MESSAGE_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
 import resources from "../../helpers/resources";
 import { localUserId, players } from "../player/player";//
-import { GltfContainer, Material, engine } from "@dcl/sdk/ecs";
+import { Entity, GltfContainer, Material, engine } from "@dcl/sdk/ecs";
 import { BuildModeVisibilty, ParcelFloor, greenBeam, redBeam } from "../modes/create";
 import { Color4 } from "@dcl/sdk/math";
 import { sceneBuilds } from "../scenes";
@@ -37,7 +37,7 @@ export function createIWBEventListeners(){
 
             if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
                 sceneBuilds.forEach((scene,key)=>{
-                    scene.entities.forEach((entity)=>{
+                    scene.entities.forEach((entity:Entity)=>{
                         addBuildModePointers(entity)
                     })
                 })

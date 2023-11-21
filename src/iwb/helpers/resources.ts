@@ -5,6 +5,8 @@ export default {
     DEBUG: true,
     allowNoWeb3:true,
 
+    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
+
     endpoints:{
         wsTest: "ws://localhost:2751",
         wsProd: "wss://dcl-iwb.co/toolset",
@@ -18,8 +20,7 @@ export default {
         validateTest: "http://localhost:2751",
 
         assetSign: "/scene/sign",
-
-        // proxy: "https://lkdcl.co/proxy?url=",
+        dclNamesGraph:"https://api.thegraph.com/subgraphs/name/decentraland/marketplace"
     },
     colors:{
         transparent: Color4.create(0,0,0,0),

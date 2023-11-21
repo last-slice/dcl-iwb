@@ -96,10 +96,27 @@ export function InputListenSystem(dt:number){
                             editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
                         }
                     }
+                 }else{
+                    
                  }
               }
               else{
-                checkShortCuts()
+                if(players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE){
+                    log('player pressed #F on an object in Build mode, need to edit')
+                    if(selectedItem && selectedItem.enabled){
+                        log('player has selected item, need to delete')
+                        if(selectedItem.mode === EDIT_MODES.GRAB){
+                            dropSelectedItem()
+                        }else{
+                            saveItem()
+                        }
+                    }else{
+                        log('player does not have item selected')
+                    }
+                }else{
+                    //didnt hit an object and not in build mode
+                    checkShortCuts()
+                }
               }
           }
   

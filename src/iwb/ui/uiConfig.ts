@@ -653,6 +653,22 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
+    blackArrowRight:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    blackArrowLeft:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
     opaqueSearchIcon:{
         atlasHeight: 1024,
         atlasWidth: 1024,

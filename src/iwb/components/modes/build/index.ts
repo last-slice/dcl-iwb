@@ -4,9 +4,9 @@ import {items} from "../../catalog"
 import {localUserId, players} from "../../player/player"
 import {engine, Entity, GltfContainer, InputAction, MeshRenderer, PointerEvents, pointerEventsSystem, PointerEventType, Transform} from "@dcl/sdk/ecs"
 import {sceneMessageBus, sendServerMessage} from "../../messaging";
-import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, IWB_MESSAGE_TYPES, Player, SERVER_MESSAGE_TYPES, SelectedItem} from "../../../helpers/types";
+import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, IWB_MESSAGE_TYPES, Player, SERVER_MESSAGE_TYPES, SceneItem, SelectedItem} from "../../../helpers/types";
 import { displayCatalogPanel } from "../../../ui/Panels/CatalogPanel"
-import { itemIdsFromEntities, sceneBuilds } from "../../scenes"
+import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes"
 
 export let selectedItem:SelectedItem
 
@@ -14,33 +14,46 @@ export function sendServerEdit(axis:string, direction:number){
     sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, 
         {   item: selectedItem.entity,
             sceneId: selectedItem.sceneId,
+            aid: selectedItem.aid,
             modifier: selectedItem.modifier,
             factor: selectedItem.factor,
             axis: axis, 
-            direction: direction
+            direction: direction,
+            editType: EDIT_MODIFIERS.TRANSFORM
         }
     )
 }
 
-export function transformObject(data:any){
-    let transform = Transform.getMutable(data.item)
-
-    switch(data.modifier){
-        case EDIT_MODIFIERS.POSITION:
-            let pos:any = transform.position
-            pos[data.axis] = pos[data.axis] + (data.direction * data.factor)
-            break;
-
-        case EDIT_MODIFIERS.ROTATION:
-            let rot:any = Quaternion.toEulerAngles(transform.rotation)
-            rot[data.axis] = rot[data.axis] + (data.direction * data.factor)
-            transform.rotation = Quaternion.fromEulerDegrees(rot.x ,rot.y, rot.z)
-            break;
-
-        case EDIT_MODIFIERS.SCALE:
-            let scale:any = transform.scale
-            scale[data.axis] =  scale[data.axis] + (data.direction * data.factor)
-            break;
+export function transformObject(sceneId:string, aid:string, edit:EDIT_MODIFIERS, axis:string, value:number){
+    let localScene = sceneBuilds.get(sceneId)
+    if(localScene){
+        let sceneAsset = localScene.ass.find((localasset:any)=> localasset.aid === aid)
+        if(sceneAsset){
+            log('we found scene asset entity', sceneAsset)
+            let entity = entitiesFromItemIds.get(aid)
+            if(entity){
+                let transform = Transform.getMutable(entity)
+                console.log('transform is', transform)
+                switch(edit){
+                    case EDIT_MODIFIERS.POSITION:
+                        let pos:any = transform.position
+                        pos[axis] = value
+                        break;
+            
+                    case EDIT_MODIFIERS.ROTATION:
+                        let rot:any = Quaternion.toEulerAngles(transform.rotation)
+                        rot[axis] = value
+                        transform.rotation = Quaternion.fromEulerDegrees(rot.x ,rot.y, rot.z)
+                        break;
+            
+                    case EDIT_MODIFIERS.SCALE:
+                        let scale:any = transform.scale
+                        scale[axis] = value
+                        break;
+                }
+                console.log('transform is mnow', transform)
+            }
+        }
     }
 }
 
@@ -127,7 +140,7 @@ export function selectCatalogItem(id:any, mode:EDIT_MODES, already?:boolean){
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
         }else{
-            log('this asset is ready for viewing, place object in scene')
+            log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
     
             //to do
             //add different asset types here//
@@ -246,11 +259,11 @@ export function dropSelectedItem(){
     let parcel = "" + Math.floor(finalPosition.x/16) + "," + Math.floor(finalPosition.z/16)
 
     sceneBuilds.forEach((scene,key)=>{
-        if(scene.pcls.find((sc)=> sc === parcel)){
+        if(scene.pcls.find((sc:string)=> sc === parcel)){
             log('we can drop item here')
 
             PointerEvents.deleteFrom(selectedItem.entity)
-            addBuildModePointers(selectedItem.entity)
+            // addBuildModePointers(selectedItem.entity)
 
             players.get(localUserId)!.activeScene = scene
 
@@ -268,6 +281,8 @@ export function dropSelectedItem(){
             t.rotation.y =  rotation.y
             t.rotation.w = rotation.w
             t.parent = curSceneParent
+
+            engine.removeEntity(selectedItem.entity)
         
             sendServerMessage(
                 selectedItem.already ? SERVER_MESSAGE_TYPES.SCENE_UPDATE_ITEM : SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
@@ -319,6 +334,9 @@ export function checkBuildPermissions(player:Player){
     }else{
         player.canBuild = false
         player.activeScene = null
+        if(selectedItem && selectedItem.enabled){
+            // selectedItem.enabled = false
+        }
     }
 }
 
@@ -376,8 +394,9 @@ export function sendServerDelete(entity:Entity){
     console.log('found asset id', assetId)
     if(assetId){
         sceneBuilds.forEach((scene:IWBScene)=>{
+            log('this scene to find items to delete is', scene)
             let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
-            console.log('scene item is', sceneItem)
+            console.log('scene item to delete is', sceneItem)//
             if(sceneItem){
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {aid: assetId, sceneId:scene.id, entity:entity})
                 return
@@ -386,15 +405,21 @@ export function sendServerDelete(entity:Entity){
     }
 }
 
-export function removeItem(info:any){
-    let scene = sceneBuilds.get(info.sceneId)
+export function removeItem(sceneId:string, info:any){
+    let scene = sceneBuilds.get(sceneId)
     console.log('scene is', scene)
     if(scene){
-        let assetIndex = scene.ass.findIndex((ass)=> ass.aid === info.aid)
-        if(assetIndex >= 0){
-            scene.ass.splice(assetIndex,1)
-            engine.removeEntity(info.entity)
-            itemIdsFromEntities.delete(info.entity)
+
+        let entity = entitiesFromItemIds.get(info.aid)
+        if(entity){
+            engine.removeEntity(entity)
+            itemIdsFromEntities.delete(entity)
+            entitiesFromItemIds.delete(info.aid)
+
+            let assetIndex = scene.entities.findIndex((ent:Entity)=> ent === entity)
+            if(assetIndex >= 0){
+                scene.entities.splice(assetIndex,1)
+            }
         }
     }
 }

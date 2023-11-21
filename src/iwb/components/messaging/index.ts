@@ -30,13 +30,11 @@ export function createMessageManager(){
 
 export async function colyseusConnect(data:any, token:string, world?:any){
 
-    connect(world && world.world !== "iwb" ? "user-world" : "iwb-world", data, token, world).then((room:Room) => {
+    connect('iwb-world', data, token, world).then((room:Room) => {
         log("Connected!");
         cRoom = room
         sessionId = room.sessionId
         connected = true
-
-        
 
         createIWBEventListeners()
         !sceneMessageBus ? createMessageManager() : null
@@ -48,7 +46,7 @@ export async function colyseusConnect(data:any, token:string, world?:any){
     }).catch((err) => {
         console.error('colyseus connection error', err)
     });
-}//
+}
 
 export async function joinWorld(world?:any){
     if(connected){

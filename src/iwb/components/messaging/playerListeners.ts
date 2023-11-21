@@ -6,6 +6,7 @@ import { Vector3 } from "@dcl/sdk/math"
 import { addPlayerScenes, localUserId, players } from "../player/player"
 import { items } from "../catalog"
 import { Room } from "colyseus.js"
+import { iwbEvents } from "."
 
 export function createrPlayerListeners(room:Room){
     log('creating player listeners for room', room.roomId)
@@ -15,7 +16,7 @@ export function createrPlayerListeners(room:Room){
         if(info){
             items.set(info.id, info)
         }
-    })
+    })//
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG +' received', info)
@@ -25,7 +26,7 @@ export function createrPlayerListeners(room:Room){
                 items.set(asset.id, asset)
             })
         }
-    })//
+    })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG +' received', info)
@@ -40,4 +41,10 @@ export function createrPlayerListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info:any)=>{
         log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE +' received', info)
     })
-}//
+
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info:any)=>{
+        log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED +' received', info)
+        players.get(localUserId)!.mode = info.mode
+        iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode:info.mode})
+    })
+}

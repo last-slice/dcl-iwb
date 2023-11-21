@@ -1,25 +1,27 @@
 import { Player, PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
 import { iwbEvents, joinWorld, sendServerMessage, world } from "../messaging";
-import { deleteCreationEntities } from "../modes/create";
+import { deleteCreationEntities, tempParcels } from "../modes/create";
 import {AvatarAnchorPointType, AvatarAttach, Entity, engine} from "@dcl/sdk/ecs";
 import { displayRealmTravelPanel } from "../../ui/Panels/realmTravelPanel";
 import { utils } from "../../helpers/libraries";
 import { displaySettingsPanel } from "../../ui/Panels/settings/settingsIndex";
-import { movePlayerTo } from "~system/RestrictedActions";
+import { changeRealm, movePlayerTo } from "~system/RestrictedActions";
 import { log } from "../../helpers/functions";
 import { deleteAllRealmObjects } from "../scenes";
+import resources from "../../helpers/resources";
 
 export let localUserId:string
 export let players:Map<string, Player> = new Map<string, Player>()
 
 export async function addPlayer(userId:string, local:boolean, data?:any[]){
     if(local){
-        localUserId = userId
+        localUserId = userId//
     }
 
     let pData:any = {
         dclData:null,
         mode: SCENE_MODES.PLAYMODE,
+        worlds:[],
         scenes:[],
         objects:[],
         buildingAllowed:[],
@@ -48,7 +50,33 @@ export async function addPlayer(userId:string, local:boolean, data?:any[]){
     players.set(userId, pData)
 
     console.log("Player *** ", players.get(userId))
+
+
+    await getPlayerNames()//
 }
+
+export async function getPlayerNames(){
+    let res = await fetch(resources.endpoints.dclNamesGraph, {
+        headers:{"content-type": "application/json"},
+        method:"POST",
+        body: JSON.stringify({
+            variables: {offset:0, owner: localUserId},
+            query:"query getUserNames($owner: String, $offset: Int) {\n  nfts(first: 1000, skip: $offset, where: {owner: $owner, category: ens}) {\n    ens {\n      subdomain\n    }\n  }\n}\n"
+        })
+    })
+
+    let json = await res.json()
+    console.log('player names are ', json)
+    if(json.data){
+        let player = players.get(localUserId)
+        if(player){
+            json.data.nfts.forEach((nft:any)=>{
+                player!.worlds.push({name: nft.ens.subdomain, owner:localUserId, ens:nft.ens.subdomain + ".dcl.eth", builds:0, updated:0, init:false})
+            })
+        }
+    }
+}
+  
 
 export function removePlayer(user:string){
     /**
@@ -75,7 +103,7 @@ export function addPlayerScenes(user:string, scenes:any[]){
     let player = players.get(user)
     if(player){
         scenes.forEach((scene)=>{
-            player.scenes.push(scene)
+            player!.scenes.push(scene)
         })
     }
 }
@@ -89,16 +117,10 @@ export function setPlayMode(user:string, mode:SCENE_MODES){
     }
 }
 
-export function worldTravel(w:any){
-
-    deleteAllRealmObjects()
+export function worldTravel(world:any){
+    log('traveling to world', world)
 
     displaySettingsPanel(false)
-    displayRealmTravelPanel(true)
-    movePlayerTo({newRelativePosition:{x:16, y:0, z:16}})
-    utils.timers.setTimeout(()=>{
-        world.world !== w.world ? joinWorld(w) : null
-        displayRealmTravelPanel(false)
-    }, 2000)
+    displayRealmTravelPanel(false, {})
+    changeRealm({realm: "https://worlds.dcl-iwb.co/world/"+world.ens})
 }
-//

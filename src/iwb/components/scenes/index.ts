@@ -1,20 +1,44 @@
 import { Entity, GltfContainer, Material, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
-import { IWBScene, SceneItem } from "../../helpers/types"
+import { IWBScene, SCENE_MODES, SceneItem } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
-import { Color4, Vector3 } from "@dcl/sdk/math"
+import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
+import { localUserId, players } from "../player/player"
+import { addBuildModePointers } from "../modes/build"
 
+export let realm:string = ""
 export let scenes:any[] = []
 export let worlds:any[] = []
 
-export let sceneBuilds:Map<string, IWBScene> = new Map()
+export let sceneBuilds:Map<string, any> = new Map()
 export let itemIdsFromEntities:Map<number,any> = new Map()
+export let entitiesFromItemIds:Map<string,Entity> = new Map()
+
+export function updateRealm(value:string){
+    realm = value
+}
+
+export function setWorlds(config:any){
+    log('worlds are ', config)
+    let player = players.get(localUserId)
+
+    config.forEach((world:any)=>{
+        log("world is", world)
+        worlds.push({name: world.worldName, owner:world.owner, ens:world.ens, builds: world.builds, updated: world.updated})
+
+        let playerWorld = player?.worlds.find((w) => w.name === world.worldName)
+        if(playerWorld){
+            log('player has that world')
+            playerWorld.updated = world.updated
+            playerWorld.builds = world.builds
+            playerWorld.init = true
+        }
+    })
+}
 
 export function setScenes(info:any){
-    log('server scene list', info)//
-
     //set creator worlds
     info.forEach((scene:any)=>{
         scenes.push({owner:scene.owner, builds:1, updated:scene.updated, scna:scene.scna, name:scene.name, id:scene.id})
@@ -34,23 +58,16 @@ export function setScenes(info:any){
 }
 
 export function loadScene(info:any){
-
-    loadSceneBoundaries(info)
-    .then((res1)=> loadSceneAssets(res1))
-    .then((info)=>{
-        log('loaded scene info is', info)
-        sceneBuilds.set(info.id, info)
-    })
-    
+    sceneBuilds.set(info.id, {...info})
+    loadSceneBoundaries(info.id)  
 }
 
-async function loadSceneBoundaries(info:any){
+function loadSceneBoundaries(id:any){
+    let info = sceneBuilds.get(id)
     info.entities = []
+
     info.pcls.forEach((parcel:string)=>{
-        let entities = addBoundariesForParcel(parcel, true, true)
-        entities.forEach((entity)=>{
-            RealmEntityComponent.create(entity)
-        })
+        addBoundariesForParcel(parcel, true, true)
     })
 
     // create parent entity for scene//
@@ -71,37 +88,49 @@ async function loadSceneBoundaries(info:any){
             albedoColor: Color4.create(.2, .9, .1, 1)
         })
     }
-
-    return info
-}//
-
-async function loadSceneAssets(info:IWBScene){
-    info.ass.forEach(async (asset:SceneItem)=>{
-        info.entities.push(await loadSceneAsset(info.parentEntity, asset))
-    })
-    return info
+    // loadSceneAssets(id)
+    log('new local scene is', info)
 }
 
-async function loadSceneAsset(parent:Entity, item:SceneItem){
-    let ent = engine.addEntity()
-    RealmEntityComponent.create(ent)
+export function loadSceneAsset(sceneId:string, item:SceneItem){
+    let localScene = sceneBuilds.get(sceneId)
+    log('local sene is', localScene)
+    if(localScene){
+        log("local scene in building asst is", localScene)
 
-    let itemConfig = items.get(item.id)
-    log('loading item config for item', item, itemConfig)
+        localScene.ass.push(item)
+        log("local scene in building asst is", localScene)
 
-    if(itemConfig){
-        itemIdsFromEntities.set(ent, item.aid)
-        Transform.create(ent, {parent:parent, position:item.p, rotation:item.r, scale:item.s})
-        switch(itemConfig.ty){
-            case '3d':
-                GltfContainer.create(ent, {src: "assets/" + item.id + ".glb"})
-                break;
+        let parent = localScene.parentEntity
 
-            case 'prim':
-                break;
+        let entity = engine.addEntity()
+        RealmEntityComponent.create(entity)
+
+        if(players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE){
+            addBuildModePointers(entity)
         }
+
+        localScene.entities.push(entity)
+    
+        let itemConfig = items.get(item.id)
+        log('loading item config for item', item, itemConfig)
+    
+        if(itemConfig){
+            itemIdsFromEntities.set(entity, item.aid)
+            entitiesFromItemIds.set(item.aid, entity)
+    
+            Transform.create(entity, {parent:parent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
+            switch(itemConfig.ty){
+                case '3d':
+                    GltfContainer.create(entity, {src: "assets/" + item.id + ".glb"})
+                    break;
+    
+                case 'prim':
+                    break;
+            }
+        }
+        log('local scene after asset is', localScene)
     }
-    return ent
 }
 
 export function deleteAllRealmObjects(){

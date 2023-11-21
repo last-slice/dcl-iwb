@@ -3,8 +3,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont, uiSizer } from './helpers'
 import { selectedItem, sendServerEdit, toggleEditModifier, toggleModifier, transformObject } from '../components/modes/build'
 import { uiSizes } from './uiConfig'
-import { EDIT_MODES, EDIT_MODIFIERS, SERVER_MESSAGE_TYPES } from '../helpers/types'
-import { sendServerMessage } from '../components/messaging'
+import { EDIT_MODES, EDIT_MODIFIERS } from '../helpers/types'
 
 export let showGizmoPanel = false
 
