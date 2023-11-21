@@ -54,6 +54,7 @@ export function createRPPPanel() {
                         justifyContent: 'center',
                         width: '90%',
                         height: '30%',
+                        position: {left: (dimensions.width - calculateImageDimensions(105, 90 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(155, 90 / 30).height) / 2}
                     }}
                 // uiBackground={{color:Color4.Green()}}
                 >
@@ -66,18 +67,6 @@ export function createRPPPanel() {
                         textAlign="middle-center"
                     />
                     <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '90%',
-                            height: '30%',
-                            position: { top: 0 }
-                        }}
-                    // uiBackground={{color:Color4.Green()}}
-                    >
-                    </UiEntity>
-                    <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -85,7 +74,7 @@ export function createRPPPanel() {
                         width: calculateImageDimensions(3, 111 / 41).width,
                         height: calculateImageDimensions(4, 111 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -25, left: -225 }
+                        position: { left: (dimensions.width - calculateImageDimensions(130, 30 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(50, 30 / 30).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -115,7 +104,7 @@ export function createRPPPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -40 }
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(285, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -151,7 +140,7 @@ export function createRPPPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -20 }
+                        position: {left: (dimensions.width - calculateImageDimensions(105, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(275, 223 / 41).height) / 2   }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -187,7 +176,7 @@ export function createRPPPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 0 }
+                        position: {left: (dimensions.width - calculateImageDimensions(105, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(265, 223 / 41).height) / 2   }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -224,7 +213,7 @@ export function createRPPPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 20 }
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(255, 223 / 41).height) / 2  }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -261,7 +250,7 @@ export function createRPPPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 40 }
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(245, 223 / 41).height) / 2  }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',

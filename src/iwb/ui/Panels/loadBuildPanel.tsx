@@ -1,8 +1,9 @@
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
+import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 import { prevBuilds } from '../../components/builds'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import resources from '../../helpers/resources'
+import { Color4Type } from '@dcl/sdk/ecs'
 
 export let showLoadBuildPanel = false
 
@@ -39,7 +40,7 @@ export function createLoadBuildPanel() {
                 position: { left: (dimensions.width - calculateImageDimensions(45, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(45, 580 / 403).height) / 2 }
             }}
         // uiBackground={{ color: Color4.Red() }}//
-        
+
         >
             <UiEntity
                 uiTransform={{
@@ -89,127 +90,36 @@ export function createLoadBuildPanel() {
                             justifyContent: 'center',
                             width: '90%',
                             height: '30%',
-                            position: { top: 40 }
+                            position: { left: (dimensions.width - calculateImageDimensions(105, 90 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(225, 90 / 30).height) / 2 }
                         }}
                     // uiBackground={{color:Color4.Green()}}
                     >
                     </UiEntity>
 
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '80%',
-                height: '200%',
-                positionType:'absolute',
-                position: { left: (dimensions.width - calculateImageDimensions(92, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(60, 580 / 403).height) / 2 }
-            }}
-            uiBackground={{color:Color4.Gray()}}
-            />
-
-            {/* header row */}
-        <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '80%',
-                height: '10%',
-            }}
-            // uiBackground={{color:Color4.Blue()}}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
-            }}
-            
-        >
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
-            />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Parcel Count", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Size", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
-            />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Poly Count", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
-            />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Visit", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
-                    
                     <UiEntity
                         uiTransform={{
                             flexDirection: 'column',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateImageDimensions(3, 111 / 41).width,
-                            height: calculateImageDimensions(4, 111 / 41).height,
-                            margin: { right: "2%" },
-                            position: { bottom: 25, right: 500 }
+                            justifyContent: 'flex-start',
+                            width: '80%',
+                            height: '200%',
+                            positionType: 'absolute',
+                            position: { left: (dimensions.width - calculateImageDimensions(92, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(60, 580 / 403).height) / 2 }
                         }}
+                        uiBackground={{ color: Color4.Gray() }}
+                    />
+
+                    {/* header row */}
+                    <UiEntity
+                        uiTransform={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '80%',
+                            height: '10%',
+                        }}
+                        // uiBackground={{color:Color4.Blue()}}
                         uiBackground={{
                             textureMode: 'stretch',
                             texture: {
@@ -218,22 +128,122 @@ export function createLoadBuildPanel() {
                             uvs: getImageAtlasMapping({
                                 atlasHeight: 1024,
                                 atlasWidth: 1024,
-                                sourceTop: 60,
-                                sourceLeft: 844,
-                                sourceWidth: 30,
-                                sourceHeight: 30
+                                sourceTop: 801,
+                                sourceLeft: 802,
+                                sourceWidth: 223,
+                                sourceHeight: 41
                             })
                         }}
-                        onMouseDown={() => {
-                            displayLoadBuildPanel(false)
-                        }}
+
                     >
+                        <UiEntity
+                            uiTransform={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '30%',
+                                height: '100%',
+                            }}
+                            // uiBackground={{color:Color4.Green()}}
+                            uiText={{ value: "Name", fontSize: sizeFont(25, 15), textAlign: 'middle-left', color: Color4.Black() }}
+                        />
+
+                        <UiEntity
+                            uiTransform={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '20%',
+                                height: '100%',
+                            }}
+                            // uiBackground={{color:Color4.Green()}}
+                            uiText={{ value: "Parcel Count", fontSize: sizeFont(25, 15), textAlign: 'middle-center', color: Color4.Black() }}
+                        />
+                        <Dropdown
+                            options={[`My Builds`, `Friends Builds`, `Most Popular`]}
+                            onChange={selectOption}
+                            uiTransform={{
+                                width: '200px',
+                                height: '30px',
+                                position: { left: (dimensions.width - calculateImageDimensions(72, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(82, 580 / 403).height) / 2 }
+                            }}
+                        />
+
+                        <UiEntity
+                            uiTransform={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '20%',
+                                height: '100%',
+                            }}
+                            // uiBackground={{color:Color4.Green()}}
+                            uiText={{ value: "Size", fontSize: sizeFont(25, 15), textAlign: 'middle-center', color: Color4.Black() }}
+                        />
+
+                        <UiEntity
+                            uiTransform={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '20%',
+                                height: '100%',
+                            }}
+                            // uiBackground={{color:Color4.Green()}}
+                            uiText={{ value: "Poly Count", fontSize: sizeFont(25, 15), textAlign: 'middle-center', color: Color4.Black() }}
+                        />
+
+                        <UiEntity
+                            uiTransform={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '20%',
+                                height: '100%',
+                            }}
+                            // uiBackground={{color:Color4.Green()}}
+                            uiText={{ value: "Visit", fontSize: sizeFont(25, 15), textAlign: 'middle-center', color: Color4.Black() }}
+                        />
+
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: calculateImageDimensions(3, 111 / 41).width,
+                                height: calculateImageDimensions(4, 111 / 41).height,
+                                margin: { right: "2%" },
+                                position: { left: (dimensions.width - calculateImageDimensions(168, 30 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(55, 30 / 30).height) / 2 }
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas2.png'
+                                },
+                                uvs: getImageAtlasMapping({
+                                    atlasHeight: 1024,
+                                    atlasWidth: 1024,
+                                    sourceTop: 60,
+                                    sourceLeft: 844,
+                                    sourceWidth: 30,
+                                    sourceHeight: 30
+                                })
+                            }}
+                            onMouseDown={() => {
+                                displayLoadBuildPanel(false)
+                            }}
+                        >
+                        </UiEntity>
                     </UiEntity>
+
+
+
                 </UiEntity>
-
-
-
-        </UiEntity>
                 <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
@@ -242,7 +252,7 @@ export function createLoadBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 227, left: -120 }
+                        position: { left: (dimensions.width - calculateImageDimensions(120, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(115, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -278,7 +288,7 @@ export function createLoadBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 190, left: 10 }
+                        position: { left: (dimensions.width - calculateImageDimensions(100, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(140, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -314,7 +324,7 @@ export function createLoadBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 154, left: 140 }
+                        position: { left: (dimensions.width - calculateImageDimensions(80, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(166, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -342,79 +352,94 @@ export function createLoadBuildPanel() {
                         font="serif"
                         textAlign="middle-center"
                     />
-                      </UiEntity>
+                </UiEntity>
+
+                <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '10%',
+                        height: '20%',
+                    }}
+                    uiText={{ value: "Page " + (currentPage + 1) + " / " + totalPages }}
+                />
+                <UiEntity
+                    uiTransform={{
+                        display: totalPages > 1 ? 'flex' : 'none',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        width: '90%',
+                        height: '8%',
+                    }}
+                // uiBackground={{color:Color4.Blue()}}
+                >
 
                     <UiEntity
                         uiTransform={{
                             display: 'flex',
-                            flexDirection: 'column',
-                            width: '10%',
-                            height: '20%',
+                            justifyContent: 'center',
+                            alignContent: 'center',
+                            flexDirection: 'row',
+                            width: '25%',
+                            height: '90%',
+                            margin: { right: '2%' }
                         }}
-                        uiText={{ value: "Page " + (currentPage + 1) + " / " + totalPages }}
+                        uiBackground={{ color: Color4.Purple() }}
+                        uiText={{ value: "<", fontSize: sizeFont(20, 12) }}
+                        onMouseUp={() => {
+                            if (currentPage - 1 >= 0) {
+                                currentPage--
+                            }
+                        }}
                     />
                     <UiEntity
                         uiTransform={{
-                            display: totalPages > 1 ? 'flex' : 'none',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
+                            display: 'flex',
+                            justifyContent: 'center',
                             alignContent: 'center',
-                            alignItems: 'center',
-                            width: '90%',
-                            height: '8%',
+                            flexDirection: 'row',
+                            width: '25%',
+                            height: '90%',
+                            margin: { left: '2%' }
                         }}
-                    // uiBackground={{color:Color4.Blue()}}
-                    >
-
-                        <UiEntity
-                            uiTransform={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignContent: 'center',
-                                flexDirection: 'row',
-                                width: '25%',
-                                height: '90%',
-                                margin: { right: '2%' }
-                            }}
-                            uiBackground={{ color: Color4.Purple() }}
-                            uiText={{ value: "<", fontSize: sizeFont(20, 12) }}
-                            onMouseUp={() => {
-                                if (currentPage - 1 >= 0) {
-                                    currentPage--
-                                }
-                            }}
-                        />
-                        <UiEntity
-                            uiTransform={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignContent: 'center',
-                                flexDirection: 'row',
-                                width: '25%',
-                                height: '90%',
-                                margin: { left: '2%' }
-                            }}
-                            uiBackground={{ color: Color4.Purple() }}
-                            uiText={{ value: ">", fontSize: sizeFont(20, 12) }}
-                            onMouseUp={() => {
-                                if ((currentPage + 1) * itemsPerPage + itemsPerPage <= prevBuilds.size)
-                                    currentPage++
-                            }}
-                        />
-                    </UiEntity>
-
-
-
-                </UiEntity>
+                        uiBackground={{ color: Color4.Purple() }}
+                        uiText={{ value: ">", fontSize: sizeFont(20, 12) }}
+                        onMouseUp={() => {
+                            if ((currentPage + 1) * itemsPerPage + itemsPerPage <= prevBuilds.size)
+                                currentPage++
+                        }}
+                    />
                 </UiEntity>
 
 
 
+            </UiEntity>
+        </UiEntity>
 
-     
+
+
+
+
 
     )
 }
+function selectOption(index: number) {
+    switch (index) {
+      case 0:
+        textColor = Color4.Red()
+        break
+      case 1:
+        textColor = Color4.Blue()
+        break
+      case 2:
+        textColor = Color4.Green()
+        break
+    }
+  }
+  let textColor: Color4Type = Color4.Red()
+  
 function generateCatalogRows(itemsToShow: any) {
     let arr: any[] = []
 

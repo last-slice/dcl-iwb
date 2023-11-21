@@ -54,6 +54,7 @@ export function createInfoPanel() {
                         justifyContent: 'center',
                         width: '90%',
                         height: '30%',
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(70, 580 / 403).height) / 2 }
                     }}
                 // uiBackground={{color:Color4.Green()}}
                 >
@@ -72,7 +73,7 @@ export function createInfoPanel() {
                             justifyContent: 'center',
                             width: '90%',
                             height: '30%',
-                            position: { top: 20 }
+                            position: { left: (dimensions.width - calculateImageDimensions(100, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(70, 580 / 403).height) / 2 }
                         }}
                     // uiBackground={{color:Color4.Green()}}
                     >
@@ -93,7 +94,7 @@ export function createInfoPanel() {
                             width: calculateImageDimensions(3, 111 / 41).width,
                             height: calculateImageDimensions(4, 111 / 41).height,
                             margin: { right: "2%" },
-                            position: { top: -25, left: -225 }
+                            position: { left: (dimensions.width - calculateImageDimensions(132, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(85, 580 / 403).height) / 2 }
                         }}
                         uiBackground={{
                             textureMode: 'stretch',
@@ -123,7 +124,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 60, left: -150 }
+                        position: { left: (dimensions.width - calculateImageDimensions(130, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(275, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -160,7 +161,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 70, left: -150 }
+                        position: {left: (dimensions.width - calculateImageDimensions(130, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(265, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -197,7 +198,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 80, left: -150 }
+                        position: {left: (dimensions.width - calculateImageDimensions(130, 223 / 41).width) / 2,  top: (dimensions.height - calculateImageDimensions(255, 223 / 41).height) / 2}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -234,7 +235,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 90, left: -150 }
+                        position: { left: (dimensions.width - calculateImageDimensions(130, 223 / 41).width) / 2,  top: (dimensions.height - calculateImageDimensions(245, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -271,7 +272,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -85, left: 120 }
+                        position: { left: (dimensions.width - calculateImageDimensions(85, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(380, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -308,7 +309,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -75, left: 120 }
+                        position: { left: (dimensions.width - calculateImageDimensions(85, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(370, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -345,7 +346,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -65, left: 120 }
+                        position: { left: (dimensions.width - calculateImageDimensions(85, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(360, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -382,7 +383,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -55, left: 120 }
+                        position: { left: (dimensions.width - calculateImageDimensions(85, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(350, 223 / 41).height) / 2}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -419,7 +420,7 @@ export function createInfoPanel() {
                         width: calculateImageDimensions(30, 223 / 41).width,
                         height: calculateImageDimensions(30, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -25, left: 20 }
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(310, 223 / 41).height) / 2}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',

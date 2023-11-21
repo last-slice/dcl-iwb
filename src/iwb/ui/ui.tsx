@@ -32,6 +32,7 @@ import { createEditObjectPanel } from './Panels/EditObjectPanel'
 import { createGizmoPanel } from './GizmoPanel'
 import { createInitalizeWorldPanel } from './Panels/initaliteWorldPanel'
 import { createWorldReadyPanel } from './Panels/worldReadyPanel'
+import { createCatalogInfoPanel } from './Panels/CatalogInfoPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -48,6 +49,7 @@ const uiComponent = () => [
    */
 
   createNoWeb3Panel(),
+  createCatalogInfoPanel(),
   createSettingsPanel(),
   createPBuildConfirmPanel(),
   createDeleteBuildPanel(),

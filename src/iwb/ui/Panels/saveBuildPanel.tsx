@@ -84,7 +84,7 @@ export function createSaveBuildPanel() {
                             justifyContent: 'center',
                             width: '90%',
                             height: '30%',
-                            position: { top: 40 }
+                            position: { left: (dimensions.width - calculateImageDimensions(100, 90 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(140, 90 / 30).height) / 2 }
                         }}
                     // uiBackground={{color:Color4.Green()}}
                     >
@@ -105,7 +105,7 @@ export function createSaveBuildPanel() {
                             width: calculateImageDimensions(3, 111 / 41).width,
                             height: calculateImageDimensions(4, 111 / 41).height,
                             margin: { right: "2%" },
-                            position: { bottom: 25, right: 280 }
+                            position: { left: (dimensions.width - calculateImageDimensions(138, 30 / 30).width) / 2, top: (dimensions.height - calculateImageDimensions(55, 30 / 30).height) / 2 }
                         }}
                         uiBackground={{
                             textureMode: 'stretch',
@@ -135,7 +135,7 @@ export function createSaveBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 227, left: -120 }
+                        position: { left: (dimensions.width - calculateImageDimensions(120, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(110, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -171,7 +171,7 @@ export function createSaveBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 190, left: 10 }
+                        position: { left: (dimensions.width - calculateImageDimensions(100, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(135, 223 / 41).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -207,7 +207,7 @@ export function createSaveBuildPanel() {
                         width: calculateImageDimensions(7, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 154, left: 140 }
+                        position: { left: (dimensions.width - calculateImageDimensions(80, 223 / 41).width) / 2, top: (dimensions.height - calculateImageDimensions(160, 223 / 41).height) / 2}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',

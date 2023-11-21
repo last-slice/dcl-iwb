@@ -136,7 +136,12 @@ export interface CatalogItemType {
     n:  string
     objName: string
     ty:string
-    si?:any
+    cat: string
+    pc: number
+    on: string
+    si: number
+    d: string
+    tag: Array<string>
 }
 
 export interface SceneItem extends CatalogItemType{

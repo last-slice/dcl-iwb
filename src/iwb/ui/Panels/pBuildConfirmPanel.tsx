@@ -54,6 +54,7 @@ export function createPBuildConfirmPanel() {
                         justifyContent: 'center',
                         width: '90%',
                         height: '30%',
+                        position: {left: (dimensions.width - calculateImageDimensions(105, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(70, 580 / 403).height) / 2}
                     }}
                 // uiBackground={{color:Color4.Green()}}
                 >
@@ -72,7 +73,7 @@ export function createPBuildConfirmPanel() {
                             justifyContent: 'center',
                             width: '90%',
                             height: '30%',
-                            position: { top: 40 }
+                            position: { left: (dimensions.width - calculateImageDimensions(100, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(65, 580 / 403).height) / 2 }
                         }}
                     // uiBackground={{color:Color4.Green()}}
                     >
@@ -93,7 +94,7 @@ export function createPBuildConfirmPanel() {
                         width: calculateImageDimensions(3, 111 / 41).width,
                         height: calculateImageDimensions(4, 111 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: -25, left: -225 }
+                        position: { left: (dimensions.width - calculateImageDimensions(132, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(82, 580 / 403).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -123,7 +124,7 @@ export function createPBuildConfirmPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 40 }
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(60, 580 / 403).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -159,7 +160,7 @@ export function createPBuildConfirmPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 60 }
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(55, 580 / 403).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -195,7 +196,7 @@ export function createPBuildConfirmPanel() {
                         width: calculateImageDimensions(13, 223 / 41).width,
                         height: calculateImageDimensions(13, 223 / 41).height,
                         margin: { right: "2%" },
-                        position: { top: 80 }
+                        position: { left: (dimensions.width - calculateImageDimensions(105, 580 / 403).width) / 2, top: (dimensions.height - calculateImageDimensions(50, 580 / 403).height) / 2 }
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
