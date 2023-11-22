@@ -92,7 +92,7 @@ export interface Player {
     mode:SCENE_MODES,
     scenes:IWBScene[],
     worlds:any[],
-    buildingAllowed:string[],
+    buildingAllowed:boolean,
     currentParcel:string,
     uploadToken:string,
     version: number

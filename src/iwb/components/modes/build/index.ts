@@ -260,11 +260,11 @@ export function dropSelectedItem(){
     let parcel = "" + Math.floor(finalPosition.x/16) + "," + Math.floor(finalPosition.z/16)
 
     sceneBuilds.forEach((scene,key)=>{
-        if(scene.pcls.find((sc:string)=> sc === parcel)){
+        if(scene.pcls.find((sc:string)=> sc === parcel) && players.get(localUserId)?.canBuild){
             log('we can drop item here')
 
             PointerEvents.deleteFrom(selectedItem.entity)
-            // addBuildModePointers(selectedItem.entity)
+            // addBuildModePointers(selectedItem.entity)//
 
             players.get(localUserId)!.activeScene = scene
 
@@ -283,7 +283,7 @@ export function dropSelectedItem(){
             t.rotation.w = rotation.w
             t.parent = curSceneParent
 
-            engine.removeEntity(selectedItem.entity)
+            engine.removeEntity(selectedItem.entity)//
         
             sendServerMessage(
                 selectedItem.already ? SERVER_MESSAGE_TYPES.SCENE_UPDATE_ITEM : SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
@@ -329,9 +329,10 @@ export function checkBuildPermissions(player:Player){
         }
     })
 
+    player.activeScene = activeScene
+
     if(canbuild){
         player.canBuild = true
-        player.activeScene = activeScene
     }else{
         player.canBuild = false
         player.activeScene = null

@@ -271,9 +271,10 @@ export function createNewScenePanel() {
                         uvs: getImageAtlasMapping(uiSizes.positiveButton)
                     }}
                     onMouseDown={() => {
-                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {//
                             player: localUserId,
-                            parcel: players.get(localUserId)!.currentParcel
+                            parcel: players.get(localUserId)!.currentParcel,
+                            scene: players.get(localUserId)?.activeScene?.id
                         })
                     }}
                     uiText={{value: "Toggle Parcel", fontSize:sizeFont(30,20), color:Color4.White()}}

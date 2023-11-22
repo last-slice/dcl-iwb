@@ -1,11 +1,12 @@
 import {log} from "../../helpers/functions"
-import {SERVER_MESSAGE_TYPES} from "../../helpers/types"
+import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {items} from "../catalog"
 import {localUserId, players, removePlayer} from "../player/player"
 import {addBoundariesForParcel} from "../modes/create";
 import { setScenes, setWorlds } from "../scenes";
 import { Room } from "colyseus.js";
 import { displayWorldReadyPanel } from "../../ui/Panels/worldReadyPanel";
+import { showNotification } from "../../ui/Panels/notificationUI";
 
 
 export function initiateMessageListeners(room: Room) {
@@ -56,8 +57,12 @@ export function initiateMessageListeners(room: Room) {
 
     room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
-        if(info.owner === localUserId){
+        if(info.owner === localUserId && info.init){
             displayWorldReadyPanel(true, info)
+        }
+        else{
+            log('should display something else')
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: info.worldName + " just deployed their world - " + info.ens + "!", animate:{enabled:true, return:true, time:5}})
         }
 
         setWorlds([info])

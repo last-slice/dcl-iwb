@@ -24,7 +24,7 @@ export async function addPlayer(userId:string, local:boolean, data?:any[]){
         worlds:[],
         scenes:[],
         objects:[],
-        buildingAllowed:[],
+        buildingAllowed:false,
         selectedEntity:null,
         canBuild:false,
         homeWorld:false
@@ -124,4 +124,8 @@ export function worldTravel(world:any){
     displaySettingsPanel(false)
     displayRealmTravelPanel(false, {})
     changeRealm({realm: "https://worlds.dcl-iwb.co/world/"+world.ens})
+}
+
+export function hasBuildPermissions(){
+    return players.get(localUserId)?.buildingAllowed || players.get(localUserId)?.homeWorld
 }

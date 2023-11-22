@@ -29,7 +29,7 @@ export function createCatalogInfoPanel() {
 
     return (
         <UiEntity
-            key={"info-panel"}
+            key={"catalog-item-info-panel"}
             uiTransform={{
                 display: showCatalogInfoPanel ? 'flex' : 'none',
                 flexDirection: 'column',
@@ -38,7 +38,7 @@ export function createCatalogInfoPanel() {
                 width: calculateImageDimensions(25, 345 / 511).width,
                 height: calculateImageDimensions(25, 345 / 511).height,
                 positionType: 'absolute',
-                position: { right: '3%', bottom: '3%' }
+                position: { right: '3%', bottom: '3%' }//
             }}
             uiBackground={{
                 textureMode: 'stretch',

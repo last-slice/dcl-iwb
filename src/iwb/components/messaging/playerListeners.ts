@@ -6,7 +6,7 @@ import { Vector3 } from "@dcl/sdk/math"
 import { addPlayerScenes, localUserId, players } from "../player/player"
 import { items } from "../catalog"
 import { Room } from "colyseus.js"
-import { iwbEvents } from "."
+import { iwbEvents } from "."//
 
 export function createrPlayerListeners(room:Room){
     log('creating player listeners for room', room.roomId)

@@ -71,6 +71,10 @@ export function setScenes(info:any){
 
 export function loadScene(info:any){
     sceneBuilds.set(info.id, {...info})
+
+    if(info.bps.includes(localUserId)){
+        players.get(localUserId)!.buildingAllowed = true
+    }
     loadSceneBoundaries(info.id)  
 }
 
