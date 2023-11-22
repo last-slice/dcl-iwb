@@ -7,6 +7,7 @@ import { setScenes, setWorlds } from "../scenes";
 import { Room } from "colyseus.js";
 import { displayWorldReadyPanel } from "../../ui/Panels/worldReadyPanel";
 import { showNotification } from "../../ui/Panels/notificationUI";
+import { addSceneStateListeners } from "./sceneListeners";
 
 
 export function initiateMessageListeners(room: Room) {
@@ -26,9 +27,7 @@ export function initiateMessageListeners(room: Room) {
 
         //set deployed iwb version
         players.get(localUserId)!.version = info.iwb.v
-
-        //set scene list
-        // setScenes(info.scenes)
+        
         setWorlds(info.worlds)
 
         //set occupied parcels
@@ -37,6 +36,7 @@ export function initiateMessageListeners(room: Room) {
         //     addBoundariesForParcel(p, false)
         // }
 
+        addSceneStateListeners(room)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {

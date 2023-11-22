@@ -19,72 +19,6 @@ export function createSceneListeners(room: any) {
             deleteParcelEntities(parcel)
         })
 
-        room.state.scenes.onAdd(async(scene:any, key:string)=>{
-            log('Room Scene Added', key, scene)
-            await loadScene(scene)
-
-            scene.ass.onAdd((asset:any, key:any)=>{
-                log('added new item to state schema', key, asset)
-                loadSceneAsset(scene.id, asset)
-
-                //position
-                asset.p.listen("x", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "x", currentValue)
-                    }
-                });
-                asset.p.listen("y", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "y", currentValue)
-                    }
-                });
-                asset.p.listen("z", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "z", currentValue)
-                    }
-                });
-
-                //rotation
-                asset.r.listen("x", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "x", currentValue)
-                    }
-                });
-                asset.r.listen("y", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "y", currentValue)
-                    }
-                });
-                asset.r.listen("z", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "z", currentValue)
-                    }
-                });
-
-                //scale
-                asset.s.listen("x", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "x", currentValue)
-                    }
-                });
-                asset.s.listen("y", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "y", currentValue)
-                    }
-                });
-                asset.s.listen("z", (currentValue:any, previousValue:any) => {
-                    if(previousValue !== undefined){
-                        transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "z", currentValue)
-                    }
-                });
-            })
-
-            scene.ass.onRemove((asset:any, key:any)=>{
-                log("scene asset remove", key, asset)
-                removeItem(scene.id, asset)
-            })
-        })
-
         room.onMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, (info: any) => {
             log(SERVER_MESSAGE_TYPES.SELECT_PARCEL + ' received', info)
             selectParcel(info)
@@ -133,4 +67,72 @@ export function createSceneListeners(room: any) {
             log(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET + ' received', info)
 
         })
+}
+
+export function addSceneStateListeners(room:any){
+    room.state.scenes.onAdd(async(scene:any, key:string)=>{
+        log('Room Scene Added', key, scene)
+        await loadScene(scene)
+
+        scene.ass.onAdd((asset:any, key:any)=>{
+            log('added new item to state schema', key, asset)
+            loadSceneAsset(scene.id, asset)
+
+            //position
+            asset.p.listen("x", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "x", currentValue)
+                }
+            });
+            asset.p.listen("y", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "y", currentValue)
+                }
+            });
+            asset.p.listen("z", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "z", currentValue)
+                }
+            });
+
+            //rotation
+            asset.r.listen("x", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "x", currentValue)
+                }
+            });
+            asset.r.listen("y", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "y", currentValue)
+                }
+            });
+            asset.r.listen("z", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "z", currentValue)
+                }
+            });
+
+            //scale
+            asset.s.listen("x", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "x", currentValue)
+                }
+            });
+            asset.s.listen("y", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "y", currentValue)
+                }
+            });
+            asset.s.listen("z", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined){
+                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "z", currentValue)
+                }
+            });
+        })
+
+        scene.ass.onRemove((asset:any, key:any)=>{
+            log("scene asset remove", key, asset)
+            removeItem(scene.id, asset)
+        })
+    })
 }

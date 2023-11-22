@@ -12,22 +12,15 @@ export function setupMessageBus(){
     sceneMessageBus.on(IWB_MESSAGE_TYPES.USE_SELECTED_ASSET, (info:any)=>{
         log(IWB_MESSAGE_TYPES.USE_SELECTED_ASSET + ' message bus received', info)
         if(info.user !== localUserId){
-            //need to show asset for other user
-            let player = players.get(info.user)
-            if(player){
-                otherUserSelectedItem(player, info.item)
-            }
+            log('need to show pickup asset for other user')
+                otherUserSelectedItem(info)
         }
     })
 
     sceneMessageBus.on(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, (info:any)=>{
         log(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET + ' message bus received', info)
-        if(info.user !== localUserId){
-            //need to show asset for other user
-            let player = players.get(info.user)
-            if(player){
-                otherUserPlaceditem(player, info)
-            }
+        if(info.user !== localUserId){//
+            otherUserPlaceditem(info)
         }
     })
 

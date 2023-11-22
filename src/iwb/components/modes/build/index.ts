@@ -2,13 +2,14 @@ import {Quaternion, Vector3} from "@dcl/sdk/math"
 import {getRandomString, log, roundQuaternion, roundVector} from "../../../helpers/functions"
 import {items} from "../../catalog"
 import {localUserId, players} from "../../player/player"
-import {engine, Entity, GltfContainer, InputAction, MeshRenderer, PointerEvents, pointerEventsSystem, PointerEventType, Transform} from "@dcl/sdk/ecs"
+import {AvatarAnchorPointType, AvatarAttach, engine, Entity, GltfContainer, InputAction, MeshRenderer, PointerEvents, pointerEventsSystem, PointerEventType, Transform} from "@dcl/sdk/ecs"
 import {sceneMessageBus, sendServerMessage} from "../../messaging";
 import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, IWB_MESSAGE_TYPES, Player, SERVER_MESSAGE_TYPES, SceneItem, SelectedItem} from "../../../helpers/types";
 import { displayCatalogPanel } from "../../../ui/Panels/CatalogPanel"
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes"
 
-export let selectedItem:SelectedItem
+export let selectedItem:SelectedItem//
+export let playerParentEntities:Map<string, Entity> = new Map()
 
 export function sendServerEdit(axis:string, direction:number){
     sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, 
@@ -150,46 +151,33 @@ export function selectCatalogItem(id:any, mode:EDIT_MODES, already?:boolean){
         }
         Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
     }
-
-
-
 }
 
-export function otherUserPlaceditem(player:any, info:any){
-    let ent = player.selectedEntity
-    let transform = Transform.getMutable(ent)
-    transform.position = info.position
-    transform.scale = info.scale
-    transform.rotation = Quaternion.fromEulerDegrees(info.rotation.x, info.rotation.y, info.rotation.z)
-    player.selectedEntity = null
-}
-
-export function otherUserSelectedItem(player:any, item:any){
-    let ent:Entity
-    ent = engine.addEntity()
-
-    player.selectedEntity = ent
-
-    if(item.v && item.v > players.get(localUserId)!.version){
-        log('this asset is not ready for viewing, need to add temporary asset')
-    
-        let scale:any
-        if(item.si){
-            scale = Vector3.create(item.si.x, item.si.y, item.si.z)
-        }else{
-            scale = Vector3.One()
-        }
-        
-        MeshRenderer.setBox(ent)
-    }else{
-        log('this asset is ready for viewing, place object in scene')
-
-        //to do
-        //add different asset types here
-
-        GltfContainer.create(ent, {src: 'assets/' + item.id + ".glb"})
+export function otherUserPlaceditem(info:any){
+    let parent = playerParentEntities.get(info.user)
+    if(parent){
+        engine.removeEntity(parent)
     }
-    Transform.create(ent, {position: {x: 0, y: -.88, z: 4}, parent: player.parent})
+    // let transform = Transform.getMutable(ent)
+    // transform.position = info.position
+    // transform.scale = info.scale
+    // transform.rotation = Quaternion.fromEulerDegrees(info.rotation.x, info.rotation.y, info.rotation.z)
+    // player.selectedEntity = null
+}
+
+export function otherUserSelectedItem(info:any){
+    let parent = engine.addEntity()
+    Transform.create(parent, {position:Vector3.create(0,2,0)})
+    AvatarAttach.createOrReplace(parent, {
+        avatarId: info.user,
+        anchorPointId: AvatarAnchorPointType.AAPT_POSITION,//
+    })
+
+    let entity = entitiesFromItemIds.get(info.assetId)
+    if(entity){
+        Transform.createOrReplace(entity, {position: {x: 0, y: .25, z: 4}, parent: parent})
+    }
+    playerParentEntities.set(info.user, parent)//
 }
 
 export function otherUserRemovedSeletedItem(player:any){
@@ -197,7 +185,7 @@ export function otherUserRemovedSeletedItem(player:any){
    player.selectedEntity = null 
 }
 
-export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
+export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){//
     PointerEvents.deleteFrom(entity)
 
     let assetId = itemIdsFromEntities.get(entity)
@@ -218,12 +206,14 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
                     sceneId: scene.id,
                     itemData: sceneItem,
                     enabled:true,
-                    already: false
+                    already: already ? already : false//
                 }
         
                 if(mode === EDIT_MODES.GRAB){
                     addUseItemPointers(selectedItem.entity)
                 }
+
+                sceneMessageBus.emit(IWB_MESSAGE_TYPES.USE_SELECTED_ASSET, {user:localUserId, assetId:assetId})
                 return
             }
         })
@@ -282,7 +272,14 @@ export function dropSelectedItem(){
             t.rotation.w = rotation.w
             t.parent = curSceneParent
 
-            engine.removeEntity(selectedItem.entity)//
+            log('new transform is', t)
+
+            if(selectedItem.already){
+                log('dropping already selected item')
+                Transform.createOrReplace(selectedItem.entity, {position: t.position, rotation:t.rotation, scale:t.scale})
+            }else{
+                engine.removeEntity(selectedItem.entity) 
+            }
         
             sendServerMessage(
                 selectedItem.already ? SERVER_MESSAGE_TYPES.SCENE_UPDATE_ITEM : SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
@@ -298,6 +295,7 @@ export function dropSelectedItem(){
                     }
                 }
             )
+            sceneMessageBus.emit(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, assetId:selectedItem.aid})
 
             selectedItem.enabled = false
             return
