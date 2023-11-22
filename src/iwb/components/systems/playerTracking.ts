@@ -1,6 +1,6 @@
 import {engine, InputAction, PointerEventType, Transform} from "@dcl/sdk/ecs"
 import {localPlayer} from "../player/player"
-import {SCENE_MODES, VIEW_MODES} from "../../helpers/types"
+import {EDIT_MODES, SCENE_MODES, VIEW_MODES} from "../../helpers/types"
 import {checkBuildPermissions, selectedItem} from "../modes/build"
 import {Vector3} from "@dcl/sdk/math";
 import {flyBox} from "../modes/flying";
@@ -25,7 +25,7 @@ export function PlayerTrackingSystem(dt: number) {
     const cameraWorldHeight = getWorldPosition(localPlayer.cameraParent).y
 
     // Selected Item Height Control
-    if (selectedItem && selectedItem.enabled && selectedItem.entity && localPlayer.mode === SCENE_MODES.BUILD_MODE) {
+    if (selectedItem && selectedItem.enabled && selectedItem.entity && localPlayer.mode === SCENE_MODES.BUILD_MODE && selectedItem.mode === EDIT_MODES.GRAB) {
         console.log('selected item', selectedItem.entity)
         let selEntity = Transform.getMutable(selectedItem.entity)
 

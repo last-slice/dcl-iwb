@@ -293,8 +293,9 @@ export function dropSelectedItem(){
         
             // update object transform
             const t = Transform.getMutable(selectedItem.entity)
-            t.position = finalPosition
-            t.position.y = t.position.y - .88
+            t.position.x = finalPosition.x
+            t.position.z = finalPosition.z
+            
             t.rotation.y =  rotation.y
             t.rotation.w = rotation.w
             t.parent = curSceneParent

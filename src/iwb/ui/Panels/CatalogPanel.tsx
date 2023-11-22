@@ -100,7 +100,7 @@ function filterCatalog(){
 export function createCatalogPanel() {
     return (
         <UiEntity
-            key={"catalogpanel"}
+            key={"catalogpanel-main"}
             uiTransform={{
                 display: showCatalogPanel ? 'flex' : 'none',
                 flexDirection: 'column',
@@ -238,6 +238,7 @@ export function createCatalogPanel() {
             // uiBackground={{color:Color4.Green()}}
             >
             <Dropdown
+            key={"type-dropdown"}
                     options={[`3D`, `2D`, `All`]}
                     onChange={selectDimension}
                     uiTransform={{
@@ -315,6 +316,7 @@ export function createCatalogPanel() {
             // uiBackground={{color:Color4.Green()}}
             >
                 <Dropdown
+                key={"style-dropdown"}
                     options={[...styles]}
                     onChange={filterByStyle}
                     uiTransform={{
@@ -454,7 +456,7 @@ function generateAlphabet() {
 export function AlphabetItem(data:any){
     return (
         <UiEntity
-            key={"alphbaet-item" + data.item}
+            key={"alphbaet-item-" + data.item}
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -515,7 +517,7 @@ export const CatalogRow = ({ row, items }: { row: number, items: CatalogItemType
 function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
     return (
         <UiEntity
-            key={"catalog-item-row" + row}
+            key={"catalog-item-row" + item.id}
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'column',
