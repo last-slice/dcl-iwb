@@ -151,8 +151,28 @@ export function InputListenSystem(dt:number){
                 log('pressed F key but no result')
               }
           }
+
+        //W
+        if (inputSystem.isTriggered(InputAction.IA_FORWARD, PointerEventType.PET_DOWN)) {
+            setButtonState(InputAction.IA_FORWARD, PointerEventType.PET_DOWN)
+        }
+        //A
+        if (inputSystem.isTriggered(InputAction.IA_LEFT, PointerEventType.PET_DOWN)) {
+            setButtonState(InputAction.IA_LEFT, PointerEventType.PET_DOWN)
+        }
+        //S
+        if (inputSystem.isTriggered(InputAction.IA_BACKWARD, PointerEventType.PET_DOWN)) {
+            setButtonState(InputAction.IA_BACKWARD, PointerEventType.PET_DOWN)
+        }
+        //D
+        if (inputSystem.isTriggered(InputAction.IA_RIGHT, PointerEventType.PET_DOWN)) {
+            setButtonState(InputAction.IA_RIGHT, PointerEventType.PET_DOWN)
+        }
   
-          
+        // JUMP
+        if (inputSystem.isTriggered(InputAction.IA_JUMP, PointerEventType.PET_DOWN)) {
+            setButtonState(InputAction.IA_JUMP, PointerEventType.PET_DOWN)
+        }
   
   
   
@@ -195,4 +215,25 @@ export function InputListenSystem(dt:number){
           if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_UP)){
               setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_UP)
           }
+
+        //W
+        if (inputSystem.isTriggered(InputAction.IA_FORWARD, PointerEventType.PET_UP)) {
+            setButtonState(InputAction.IA_FORWARD, PointerEventType.PET_UP)
+        }
+        //A
+        if (inputSystem.isTriggered(InputAction.IA_LEFT, PointerEventType.PET_UP)) {
+            setButtonState(InputAction.IA_LEFT, PointerEventType.PET_UP)
+        }
+        //S
+        if (inputSystem.isTriggered(InputAction.IA_BACKWARD, PointerEventType.PET_UP)) {
+            setButtonState(InputAction.IA_BACKWARD, PointerEventType.PET_UP)
+        }
+        //D
+        if (inputSystem.isTriggered(InputAction.IA_RIGHT, PointerEventType.PET_UP)) {
+            setButtonState(InputAction.IA_RIGHT, PointerEventType.PET_UP)
+        }
+        // JUMP
+        if (inputSystem.isTriggered(InputAction.IA_JUMP, PointerEventType.PET_UP)) {
+            setButtonState(InputAction.IA_JUMP, PointerEventType.PET_UP)
+        }
 }
