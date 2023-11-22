@@ -13,16 +13,37 @@ import {
 import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import {selectCatalogItem} from '../../components/modes/build'
-import { CatalogItemType, EDIT_MODES, SCENE_MODES } from '../../helpers/types'
+import { CatalogItemType, EDIT_MODES, SCENE_MODES, SceneItem } from '../../helpers/types'
 import { uiSizes } from '../uiConfig'
 import { localUserId, players } from '../../components/player/player'
 import { displayCatalogInfoPanel, setSelectedInfoItem } from './CatalogInfoPanel'
 
 export let showCatalogPanel = false
 
+export let original:any[] = []
+export let itemsToShow:CatalogItemType[] = []
+
+export function sortAlphabet(){
+    itemsToShow = original.sort((a, b) => a.n.localeCompare(b.n));
+}
+
 export function displayCatalogPanel(value: boolean) {
+    if(value){
+        original = [...items.values()]
+        totalPages = Math.ceil(original.length / (columns * rows));
+        sortAlphabet()
+        refreshView()
+    }
     showCatalogPanel = value
 }
+
+function refreshView(){
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    itemsToShow = itemsToShow.slice(startIndex, endIndex);
+}
+
+
 
 export let objName = ''
 
@@ -33,28 +54,32 @@ const rows = 3;
 
 let currentPage = 0;
 const itemsPerPage = 9;
+let totalPages = 0
 
 let settings:any[] = [
     {label:"Public", enabled:true},
 ]
 
+let alphabet = [
+    "A","B"
+]
+
+function filterResults(filter:string){
+    log('filtering results')
+    if(filter === ""){
+        sortAlphabet()
+        refreshView()
+    }else{
+        let result = [...itemsToShow]
+        itemsToShow = result.filter(item =>
+            item.n.toLowerCase().includes(filter.toLowerCase()) ||
+            item.sty.toLowerCase().includes(filter.toLowerCase()) ||
+            item.cat.toLowerCase().includes(filter.toLowerCase())
+        );
+    }
+}
+
 export function createCatalogPanel() {
-    const startIndex = currentPage * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    let original = [...items.values()]
-    // log('original is', original)
-    
-    const sorted = original.sort((a, b) => a.n.localeCompare(b.n));
-    const itemsToShow = sorted.slice(startIndex, endIndex);
-
-    // log('sorted is', itemsToShow)
-    const totalPages = Math.ceil(original.length / (columns * rows));
-    const itemsArray = Array.from(items.values());
-
-    const filteredItems = itemsArray.filter(item => 
-        currentFilterType === 'All' || item.ty === currentFilterType
-    );
-
     return (
         <UiEntity
             key={"catalogpanel"}
@@ -128,16 +153,17 @@ export function createCatalogPanel() {
                     // }}
                 >
                     <Input
-                        onSubmit={(value) => {
-                            console.log('submitted value: ' + value)
+                        onChange={(value)=>{
+                            filterResults(value)
                         }}
-                        fontSize={15}
+                        fontSize={sizeFont(20,15)}
                         placeholder={'Search Assets'}
                         placeholderColor={Color4.White()}
                         uiTransform={{
                             width: '100%',
                             height: '120%',
                         }}
+                        color={Color4.White()}
                         ></Input>
 
                 </UiEntity>
@@ -160,9 +186,6 @@ export function createCatalogPanel() {
                         uvs: getImageAtlasMapping(uiSizes.opaqueSearchIcon)
                     }}
                     onMouseUp={() => {
-                        if (currentPage - 1 >= 0) {
-                            currentPage--
-                        }
                     }}
                 />
                 <UiEntity
@@ -289,7 +312,7 @@ export function createCatalogPanel() {
 
 
 
-            {generateCatalogRows(itemsToShow)}
+            {generateCatalogRows()}
 
 
             {/* paginate container */}
@@ -338,6 +361,7 @@ export function createCatalogPanel() {
                     onMouseUp={() => {
                         if (currentPage - 1 >= 0) {
                             currentPage--
+                            refreshView()
                         }
                     }}
                 />
@@ -363,17 +387,34 @@ export function createCatalogPanel() {
                     onMouseUp={() => {
                         if ((currentPage + 1) * itemsPerPage + itemsPerPage <= items.size)
                             currentPage++
+                            refreshView()
                     }}
                 />
 
             </UiEntity>
 
 
+{/* alphabet search bar vertical */}
+{/* 
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '5%',
+                    height: '70%',
+                    positionType:'absolute',
+                    position:{left:'2.5%', top:'25%'}
+                }}
+            uiBackground={{color:Color4.Blue()}}
+            /> */}
+
+
+
         </UiEntity>
     )
 }
 
-function generateCatalogRows(itemsToShow: CatalogItemType[]) {
+function generateCatalogRows() {
     let arr: any[] = []
 
     let start = 0

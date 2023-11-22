@@ -11,7 +11,7 @@ export function displayInfoPanel(value: boolean) {
 export function createInfoPanel() {
     return (
         <UiEntity
-            key={"selected-item-info-panel"}
+            key={"-info-panel"}
             uiTransform={{
                 display: showInfoPanel ? 'flex' : 'none',
                 flexDirection: 'column',

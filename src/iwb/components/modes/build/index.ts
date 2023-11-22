@@ -7,6 +7,7 @@ import {sceneMessageBus, sendServerMessage} from "../../messaging";
 import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, IWB_MESSAGE_TYPES, Player, SERVER_MESSAGE_TYPES, SceneItem, SelectedItem} from "../../../helpers/types";
 import { displayCatalogPanel } from "../../../ui/Panels/CatalogPanel"
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes"
+import { hideAllPanels } from "../../../ui/ui"
 
 export let selectedItem:SelectedItem//
 export let playerParentEntities:Map<string, Entity> = new Map()
@@ -185,7 +186,8 @@ export function otherUserRemovedSeletedItem(player:any){
    player.selectedEntity = null 
 }
 
-export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){//
+export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
+    hideAllPanels()
     PointerEvents.deleteFrom(entity)
 
     let assetId = itemIdsFromEntities.get(entity)
@@ -297,7 +299,7 @@ export function dropSelectedItem(){
             )
             sceneMessageBus.emit(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, assetId:selectedItem.aid})
 
-            selectedItem.enabled = false
+            selectedItem.enabled = false//
             return
         }
     })

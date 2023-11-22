@@ -142,6 +142,7 @@ export interface CatalogItemType {
     on: string
     si: number
     d: string
+    sty:string
     tag: Array<string>
     bb:any
 }
