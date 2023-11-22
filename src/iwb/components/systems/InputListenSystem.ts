@@ -1,6 +1,6 @@
 import { Entity, InputAction, PointerEventType, inputSystem } from "@dcl/sdk/ecs"
 import { setButtonState } from "../listeners/inputListeners"
-import { dropSelectedItem, editItem, grabItem, removeSelectedItem, saveItem, selectedItem, sendServerDelete } from "../modes/build"
+import { dropSelectedItem, duplicateItem, editItem, grabItem, removeSelectedItem, saveItem, selectedItem, sendServerDelete } from "../modes/build"
 import { checkShortCuts } from "../listeners/shortcuts"
 import { log } from "../../helpers/functions"
 import { localUserId, players } from "../player/player"
@@ -28,9 +28,19 @@ export function InputListenSystem(dt:number){
             }
           }
   
-          //#2
+          //#2//
           if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)){
               // Logic in response to button press
+              const result = inputSystem.getInputCommand(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)
+              if(result){
+                if(result.hit && result.hit.entityId){
+                    log('player pressed #2 on an object')
+                    if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
+                        log('player pressed #2 on an object in Build mode, need to duplicate')
+                        duplicateItem(result.hit.entityId as Entity)
+                    }
+                }
+            }
           }
   
           //#3
@@ -96,12 +106,8 @@ export function InputListenSystem(dt:number){
                             editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
                         }
                     }
-                 }else{
-                    
-                 }
-              }
-              else{
-                if(players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE){
+                 }else{               
+                    if(players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE){
                     log('player pressed #F on an object in Build mode, need to edit')
                     if(selectedItem && selectedItem.enabled){
                         log('player has selected item, need to delete')
@@ -117,6 +123,10 @@ export function InputListenSystem(dt:number){
                     //didnt hit an object and not in build mode
                     checkShortCuts()
                 }
+                 }
+              }
+              else{
+                log('pressed F key but no result')
               }
           }
   

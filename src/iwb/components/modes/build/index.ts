@@ -231,7 +231,6 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
 }
 
 export function saveItem(){
-
     PointerEvents.deleteFrom(selectedItem.entity)
     addBuildModePointers(selectedItem.entity)
     selectedItem.enabled = false
@@ -304,6 +303,21 @@ export function dropSelectedItem(){
             return
         }
     })
+}
+
+export function duplicateItem(entity:Entity){
+    let assetId = itemIdsFromEntities.get(entity)
+    console.log('found asset id', assetId)
+    if(assetId){
+        sceneBuilds.forEach((scene:IWBScene)=>{
+            let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
+            console.log('scene item is', sceneItem)
+            if(sceneItem){
+                selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB)
+                return
+            }
+        })
+    }
 }
 
 export function grabItem(entity:Entity){
@@ -385,6 +399,13 @@ export function addBuildModePointers(ent:Entity){
                 eventInfo: {
                     button: InputAction.IA_ACTION_3,
                     hoverText: "Grab",
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_ACTION_4,
+                    hoverText: "Duplicate",
                 }
             }
         ]
