@@ -1,7 +1,7 @@
 import { engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
 import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
-import { removeItem, transformObject } from "../modes/build"
+import { otherUserPlaceditem, otherUserSelectedItem, removeItem, transformObject } from "../modes/build"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
 import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, setScenes } from "../scenes"
@@ -39,33 +39,23 @@ export function createSceneListeners(room: any) {
             // setScenes(info.info)
         })
 
-        // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, (info:any) => {
-        //     log(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM + ' received', info)
-
-        //     if(info.userId !== localUserId){//
-        //         console.log('need to change transform position of item from other user')
-        //     }
-        //     removeItem(info)
-        // })
-
-        // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, (info:any) => {
-        //     log(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM + ' received', info)
-
-        //     if(info.userId !== localUserId){
-        //         console.log('need to change transform position of item from other user')
-        //     }
-
-        //     let scene = sceneBuilds.get(info.sceneId)
-        //     console.log('scene is', scene)
-        //     if(scene){
-        //         scene.ass.push(info.item)
-        //         itemIdsFromEntities.set(info.entity, info.item.aid)
-        //     }
-        // })
-
         room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, (info:any) => {
             log(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET + ' received', info)
+        })
 
+        room.onMessage(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET + ' received', info)
+            if(info.user !== localUserId){
+                log('need to show pickup asset for other user')
+                    otherUserSelectedItem(info)
+            }
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET + ' received', info)
+            if(info.user !== localUserId){
+                otherUserPlaceditem(info)
+            }
         })
 }
 

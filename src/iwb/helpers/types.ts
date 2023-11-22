@@ -11,6 +11,8 @@ export enum SERVER_MESSAGE_TYPES {
 
     // Player
     PLAY_MODE_CHANGED = 'play_mode_changed',
+    USE_SELECTED_ASSET = 'use_asset',
+    PLACE_SELECTED_ASSET = 'place_asset',
 
     // Catalog and Assets
     CATALOG_UPDATED = 'catalog_updated',

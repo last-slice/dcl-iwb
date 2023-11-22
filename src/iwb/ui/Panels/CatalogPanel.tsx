@@ -23,15 +23,10 @@ export let showCatalogPanel = false
 export let original:any[] = []
 export let itemsToShow:CatalogItemType[] = []
 
-export function sortAlphabet(){
-    itemsToShow = original.sort((a, b) => a.n.localeCompare(b.n));
-}
-
 export function displayCatalogPanel(value: boolean) {
     if(value){
         original = [...items.values()]
         totalPages = Math.ceil(original.length / (columns * rows));
-        sortAlphabet()
         refreshView()
     }
     showCatalogPanel = value
@@ -40,7 +35,8 @@ export function displayCatalogPanel(value: boolean) {
 function refreshView(){
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    itemsToShow = itemsToShow.slice(startIndex, endIndex);
+    let sort = original.sort((a, b) => a.n.localeCompare(b.n));
+    itemsToShow = sort.slice(startIndex, endIndex);
 }
 
 
@@ -67,7 +63,6 @@ let alphabet = [
 function filterResults(filter:string){
     log('filtering results')
     if(filter === ""){
-        sortAlphabet()
         refreshView()
     }else{
         let result = [...itemsToShow]

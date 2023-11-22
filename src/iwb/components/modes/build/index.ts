@@ -3,13 +3,13 @@ import {getRandomString, log, roundQuaternion, roundVector} from "../../../helpe
 import {items} from "../../catalog"
 import {localUserId, players} from "../../player/player"
 import {AvatarAnchorPointType, AvatarAttach, engine, Entity, GltfContainer, InputAction, MeshRenderer, PointerEvents, pointerEventsSystem, PointerEventType, Transform} from "@dcl/sdk/ecs"
-import {sceneMessageBus, sendServerMessage} from "../../messaging";
+import {cRoom, sendServerMessage} from "../../messaging";
 import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, IWB_MESSAGE_TYPES, Player, SERVER_MESSAGE_TYPES, SceneItem, SelectedItem} from "../../../helpers/types";
 import { displayCatalogPanel } from "../../../ui/Panels/CatalogPanel"
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes"
 import { hideAllPanels } from "../../../ui/ui"
 
-export let selectedItem:SelectedItem//
+export let selectedItem:SelectedItem
 export let playerParentEntities:Map<string, Entity> = new Map()
 
 export function sendServerEdit(axis:string, direction:number){
@@ -215,7 +215,7 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
                     addUseItemPointers(selectedItem.entity)
                 }
 
-                sceneMessageBus.emit(IWB_MESSAGE_TYPES.USE_SELECTED_ASSET, {user:localUserId, assetId:assetId})
+                cRoom.send(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, {user:localUserId, assetId:assetId})
                 return
             }
         })
@@ -255,7 +255,7 @@ export function dropSelectedItem(){
             log('we can drop item here')
 
             PointerEvents.deleteFrom(selectedItem.entity)
-            // addBuildModePointers(selectedItem.entity)//
+            addBuildModePointers(selectedItem.entity)//
 
             players.get(localUserId)!.activeScene = scene
 
@@ -278,7 +278,7 @@ export function dropSelectedItem(){
 
             if(selectedItem.already){
                 log('dropping already selected item')
-                Transform.createOrReplace(selectedItem.entity, {position: t.position, rotation:t.rotation, scale:t.scale})
+                Transform.createOrReplace(selectedItem.entity, t)
             }else{
                 engine.removeEntity(selectedItem.entity) 
             }
@@ -294,12 +294,12 @@ export function dropSelectedItem(){
                         position: roundVector(t.position, 2), 
                         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2), 
                         scale: roundVector(t.scale, 2)
-                    }
+                    }//
                 }
             )
-            sceneMessageBus.emit(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, assetId:selectedItem.aid})
+            cRoom.send(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, assetId:selectedItem.aid})
 
-            selectedItem.enabled = false//
+            selectedItem.enabled = false
             return
         }
     })
