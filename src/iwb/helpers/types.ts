@@ -51,6 +51,11 @@ export enum SCENE_MODES {
     BUILD_MODE
 }
 
+export enum VIEW_MODES {
+    AVATAR,
+    GOD
+}
+
 export enum EDIT_MODES {
     GRAB,
     EDIT
@@ -92,6 +97,7 @@ export type NOTIFICATION_DETAIL = {
 export interface Player {
     dclData:any,
     mode:SCENE_MODES,
+    viewMode:VIEW_MODES,
     scenes:IWBScene[],
     worlds:any[],
     buildingAllowed:boolean,
@@ -103,6 +109,7 @@ export interface Player {
     objects:any[],
     selectedEntity:Entity | null
     homeWorld:boolean
+    cameraParent:Entity
 }
 
 export interface IWBScene {
