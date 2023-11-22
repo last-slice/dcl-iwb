@@ -140,7 +140,7 @@ export function createCatalogInfoPanel() {
                 }}
                 onMouseDown={() => {
                     if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
-                        selectCatalogItem(selectedItem?.id, EDIT_MODES.GRAB)
+                        selectCatalogItem(selectedItem?.id, EDIT_MODES.GRAB, false)
                         displayCatalogInfoPanel(false)
                     }  
                 }}

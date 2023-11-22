@@ -1,6 +1,6 @@
 import {log} from "../../helpers/functions"
 import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
-import {items} from "../catalog"
+import {items, styles, updateStyles} from "../catalog"
 import {localUserId, players, removePlayer} from "../player/player"
 import {addBoundariesForParcel} from "../modes/create";
 import { setScenes, setWorlds } from "../scenes";
@@ -23,11 +23,13 @@ export function initiateMessageListeners(room: Room) {
                 items.set(key, value)
             }
         }
-        log('catalog size is', items.size)
+
+        //set catalog styles
+        updateStyles(info.styles)
 
         //set deployed iwb version
         players.get(localUserId)!.version = info.iwb.v
-        
+
         setWorlds(info.worlds)
 
         //set occupied parcels

@@ -1,6 +1,6 @@
 import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown, Input} from '@dcl/sdk/react-ecs'
 import {Color4, Vector3} from '@dcl/sdk/math'
-import {items} from '../../components/catalog'
+import {items, styles} from '../../components/catalog'
 
 import {
     addLineBreak,
@@ -21,11 +21,16 @@ import { displayCatalogInfoPanel, setSelectedInfoItem } from './CatalogInfoPanel
 export let showCatalogPanel = false
 
 export let original:any[] = []
+export let filtered:CatalogItemType[] = []
 export let itemsToShow:CatalogItemType[] = []
+
+export let styleFilter = "All"
+export let searchFilter = ""
 
 export function displayCatalogPanel(value: boolean) {
     if(value){
         original = [...items.values()]
+        filtered = original.sort((a, b) => a.n.localeCompare(b.n));
         totalPages = Math.ceil(original.length / (columns * rows));
         refreshView()
     }
@@ -35,15 +40,10 @@ export function displayCatalogPanel(value: boolean) {
 function refreshView(){
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    let sort = original.sort((a, b) => a.n.localeCompare(b.n));
-    itemsToShow = sort.slice(startIndex, endIndex);
+    itemsToShow = filtered.slice(startIndex, endIndex);
 }
 
-
-
 export let objName = ''
-
-let currentFilterType = 'All';
 
 const columns = 2;
 const rows = 3;
@@ -57,21 +57,44 @@ let settings:any[] = [
 ]
 
 let alphabet = [
-    "A","B"
+    "A","B", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z"
 ]
 
-function filterResults(filter:string){
-    log('filtering results')
-    if(filter === ""){
-        refreshView()
+function filterByStyle(index: number){
+    styleFilter = styles[index]
+    filterCatalog()
+}
+
+function filterCatalog(){
+    let temp = original.sort((a, b) => a.n.localeCompare(b.n));
+    log('temp item list is', temp)
+
+    let filteredResult:CatalogItemType[]
+
+    if(styleFilter === "All"){
+        filteredResult = temp
     }else{
-        let result = [...itemsToShow]
-        itemsToShow = result.filter(item =>
-            item.n.toLowerCase().includes(filter.toLowerCase()) ||
-            item.sty.toLowerCase().includes(filter.toLowerCase()) ||
-            item.cat.toLowerCase().includes(filter.toLowerCase())
+        let result = temp.filter(item =>
+            (item.sty && item.sty.toLowerCase().includes(styleFilter.toLowerCase()))
         );
+        filteredResult = [...result]
     }
+
+    if(searchFilter !== ""){
+        log('searching filter by', searchFilter)
+        let result = filteredResult.filter(item =>
+            item.n.toLowerCase().includes(searchFilter.toLowerCase()) || 
+            (item.sty && item.sty.toLowerCase().includes(searchFilter.toLowerCase())) ||
+            (item.cat && item.cat.toLowerCase().includes(searchFilter.toLowerCase())) ||
+            (item.d && item.d.toLowerCase().includes(searchFilter.toLowerCase())) ||
+            (item.on && item.on.toLowerCase().includes(searchFilter.toLowerCase()))
+        );
+        log('search filter result', result)
+        filteredResult = [...result]
+    }
+
+    filtered = [...filteredResult]
+    refreshView()
 }
 
 export function createCatalogPanel() {
@@ -149,7 +172,9 @@ export function createCatalogPanel() {
                 >
                     <Input
                         onChange={(value)=>{
-                            filterResults(value)
+                            searchFilter = value.trim()
+                            log('search filter is', searchFilter)
+                            filterCatalog()
                         }}
                         fontSize={sizeFont(20,15)}
                         placeholder={'Search Assets'}
@@ -290,8 +315,8 @@ export function createCatalogPanel() {
             // uiBackground={{color:Color4.Green()}}
             >
                 <Dropdown
-                    options={[`Public`, `Private`, `All`]}
-                    onChange={selectDimension}
+                    options={[...styles]}
+                    onChange={filterByStyle}
                     uiTransform={{
                         width: '100%',
                         height: '120%',
@@ -390,22 +415,58 @@ export function createCatalogPanel() {
 
 
 {/* alphabet search bar vertical */}
-{/* 
             <UiEntity
                 uiTransform={{
                     display: 'flex',
                     flexDirection: 'column',
+                    justifyContent:'flex-start',
+                    alignContent:"center",
+                    alignItems:'center',
                     width: '5%',
                     height: '70%',
                     positionType:'absolute',
                     position:{left:'2.5%', top:'25%'}
                 }}
-            uiBackground={{color:Color4.Blue()}}
-            /> */}
+            // uiBackground={{color:Color4.Blue()}}
+            >
+
+                {generateAlphabet()}
+
+            </UiEntity>
 
 
 
         </UiEntity>
+    )
+}
+
+function generateAlphabet() {
+    let arr: any[] = []
+
+    let start = 0
+    let end = 3
+    for (let i = 0; i < alphabet.length; i++) {
+        arr.push(<AlphabetItem row={i} item={alphabet[i]} />)
+    }
+    return arr
+}
+
+export function AlphabetItem(data:any){
+    return (
+        <UiEntity
+            key={"alphbaet-item" + data.item}
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '90%',
+                height: '21%',
+                margin: { top: '1%' }
+            }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{value: "" + data.item.toUpperCase()}}
+        />
     )
 }
 
@@ -491,7 +552,7 @@ function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
                 }}
                 onMouseDown={() => {
                     if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
-                        selectCatalogItem(item.id, EDIT_MODES.GRAB)
+                        selectCatalogItem(item.id, EDIT_MODES.GRAB, false)
                     }  
                 }}
             />
@@ -555,19 +616,19 @@ function CatalogItem({ row, item }: { row: string, item: CatalogItemType }) {
 }//
 
 function selectDimension(index: number) {
-    switch (index) {
-        case 0:
-            currentFilterType = '3D';
-            break;
-        case 1:
-            currentFilterType = '2D';
-            break;
-        case 2:
-            currentFilterType = 'All';
-            break;
-    }
+    
+    // switch (index) {
+    //     case 0:
+    //         currentFilterType = '3D';
+    //         break;
+    //     case 1:
+    //         currentFilterType = '2D';
+    //         break;
+    //     case 2:
+    //         currentFilterType = 'All';
+    //         break;
+    // }
 }
-
 
 function getButtonState(button:string){
     if(settings.find((b:any)=> b.label === button).enabled){

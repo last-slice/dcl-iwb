@@ -1,4 +1,4 @@
-import { Entity } from "@dcl/sdk/ecs"
+import { Entity, TransformType } from "@dcl/sdk/ecs"
 
 
 export enum SERVER_MESSAGE_TYPES {
@@ -167,4 +167,6 @@ export interface SelectedItem {
     itemData:SceneItem
     enabled:boolean
     already?:boolean
+    transform?:TransformType
+    pointer?:Entity
 }

@@ -2,7 +2,7 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { getImageAtlasMapping, sizeFont } from '../helpers'
-import { saveItem, selectedItem } from '../../components/modes/build'
+import { cancelSelectedItem, deleteSelectedItem, saveItem, selectedItem } from '../../components/modes/build'
 import { Transform, engine } from '@dcl/sdk/ecs'
 import { localUserId, players } from '../../components/player/player'
 import { EDIT_MODES } from '../../helpers/types'
@@ -246,6 +246,17 @@ export function EditTransform() {
 
         </UiEntity>
 
+            {/* button rows */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '90%',
+                height: '20%',
+                margin:{top:'1%'}
+            }}
+        >
 
 {/* save button */}
 <UiEntity
@@ -253,9 +264,9 @@ export function EditTransform() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%',
-                height: '20%',
-                margin:{top:'1%'}
+                width: '30%',
+                height: '100%',
+                margin:{left:"1%", right:"1%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -268,7 +279,53 @@ export function EditTransform() {
             onMouseDown={()=>{
                 saveItem()
             }}
-        >
+        />
+
+{/* delete button */}
+<UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+                margin:{left:"1%", right:"1%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+            }}
+            uiText={{value: "Delete", fontSize:sizeFont(20,16)}}
+            onMouseDown={()=>{
+                deleteSelectedItem()
+            }}
+        />
+
+{/* cancel button */}
+<UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+                margin:{left:"1%", right:"1%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.blackButton)
+            }}
+            uiText={{value: "Cancel", fontSize:sizeFont(20,16)}}
+            onMouseDown={()=>{
+                cancelSelectedItem()
+            }}
+        />
 
         </UiEntity>
 

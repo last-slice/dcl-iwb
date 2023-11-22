@@ -113,7 +113,7 @@ export function toggleEditModifier(modifier?:EDIT_MODIFIERS){
     console.log('modifier is now', selectedItem)
 }
 
-export function selectCatalogItem(id:any, mode:EDIT_MODES, already?:boolean){
+export function selectCatalogItem(id:any, mode:EDIT_MODES, already:boolean){
     displayCatalogPanel(false)
 
     let itemData = items.get(id)
@@ -127,9 +127,15 @@ export function selectCatalogItem(id:any, mode:EDIT_MODES, already?:boolean){
             catalogId:id,
             sceneId:"",
             itemData: itemData,
-            enabled:true
+            enabled:true,
+            already: already
         }
-        addUseItemPointers(selectedItem.entity)
+
+        if(already){
+            addUseItemPointers(selectedItem.entity)
+        }else{
+            addUseCatalogItemPointers(selectedItem.entity)
+        }
 
         let scale:any
         scale = Vector3.One()
@@ -188,6 +194,8 @@ export function otherUserRemovedSeletedItem(player:any){
 
 export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
     hideAllPanels()
+
+    hideAllOtherPointers()
     PointerEvents.deleteFrom(entity)
 
     let assetId = itemIdsFromEntities.get(entity)
@@ -197,6 +205,11 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
             let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
             console.log('scene item is', sceneItem)
             if(sceneItem){
+
+                let transform = Transform.get(entity)
+                let transPos = Vector3.clone(transform.position)
+                let transScal = Vector3.clone(transform.scale)
+                let transRot = Quaternion.toEulerAngles(transform.rotation)
 
                 selectedItem = {
                     mode: mode,
@@ -208,11 +221,18 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
                     sceneId: scene.id,
                     itemData: sceneItem,
                     enabled:true,
-                    already: already ? already : false//
+                    already: already ? already : false,
+                    transform: {position: transPos, rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z), scale: transScal}
                 }
+                log('selected item is', selectedItem)
         
                 if(mode === EDIT_MODES.GRAB){
                     addUseItemPointers(selectedItem.entity)
+                }else{
+                    let itemdata = items.get(selectedItem.catalogId)
+                    selectedItem.pointer = engine.addEntity()
+                    MeshRenderer.setBox(selectedItem.pointer)
+                    Transform.createOrReplace(selectedItem.pointer, {position: Vector3.create(0, itemdata!.bb.z + 1, 0), parent: selectedItem.entity})
                 }
 
                 cRoom.send(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, {user:localUserId, assetId:assetId})
@@ -225,7 +245,10 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
 export function saveItem(){
     PointerEvents.deleteFrom(selectedItem.entity)
     addBuildModePointers(selectedItem.entity)
+    addAllBuildModePointers()
+
     selectedItem.enabled = false
+    selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
 
     // let scene = sceneBuilds.get(selectedItem.sceneId)
     // let t = Transform.get(selectedItem.entity)
@@ -255,7 +278,9 @@ export function dropSelectedItem(){
             log('we can drop item here')
 
             PointerEvents.deleteFrom(selectedItem.entity)
-            addBuildModePointers(selectedItem.entity)//
+            addBuildModePointers(selectedItem.entity)
+
+            addAllBuildModePointers()
 
             players.get(localUserId)!.activeScene = scene
 
@@ -313,7 +338,7 @@ export function duplicateItem(entity:Entity){
             let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
             console.log('scene item is', sceneItem)
             if(sceneItem){
-                selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB)
+                selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB, true)
                 return
             }
         })
@@ -323,13 +348,43 @@ export function duplicateItem(entity:Entity){
 export function grabItem(entity:Entity){
     editItem(entity, EDIT_MODES.GRAB, true)
     addUseItemPointers(entity)
+    // let transform = Transform.getMutable(entity)
+    // let rot = Quaternion.toEulerAngles(transform.rotation)
+    // rot.y += 180
+    // transform.rotation = Quaternion.fromEulerDegrees(rot.x, rot.y, rot.z)
     Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
 }
+
+export function deleteSelectedItem(){
+    sendServerDelete(selectedItem.entity)
+    removeSelectedItem()
+}
+
+export function cancelSelectedItem(){
+    log('canceled selected item is', selectedItem)
+    let scene = sceneBuilds.get(selectedItem.sceneId)
+    if(scene){
+        Transform.createOrReplace(selectedItem.entity, {parent:scene.parentEntity, position:selectedItem.transform!.position, rotation:selectedItem.transform!.rotation, scale: selectedItem.transform!.scale})
+        
+        PointerEvents.deleteFrom(selectedItem.entity)
+        addBuildModePointers(selectedItem.entity)
+        addAllBuildModePointers()
+
+        selectedItem.enabled = false
+        selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
+    }else{
+        log('no scene found to cancel selected item')
+    }
+}
+
 
 export function removeSelectedItem(){
     PointerEvents.deleteFrom(selectedItem.entity)
     engine.removeEntity(selectedItem.entity)
     selectedItem.enabled = false
+    selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
+    
+    addAllBuildModePointers()
 }
 
 export function checkBuildPermissions(player:Player){
@@ -356,6 +411,27 @@ export function checkBuildPermissions(player:Player){
     }
 }
 
+function addUseCatalogItemPointers(ent:Entity){
+    PointerEvents.createOrReplace(ent, {
+        pointerEvents: [
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_SECONDARY,
+                    hoverText: "Drop",
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_ACTION_3,
+                    hoverText: "Cancel",
+                }
+            }
+        ]
+    })
+}
+
 function addUseItemPointers(ent:Entity){
     PointerEvents.createOrReplace(ent, {
         pointerEvents: [
@@ -371,6 +447,13 @@ function addUseItemPointers(ent:Entity){
                 eventInfo: {
                     button: InputAction.IA_PRIMARY,
                     hoverText: "Cancel",
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_ACTION_3,
+                    hoverText: "Delete",
                 }
             }
         ]
@@ -445,4 +528,21 @@ export function removeItem(sceneId:string, info:any){
             }
         }
     }
+}
+
+export function hideAllOtherPointers(){
+    sceneBuilds.forEach((scene,key)=>{
+        scene.entities.forEach((entity:Entity)=>{
+            PointerEvents.deleteFrom(entity)
+        })
+    })
+}
+
+export function addAllBuildModePointers(){
+    sceneBuilds.forEach((scene,key)=>{
+        log('scene for poijnters is', scene)
+        scene.entities.forEach((entity:Entity)=>{
+            addBuildModePointers(entity)
+        })
+    })
 }
