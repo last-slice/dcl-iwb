@@ -16,7 +16,7 @@ export function checkShortCuts(){
             let count = 0
 
             cut.buttons.forEach((button:any) => {
-                if(buttonsPressed.get(button).id === PointerEventType.PET_DOWN){
+                if(buttonsPressed.get(button)!.id === PointerEventType.PET_DOWN){
                     count++
                 }
             });

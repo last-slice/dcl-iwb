@@ -15,6 +15,7 @@ import { showNotification } from "./Panels/notificationUI"
 import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBuildConfirmPanel"
 import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
 import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
+import {toggleFlyMode} from "../components/modes/flying";
 
 export let uiModes: any = {
     0://playmode
@@ -77,9 +78,10 @@ export let topTools: any[] = [
             sourceWidth: 128,
             sourceHeight: 128
         },
-        enabled: true,
-        visible: true,
-        fn: () => {
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            toggleFlyMode()
         }
     },
     {
@@ -111,7 +113,6 @@ export let topTools: any[] = [
             else {
                 displayCatalogPanel(true)
             }
-
         }
     },
     // {
