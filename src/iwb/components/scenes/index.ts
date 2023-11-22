@@ -41,7 +41,6 @@ export function loadScene(info:any){
         log('loaded scene info is', info)
         sceneBuilds.set(info.id, info)
     })
-    
 }
 
 async function loadSceneBoundaries(info:any){
@@ -76,6 +75,8 @@ async function loadSceneBoundaries(info:any){
 }//
 
 async function loadSceneAssets(info:IWBScene){
+    if(!info.ass) return info
+
     info.ass.forEach(async (asset:SceneItem)=>{
         info.entities.push(await loadSceneAsset(info.parentEntity, asset))
     })

@@ -29,6 +29,7 @@ export function initiateMessageListeners(room: Room) {
         players.get(localUserId)!.version = info.iwb.v
 
         //set scene list
+        console.log('scenes are', info.scenes)
         setScenes(info.scenes)
 
         //set occupied parcels

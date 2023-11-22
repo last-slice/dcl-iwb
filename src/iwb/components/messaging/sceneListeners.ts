@@ -1,10 +1,9 @@
-import { engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
-import {IWBScene, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
-import { removeItem, transformObject } from "../modes/build"
+import {IWBScene, SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
+import {removeItem, transformObject} from "../modes/build"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
-import { localUserId, setPlayMode } from "../player/player"
-import { itemIdsFromEntities, loadScene, sceneBuilds, setScenes } from "../scenes"
+import {localUserId, setPlayMode} from "../player/player"
+import {itemIdsFromEntities, loadScene, sceneBuilds} from "../scenes"
 
 export function createSceneListeners(room: any) {//
         log('creating scene listeners for room', room.roomId)
@@ -19,15 +18,16 @@ export function createSceneListeners(room: any) {//
         })
     
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, ({userId, scene}: { userId: string, scene: IWBScene }) => {
-            log(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW + ' received', userId, scene)
+            log(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW + ' received2', userId, scene)
             saveNewScene(userId)
+            loadScene(scene)
         })
     
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW + ' received', info)
-            setScenes(info.info)
-            loadScene(info.scene)
-            if(info.user === localUserId){
+            //setScenes(info.info)
+
+            if(info.owner === localUserId){
                 setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
             }
         })

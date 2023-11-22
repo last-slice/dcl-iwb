@@ -1,15 +1,17 @@
-import { Player, PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES } from "../../helpers/types";
+import {Player, PlayerData, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../../helpers/types";
 import { iwbEvents, joinWorld, sendServerMessage, world } from "../messaging";
 import { deleteCreationEntities } from "../modes/create";
-import {AvatarAnchorPointType, AvatarAttach, Entity, engine} from "@dcl/sdk/ecs";
+import {AvatarAnchorPointType, AvatarAttach, Entity, engine, Transform, MeshRenderer} from "@dcl/sdk/ecs";
 import { displayRealmTravelPanel } from "../../ui/Panels/realmTravelPanel";
 import { utils } from "../../helpers/libraries";
 import { displaySettingsPanel } from "../../ui/Panels/settings/settingsIndex";
 import { movePlayerTo } from "~system/RestrictedActions";
 import { log } from "../../helpers/functions";
 import { deleteAllRealmObjects } from "../scenes";
+import {Vector3} from "@dcl/sdk/math";
 
 export let localUserId:string
+export let localPlayer:Player
 export let players:Map<string, Player> = new Map<string, Player>()
 
 export async function addPlayer(userId:string, local:boolean, data?:any[]){
@@ -20,6 +22,7 @@ export async function addPlayer(userId:string, local:boolean, data?:any[]){
     let pData:any = {
         dclData:null,
         mode: SCENE_MODES.PLAYMODE,
+        viewMode: VIEW_MODES.AVATAR,
         scenes:[],
         objects:[],
         buildingAllowed:[],
@@ -35,6 +38,13 @@ export async function addPlayer(userId:string, local:boolean, data?:any[]){
         anchorPointId:AvatarAnchorPointType.AAPT_POSITION
         })
         pData.parent = parent
+    } else {
+
+        let cameraParent = engine.addEntity()
+        Transform.create(cameraParent, {position: Vector3.create(0,0, 6), parent: engine.CameraEntity})
+        //MeshRenderer.setBox(cameraParent)
+
+        pData.cameraParent = cameraParent
     }
 
     if(data){
@@ -45,7 +55,9 @@ export async function addPlayer(userId:string, local:boolean, data?:any[]){
         })
     }
 
-    players.set(userId, pData)
+    localPlayer = pData
+    players.set(userId, localPlayer)
+
 
     console.log("Player *** ", players.get(userId))
 

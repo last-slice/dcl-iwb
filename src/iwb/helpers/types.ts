@@ -44,6 +44,11 @@ export enum SCENE_MODES {
     BUILD_MODE
 }
 
+export enum VIEW_MODES {
+    AVATAR,
+    GOD
+}
+
 export enum EDIT_MODES {
     GRAB,
     EDIT
@@ -84,6 +89,7 @@ export type NOTIFICATION_DETAIL = {
 export interface Player {
     dclData:any,
     mode:SCENE_MODES,
+    viewMode:VIEW_MODES,
     scenes:IWBScene[],
     buildingAllowed:string[],
     currentParcel:string,
@@ -92,6 +98,7 @@ export interface Player {
     version: number
     activeScene: IWBScene | null,
     canBuild:boolean
+    cameraParent:Entity
 }
 
 export interface IWBScene {

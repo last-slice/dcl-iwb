@@ -18,7 +18,7 @@ export function initIWB() {
         getUserData({}).then(async ({data})=>{
             log("getuserdata is", data)
             if(data){
-                await addPlayer(data.userId, true, [{dclData:data}])
+                const curPlayer = await addPlayer(data.userId, true, [{dclData:data}])
                 engine.addSystem(PlayerTrackingSystem)
                 engine.addSystem(BuildModeVisibiltyComponents)
 

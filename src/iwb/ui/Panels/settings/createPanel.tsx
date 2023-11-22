@@ -131,6 +131,7 @@ export function CreateScenePanel() {
             displaySettingsPanel(false)
             displaySetting("Explore")
             displayCreateScenePanel(true)
+            setPlayMode(localUserId, SCENE_MODES.CREATE_SCENE_MODE)
         }}
         uiText={{value: "Create", color:Color4.Black(), fontSize:sizeFont(30,20)}}
         />

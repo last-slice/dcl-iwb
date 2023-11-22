@@ -14,6 +14,7 @@ import { showNotification } from "./Panels/notificationUI"
 import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBuildConfirmPanel"
 import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
 import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
+import {toggleGodMode} from "../components/modes/god";
 
 export let uiModes:any = {
     0://playmode
@@ -79,6 +80,9 @@ export let topTools:any[]= [
         enabled:true,
         visible:true,
         fn:()=>{
+
+            toggleGodMode()
+
         }
     },
     {

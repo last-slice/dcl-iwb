@@ -132,7 +132,7 @@ export function selectCatalogItem(id:any, mode:EDIT_MODES, already?:boolean){
             //to do
             //add different asset types here//
     
-            GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
+            GltfContainer.create(selectedItem.entity, {src: 'assets/' + "b1d73b35-2f1a-4694-b751-1bdbbdf46470.glb"}) // selectedItem.catalogId + ".glb"})
         }
         Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
     }
