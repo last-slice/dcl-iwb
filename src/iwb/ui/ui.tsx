@@ -33,6 +33,7 @@ import { createGizmoPanel } from './GizmoPanel'
 import { createInitalizeWorldPanel } from './Panels/initaliteWorldPanel'
 import { createWorldReadyPanel } from './Panels/worldReadyPanel'
 import { createCatalogInfoPanel, displayCatalogInfoPanel } from './Panels/CatalogInfoPanel'
+import { createSceneInfoPanel } from './Panels/builds/buildsIndex'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -77,7 +78,8 @@ const uiComponent = () => [
   createGizmoPanel(),
   createEditObjectPanel(),
   createInitalizeWorldPanel(),
-  createWorldReadyPanel(),//
+  createWorldReadyPanel(),
+  createSceneInfoPanel()
 ]
 
 

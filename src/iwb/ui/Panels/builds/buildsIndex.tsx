@@ -2,46 +2,39 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
-import { BuildsPanel, showYourBuilds } from './buildsPanel'
-import { AccessPanel } from './accessPanel'
-import { ExplorePanel, showAllWorlds } from './explorePanel'
-import { SettingsPanel } from './settingsPanel'
-import { CreateScenePanel } from './createPanel'
-import { YourWorlds, showWorlds } from './youWorlds'
-import { realm } from '../../../components/scenes'
 import { isPreview, log } from '../../../helpers/functions'
 import { localUserId, players } from '../../../components/player/player'
-import { VersionPanel } from './versionPanel'
+import { IWBScene } from '../../../helpers/types'
+import { sceneBuilds } from '../../../components/scenes'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
 
 export let buttons:any[] = [
-    {label:"Explore", pressed:false},
-    {label:"My Worlds", pressed:false},
-    {label:"Builds", pressed:false},
+    {label:"Info", pressed:false},
+    {label:"Config", pressed:false},
     {label:"Access", pressed:false},
-    {label:"Create", pressed:false},
-    {label:"Settings", pressed:false},
-    {label:"Version", pressed:false},
+    {label:"Delete", pressed:false},
+
+    {label:"Back", pressed:false},
     {label:"Close", pressed:false},
 ]
 
-export function displaySettingsPanel(value: boolean) {
+export let scene:IWBScene
+
+export function displaySceneInfoPanel(value: boolean, selectedScene:IWBScene) {
     showSettingsPanel = value
-    if(showSettingsPanel){
-        showAllWorlds()
-    }
+    scene = selectedScene
 }
 
-export function displaySetting(value:string){
+export function displaySceneSetting(value:string){
     showSetting = value
 }
 
-export function createSettingsPanel() {
+export function createSceneInfoPanel() {
     return (
         <UiEntity
-            key={"settingspanel"}
+            key={"sceneinfopanel"}
             uiTransform={{
                 display: showSettingsPanel ? 'flex' : 'none',
                 flexDirection: 'column',
@@ -50,7 +43,7 @@ export function createSettingsPanel() {
                 width: calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width,
                 height: calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).height,
                 positionType: 'absolute',
-                position: { left: (dimensions.width - calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width) / 2, bottom: '15%'}
+                position: { left: (dimensions.width - calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width) / 2, top: (dimensions.height - calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).height) / 2 }
             }}
         // uiBackground={{ color: Color4.Red() }}
         >
@@ -76,18 +69,19 @@ export function createSettingsPanel() {
             >
 
                 {/* header container */}
-                {/* <UiEntity
+                <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
                     height: '10%',
+                    margin:{left:'10%', bottom:'5%'}
                 }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Settings", fontSize: sizeFont(40,30), color:Color4.Black()}}
+                uiText={{value:"Editing Scene: " + (scene? scene.n : ""), fontSize: sizeFont(30,25), color:Color4.Black(), textAlign:'middle-left'}}
                 >
-                </UiEntity> */}
+                </UiEntity>
 
                     {/* main content container */}
                 <UiEntity
@@ -97,7 +91,7 @@ export function createSettingsPanel() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '97%',
-                    height: '85%',
+                    height: '75%',
                     margin:{left:"1%"},
                     padding:{left:"2%", right:'2%', bottom:'2%'}
                 }}
@@ -134,13 +128,10 @@ export function createSettingsPanel() {
                     // uiBackground={{color:Color4.Blue()}}
                     >
 
-                    <YourWorlds/>
-                    <BuildsPanel/>
-                    <ExplorePanel/>
-                    <CreateScenePanel/>
-                    <SettingsPanel/>
-                    <VersionPanel/>
+                    
+                    {/* add scene panels here */}
                         
+
                     </UiEntity>
 
                 </UiEntity>
@@ -164,8 +155,8 @@ function generateSettingsButtons(buttons:any[]){
             width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
             height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
             margin:{top:"1%", bottom:'1%'},
-            positionType: button.label === "Close" ? "absolute" : undefined,
-            position: button.label === "Close" ? {bottom:0} : undefined,
+            positionType: button.label === "Close" || "Back" ? "absolute" : undefined,
+            position: button.label === "Close" || "Back" ? {bottom:0} : undefined,
             display: getButtonDisplay(button.label)
         }}
         uiBackground={{
@@ -176,24 +167,24 @@ function generateSettingsButtons(buttons:any[]){
             uvs: getButtonState(button.label)
         }}
         onMouseDown={() => {
-            if(button.label === "Close"){
-                displaySettingsPanel(false)
-                displaySetting('Builds')
-            }else if(button.label === "My Worlds"){
-                showWorlds()
-                displaySetting(button.label)
-            }
-            else if(button.label === "Explore"){
-                showAllWorlds()
-                displaySetting(button.label)
-            }
-            else if(button.label === "Builds"){
-                showYourBuilds()
-                displaySetting(button.label)
-            }
-            else{
-                displaySetting(button.label)
-            }
+            // if(button.label === "Close"){
+            //     displaySettingsPanel(false)
+            //     displaySetting('Builds')
+            // }else if(button.label === "My Worlds"){
+            //     showWorlds()
+            //     displaySetting(button.label)
+            // }
+            // else if(button.label === "Explore"){
+            //     showAllWorlds()
+            //     displaySetting(button.label)
+            // }
+            // else if(button.label === "Builds"){
+            //     showYourBuilds()
+            //     displaySetting(button.label)
+            // }
+            // else{
+            //     displaySetting(button.label)
+            // }
         }}
         uiText={{value: button.label, color:Color4.Black(), fontSize:sizeFont(30,20)}}
         />)
@@ -202,7 +193,7 @@ function generateSettingsButtons(buttons:any[]){
 }
 
 function getButtonDisplay(button:string){
-    if(button === "Create" || button === "Version" || button === "Builds"){
+    if(button === "Create" || button === "Access" || button === "Builds"){
         return isPreview ? 'flex' :  (localUserId && players.get(localUserId)!.homeWorld) ?  'flex' : 'none'
     }else{
         return 'flex'

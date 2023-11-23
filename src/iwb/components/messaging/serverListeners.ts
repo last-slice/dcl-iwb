@@ -1,9 +1,9 @@
 import {log} from "../../helpers/functions"
 import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {items, styles, updateStyles} from "../catalog"
-import {localUserId, players, removePlayer} from "../player/player"
+import {iwbConfig, localUserId, players, removePlayer} from "../player/player"
 import {addBoundariesForParcel} from "../modes/create";
-import { setScenes, setWorlds } from "../scenes";
+import { setWorlds } from "../scenes";
 import { Room } from "colyseus.js";
 import { displayWorldReadyPanel } from "../../ui/Panels/worldReadyPanel";
 import { showNotification } from "../../ui/Panels/notificationUI";
@@ -29,6 +29,8 @@ export function initiateMessageListeners(room: Room) {
 
         //set deployed iwb version
         players.get(localUserId)!.version = info.iwb.v
+        iwbConfig.v = info.iwb.v
+        iwbConfig.updates = info.iwb.updates
 
         setWorlds(info.worlds)
 

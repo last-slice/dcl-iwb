@@ -12,6 +12,7 @@ import {Vector3} from "@dcl/sdk/math";
 export let localUserId: string
 export let localPlayer: Player
 export let players: Map<string, Player> = new Map<string, Player>()
+export let iwbConfig:any = {}
 
 export async function addPlayer(userId: string, local: boolean, data?: any[]) {
     if (local) {
@@ -88,7 +89,8 @@ export async function getPlayerNames() {
                     ens: nft.ens.subdomain + ".dcl.eth",
                     builds: 0,
                     updated: 0,
-                    init: false
+                    init: false,
+                    version:0
                 })
             })
         }

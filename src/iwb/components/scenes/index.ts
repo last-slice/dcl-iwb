@@ -1,12 +1,13 @@
 import { Entity, GltfContainer, Material, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
-import { IWBScene, SCENE_MODES, SceneItem } from "../../helpers/types"
+import { IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
 import { localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
+import { showNotification } from "../../ui/Panels/notificationUI"
 
 export let realm:string = ""
 export let scenes:any[] = []
@@ -33,21 +34,28 @@ export function updateRealm(value:string){
 }
 
 export function setWorlds(config:any){
-    log('worlds are ', config)
     let player = players.get(localUserId)
 
     config.forEach((world:any)=>{
-        log("world is", world)
-        worlds.push({name: world.worldName, owner:world.owner, ens:world.ens, builds: world.builds, updated: world.updated})
+        worlds.push({name: world.worldName, v:world.v, owner:world.owner, ens:world.ens, builds: world.builds, updated: world.updated})
 
         let playerWorld = player?.worlds.find((w) => w.name === world.worldName)
         if(playerWorld){
-            log('player has that world')
+            playerWorld.v = world.v
             playerWorld.updated = world.updated
-            playerWorld.builds = world.builds
-            playerWorld.init = true
+            playerWorld.builds = world.builds               
         }
     })
+
+    if(player!.homeWorld){
+        let config = player!.worlds.find((w)=> w.ens === realm)
+        if(config){
+            if(config.v < player!.version){
+                log('world version behind deployed version, show notification to update')
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.", animate:{enabled:true, time:10, return:true}})
+            }
+        }
+    }
 }
 
 export function setScenes(info:any){

@@ -1,19 +1,43 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 import { displaySettingsPanel, showSetting } from './settingsIndex'
-import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { localUserId } from '../../../components/player/player'
-import { realm, scenes, worlds } from '../../../components/scenes'
+import { realm, worlds } from '../../../components/scenes'
 import { displayRealmTravelPanel } from '../realmTravelPanel'
+import { log } from '../../../helpers/functions'
 
-let pressed:any ={
-    Save:false,
-    Load:false
+let visibleIndex = 0
+let visibleItems:any[] = []
+
+export function showAllWorlds(){
+    visibleIndex = 0
+    visibleItems.length = 0
+    refreshVisibleItems()
 }
-//
 
-let exploreView = 'Creators'
+export function refreshVisibleItems(){
+    log('we are here in rewfresh')
+    visibleItems.length = 0
+
+    worlds.sort((a, b) => a.name.localeCompare(b.name));
+  
+    for(let i = (visibleIndex * 6); i < (worlds.length < 6 ? worlds.length : (visibleIndex * 6) + 6); i++){
+      visibleItems.push(worlds[i])
+      }
+
+      log('visible items first area', visibleItems)
+  
+      let top = (visibleIndex * 6) + 6
+      if(top > visibleItems.length && visibleItems.length === 6){
+          for(let i = 0; i < (top - visibleItems.length); i++){
+              visibleItems.pop()
+          }
+      }//
+
+      log('visible itmes are ', visibleItems)
+  }
 
 export function ExplorePanel() {
     return (
@@ -62,7 +86,6 @@ export function ExplorePanel() {
             {/* explore creators table */}
             <UiEntity
             uiTransform={{
-                display: exploreView === "Creators" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -202,8 +225,8 @@ export function ExplorePanel() {
 
         </UiEntity>
 
-            {/* buttons row */}
-        <UiEntity
+      {/* buttons row */}
+      <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -231,14 +254,66 @@ export function ExplorePanel() {
         <UiEntity
             uiTransform={{
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
+                flexDirection: 'row',
+                alignItems: 'center',
                 justifyContent: 'center',
                 width: '15%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
+
+                 <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(5).width,
+                height: calculateSquareImageDimensions(4).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
+            }}
+            onMouseDown={()=>{
+                if(visibleIndex - 1 >=0){
+                    visibleIndex--
+                    refreshVisibleItems()
+                }
+            }}
+            />
+
+<UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(5).width,
+                height: calculateSquareImageDimensions(4).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
+            }}
+            onMouseDown={()=>{
+                log('clickding right')
+                visibleIndex++
+                refreshVisibleItems()
+                if((visibleIndex + 1) * 6 < worlds.length){
+                    visibleIndex++
+                    refreshVisibleItems()
+                }
+            }}
+            />
+
             </UiEntity>
 
         </UiEntity>
@@ -253,7 +328,7 @@ export function ExplorePanel() {
 function generateCreatorRows(){
     let arr:any[] = []
     if(localUserId){
-        worlds.forEach((world:any, i:number)=>{
+        visibleItems.forEach((world:any, i:number)=>{
             arr.push(
             <UiEntity
             key={"world row - " + world.ens}
@@ -388,18 +463,3 @@ function generateCreatorRows(){
 
     return arr
 }
-
-function getButtonState(button:string){
-    if(exploreView === button){
-        return getImageAtlasMapping(uiSizes.positiveButton)
-    }else{
-        return getImageAtlasMapping(uiSizes.normalButton)
-    }
-}
-
-function updateView(view:string){
-    exploreView = view
-    //do things to get the new view data
-}
-
-//

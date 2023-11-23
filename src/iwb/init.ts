@@ -24,12 +24,12 @@ export function initIWB() {
                 await addPlayer(data.userId, true, [{dclData:data}])
                 
                 let realmData = await getRealm({})
-                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld.dcl.eth" : realmData.realmInfo.realmName : "")
+                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "Cuts.dcl.eth" : realmData.realmInfo.realmName : "")
 
                 engine.addSystem(PlayerTrackingSystem)
                 engine.addSystem(BuildModeVisibiltyComponents)
 
-                getAssetUploadToken()//
+                getAssetUploadToken()
             }
 
             //build IWB HQ

@@ -4,7 +4,7 @@ import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, SCENE_MODES, SERVER_MESSAGE_TYPES,
 import { otherUserPlaceditem, otherUserSelectedItem, removeItem, transformObject } from "../modes/build"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
-import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, setScenes } from "../scenes"
+import { itemIdsFromEntities, loadScene, loadSceneAsset } from "../scenes"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
