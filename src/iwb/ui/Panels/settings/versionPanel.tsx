@@ -72,7 +72,7 @@ export function VersionPanel() {
             width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
             height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
             margin:{top:"1%", bottom:'1%'},
-            display: localUserId ? (players.get(localUserId)!.version < iwbConfig.v ? 'flex' : 'none') : "none"
+            // display: localUserId ? (players.get(localUserId)!.version < iwbConfig.v ? 'flex' : 'none') : "none"
         }}
         uiBackground={{
             textureMode: 'stretch',

@@ -154,7 +154,8 @@ export function createCatalogInfoPanel() {
                     justifyContent: 'center',
                     width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
                     height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
-                    margin:{top:"2%"}
+                    margin:{top:"2%"},
+                    display:'none'
                 }}
                 uiBackground={{
                     textureMode: 'stretch',
@@ -230,7 +231,7 @@ export function createCatalogInfoPanel() {
                         flexDirection: 'column',
                         width: '100%',
                         height: '30%',
-                        margin:{bottom:"2%"}
+                        margin:{bottom:"5%"}
                     }}
                     uiText={{ value:  `${selectedItem?.n}`, fontSize: sizeFont(40, 30), textAlign:'middle-left'}}
                      />
@@ -243,9 +244,9 @@ export function createCatalogInfoPanel() {
                             flexDirection: 'column',
                             width: '100%',
                             height: '20%',
-                            margin:{bottom:"2%"}
+                            margin:{bottom:"5%"}
                         }}
-                        uiText={{ value: `Catalog Name ${selectedItem?.cat}`, fontSize: sizeFont(30, 20), textAlign:'middle-left'}}
+                        uiText={{ value: `Catalog Name ${selectedItem?.cat}`, fontSize: sizeFont(25, 15), textAlign:'middle-left'}}
                     />
 
                     <UiEntity
@@ -255,7 +256,7 @@ export function createCatalogInfoPanel() {
                     width: '100%',
                     height: '20%',
                 }}
-                uiText={{ value: `Artist:   ${selectedItem?.on}`, fontSize: sizeFont(30, 20), textAlign:'middle-left'}}
+                uiText={{ value: `Artist:   ${selectedItem?.on}`, fontSize: sizeFont(25, 15), textAlign:'middle-left'}}
                 /> 
 
                 </UiEntity>
@@ -281,7 +282,7 @@ export function createCatalogInfoPanel() {
                     width: '50%',
                     height: '100%',
                 }}
-                uiText={{ value: `Size: ${(selectedItem?.si / 1024 / 1024).toFixed(2)}MB`, textAlign:'middle-left',  fontSize: sizeFont(30, 20)}}
+                uiText={{ value: `Size: ${(selectedItem?.si / 1024 / 1024).toFixed(2)}MB`, textAlign:'middle-left',  fontSize: sizeFont(25, 15)}}
             /> 
 
                 <UiEntity
@@ -291,7 +292,7 @@ export function createCatalogInfoPanel() {
                     width: '50%',
                     height: '100%',
                 }}
-                uiText={{ value: 'Poly Count: ' + formatDollarAmount(selectedItem?.pc), textAlign:'middle-left',  fontSize: sizeFont(30, 20)}}
+                uiText={{ value: 'Poly Count: ' + formatDollarAmount(selectedItem?.pc), textAlign:'middle-left',  fontSize: sizeFont(25, 15)}}
             />
 
             </UiEntity>
@@ -348,7 +349,7 @@ export function createCatalogInfoPanel() {
                     alignContent: 'center',
                     height: 'auto',
                 }}
-                uiText={{ value: `DESCRIPTION:   ${selectedItem?.d}`,  fontSize: sizeFont(25, 15), textAlign:'middle-left' }}
+                uiText={{ value: `Description:   ${selectedItem?.d}`,  fontSize: sizeFont(25, 15), textAlign:'middle-left' }}
             />
 
             </UiEntity>

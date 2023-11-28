@@ -16,6 +16,7 @@ import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBui
 import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
 import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
 import {toggleFlyMode} from "../components/modes/flying";
+import { hideAllPanels } from "./ui"
 
 export let uiModes: any = {
     0://playmode
@@ -108,9 +109,9 @@ export let topTools: any[] = [
         fn: () => {
             if (showCatalogPanel) {
                 displayCatalogPanel(false)
-
             }
             else {
+                hideAllPanels()
                 displayCatalogPanel(true)
             }
         }

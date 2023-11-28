@@ -30,6 +30,7 @@ export let searchFilter = ""
 export function displayCatalogPanel(value: boolean) {
     if(value){
         original = [...items.values()]
+        // original.sort((a, b) => a.n.localeCompare(b.n));
         filtered = original.sort((a, b) => a.n.localeCompare(b.n));
         totalPages = Math.ceil(original.length / (columns * rows));
         refreshView()
@@ -60,12 +61,33 @@ let alphabet = [
     "A","B", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z"
 ]
 
+function findPageForLetter(letter: string): number | null {
+    let start = 0;
+    let temp = [...original]
+    let end = temp.length - 1;
+
+    for (let page = 1; page <= Math.ceil(temp.length / itemsPerPage); page++) {
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, temp.length);
+        
+        const namesOnPage = temp.slice(startIndex, endIndex);
+
+        // Check if any name on the page starts with the letter "B"
+        if (namesOnPage.some(item => item.n.toLowerCase().startsWith(letter.toLowerCase()))) {
+            return page;
+        }
+    }
+
+    return null; // No names starting with "B" found in the list
+}
+
 function filterByStyle(index: number){
     styleFilter = styles[index]
     filterCatalog()
 }
 
 function filterCatalog(){
+     currentPage = 0
     let temp = original.sort((a, b) => a.n.localeCompare(b.n));
     log('temp item list is', temp)
 
@@ -468,6 +490,15 @@ export function AlphabetItem(data:any){
             }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{value: "" + data.item.toUpperCase()}}
+        onMouseDown={()=>{
+            log('finding page for letter ', data.item)
+            let pageLetter = findPageForLetter(data.item)
+            log('page letter found is', pageLetter)
+            if(pageLetter !== null && pageLetter - 1 >= 0){
+                currentPage = pageLetter - 1
+                refreshView()
+            }
+        }}
         />
     )
 }

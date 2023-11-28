@@ -17,7 +17,7 @@ export default {
         toolsetTest: "http://localhost:3000/toolset",
         toolsetProd: "https://dcl-iwb.co/toolset",
 
-        validateTest: "http://localhost:2751",//
+        validateTest: "http://localhost:2751",
 
         assetSign: "/scene/sign",
         dclNamesGraph:"https://api.thegraph.com/subgraphs/name/decentraland/marketplace"
