@@ -10,7 +10,7 @@ import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../sce
 import { hideAllPanels } from "../../../ui/ui"
 
 export let selectedItem:SelectedItem
-export let playerParentEntities:Map<string, Entity> = new Map()
+export let playerParentEntities:Map<string, Entity> = new Map()//
 
 export function sendServerEdit(axis:string, direction:number){
     sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, 
@@ -157,6 +157,8 @@ export function selectCatalogItem(id:any, mode:EDIT_MODES, already:boolean){
             GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
         }
         Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
+
+        cRoom.send(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {user:localUserId, catalogId:id, assetId:selectedItem.aid})
     }
 }
 
@@ -172,24 +174,58 @@ export function otherUserPlaceditem(info:any){
     // player.selectedEntity = null
 }
 
-export function otherUserSelectedItem(info:any){
+export function otherUserSelectedItem(info:any, catalog?:boolean){
     let parent = engine.addEntity()
     Transform.create(parent, {position:Vector3.create(0,2,0)})
     AvatarAttach.createOrReplace(parent, {
         avatarId: info.user,
-        anchorPointId: AvatarAnchorPointType.AAPT_POSITION,//
+        anchorPointId: AvatarAnchorPointType.AAPT_POSITION,
     })
 
-    let entity = entitiesFromItemIds.get(info.assetId)
-    if(entity){
-        Transform.createOrReplace(entity, {position: {x: 0, y: .25, z: 4}, parent: parent})
+    if(catalog){
+        let itemData = items.get(info.catalogId)
+        if(itemData){
+            let entity = engine.addEntity()
+            Transform.createOrReplace(entity, {position: {x: 0, y: .25, z: 4}, parent: parent})
+            let scale:any
+            scale = Vector3.One()
+        
+            if(itemData.v && itemData.v > players.get(localUserId)!.version){
+                log('this asset is not ready for viewing, need to add temporary asset')
+                MeshRenderer.setBox(entity)
+
+                if(itemData.bb){
+                    scale = Vector3.create(itemData.bb.x, itemData.bb.y, itemData.bb.z)
+                }
+
+            }else{
+                log('this asset is ready for viewing, place object in scene', info.catalogId)
+        
+                //to do
+                //add different asset types here//
+        
+                GltfContainer.create(entity, {src: 'assets/' + info.catalogId + ".glb"})
+            }
+            playerParentEntities.set(info.user, parent)
+        }
+
+    }else{
+        let entity = entitiesFromItemIds.get(info.assetId)
+        if(entity){
+            Transform.createOrReplace(entity, {position: {x: 0, y: .25, z: 4}, parent: parent})
+            playerParentEntities.set(info.user, parent)
+        }
     }
-    playerParentEntities.set(info.user, parent)//
+
+    
+    
 }
 
 export function otherUserRemovedSeletedItem(player:any){
-   engine.removeEntity(player.selectedEntity)
-   player.selectedEntity = null 
+    let parent = playerParentEntities.get(player)
+    if(parent){
+        engine.removeEntityWithChildren(parent)
+    }
 }
 
 export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
@@ -205,6 +241,9 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
             let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
             console.log('scene item is', sceneItem)
             if(sceneItem){
+
+                log('clicked entity is', entity)
+                log('scene for asset is', scene)
 
                 let transform = Transform.get(entity)
                 let transPos = Vector3.clone(transform.position)
@@ -225,17 +264,13 @@ export function editItem(entity:Entity, mode:EDIT_MODES, already?:boolean){
                     transform: {position: transPos, rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z), scale: transScal}
                 }
                 log('selected item is', selectedItem)
-        
-                if(mode === EDIT_MODES.GRAB){
-                    addUseItemPointers(selectedItem.entity)
-                }else{
-                    let itemdata = items.get(selectedItem.catalogId)
-                    selectedItem.pointer = engine.addEntity()
-                    MeshRenderer.setBox(selectedItem.pointer)
-                    Transform.createOrReplace(selectedItem.pointer, {position: Vector3.create(0, itemdata!.bb.z + 1, 0), parent: selectedItem.entity})
-                }
 
-                cRoom.send(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, {user:localUserId, assetId:assetId})
+                let itemdata = items.get(selectedItem.catalogId)
+                log('selected item data is', itemdata)
+                selectedItem.pointer = engine.addEntity()
+                MeshRenderer.setBox(selectedItem.pointer)
+                Transform.createOrReplace(selectedItem.pointer, {position: Vector3.create(0, itemdata!.bb.z + 1, 0), parent: selectedItem.entity})
+                // cRoom.send(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {user:localUserId, catalogId: sceneItem.id, assetId:assetId})
                 return
             }
         })
@@ -264,7 +299,7 @@ export function saveItem(){
     // }
 }
 
-export function dropSelectedItem(){
+export function dropSelectedItem(canceled?:boolean){
     const {position, rotation} = Transform.get(engine.PlayerEntity)
     const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
     const finalPosition = Vector3.add(position, forwardVector)
@@ -292,25 +327,30 @@ export function dropSelectedItem(){
             finalPosition.z = finalPosition.z - curSceneParentPosition.z
         
             // update object transform
-            const t = Transform.getMutable(selectedItem.entity)
-            t.position.x = finalPosition.x
-            t.position.z = finalPosition.z
-            
-            t.rotation.y =  rotation.y
-            t.rotation.w = rotation.w
+            let t = Transform.getMutable(selectedItem.entity)
+            if(canceled){
+                t = selectedItem.transform!
+            }else{
+                t.position.x = finalPosition.x
+                t.position.z = finalPosition.z
+                
+                t.rotation.y =  rotation.y
+                t.rotation.w = rotation.w
+            }
+
             t.parent = curSceneParent
 
             log('new transform is', t)
 
-            if(selectedItem.already){
-                log('dropping already selected item')
-                Transform.createOrReplace(selectedItem.entity, t)
-            }else{
-                engine.removeEntity(selectedItem.entity) 
-            }
+            // if(selectedItem.already){
+            //     log('dropping already selected item')
+            //     // Transform.createOrReplace(selectedItem.entity, t)
+            // }else{
+                engine.removeEntity(selectedItem.entity)
+            // }
         
             sendServerMessage(
-                selectedItem.already ? SERVER_MESSAGE_TYPES.SCENE_UPDATE_ITEM : SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
+                SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
                 {baseParcel: scene.bpcl, 
                     item: {
                         entity:selectedItem.entity,
@@ -320,11 +360,9 @@ export function dropSelectedItem(){
                         position: roundVector(t.position, 2), 
                         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2), 
                         scale: roundVector(t.scale, 2)
-                    }//
+                    }
                 }
             )
-            cRoom.send(IWB_MESSAGE_TYPES.PLACE_SELECTED_ASSET, {user:localUserId, assetId:selectedItem.aid})
-
             selectedItem.enabled = false
             return
         }
@@ -339,7 +377,7 @@ export function duplicateItem(entity:Entity){
             let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
             console.log('scene item is', sceneItem)
             if(sceneItem){
-                selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB, true)
+                selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB, false)
                 return
             }
         })
@@ -347,7 +385,63 @@ export function duplicateItem(entity:Entity){
 }
 
 export function grabItem(entity:Entity){
-    editItem(entity, EDIT_MODES.GRAB, true)
+    hideAllPanels()
+
+    hideAllOtherPointers()
+    PointerEvents.deleteFrom(entity)
+
+    let assetId = itemIdsFromEntities.get(entity)
+    console.log('found asset id', assetId)
+    if(assetId){
+        sceneBuilds.forEach((scene:IWBScene)=>{
+            let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
+            console.log('scene item is', sceneItem)
+            if(sceneItem){
+                cRoom.send(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {user:localUserId, catalogId: sceneItem.id, assetId:assetId, sceneId: scene.id})
+
+                let transform = Transform.get(entity)
+                let transPos = Vector3.clone(transform.position)
+                let transScal = Vector3.clone(transform.scale)
+                let transRot = Quaternion.toEulerAngles(transform.rotation)
+
+                selectedItem = {
+                    mode: EDIT_MODES.GRAB,
+                    modifier:EDIT_MODIFIERS.POSITION,
+                    factor:1,
+                    entity: engine.addEntity(),//
+                    aid: getRandomString(6),
+                    catalogId: sceneItem.id,
+                    sceneId: scene.id,
+                    itemData: sceneItem,
+                    enabled:true,
+                    already: true,
+                    transform: {position: transPos, rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z), scale: transScal}
+                }
+                addUseItemPointers(selectedItem.entity)
+        
+                let scale:any
+                scale = Vector3.One()
+            
+                if(selectedItem.itemData.v && selectedItem.itemData.v > players.get(localUserId)!.version){
+                    log('this asset is not ready for viewing, need to add temporary asset')
+                    MeshRenderer.setBox(selectedItem.entity)
+        
+                    if(selectedItem.itemData.bb){
+                        scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.y, selectedItem.itemData.bb.z)
+                    }
+        
+                }else{
+                    log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
+            
+                    //to do
+                    //add different asset types here//
+            
+                    GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
+                }
+                Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})        
+            }
+        })
+    }
     addUseItemPointers(entity)
     // let transform = Transform.getMutable(entity)
     // let rot = Quaternion.toEulerAngles(transform.rotation)
@@ -363,19 +457,20 @@ export function deleteSelectedItem(){
 
 export function cancelSelectedItem(){
     log('canceled selected item is', selectedItem)
-    let scene = sceneBuilds.get(selectedItem.sceneId)
-    if(scene){
-        Transform.createOrReplace(selectedItem.entity, {parent:scene.parentEntity, position:selectedItem.transform!.position, rotation:selectedItem.transform!.rotation, scale: selectedItem.transform!.scale})
+    dropSelectedItem(true)
+    // let scene = sceneBuilds.get(selectedItem.sceneId)
+    // if(scene){
+    //     Transform.createOrReplace(selectedItem.entity, {parent:scene.parentEntity, position:selectedItem.transform!.position, rotation:selectedItem.transform!.rotation, scale: selectedItem.transform!.scale})
         
-        PointerEvents.deleteFrom(selectedItem.entity)
-        addBuildModePointers(selectedItem.entity)
-        addAllBuildModePointers()
+    //     PointerEvents.deleteFrom(selectedItem.entity)
+    //     addBuildModePointers(selectedItem.entity)
+    //     addAllBuildModePointers()
 
-        selectedItem.enabled = false
-        selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
-    }else{
-        log('no scene found to cancel selected item')
-    }
+    //     selectedItem.enabled = false
+    //     selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
+    // }else{
+    //     log('no scene found to cancel selected item')
+    // }
 }
 
 
@@ -393,7 +488,7 @@ export function checkBuildPermissions(player:Player){
     let activeScene = null
     sceneBuilds.forEach((scene:IWBScene, key:string)=>{
         if(scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission)=> permission === localUserId)))){
-            console.log('player is on current owned parcel')
+            // console.log('player is on current owned parcel')
             canbuild = true
             activeScene = scene
         }
@@ -496,6 +591,11 @@ export function addBuildModePointers(ent:Entity){
     })
 }
 
+export function cancelCatalogItem(){
+    sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_CANCELED_CATALOG_ASSET, {aid: selectedItem.aid, sceneId:selectedItem.sceneId})
+    removeSelectedItem()
+}
+
 export function sendServerDelete(entity:Entity){
     let assetId = itemIdsFromEntities.get(entity)
     console.log('found asset id', assetId)
@@ -503,9 +603,9 @@ export function sendServerDelete(entity:Entity){
         sceneBuilds.forEach((scene:IWBScene)=>{
             log('this scene to find items to delete is', scene)
             let sceneItem = scene.ass.find((asset)=> asset.aid === assetId)
-            console.log('scene item to delete is', sceneItem)//
+            console.log('scene item to delete is', sceneItem)
             if(sceneItem){
-                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {aid: assetId, sceneId:scene.id, entity:entity})
+                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {assetId: assetId, sceneId:scene.id, entity:entity})
                 return
             }
         })
@@ -516,7 +616,6 @@ export function removeItem(sceneId:string, info:any){
     let scene = sceneBuilds.get(sceneId)
     console.log('scene is', scene)
     if(scene){
-
         let entity = entitiesFromItemIds.get(info.aid)
         if(entity){
             engine.removeEntity(entity)

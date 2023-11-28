@@ -26,12 +26,12 @@ export function PlayerTrackingSystem(dt: number) {
 
     // Selected Item Height Control
     if (selectedItem && selectedItem.enabled && selectedItem.entity && localPlayer.mode === SCENE_MODES.BUILD_MODE && selectedItem.mode === EDIT_MODES.GRAB) {
-        console.log('selected item', selectedItem.entity)
+        // console.log('selected item', selectedItem.entity)
         let selEntity = Transform.getMutable(selectedItem.entity)
 
         if (!selEntity) return
 
-        console.log('selected item pos y', cameraWorldHeight)
+        // console.log('selected item pos y', cameraWorldHeight)
         Transform.getMutable(selectedItem.entity).position = {
             ...selEntity.position,
             y: getWorldPosition(localPlayer.cameraParent).y - .88 - playerPos.y
@@ -51,26 +51,26 @@ export function PlayerTrackingSystem(dt: number) {
     buttonsPressed.forEach((value, key) => {
         if (value.id === PointerEventType.PET_DOWN && key !== InputAction.IA_POINTER) {
             buttonPressed = true
-            console.log('button pressed', key)
+            // console.log('button pressed', key)
         }
     })
 
     if (!buttonPressed) return
 
 
-    console.log('moved')
+    // console.log('moved')
     const otherAvatarTransform = Transform.getMutable(flyBox)
 
     if (cameraWorldHeight < playerPos.y - .88) {
-        console.log('looking down')
+        // console.log('looking down')
         otherAvatarTransform.position.y = Math.max(cameraWorldHeight - .88 - .01, 0)
     } else if (cameraWorldHeight > playerPos.y + 1) {
 
-        console.log('looking up')
+        // console.log('looking up')
         otherAvatarTransform.position.y = cameraWorldHeight - .88 + .01
     } else {
 
-        console.log('looking straight')
+        // console.log('looking straight')//
         otherAvatarTransform.position = {...playerPos, y: playerPos.y - .88}
     }
 

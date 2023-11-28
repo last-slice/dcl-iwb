@@ -1,6 +1,6 @@
 import { Entity, InputAction, PointerEventType, inputSystem } from "@dcl/sdk/ecs"
 import { setButtonState } from "../listeners/inputListeners"
-import { cancelSelectedItem, deleteSelectedItem, dropSelectedItem, duplicateItem, editItem, grabItem, removeSelectedItem, saveItem, selectedItem, sendServerDelete } from "../modes/build"
+import { cancelCatalogItem, cancelSelectedItem, deleteSelectedItem, dropSelectedItem, duplicateItem, editItem, grabItem, removeSelectedItem, saveItem, selectedItem, sendServerDelete } from "../modes/build"
 import { checkShortCuts } from "../listeners/shortcuts"
 import { log } from "../../helpers/functions"
 import { localUserId, players } from "../player/player"
@@ -23,7 +23,7 @@ export function InputListenSystem(dt:number){
                     if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
                         if(selectedItem && selectedItem.enabled){
                             log('player wants to delete selected item')
-                            deleteSelectedItem()
+                            cancelCatalogItem()
                         }else{
                             log('player pressed #1 on an object in Build mode, need to grab')
                             grabItem(result.hit.entityId as Entity)

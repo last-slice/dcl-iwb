@@ -1,7 +1,7 @@
 import { engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
 import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
-import { otherUserPlaceditem, otherUserSelectedItem, removeItem, transformObject } from "../modes/build"
+import { otherUserPlaceditem, otherUserRemovedSeletedItem, otherUserSelectedItem, removeItem, transformObject } from "../modes/build"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
 import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene } from "../scenes"
@@ -37,27 +37,34 @@ export function createSceneListeners(room: any) {
     
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW + ' received', info)
-            // setScenes(info.info)
+            // setScenes(info.info)//
         })
 
         room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, (info:any) => {
             log(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET + ' received', info)
         })
 
-        room.onMessage(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, (info:any) => {
-            log(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET + ' received', info)
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM + ' received', info)
             if(info.user !== localUserId){
-                log('need to show pickup asset for other user')
-                    otherUserSelectedItem(info)
+                otherUserRemovedSeletedItem(info.user)
             }
-        })
+        })//
+
+        // room.onMessage(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, (info:any) => {
+        //     log(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET + ' received', info)
+        //     if(info.user !== localUserId){
+        //         log('need to show pickup asset for other user')
+        //             otherUserSelectedItem(info)
+        //     }
+        // })//
 
         room.onMessage(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET, (info:any) => {
             log(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET + ' received', info)
             if(info.user !== localUserId){
                 otherUserPlaceditem(info)
             }
-        })//
+        })
 
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_BP, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_ADD_BP + ' received', info)
@@ -155,5 +162,21 @@ export function addSceneStateListeners(room:any){
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.ona + " just deleted their scene " + scene.n, animate:{enabled:true, return:true, time:5}})
         }
         unloadScene(key)
+    })
+
+
+    room.state.players.onAdd((player:any, key:string)=>{
+        log('player is', player)
+        player.listen("selectedAsset", (current:any, previous:any)=>{
+            log('player selected asset', previous, current)
+            if(player.address !== localUserId){
+                if(current === null){
+                    otherUserRemovedSeletedItem(player.address)
+                }else{
+                    current.user = player.address
+                    otherUserSelectedItem(current, true)
+                }
+            }
+        })
     })
 }
