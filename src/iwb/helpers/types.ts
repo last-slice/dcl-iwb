@@ -31,7 +31,9 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_LOAD = 'scene_load',
     SCENE_UPDATE_ITEM = 'scene_update_item',
     SCENE_DELETE_ITEM = 'scene_delete_item',
-    
+    SCENE_ADD_BP = 'add_build_permissions',
+    SCENE_DELETE_BP = 'delete_build_permissions',
+    SCENE_DELETE = 'delete_scene',
 
     //World
     INIT_WORLD = "init_world",
@@ -136,7 +138,8 @@ export interface IWBScene {
     pcnt:number,
     isdl:boolean,
     e:boolean,
-    entities:Entity[]
+    entities:Entity[],
+    im?:string
 }
 
 export interface CatalogItemType {

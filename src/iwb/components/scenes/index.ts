@@ -43,7 +43,8 @@ export function setWorlds(config:any){
         if(playerWorld){
             playerWorld.v = world.v
             playerWorld.updated = world.updated
-            playerWorld.builds = world.builds               
+            playerWorld.builds = world.builds            
+            playerWorld.init = true   
         }
     })
 
@@ -84,6 +85,18 @@ export function loadScene(info:any){
         players.get(localUserId)!.buildingAllowed = true
     }
     loadSceneBoundaries(info.id)  
+}
+
+export function unloadScene(sceneId:any){
+    let localScene = sceneBuilds.get(sceneId)
+    if(localScene){
+        engine.removeEntityWithChildren(localScene.parentEntity)
+        localScene.entities.forEach((entity:Entity)=>{
+            let aid= itemIdsFromEntities.get(entity)
+            itemIdsFromEntities.delete(entity)
+            entitiesFromItemIds.delete(aid)
+        })
+    }
 }
 
 function loadSceneBoundaries(id:any){

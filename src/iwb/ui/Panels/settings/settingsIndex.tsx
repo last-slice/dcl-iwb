@@ -20,7 +20,6 @@ export let buttons:any[] = [
     {label:"Explore", pressed:false},
     {label:"My Worlds", pressed:false},
     {label:"Builds", pressed:false},
-    {label:"Access", pressed:false},
     {label:"Create", pressed:false},
     {label:"Settings", pressed:false},
     {label:"Version", pressed:false},

@@ -1,10 +1,11 @@
 import { engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
-import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
+import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
 import { otherUserPlaceditem, otherUserSelectedItem, removeItem, transformObject } from "../modes/build"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
-import { itemIdsFromEntities, loadScene, loadSceneAsset } from "../scenes"
+import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene } from "../scenes"
+import { showNotification } from "../../ui/Panels/notificationUI"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -55,6 +56,26 @@ export function createSceneListeners(room: any) {
             log(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET + ' received', info)
             if(info.user !== localUserId){
                 otherUserPlaceditem(info)
+            }
+        })//
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_BP, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_ADD_BP + ' received', info)
+            if(info.user === localUserId){
+                showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You were granted build permissions for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
+            }
+            else{
+                showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Build Permissions Granted to user " + info.user + " for your scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
+            }
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP + ' received', info)
+            if(info.user === localUserId){
+                showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builde permissions were removed for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
+            }
+            else{
+                showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on your scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
             }
         })
 }
@@ -124,5 +145,15 @@ export function addSceneStateListeners(room:any){
             log("scene asset remove", key, asset)
             removeItem(scene.id, asset)
         })
+    })
+
+    room.state.scenes.onRemove((scene:any, key:string)=>{
+        log('removing scene from state', key, scene)
+        if(scene.o === localUserId){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You deleted scene " + scene.n, animate:{enabled:true, return:true, time:5}})
+        }else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.ona + " just deleted their scene " + scene.n, animate:{enabled:true, return:true, time:5}})
+        }
+        unloadScene(key)
     })
 }

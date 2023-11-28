@@ -63,7 +63,7 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
 
     console.log("Player *** ", players.get(userId))
 
-    await getPlayerNames()//
+    await getPlayerNames()
     return players.get(userId)
 }
 
@@ -146,5 +146,5 @@ export function worldTravel(world: any) {
 }
 
 export function hasBuildPermissions() {
-    return players.get(localUserId)?.buildingAllowed || players.get(localUserId)?.homeWorld
+    return players.get(localUserId)!.canBuild || players.get(localUserId)!.homeWorld
 }

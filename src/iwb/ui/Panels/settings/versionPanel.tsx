@@ -11,6 +11,7 @@ import { showNotification } from '../notificationUI'
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 
 export function VersionPanel() {
+    console.log(players.get(localUserId)?.version, iwbConfig.v)
     return (
         <UiEntity
             key={"versionpanel"}
@@ -30,7 +31,7 @@ export function VersionPanel() {
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '25%',
+            height: '10%',
             margin:{top:'5%', bottom:"1%"}
         }}
     // uiBackground={{ color: Color4.Teal() }}
@@ -43,7 +44,7 @@ export function VersionPanel() {
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '25%',
+            height: '10%',
         }}
     // uiBackground={{ color: Color4.Teal() }}
     uiText={{value:"IWB Version: " + (iwbConfig.v ? iwbConfig.v : ""), fontSize:sizeFont(35,25), textAlign:'middle-center', color:Color4.Black()}}
@@ -71,6 +72,7 @@ export function VersionPanel() {
             width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
             height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
             margin:{top:"1%", bottom:'1%'},
+            display: localUserId ? (players.get(localUserId)!.version < iwbConfig.v ? 'flex' : 'none') : "none"
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -94,7 +96,7 @@ export function VersionPanel() {
 
 function generateUpdateRows(){
     let arr:any[] = []
-    if(iwbConfig.updates){
+    if(iwbConfig.updates && players.get(localUserId)!.version < iwbConfig.v){
         iwbConfig.updates.forEach((update:string)=>{
             arr.push(
             <UiEntity

@@ -1,6 +1,6 @@
 import { Color4 } from "@dcl/sdk/math"
 import ReactEcs, { UiEntity, Label } from "@dcl/sdk/react-ecs"
-import { players, localUserId, setPlayMode, hasBuildPermissions } from "../../components/player/player"
+import { players, localUserId, setPlayMode, hasBuildPermissions, localPlayer } from "../../components/player/player"
 import { atHQ, log } from "../../helpers/functions"
 import { SCENE_MODES } from "../../helpers/types"
 import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"

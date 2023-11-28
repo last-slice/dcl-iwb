@@ -1,13 +1,13 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 import { displaySettingsPanel, showSetting } from './settingsIndex'
-import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { displayDeleteBuildPanel } from '../deleteBuildPanel'
 import { localUserId, players } from '../../../components/player/player'
 import { formatDollarAmount, log } from '../../../helpers/functions'
 import { sceneBuilds } from '../../../components/scenes'
-import { displaySceneInfoPanel } from '../builds/buildsIndex'
+import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from '../builds/buildsIndex'
 
 let visibleIndex = 0
 let visibleItems:any[] = []
@@ -188,86 +188,6 @@ export function BuildsPanel() {
 
 
         </UiEntity>
-
-            {/* buttons row */}
-        <UiEntity
-            uiTransform={{
-                display: selectedRow !== -1 ? 'flex' : 'none',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '20%',
-            }}
-            // uiBackground={{color:Color4.Black()}}
-        >
-
-            {/* save button */}
-            <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(10, getAspect(uiSizes.rectangleButton)).width,
-            height: calculateImageDimensions(12,getAspect(uiSizes.rectangleButton)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping({
-                atlasHeight: 1024,
-                atlasWidth: 1024,
-                sourceTop: 801,
-                sourceLeft: 802,
-                sourceWidth: 223,
-                sourceHeight: 41
-            })
-        }}
-        onMouseDown={() => {
-            // pressed.Save = true
-            displaySettingsPanel(false)
-            displaySceneInfoPanel(true, visibleItems[selectedRow])
-        }}
-        onMouseUp={()=>{
-            // pressed.Save = false
-        }}
-        uiText={{value: "Edit Scene", color:Color4.Black(), fontSize:sizeFont(30,20)}}
-        />
-
-        {/* load button */}
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(10, getAspect(uiSizes.rectangleButton)).width,
-            height: calculateImageDimensions(12,getAspect(uiSizes.rectangleButton)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs:getImageAtlasMapping(uiSizes.dangerButton)
-        }}
-        onMouseDown={() => {
-            // pressed.Load = true
-            displaySettingsPanel(false)
-            displayDeleteBuildPanel(true)
-        }}
-        onMouseUp={()=>{
-            // pressed.Load = false
-        }}
-        uiText={{value: "Delete Scene", color:Color4.Black(), fontSize:sizeFont(30,20)}}
-        />
-
-        </UiEntity>
-
-
         
         </UiEntity>
     )
@@ -302,9 +222,9 @@ function generateBuildRows(){
 
             getImageAtlasMapping(uiSizes.normalLightestButton)
         }}
-        onMouseDown={()=>{
-            toggleSelectedRow(i)
-        }}
+        // onMouseDown={()=>{
+        //     toggleSelectedRow(i)
+        // }}
         >
 
         {/* scene name */}
@@ -340,7 +260,7 @@ function generateBuildRows(){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '20%',
+            width: '10%',
             height: '100%',
             display:'flex'
         }}
@@ -360,7 +280,41 @@ function generateBuildRows(){
         uiText={{value: "" + formatDollarAmount(scene.pc), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
         />
 
-        {/* save button */}
+{/* settings button */}
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '10%',
+        height: '80%',
+        margin:{right:"1%"},
+    }}
+    >
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateSquareImageDimensions(3.5).width,
+        height: calculateSquareImageDimensions(4).height,
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas1.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.settingsButton)
+    }}
+    onMouseDown={() => {
+        displaySettingsPanel(false)
+        displaySceneInfoPanel(true, visibleItems[i])
+    }}
+    />
+
+    </UiEntity>
+
+        {/* go button */}
         <UiEntity
     uiTransform={{
         flexDirection: 'column',
