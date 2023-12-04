@@ -69,7 +69,7 @@ function ContextEventRow(data:any){
     <UiEntity
     key={"context-row-" + event.eventInfo.button}
     uiTransform={{
-      width: '100%',
+      width: '70%',
       height: '20%',
       justifyContent:'center',
       flexDirection:'column',
@@ -83,10 +83,10 @@ function ContextEventRow(data:any){
       uvs:getImageAtlasMapping({
           atlasHeight:1024,
           atlasWidth:1024,
-          sourceTop:271,
-          sourceLeft:7,
-          sourceWidth:496,
-          sourceHeight:79
+          sourceTop:718,
+          sourceLeft:802,
+          sourceWidth:223,
+          sourceHeight:41
         })
     }}
     uiText={{value:"" + getButtonText(event.eventInfo), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}

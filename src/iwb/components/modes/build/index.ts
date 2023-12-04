@@ -594,10 +594,23 @@ function addUseItemPointers(ent: Entity) {
     PointerEvents.createOrReplace(ent, {
         pointerEvents: [
             {
+                eventType: PointerEventType.PET_HOVER_ENTER,
+                eventInfo: {
+                    showFeedback:false
+                }
+            },
+            {
+                eventType: PointerEventType.PET_HOVER_LEAVE,
+                eventInfo: {
+                    showFeedback:false
+                }
+            },
+            {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
                     button: InputAction.IA_SECONDARY,
                     hoverText: "Drop",
+                    showFeedback:false
                 }
             },
             {
@@ -605,6 +618,7 @@ function addUseItemPointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_PRIMARY,
                     hoverText: "Cancel",
+                    showFeedback:false
                 }
             },
             {
@@ -612,6 +626,7 @@ function addUseItemPointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_ACTION_3,
                     hoverText: "Delete",
+                    showFeedback:false
                 }
             }
         ]
@@ -624,29 +639,13 @@ export function addBuildModePointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_HOVER_ENTER,
                 eventInfo: {
-                    // showFeedback:false
+                    showFeedback:false
                 }
             },
             {
                 eventType: PointerEventType.PET_HOVER_LEAVE,
                 eventInfo: {
-                    // showFeedback:false
-                }
-            },
-            {
-                eventType: PointerEventType.PET_DOWN,
-                eventInfo: {
-                    button: InputAction.IA_PRIMARY,
-                    hoverText: "Delete",
-                    // showFeedback:false
-                }
-            },
-            {
-                eventType: PointerEventType.PET_DOWN,
-                eventInfo: {
-                    button: InputAction.IA_SECONDARY,
-                    hoverText: "Edit",
-                    // showFeedback:false
+                    showFeedback:false
                 }
             },
             {
@@ -654,7 +653,15 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_ACTION_3,
                     hoverText: "Grab",
-                    // showFeedback:false
+                    showFeedback:false
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_SECONDARY,
+                    hoverText: "Edit",
+                    showFeedback:false
                 }
             },
             {
@@ -662,9 +669,17 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_ACTION_4,
                     hoverText: "Duplicate",
-                    // showFeedback:false
+                    showFeedback:false
                 }
-            }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_PRIMARY,
+                    hoverText: "Delete",
+                    showFeedback:false
+                }
+            },
         ]
     })
 }

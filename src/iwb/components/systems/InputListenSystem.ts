@@ -13,11 +13,10 @@ export function InputListenSystem(dt:number){
     //HOVER ACTIONS
     const hoverResult = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)
     if(hoverResult && hoverResult.hit && hoverResult.hit.entityId){
-        log('we have a hover', hoverResult)
         let hoverEvents = PointerEvents.get(hoverResult.hit.entityId as Entity)
         if(hoverEvents){
             updateContextEvents([...hoverEvents.pointerEvents])
-            // displayHover(true)
+            displayHover(true)
         }
     }
 
@@ -28,7 +27,7 @@ export function InputListenSystem(dt:number){
     }
 
 
- //DOWN BUTTON ACTIONS
+        //DOWN BUTTON ACTIONS
         //POINTER
         if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)){
             setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
