@@ -1,13 +1,13 @@
 import {log} from "../../helpers/functions"
 import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
-import {items, styles, updateStyles} from "../catalog"
+import {updateStyles} from "../catalog"
 import {iwbConfig, localUserId, players, removePlayer} from "../player/player"
-import {addBoundariesForParcel} from "../modes/create";
-import { setWorlds } from "../scenes";
-import { Room } from "colyseus.js";
-import { displayWorldReadyPanel } from "../../ui/Panels/worldReadyPanel";
-import { showNotification } from "../../ui/Panels/notificationUI";
-import { addSceneStateListeners } from "./sceneListeners";
+import {setWorlds} from "../scenes";
+import {Room} from "colyseus.js";
+import {displayWorldReadyPanel} from "../../ui/Panels/worldReadyPanel";
+import {showNotification} from "../../ui/Panels/notificationUI";
+import {addSceneStateListeners} from "./sceneListeners";
+import {refreshSortedItems, updateItem} from "../catalog/items";
 
 
 export function initiateMessageListeners(room: Room) {
@@ -20,9 +20,10 @@ export function initiateMessageListeners(room: Room) {
         for (const key in catalog) {
             if (catalog.hasOwnProperty(key)) {
                 const value = catalog[key];
-                items.set(key, value)
+                updateItem(key, value)
             }
         }
+        refreshSortedItems()
 
         //set catalog styles
         updateStyles(info.styles)
@@ -45,7 +46,7 @@ export function initiateMessageListeners(room: Room) {
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD + ' received', info)
-        if(info){
+        if (info) {
             // updateWorld(info)
         }
     })
@@ -61,12 +62,15 @@ export function initiateMessageListeners(room: Room) {
 
     room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
-        if(info.owner === localUserId && info.init){
+        if (info.owner === localUserId && info.init) {
             displayWorldReadyPanel(true, info)
-        }
-        else{
+        } else {
             log('should display something else')
-            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: info.worldName + " just deployed their world - " + info.ens + "!", animate:{enabled:true, return:true, time:5}})
+            showNotification({
+                type: NOTIFICATION_TYPES.MESSAGE,
+                message: info.worldName + " just deployed their world - " + info.ens + "!",
+                animate: {enabled: true, return: true, time: 5}
+            })
         }
 
         setWorlds([info])

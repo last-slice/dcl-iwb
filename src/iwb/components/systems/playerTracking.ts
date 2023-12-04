@@ -34,10 +34,9 @@ export function PlayerTrackingSystem(dt: number) {
         // console.log('selected item pos y', cameraWorldHeight)
         Transform.getMutable(selectedItem.entity).position = {
             ...selEntity.position,
-            y: getWorldPosition(localPlayer.cameraParent).y - .88 - playerPos.y
+            y: getWorldPosition(localPlayer.cameraParent).y - playerPos.y //+ selectedItem.initialHeight
         }
     }
-
 
     // FLY MODE
     if (localPlayer.viewMode === VIEW_MODES.AVATAR) return;

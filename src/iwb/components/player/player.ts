@@ -12,7 +12,7 @@ import {Vector3} from "@dcl/sdk/math";
 export let localUserId: string
 export let localPlayer: Player
 export let players: Map<string, Player> = new Map<string, Player>()
-export let iwbConfig:any = {}
+export let iwbConfig: any = {}
 
 export async function addPlayer(userId: string, local: boolean, data?: any[]) {
     if (local) {
@@ -47,6 +47,8 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
         //MeshRenderer.setBox(cameraParent)
 
         pData.cameraParent = cameraParent
+
+        localPlayer = pData
     }
 
     if (data) {
@@ -57,13 +59,9 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
         })
     }
 
-    localPlayer = pData
-    players.set(userId, localPlayer)
+    players.set(userId, pData)
 
-
-    console.log("Player *** ", players.get(userId))
-
-    await getPlayerNames()
+    void getPlayerNames()
     return players.get(userId)
 }
 
@@ -80,21 +78,19 @@ export async function getPlayerNames() {
     let json = await res.json()
     console.log('player names are ', json)
     if (json.data) {
-        let player = players.get(localUserId)
-        if (player) {
-            json.data.nfts.forEach((nft: any) => {
-                player!.worlds.push({
-                    name: nft.ens.subdomain,
-                    owner: localUserId,
-                    ens: nft.ens.subdomain + ".dcl.eth",
-                    builds: 0,
-                    updated: 0,
-                    init: false,
-                    version:0
-                })
+        json.data.nfts.forEach((nft: any) => {
+            localPlayer.worlds.push({
+                name: nft.ens.subdomain,
+                owner: localUserId,
+                ens: nft.ens.subdomain + ".dcl.eth",
+                builds: 0,
+                updated: 0,
+                init: false,
+                version: 0
             })
-        }
+        })
     }
+
 }
 
 
