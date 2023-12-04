@@ -29,6 +29,7 @@ import { createRealmTravelPanel } from './Panels/realmTravelPanel'
 import { createDebugPanel } from './Panels/debugPanel'
 import { createSceneSavedPanel } from './Panels/sceneSavedPanel'
 import { createCatalogInfoPanel } from './Panels/CatalogInfoPanel'
+import { createSceneInfoPanel } from './Panels/sceneInfoPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -45,6 +46,7 @@ const uiComponent = () => [
    */
 
   createNoWeb3Panel(),
+  createSceneInfoPanel(),
   createCatalogInfoPanel(),
   createSettingsPanel(),
   createPBuildConfirmPanel(),
