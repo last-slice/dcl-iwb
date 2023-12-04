@@ -164,7 +164,7 @@ function CreateToolIcon(data:any){
         texture: {
         src: config.atlas,
         },
-        uvs:getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
+        uvs: config.uvOverride ? config.uvOverride() : getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
     }}
     onMouseDown={()=>{
         if(data.toggle){

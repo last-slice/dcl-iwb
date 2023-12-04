@@ -1,13 +1,33 @@
-import { Entity, InputAction, PointerEventType, inputSystem } from "@dcl/sdk/ecs"
+import { Entity, InputAction, PointerEventType, PointerEvents, inputSystem } from "@dcl/sdk/ecs"
 import { setButtonState } from "../listeners/inputListeners"
 import { cancelCatalogItem, cancelSelectedItem, deleteSelectedItem, dropSelectedItem, duplicateItem, editItem, grabItem, removeSelectedItem, saveItem, selectedItem, sendServerDelete } from "../modes/build"
 import { checkShortCuts } from "../listeners/shortcuts"
 import { log } from "../../helpers/functions"
 import { localUserId, players } from "../player/player"
 import { EDIT_MODES, SCENE_MODES } from "../../helpers/types"
+import { displayHover, updateContextEvents } from "../../ui/contextMenu"
 
 
 export function InputListenSystem(dt:number){
+
+    //HOVER ACTIONS
+    const hoverResult = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)
+    if(hoverResult && hoverResult.hit && hoverResult.hit.entityId){
+        log('we have a hover', hoverResult)
+        let hoverEvents = PointerEvents.get(hoverResult.hit.entityId as Entity)
+        if(hoverEvents){
+            updateContextEvents([...hoverEvents.pointerEvents])
+            // displayHover(true)
+        }
+    }
+
+    const hoever = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
+    if(hoever){
+        console.log('hover leave', hoever)
+        displayHover(false)
+    }
+
+
  //DOWN BUTTON ACTIONS
         //POINTER
         if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)){

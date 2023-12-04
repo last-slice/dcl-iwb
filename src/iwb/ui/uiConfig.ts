@@ -1,6 +1,6 @@
 import { localUserId, players } from "../components/player/player"
 import resources from "../helpers/resources"
-import { NOTIFICATION_TYPES } from "../helpers/types"
+import { NOTIFICATION_TYPES, VIEW_MODES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
 import { displayCatalogInfoPanel } from "./Panels/CatalogInfoPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
@@ -17,6 +17,8 @@ import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPan
 import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
 import {toggleFlyMode} from "../components/modes/flying";
 import { hideAllPanels } from "./ui"
+import { getImageAtlasMapping } from "./helpers"
+import { log } from "../helpers/functions"
 
 export let uiModes: any = {
     0://playmode
@@ -74,7 +76,7 @@ export let topTools: any[] = [
         disabledUV: {
             atlasHeight: 1024,
             atlasWidth: 1024,
-            sourceTop: 128 * 2,
+            sourceTop: 128 * 3,
             sourceLeft: 128 * 3,
             sourceWidth: 128,
             sourceHeight: 128
@@ -83,6 +85,9 @@ export let topTools: any[] = [
         visible:true,
         fn:()=>{
             toggleFlyMode()
+        },
+        uvOverride:()=>{
+            return players.has(localUserId) ? players.get(localUserId)!.viewMode === VIEW_MODES.GOD ? getImageAtlasMapping(uiSizes.godModeButton) : getImageAtlasMapping(uiSizes.carpenterButton) : getImageAtlasMapping()
         }
     },
     {
@@ -1122,7 +1127,7 @@ export let uiSizes:any ={
     carpenterButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
-        sourceTop: 386,
+        sourceTop: 384,
         sourceLeft: 384,
         sourceWidth: 128,
         sourceHeight: 128
