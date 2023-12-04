@@ -16,7 +16,7 @@ export function displaySceneInfoPanel(value: boolean) {
 export function createSceneInfoPanel() {
     return (
         <UiEntity
-            key={"sceneinfopanel"}
+            key={"newsceneinfopanel"}
             uiTransform={{
                 display: showSceneInfoPanel ? 'flex' : 'none',
                 flexDirection: 'column',
