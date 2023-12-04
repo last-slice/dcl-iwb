@@ -183,4 +183,5 @@ export interface SelectedItem {
     already?:boolean
     transform?:TransformType
     pointer?:Entity
+    initialHeight: number
 }
