@@ -12,6 +12,7 @@ import {signedFetch} from "~system/SignedFetch";
 import { BuildModeVisibiltyComponents } from "./components/systems/BuildModeVisibilty";
 import { getRealm } from "~system/Runtime";
 import { realm, updateRealm } from "./components/scenes";
+import EditItemSystem from "./components/systems/EditItemSystem";
 
 export function initIWB() {
     setupUi()
@@ -28,6 +29,7 @@ export function initIWB() {
 
                 engine.addSystem(PlayerTrackingSystem)
                 engine.addSystem(BuildModeVisibiltyComponents)
+                engine.addSystem(EditItemSystem)
 
                 getAssetUploadToken()
             }

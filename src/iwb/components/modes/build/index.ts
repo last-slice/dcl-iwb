@@ -21,6 +21,7 @@ import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SelectedItem, SERVER_MESSA
 import {displayCatalogPanel} from "../../../ui/Panels/CatalogPanel"
 import {entitiesFromItemIds, itemIdsFromEntities, sceneBuilds} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
+import {generateSettingsInputs} from "../../../ui/Panels/EditProperties";
 
 export let selectedItem: SelectedItem
 export let playerParentEntities: Map<string, Entity> = new Map()//
@@ -320,6 +321,9 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
                     parent: selectedItem.entity
                 })
                 // cRoom.send(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {user:localUserId, catalogId: sceneItem.id, assetId:assetId})
+
+                generateSettingsInputs()
+
                 return
             }
         })
