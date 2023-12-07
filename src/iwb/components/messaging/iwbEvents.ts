@@ -8,7 +8,8 @@ import { Entity, GltfContainer, Material, engine } from "@dcl/sdk/ecs";
 import { BuildModeVisibilty, ParcelFloor, greenBeam, redBeam } from "../modes/create";
 import { Color4 } from "@dcl/sdk/math";
 import { sceneBuilds } from "../scenes";
-import { addBuildModePointers } from "../modes/build";
+import { addBuildModePointers, resetEntityForBuildMode } from "../modes/build";
+import { resetEntityForPlayMode } from "../modes/play";
 
 let created = false
 export function createIWBEventListeners(){
@@ -35,13 +36,16 @@ export function createIWBEventListeners(){
                 }
             }
 
-            if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
-                sceneBuilds.forEach((scene,key)=>{
-                    scene.entities.forEach((entity:Entity)=>{
+            sceneBuilds.forEach((scene,key)=>{
+                scene.entities.forEach((entity:Entity)=>{
+                    if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
                         addBuildModePointers(entity)
-                    })
+                        resetEntityForBuildMode(scene, entity)
+                    }else{
+                        resetEntityForPlayMode(scene, entity)
+                    }
                 })
-            }
+            })
         })
     }
 }

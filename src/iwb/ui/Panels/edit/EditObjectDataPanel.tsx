@@ -7,6 +7,8 @@ import { sceneBuilds } from '../../../components/scenes'
 import { COMPONENT_TYPES, EDIT_MODES, IWBScene, SceneItem } from '../../../helpers/types'
 import { log } from '../../../helpers/functions'
 import { ImageComponentPanel } from './ImageComponentPanel'
+import { EditTransform } from './EditTransform'
+import { VisibilityComponentPanel } from './VisibiltyComponentPanel'
 
 export let visibleComponent:string = ""
 
@@ -23,7 +25,7 @@ export function EditObjectData() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '95%',
-                height: '35%',
+                height: '65%',
             }}
         // uiBackground={{color:Color4.Blue()}}
         >
@@ -126,6 +128,8 @@ export function EditObjectData() {
         >
 
             <ImageComponentPanel/>
+            <EditTransform />
+            <VisibilityComponentPanel />
 
         </UiEntity>
 
@@ -148,7 +152,7 @@ function generateComponentViews(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '15%',
+                height: '10%',
                 margin:{top:"2%"}
             }}
         uiBackground={{color:Color4.Black()}}
@@ -165,11 +169,11 @@ function generateComponentViews(){
 function getComponents(){
     let components:any[] = []
     if(selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT){
-        log('get comp is here', selectedItem)
+        // log('get comp is here', selectedItem)
         let scene:IWBScene = sceneBuilds.get(selectedItem.sceneId)
-        log('scene is', scene)
+        // log('scene is', scene)
         let asset = scene.ass.find((as)=> as.aid === selectedItem.aid)
-        log('asset is ', asset)
+        // log('asset is ', asset)
         if(asset){
             components = asset.comps ? asset.comps : []
         }

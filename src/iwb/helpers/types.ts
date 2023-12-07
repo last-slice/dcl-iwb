@@ -26,6 +26,7 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_SCENES_CATALOG = 'player_scenes_catalog',
     PLAYER_JOINED_USER_WORLD = 'player_joined_private_world',
     PLAYER_EDIT_ASSET = 'player_edit_asset',
+    UPDATE_ITEM_COMPONENT = "update_component",//
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
@@ -41,7 +42,7 @@ export enum SERVER_MESSAGE_TYPES {
     //World
     INIT_WORLD = "init_world",
     NEW_WORLD_CREATED = 'new_world_created',
-    FORCE_DEPLOYMENT = 'force_deployment'
+    FORCE_DEPLOYMENT = 'force_deployment',
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -174,6 +175,7 @@ export interface SceneItem extends CatalogItemType{
     colComp:any
     imgComp:any
     vidComp:any
+    matComp:any
 }
 
 export interface SelectedItem {
@@ -198,4 +200,5 @@ export enum COMPONENT_TYPES {
     VIDEO_COMPONENT = 'Video',
     MATERIAL_COMPONENT = "Material",
     COLLISION_COMPONENT = "Collision",
+    TRANSFORM_COMPONENT = "Transform"
 }

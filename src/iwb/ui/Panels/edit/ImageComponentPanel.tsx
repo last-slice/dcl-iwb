@@ -3,7 +3,13 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
-import { COMPONENT_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { sendServerMessage } from '../../../components/messaging'
+import { selectedItem } from '../../../components/modes/build'
+import { items } from '../../../components/catalog'
+import { sceneBuilds } from '../../../components/scenes'
+
+let value = ""
 
 export function ImageComponentPanel() {
     return (
@@ -39,7 +45,7 @@ export function ImageComponentPanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '20%',
+                height: '10%',
                 margin:{top:"2%"}
             }}
         >
@@ -48,13 +54,18 @@ export function ImageComponentPanel() {
         onSubmit={(value) => {
             console.log('submitted value: ' + value)
         }}
+        onChange={(input)=>{
+            value = input
+        }}
+        color={Color4.White()}
         fontSize={sizeFont(25,15)}
-        placeholder={'type something'}
+        placeholder={'new image link'}
         placeholderColor={Color4.White()}
         uiTransform={{
             width: '100%',
             height: '120%',
         }}
+        value={"" + (visibleComponent === COMPONENT_TYPES.IMAGE_COMPONENT ? getImage() : "" )}
         ></Input>
 
                 <UiEntity
@@ -67,6 +78,10 @@ export function ImageComponentPanel() {
             }}
             uiBackground={{color:Color4.Green()}}
             uiText={{value:"Save", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-center'}}
+            onMouseDown={()=>{
+                sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.IMAGE_COMPONENT, action:"update", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, url:value}})
+
+            }}
             />
 
 
@@ -78,3 +93,12 @@ export function ImageComponentPanel() {
         </UiEntity>
     )
 }
+
+function getImage(){
+    let scene = sceneBuilds.get(selectedItem.sceneId)
+    let asset = scene.ass.find((a:any)=> a.aid === selectedItem.aid)
+    if(asset){
+        return asset.imgComp.url
+    }
+}
+//

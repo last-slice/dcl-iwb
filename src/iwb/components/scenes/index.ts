@@ -1,12 +1,12 @@
-import { Entity, GltfContainer, Material, MeshCollider, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
+import { Entity, GltfContainer, Material, MeshCollider, MeshRenderer, RaycastResult, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
-import { NOTIFICATION_TYPES, SCENE_MODES, SceneItem } from "../../helpers/types"
+import { COMPONENT_TYPES, NOTIFICATION_TYPES, SCENE_MODES, SceneItem } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
 import { localUserId, players } from "../player/player"
-import { addBuildModePointers } from "../modes/build"
+import { addBuildModePointers, updateImageUrl } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
 
 export let realm:string = ""
@@ -155,9 +155,9 @@ export function loadSceneAsset(sceneId:string, item:SceneItem){
     
             Transform.create(entity, {parent:parent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
             
-            addAssetComponents(entity, item, itemConfig.ty)
+            addAssetComponents(entity, item, itemConfig.ty, itemConfig.n)
             
-            log('local scene item is', item)
+            log('local scene item is', item)//
         }
         log('local scene after asset is', localScene)
         localScene.ass.push(item)
@@ -170,8 +170,13 @@ export function deleteAllRealmObjects(){
     }
 }
 
-
-function addAssetComponents(entity:Entity, item:SceneItem, type:string){
+function addAssetComponents(entity:Entity, item:SceneItem, type:string, name:string){
+    if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){
+        log("item includes visibility", item.visComp.visible)
+        VisibilityComponent.create(entity, {
+            visible: item.visComp.visible
+        })
+    }
     switch(type){
         case '3D':
             GltfContainer.create(entity, {src: "assets/" + item.id + ".glb"})
@@ -180,6 +185,15 @@ function addAssetComponents(entity:Entity, item:SceneItem, type:string){
         case '2D':
             MeshRenderer.setPlane(entity)
             MeshCollider.setPlane(entity)
+            
+            switch(name){
+                case 'Image':
+                    updateImageUrl(item.aid, item.matComp, item.imgComp.url)
+                    break;
+
+                case 'Video':
+                    break;
+            }
             break;
 
         case 'Audio':

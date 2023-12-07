@@ -10,11 +10,13 @@ import {
     Entity,
     GltfContainer,
     InputAction,
+    Material,
     MeshCollider,
     MeshRenderer,
     PointerEvents,
     PointerEventType,
-    Transform
+    Transform,
+    VisibilityComponent
 } from "@dcl/sdk/ecs"
 import {cRoom, sendServerMessage} from "../../messaging";
 import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SelectedItem, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
@@ -22,6 +24,7 @@ import {displayCatalogPanel} from "../../../ui/Panels/CatalogPanel"
 import {entitiesFromItemIds, itemIdsFromEntities, sceneBuilds} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
 import { displaySceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
+import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
 
 export let selectedItem: SelectedItem
 export let playerParentEntities: Map<string, Entity> = new Map()//
@@ -347,6 +350,9 @@ export function saveItem() {
 
     //     selectedItem.enabled = false
     // }
+
+    hideAllPanels()
+    openEditComponent("")
 }
 
 export function dropSelectedItem(canceled?: boolean) {
@@ -545,7 +551,7 @@ function addGrabbedComponent(){
 
         case '2D':
             MeshRenderer.setPlane(selectedItem.entity)
-            MeshCollider.setPlane(selectedItem.entity)
+            MeshCollider.setPlane(selectedItem.entity)//
             break;
 
         case 'Audio':
@@ -766,4 +772,43 @@ export function addAllBuildModePointers() {
             addBuildModePointers(entity)
         })
     })
+}
+
+
+export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
+    let assetId = itemIdsFromEntities.get(entity)
+    if(assetId){
+        log("found asset id")
+        let sceneItem = scene.ass.find((a)=> a.aid === assetId)
+        if(sceneItem){
+            log('found scene item', sceneItem)
+            VisibilityComponent.createOrReplace(entity, {
+                visible: true
+            })
+        }
+    }
+}
+//
+
+export function updateImageUrl(aid:string, materialComp:any, url:string){
+    log('updateing image url', aid, materialComp, url)
+    let ent = entitiesFromItemIds.get(aid)
+    
+    if(ent){
+        let texture = Material.Texture.Common({
+            src: "" + url
+        })
+        
+        Material.setPbrMaterial(ent, {
+            // albedoColor: Color4.create(parseFloat(matComp.color[0]), parseFloat(matComp.color[1]), parseFloat(matComp.color[2]), parseFloat(matComp.color[3])),
+            metallic: parseFloat(materialComp.metallic),
+            roughness:parseFloat(materialComp.roughness),
+            specularIntensity:parseFloat(materialComp.intensity),
+            emissiveIntensity: materialComp.emissPath !== "" ? parseFloat(materialComp.emissInt) : undefined,
+            texture: texture,
+            // emissiveColor: item.matComp.emissPath !== "" ? item.matComp,
+            emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
+          })
+    }
+
 }

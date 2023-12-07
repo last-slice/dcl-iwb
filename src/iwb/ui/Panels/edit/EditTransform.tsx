@@ -5,8 +5,9 @@ import { calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeF
 import { cancelSelectedItem, deleteSelectedItem, saveItem, selectedItem, sendServerEdit, toggleEditModifier, toggleModifier } from '../../../components/modes/build'
 import { Transform, engine } from '@dcl/sdk/ecs'
 import { localUserId, players } from '../../../components/player/player'
-import { EDIT_MODES, EDIT_MODIFIERS } from '../../../helpers/types'
+import { COMPONENT_TYPES, EDIT_MODES, EDIT_MODIFIERS } from '../../../helpers/types'
 import { uiSizes } from '../../uiConfig'
+import { visibleComponent } from './EditObjectDataPanel'
 
 let pressed:any ={
 
@@ -22,7 +23,8 @@ export function EditTransform() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '95%',
-                height: '37%',
+                height: '80%',
+                display: visibleComponent === COMPONENT_TYPES.TRANSFORM_COMPONENT ? 'flex' : 'none',
             }}
         // uiBackground={{color:Color4.Red()}}
         >
@@ -34,7 +36,7 @@ export function EditTransform() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: '50%',
+                width: '60%',
                 height: '100%',
             }}
         >
@@ -250,89 +252,6 @@ export function EditTransform() {
 
         </UiEntity>
 
-            {/* button rows */}
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '90%',
-                height: '20%',
-                margin:{top:'1%'}
-            }}
-        >
-
-{/* save button */}
-<UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-                margin:{left:"1%", right:"1%"}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
-            }}
-            uiText={{value: "Save", fontSize:sizeFont(20,16)}}
-            onMouseDown={()=>{
-                saveItem()
-            }}
-        />
-
-{/* delete button */}
-<UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-                margin:{left:"1%", right:"1%"}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
-            }}
-            uiText={{value: "Delete", fontSize:sizeFont(20,16)}}
-            onMouseDown={()=>{
-                deleteSelectedItem()
-            }}
-        />
-
-{/* cancel button */}
-<UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-                margin:{left:"1%", right:"1%"}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.blackButton)
-            }}
-            uiText={{value: "Cancel", fontSize:sizeFont(20,16)}}
-            onMouseDown={()=>{
-                cancelSelectedItem()
-            }}
-        />
-
-        </UiEntity>
-
 </UiEntity>
 
 
@@ -345,7 +264,7 @@ export function EditTransform() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%',
+                width: '40%',
                 height: '100%',
             }}
         // uiBackground={{ color: Color4.Red() }}
