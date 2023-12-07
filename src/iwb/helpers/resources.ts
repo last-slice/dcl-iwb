@@ -31,5 +31,5 @@ export default {
     textures:{
         atlas1:"assets/atlas1.png",
         atlas2:"assets/atlas2.png"
-    }
+    }//
 }

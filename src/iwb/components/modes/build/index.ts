@@ -397,7 +397,7 @@ export function dropSelectedItem(canceled?: boolean) {
             // if(selectedItem.already){
             //     log('dropping already selected item')
             //     // Transform.createOrReplace(selectedItem.entity, t)
-            // }else{
+            // }else{//
             engine.removeEntity(selectedItem.entity)
             // }
 
@@ -499,7 +499,7 @@ export function grabItem(entity: Entity) {
                     //to do
                     //add different asset types here//
 
-                    GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
+                    addGrabbedComponent()
                 }
                 Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
             }
@@ -534,6 +534,23 @@ export function cancelSelectedItem() {
     // }else{
     //     log('no scene found to cancel selected item')
     // }
+}
+
+function addGrabbedComponent(){
+    log('selected item type is', selectedItem)
+    switch(selectedItem.itemData.type){
+        case '3D':
+            GltfContainer.create(selectedItem.entity, {src: "assets/" + selectedItem.catalogId + ".glb"})
+            break;
+
+        case '2D':
+            MeshRenderer.setPlane(selectedItem.entity)
+            MeshCollider.setPlane(selectedItem.entity)
+            break;
+
+        case 'Audio':
+            break;
+    }
 }
 
 

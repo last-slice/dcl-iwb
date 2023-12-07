@@ -304,7 +304,7 @@ function generateBuildRows(){
         texture: {
             src: 'assets/atlas1.png'
         },
-        uvs: getImageAtlasMapping(uiSizes.settingsButton)
+        uvs: getImageAtlasMapping(uiSizes.infoButtonBlack)
     }}
     onMouseDown={() => {
         displaySettingsPanel(false)

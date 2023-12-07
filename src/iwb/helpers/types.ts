@@ -168,6 +168,12 @@ export interface SceneItem extends CatalogItemType{
     r: {x:number, y:number, z:number, w?:number},
     s: {x:number, y:number, z:number}
     entity?:Entity
+    type:string
+    comps:any[]
+    visComp:any
+    colComp:any
+    imgComp:any
+    vidComp:any
 }
 
 export interface SelectedItem {
@@ -184,4 +190,12 @@ export interface SelectedItem {
     transform?:TransformType
     pointer?:Entity
     initialHeight: number
+}
+
+export enum COMPONENT_TYPES {
+    VISBILITY_COMPONENT = "Visibility",
+    IMAGE_COMPONENT = "Image",
+    VIDEO_COMPONENT = 'Video',
+    MATERIAL_COMPONENT = "Material",
+    COLLISION_COMPONENT = "Collision",
 }

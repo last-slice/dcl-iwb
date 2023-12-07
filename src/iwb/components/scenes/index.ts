@@ -1,6 +1,6 @@
-import { Entity, GltfContainer, Material, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
+import { Entity, GltfContainer, Material, MeshCollider, MeshRenderer, RaycastResult, Transform, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
-import { IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem } from "../../helpers/types"
+import { NOTIFICATION_TYPES, SCENE_MODES, SceneItem } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
@@ -135,11 +135,6 @@ export function loadSceneAsset(sceneId:string, item:SceneItem){
     let localScene = sceneBuilds.get(sceneId)
     log('local sene is', localScene)
     if(localScene){
-        log("local scene in building asst is", localScene)
-
-        localScene.ass.push(item)
-        log("local scene in building asst is", localScene)
-
         let parent = localScene.parentEntity
 
         let entity = engine.addEntity()
@@ -159,21 +154,35 @@ export function loadSceneAsset(sceneId:string, item:SceneItem){
             entitiesFromItemIds.set(item.aid, entity)
     
             Transform.create(entity, {parent:parent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
-            switch(itemConfig.ty){
-                case '3D':
-                    GltfContainer.create(entity, {src: "assets/" + item.id + ".glb"})
-                    break;
-    
-                case 'prim':
-                    break;
-            }
+            
+            addAssetComponents(entity, item, itemConfig.ty)
+            
+            log('local scene item is', item)
         }
         log('local scene after asset is', localScene)
+        localScene.ass.push(item)
     }
 }
 
 export function deleteAllRealmObjects(){
     for (const [entity] of engine.getEntitiesWith(RealmEntityComponent)) {    
         engine.removeEntity(entity)
+    }
+}
+
+
+function addAssetComponents(entity:Entity, item:SceneItem, type:string){
+    switch(type){
+        case '3D':
+            GltfContainer.create(entity, {src: "assets/" + item.id + ".glb"})
+            break;
+
+        case '2D':
+            MeshRenderer.setPlane(entity)
+            MeshCollider.setPlane(entity)
+            break;
+
+        case 'Audio':
+            break;
     }
 }
