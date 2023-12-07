@@ -34,7 +34,7 @@ export function displaySceneSetting(value:string){
     buildInfoTab = value
 }
 
-export function createSceneInfoPanel() {
+export function createScenePanel() {
     return (
         <UiEntity
             key={"sceneinfopanel"}

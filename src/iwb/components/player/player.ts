@@ -16,7 +16,7 @@ export let iwbConfig: any = {}
 
 export async function addPlayer(userId: string, local: boolean, data?: any[]) {
     if (local) {
-        localUserId = userId//
+        localUserId = userId
     }
 
     let pData: any = {
@@ -60,8 +60,6 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
     }
 
     players.set(userId, pData)
-
-    void getPlayerNames()
     return players.get(userId)
 }
 

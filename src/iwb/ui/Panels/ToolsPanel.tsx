@@ -92,7 +92,7 @@ export function createToolsPanel() {
             }}
             // uiBackground={{ color: Color4.Blue() }}
         >
-            {createBottomToolIcons(bottomTools)}
+            {/* {createBottomToolIcons(bottomTools)} */}
         </UiEntity>
         </UiEntity>
     )
@@ -153,7 +153,7 @@ function CreateToolIcon(data:any){
     return ( <UiEntity
     key={config.name}
     uiTransform={{
-        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
+        display: getDisplay(config),
         width: calculateSquareImageDimensions(4).width,
         height: calculateSquareImageDimensions(4).height,
         flexDirection:'row',
@@ -181,6 +181,18 @@ function CreateToolIcon(data:any){
     )
 }
 
+function getDisplay(config:any){
+    switch(config.name){
+        case 'Settings':
+            return 'flex'
+
+        case 'SceneInfo':
+            return players.has(localUserId) && players.get(localUserId)?.activeScene && players.get(localUserId)?.activeScene !== null ? 'flex' : 'none'
+
+        default:
+            return players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none'
+    }
+}
 
 // function checkModeAndPermissions(){
 //     let player = players.get(localUserId)

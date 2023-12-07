@@ -1,9 +1,11 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont, uiSizer } from '../helpers'
-import { uiSizes } from '../uiConfig'
+import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont, uiSizer } from '../../helpers'
+import { uiSizes } from '../../uiConfig'
 import { EditTransform } from './EditTransform'
-import { selectedItem } from '../../components/modes/build'
-import { EDIT_MODES } from '../../helpers/types'//
+import { selectedItem } from '../../../components/modes/build'
+import { EDIT_MODES, EDIT_MODIFIERS } from '../../../helpers/types'
+import { EditObjectDetails } from './EditObjectDetails'
+import { EditObjectData } from './EditObjectDataPanel'
 
 export function createEditObjectPanel() {
     return (
@@ -15,10 +17,10 @@ export function createEditObjectPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(20, getAspect(uiSizes.horzRectangleOpaque)).width,
-                height: calculateImageDimensions(20, getAspect(uiSizes.horzRectangleOpaque)).height,
+                width: calculateImageDimensions(25, 345 / 511).width,
+                height: calculateImageDimensions(30, 345 / 511).height,
                 positionType: 'absolute',
-                position: { right: '4%', top:'2%' }
+                position: { right: '4%', bottom:'3%' }
             }}
         // uiBackground={{ color: Color4.Red() }}
         >
@@ -34,23 +36,12 @@ export function createEditObjectPanel() {
                     texture: {
                         src: 'assets/atlas1.png'
                     },
-                    uvs: getImageAtlasMapping(uiSizes.horzRectangleOpaque)
+                    uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
                 }}
             >
-
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '90%',
-                        height: '10%',
-                        margin:{top:'2%'}
-                    }}
-                uiText={{value: "Editing Object Name", fontSize:sizeFont(20,15)}}
-                />
-
-                    <EditTransform/>
+                <EditObjectDetails />
+                <EditObjectData/>
+                <EditTransform/>
 
                 </UiEntity>
         </UiEntity>

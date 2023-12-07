@@ -1,3 +1,4 @@
+import { engine } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 
 export default {

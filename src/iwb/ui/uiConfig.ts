@@ -19,6 +19,7 @@ import {toggleFlyMode} from "../components/modes/flying";
 import { hideAllPanels } from "./ui"
 import { getImageAtlasMapping } from "./helpers"
 import { log } from "../helpers/functions"
+import { displaySceneInfoPanel, showSceneInfoPanel } from "./Panels/sceneInfoPanel"
 
 export let uiModes: any = {
     0://playmode
@@ -120,6 +121,35 @@ export let topTools: any[] = [
                 displayCatalogPanel(true)
             }
         }
+    },
+    {
+        name: "SceneInfo",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 1,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            if(showSceneInfoPanel){
+                displaySceneInfoPanel(false)
+            }else{
+                displaySceneInfoPanel(true)
+            }
+        },
     },
     // {
     //     name: "Image",

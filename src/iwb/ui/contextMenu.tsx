@@ -12,7 +12,6 @@ export function displayHover(value:boolean){
 let contextEvents:any[] = []
 
 export function updateContextEvents(events:any[]){
-  console.log('events are ',events)
   contextEvents.length = 0
   contextEvents = events.filter((e)=> e.eventType === PointerEventType.PET_DOWN)
 }
@@ -35,14 +34,28 @@ export function createCustomContextMenu(){
 
           <UiEntity
       uiTransform={{
-        width: '20%',
+        width: '10%',
         height: '20%',
         justifyContent:'center',
         flexDirection:'column',
         positionType:'absolute',
-        position:{left:'55%'}
+        position:{left:'35%'}
       }}
       // uiBackground={{color:Color4.Green()}}
+      uiBackground={{
+        texture:{
+            src: resources.textures.atlas2
+        },
+        textureMode: 'stretch',
+        uvs:getImageAtlasMapping({
+            atlasHeight:1024,
+            atlasWidth:1024,
+            sourceTop:718,
+            sourceLeft:802,
+            sourceWidth:223,
+            sourceHeight:41
+          })
+      }}
     >
 
       {generateContextRows()}
@@ -64,7 +77,6 @@ function generateContextRows(){
 
 function ContextEventRow(data:any){
   let event = data.data
-  console.log('context row is')
   return(
     <UiEntity
     key={"context-row-" + event.eventInfo.button}
@@ -75,20 +87,20 @@ function ContextEventRow(data:any){
       flexDirection:'column',
       margin:{top:"1%", bottom:"1%"}
     }}
-    uiBackground={{
-      texture:{
-          src: resources.textures.atlas2
-      },
-      textureMode: 'stretch',
-      uvs:getImageAtlasMapping({
-          atlasHeight:1024,
-          atlasWidth:1024,
-          sourceTop:718,
-          sourceLeft:802,
-          sourceWidth:223,
-          sourceHeight:41
-        })
-    }}
+    // uiBackground={{
+    //   texture:{
+    //       src: resources.textures.atlas2
+    //   },
+    //   textureMode: 'stretch',
+    //   uvs:getImageAtlasMapping({
+    //       atlasHeight:1024,
+    //       atlasWidth:1024,
+    //       sourceTop:718,
+    //       sourceLeft:802,
+    //       sourceWidth:223,
+    //       sourceHeight:41
+    //     })
+    // }}
     uiText={{value:"" + getButtonText(event.eventInfo), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
   />
   )

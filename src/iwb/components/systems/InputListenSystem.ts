@@ -16,13 +16,12 @@ export function InputListenSystem(dt:number){
         let hoverEvents = PointerEvents.get(hoverResult.hit.entityId as Entity)
         if(hoverEvents){
             updateContextEvents([...hoverEvents.pointerEvents])
-            displayHover(true)
+            displayHover(true)//
         }
     }
 
     const hoever = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
     if(hoever){
-        console.log('hover leave', hoever)
         displayHover(false)
     }
 
@@ -31,10 +30,15 @@ export function InputListenSystem(dt:number){
         //POINTER
         if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)){
             setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
+            displayHover(false)
           }
+
+
   
           //#1
           if (inputSystem.isTriggered(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)){
+            displayHover(false)
+
               const result = inputSystem.getInputCommand(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)
               if(result){
                 if(result.hit && result.hit.entityId){
@@ -63,6 +67,8 @@ export function InputListenSystem(dt:number){
   
           //#2//
           if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)){
+            displayHover(false)
+            
               // Logic in response to button press
               const result = inputSystem.getInputCommand(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)
               if(result){
@@ -79,21 +85,25 @@ export function InputListenSystem(dt:number){
           //#3
           if (inputSystem.isTriggered(InputAction.IA_ACTION_5, PointerEventType.PET_DOWN)){
               // Logic in response to button press
+              displayHover(false)
           }
   
           //#4
           if (inputSystem.isTriggered(InputAction.IA_ACTION_6, PointerEventType.PET_DOWN)){
               // Logic in response to button press
+              displayHover(false)
           }
   
           //Shift
           if (inputSystem.isTriggered(InputAction.IA_WALK, PointerEventType.PET_DOWN)){
+            displayHover(false)
               setButtonState(InputAction.IA_WALK, PointerEventType.PET_DOWN)
               checkShortCuts()
           }
   
           //E
           if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)){
+            displayHover(false)
               setButtonState(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
               const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
               if(result){
@@ -128,6 +138,7 @@ export function InputListenSystem(dt:number){
   
           //F
           if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)){
+            displayHover(false)
               setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
               const result = inputSystem.getInputCommand(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
               if(result){

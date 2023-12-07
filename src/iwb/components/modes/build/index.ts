@@ -21,6 +21,7 @@ import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SelectedItem, SERVER_MESSA
 import {displayCatalogPanel} from "../../../ui/Panels/CatalogPanel"
 import {entitiesFromItemIds, itemIdsFromEntities, sceneBuilds} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
+import { displaySceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 
 export let selectedItem: SelectedItem
 export let playerParentEntities: Map<string, Entity> = new Map()//
@@ -563,10 +564,13 @@ export function checkBuildPermissions(player: Player) {
     } else {
         player.canBuild = false
         player.activeScene = null
+        displaySceneInfoPanel(false)
+        
         if (selectedItem && selectedItem.enabled) {
             // selectedItem.enabled = false
         }
     }
+    // log('player active scene', player.activeScene)
 }
 
 function addUseCatalogItemPointers(ent: Entity) {

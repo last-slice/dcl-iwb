@@ -28,13 +28,13 @@ import { createSettingsPanel, displaySettingsPanel } from './Panels/settings/set
 import { createRealmTravelPanel } from './Panels/realmTravelPanel'
 import { createDebugPanel } from './Panels/debugPanel'
 import { createSceneSavedPanel } from './Panels/sceneSavedPanel'
-import { createEditObjectPanel } from './Panels/EditObjectPanel'
-import { createGizmoPanel } from './GizmoPanel'
 import { createInitalizeWorldPanel } from './Panels/initaliteWorldPanel'
 import { createWorldReadyPanel } from './Panels/worldReadyPanel'
 import { createCatalogInfoPanel, displayCatalogInfoPanel } from './Panels/CatalogInfoPanel'
-import { createSceneInfoPanel } from './Panels/builds/buildsIndex'
+import { createScenePanel } from './Panels/builds/buildsIndex'
 import { createCustomContextMenu } from './contextMenu'
+import { createSceneInfoPanel } from './Panels/sceneInfoPanel'
+import { createEditObjectPanel } from './Panels/edit/EditObjectPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -68,12 +68,12 @@ const uiComponent = () => [
   createAssetUploadUI(),
   createDebugPanel(),
   createSceneSavedPanel(),
-  createGizmoPanel(),
   createEditObjectPanel(),
   createInitalizeWorldPanel(),
   createWorldReadyPanel(),
+  createScenePanel(),
+  createCustomContextMenu(),
   createSceneInfoPanel(),
-  createCustomContextMenu()
 ]
 
 

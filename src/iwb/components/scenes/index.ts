@@ -24,8 +24,10 @@ export function updateRealm(value:string){
         let player = players.get(localUserId)
         if(player){
             player.worlds.forEach((world)=>{
+                log('world is', world)
                 if((world.ens === value)){
                     player!.homeWorld = true
+                    log('player is in home world')
                     return
                 }
             })
