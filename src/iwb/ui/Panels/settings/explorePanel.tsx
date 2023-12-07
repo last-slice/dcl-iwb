@@ -1,21 +1,43 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 import { displaySettingsPanel, showSetting } from './settingsIndex'
-import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
-import { displayDeleteBuildPanel } from '../deleteBuildPanel'
-import { localUserId, players, worldTravel } from '../../../components/player/player'
-import { formatDollarAmount, log } from '../../../helpers/functions'
-import { joinWorld, world } from '../../../components/messaging'
-import { scenes, worlds } from '../../../components/scenes'
+import { localUserId } from '../../../components/player/player'
+import { realm, worlds } from '../../../components/scenes'
+import { displayRealmTravelPanel } from '../realmTravelPanel'
+import { log } from '../../../helpers/functions'
 
-let pressed:any ={
-    Save:false,
-    Load:false
+let visibleIndex = 0
+let visibleItems:any[] = []
+
+export function showAllWorlds(){
+    visibleIndex = 0
+    visibleItems.length = 0
+    refreshVisibleItems()
 }
-//
 
-let exploreView = 'Creators'
+export function refreshVisibleItems(){
+    log('we are here in rewfresh')
+    visibleItems.length = 0
+
+    worlds.sort((a, b) => a.name.localeCompare(b.name));
+  
+    for(let i = (visibleIndex * 6); i < (worlds.length < 6 ? worlds.length : (visibleIndex * 6) + 6); i++){
+      visibleItems.push(worlds[i])
+      }
+
+      log('visible items first area', visibleItems)
+  
+      let top = (visibleIndex * 6) + 6
+      if(top > visibleItems.length && visibleItems.length === 6){
+          for(let i = 0; i < (top - visibleItems.length); i++){
+              visibleItems.pop()
+          }
+      }//
+
+      log('visible itmes are ', visibleItems)
+  }
 
 export function ExplorePanel() {
     return (
@@ -51,122 +73,12 @@ export function ExplorePanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '60%',
+                width: '100%',
                 height: '100%',
             }}
-            uiText={{value:"Current Realm: " + (world ? world.label : ""),  textAlign:'middle-left', color:Color4.Black(), fontSize:sizeFont(20,15)}}
+            uiText={{value:"Current Realm: " + realm,  textAlign:'middle-left', color:Color4.Black(), fontSize:sizeFont(20,15)}}
             />
 
-            {/* IWB realm jump button */}
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(6, getAspect(uiSizes.blueButton)).width,
-            height: calculateImageDimensions(10,getAspect(uiSizes.blueButton)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.blueButton)
-        }}
-        onMouseDown={() => {
-            // pressed.Save = true
-        }}
-        uiText={{value: "IWB", color:Color4.Black(), fontSize:sizeFont(25,15)}}
-        />
-
-          {/* Personal realm jump button */}
-          <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-            height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.blueButton)
-        }}
-        onMouseDown={() => {
-            // pressed.Save = true
-            worldTravel({world:localUserId, label:players.get(localUserId)?.dclData.displayName})
-        }}
-        uiText={{value: "My Realm", color:Color4.Black(), fontSize:sizeFont(25,15)}}
-        />
-
-
-            </UiEntity>
-
-            {/* filter buttons row */}
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '11%',
-            }}
-            // uiBackground={{color:Color4.Blue()}}
-            >
-
-            {/* Creators filter */}
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(6, getAspect(uiSizes.normalButton)).width,
-            height: calculateImageDimensions(10,getAspect(uiSizes.normalButton)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getButtonState('Creators')
-        }}
-        onMouseDown={() => {
-            // pressed.Save = true
-            updateView("Creators")
-        }}
-        uiText={{value: "Creators", color:Color4.Black(), fontSize:sizeFont(25,15)}}
-        />
-
-          {/* Builds filter */}
-          <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(6, getAspect(uiSizes.normalButton)).width,
-            height: calculateImageDimensions(10,getAspect(uiSizes.normalButton)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getButtonState('Builds')
-        }}
-        onMouseDown={() => {
-            // pressed.Save = true
-            updateView("Builds")
-        }}
-        uiText={{value: "Builds", color:Color4.Black(), fontSize:sizeFont(25,15)}}
-        />
 
 
             </UiEntity>
@@ -174,7 +86,6 @@ export function ExplorePanel() {
             {/* explore creators table */}
             <UiEntity
             uiTransform={{
-                display: exploreView === "Creators" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -314,8 +225,8 @@ export function ExplorePanel() {
 
         </UiEntity>
 
-            {/* buttons row */}
-        <UiEntity
+      {/* buttons row */}
+      <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -343,317 +254,84 @@ export function ExplorePanel() {
         <UiEntity
             uiTransform={{
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
+                flexDirection: 'row',
+                alignItems: 'center',
                 justifyContent: 'center',
                 width: '15%',
                 height: '100%',
             }}
-            uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
-            </UiEntity>
 
-        </UiEntity>
-
-            </UiEntity>
-
-
-             {/* explore builds table */}
-             <UiEntity
-            uiTransform={{
-                display: exploreView === "Builds" ? 'flex' : 'none',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '90%',
-            }}
-            // uiBackground={{color:Color4.Gray()}}
-            >
-
-            {/* explore table bg */}
-            <UiEntity
+                 <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '85%',
-                positionType:'absolute'
-            }}
-            uiBackground={{color:Color4.Gray()}}
-            />
-
-            {/* header row */}
-        <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 justifyContent: 'center',
-                width: '100%',
-                height: '10%',
+                width: calculateSquareImageDimensions(5).width,
+                height: calculateSquareImageDimensions(4).height,
             }}
-            // uiBackground={{color:Color4.Blue()}}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
+                uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
             }}
-            
-        >
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40%',
-                height: '100%',
+            onMouseDown={()=>{
+                if(visibleIndex - 1 >=0){
+                    visibleIndex--
+                    refreshVisibleItems()
+                }
             }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
             />
 
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Blue()}}
-            uiText={{value:"Creator Name", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
-            />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Last Update", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '10%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            
-            uiText={{value:"Go", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
-            />
-
-        </UiEntity>
-
-            {/* builds row */}
-        <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '80%',
-            }}
-            // uiBackground={{color:Color4.Yellow()}}
-        >
-
-
-            {generateBuildRows()}
-
-
-
-        </UiEntity>
-
-            {/* buttons row */}
-        <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '15%',
-            }}
-            // uiBackground={{color:Color4.Black()}}
-        >
-             <UiEntity
+<UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                width: '85%',
-                height: '100%',
+                width: calculateSquareImageDimensions(5).width,
+                height: calculateSquareImageDimensions(4).height,
             }}
-            // uiBackground={{color:Color4.Black()}}
-        >
-        </UiEntity>
-
-
-        <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                width: '15%',
-                height: '100%',
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
             }}
-            uiBackground={{color:Color4.Black()}}
-        >
+            onMouseDown={()=>{
+                log('clickding right')
+                visibleIndex++
+                refreshVisibleItems()
+                if((visibleIndex + 1) * 6 < worlds.length){
+                    visibleIndex++
+                    refreshVisibleItems()
+                }
+            }}
+            />
+
             </UiEntity>
 
         </UiEntity>
 
             </UiEntity>
-
-
 
         
         </UiEntity>
     )
 }
 
-function generateBuildRows(){
-    let arr:any[] = []
-    if(localUserId && exploreView === "Builds"){
-        scenes.forEach((scene:any, i:number)=>{
-            arr.push(
-            <UiEntity
-            key={"build row - " + scene.id}
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '15%',
-                display:'flex'
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
-
-                : 
-
-                getImageAtlasMapping(uiSizes.normalLightestButton)
-            }}
-            >
-
-            {/* scene name */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent:'flex-start',
-                width: '40%',
-                height: '100%',
-                display:'flex'
-            }}
-            uiText={{value: "" + scene.scna, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
-            />
-
-              {/* world build counts */}
-              <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-                display:'flex'
-            }}
-            uiText={{value: "" + scene.name, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
-
-
-            {/* world last updated */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-                display:'flex'
-            }}
-            uiText={{value: "" + Math.floor((Math.floor(Date.now()/1000) - scene.updated) / 86400) + " days ago", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
-
-            {/* go button */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '10%',
-                height: '100%',
-                display:'flex'
-            }}
-            >
-                        
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateImageDimensions(2, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
-            }}
-            uiText={{value: "GO", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
-            </UiEntity>
-
-
-                </UiEntity>
-                )
-        })
-    }
-
-    return arr
-}
-
-
 function generateCreatorRows(){
     let arr:any[] = []
     if(localUserId){
-        worlds.forEach((world:any, i:number)=>{
+        visibleItems.forEach((world:any, i:number)=>{
             arr.push(
             <UiEntity
-            key={"world row - " + world.id}
+            key={"world row - " + world.ens}
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -744,7 +422,8 @@ function generateCreatorRows(){
             }}
             uiText={{value: "GO", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
             onMouseDown={()=>{
-                worldTravel(world.owner)
+               displaySettingsPanel(false)
+               displayRealmTravelPanel(true, world)
             }}
             />
             </UiEntity>
@@ -784,18 +463,3 @@ function generateCreatorRows(){
 
     return arr
 }
-
-function getButtonState(button:string){
-    if(exploreView === button){
-        return getImageAtlasMapping(uiSizes.positiveButton)
-    }else{
-        return getImageAtlasMapping(uiSizes.normalButton)
-    }
-}
-
-function updateView(view:string){
-    exploreView = view
-    //do things to get the new view data
-}
-
-//

@@ -1,9 +1,12 @@
+import { engine } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 
 export default {
 
     DEBUG: true,
     allowNoWeb3:true,
+
+    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
 
     endpoints:{
         wsTest: "ws://localhost:2751",
@@ -18,8 +21,7 @@ export default {
         validateTest: "http://localhost:2751",
 
         assetSign: "/scene/sign",
-
-        proxy: "https://lkdcl.co/proxy?url=",
+        dclNamesGraph:"https://api.thegraph.com/subgraphs/name/decentraland/marketplace"
     },
     colors:{
         transparent: Color4.create(0,0,0,0),
@@ -29,5 +31,5 @@ export default {
     textures:{
         atlas1:"assets/atlas1.png",
         atlas2:"assets/atlas2.png"
-    }
+    }//
 }

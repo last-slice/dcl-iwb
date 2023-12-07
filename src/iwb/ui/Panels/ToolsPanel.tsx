@@ -1,6 +1,6 @@
 import { Color4 } from "@dcl/sdk/math"
 import ReactEcs, { UiEntity, Label } from "@dcl/sdk/react-ecs"
-import { players, localUserId, setPlayMode } from "../../components/player/player"
+import { players, localUserId, setPlayMode, hasBuildPermissions, localPlayer } from "../../components/player/player"
 import { atHQ, log } from "../../helpers/functions"
 import { SCENE_MODES } from "../../helpers/types"
 import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
@@ -16,7 +16,7 @@ export function displayToolsPanel(value: boolean) {
 export function createToolsPanel() {
     return (
         <UiEntity
-            key={"toolpanel"}
+            key={"toolspanel"}
             uiTransform={{
                 // display: checkModeAndPermissions(),
                 display:'flex',
@@ -67,7 +67,7 @@ export function createToolsPanel() {
             onMouseDown={()=>{
                 if(players.has(localUserId)){
                    let mode = players.get(localUserId)!.mode
-                   if(mode == 0){
+                   if(mode == 0 && hasBuildPermissions()){
                     setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
                    }else{
                     setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
@@ -92,7 +92,7 @@ export function createToolsPanel() {
             }}
             // uiBackground={{ color: Color4.Blue() }}
         >
-            {createBottomToolIcons(bottomTools)}
+            {/* {createBottomToolIcons(bottomTools)} */}
         </UiEntity>
         </UiEntity>
     )
@@ -153,7 +153,7 @@ function CreateToolIcon(data:any){
     return ( <UiEntity
     key={config.name}
     uiTransform={{
-        display: config.name === "Settings" ? 'flex' : players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none',
+        display: getDisplay(config),
         width: calculateSquareImageDimensions(4).width,
         height: calculateSquareImageDimensions(4).height,
         flexDirection:'row',
@@ -164,7 +164,7 @@ function CreateToolIcon(data:any){
         texture: {
         src: config.atlas,
         },
-        uvs:getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
+        uvs: config.uvOverride ? config.uvOverride() : getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
     }}
     onMouseDown={()=>{
         if(data.toggle){
@@ -181,22 +181,34 @@ function CreateToolIcon(data:any){
     )
 }
 
+function getDisplay(config:any){
+    switch(config.name){
+        case 'Settings':
+            return 'flex'
 
-function checkModeAndPermissions(){
-    let player = players.get(localUserId)
-    if(!atHQ() && localUserId && player!.mode !== SCENE_MODES.CREATE_SCENE_MODE){
-         if(player!.buildingAllowed.length > 0){
-            // console.log('player building parcels allowed', player.buildingAllowed)
-            if(player!.buildingAllowed.find((b:any)=> b.parcel === player!.currentParcel)){
-                return "flex"
-            }else{
-                return "none"
-            }
-         }else{
-            return "none"
-         }
-    }
-    else{
-        return "none"
+        case 'SceneInfo':
+            return players.has(localUserId) && players.get(localUserId)?.activeScene && players.get(localUserId)?.activeScene !== null ? 'flex' : 'none'
+
+        default:
+            return players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none'
     }
 }
+
+// function checkModeAndPermissions(){
+//     let player = players.get(localUserId)
+//     if(!atHQ() && localUserId && player!.mode !== SCENE_MODES.CREATE_SCENE_MODE){
+//          if(player!.buildingAllowed.length > 0){
+//             // console.log('player building parcels allowed', player.buildingAllowed)
+//             if(player!.buildingAllowed.find((b:any)=> b.parcel === player!.currentParcel)){
+//                 return "flex"
+//             }else{
+//                 return "none"
+//             }
+//          }else{
+//             return "none"
+//          }
+//     }
+//     else{
+//         return "none"
+//     }
+// }

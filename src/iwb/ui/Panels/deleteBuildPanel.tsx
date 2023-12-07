@@ -3,6 +3,9 @@ import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { displaySettingsPanel } from './settings/settingsIndex'
+import { sendServerMessage } from '../../components/messaging'
+import { SERVER_MESSAGE_TYPES } from '../../helpers/types'
+import { scene } from './builds/buildsIndex'
 
 export let showDeleteBuildPanel = false
 
@@ -89,6 +92,7 @@ export function createDeleteBuildPanel() {
             }}
             onMouseDown={() => {
                 displayDeleteBuildPanel(false)
+                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE, {sceneId: scene!.id})
             }}
             uiText={{value: "Delete", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />

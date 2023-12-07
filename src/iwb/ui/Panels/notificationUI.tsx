@@ -185,7 +185,7 @@ export function createNotificationUI(){
           display: currentNotification.type === NOTIFICATION_TYPES.MESSAGE ? 'flex' : 'none',
           alignSelf:'center'
         }}
-        uiText={{color:Color4.Black(), value: addLineBreak(currentNotification.text, undefined, 25), fontSize:sizeFont(35,25)}}
+        uiText={{color:Color4.Black(), value: addLineBreak(currentNotification.text, undefined, 40), fontSize:sizeFont(25,20)}}
       >
         
           </UiEntity>
@@ -227,7 +227,7 @@ export function createNotificationUI(){
         }}
         uiBackground={{
             texture:{
-                src: resources.endpoints.proxy + currentNotification.image
+                src: currentNotification.image
             },
             textureMode: 'stretch',
             uvs:getImageAtlasMapping({

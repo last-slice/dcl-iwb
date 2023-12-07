@@ -5,8 +5,6 @@ import { uiSizes } from '../uiConfig'
 import { localUserId, players } from '../../components/player/player'
 import { formatDollarAmount } from '../../helpers/functions'
 
-
-
 export let showSceneInfoPanel = false
 
 export function displaySceneInfoPanel(value: boolean) {
@@ -16,7 +14,7 @@ export function displaySceneInfoPanel(value: boolean) {
 export function createSceneInfoPanel() {
     return (
         <UiEntity
-            key={"newsceneinfopanel"}
+            key={"scenespecificinfopanel"}
             uiTransform={{
                 display: showSceneInfoPanel ? 'flex' : 'none',
                 flexDirection: 'column',
@@ -472,7 +470,7 @@ function generateBuildRows() {
         player!.scenes.forEach((scene: any, i: number) => {
             arr.push(
                 <UiEntity
-                    key={"build row - " + scene.id}
+                    key={"build row - " + scene.id + "i"}
                     uiTransform={{
                         flexDirection: 'row',
                         alignItems: 'center',

@@ -2,28 +2,35 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
-import { BuildsPanel } from './buildsPanel'
+import { BuildsPanel, showYourBuilds } from './buildsPanel'
 import { AccessPanel } from './accessPanel'
-import { ExplorePanel } from './explorePanel'
+import { ExplorePanel, showAllWorlds } from './explorePanel'
 import { SettingsPanel } from './settingsPanel'
 import { CreateScenePanel } from './createPanel'
-import { world } from '../../../components/messaging'
-import { log } from '../../../helpers/functions'
+import { YourWorlds, showWorlds } from './youWorlds'
+import { realm } from '../../../components/scenes'
+import { isPreview, log } from '../../../helpers/functions'
+import { localUserId, players } from '../../../components/player/player'
+import { VersionPanel } from './versionPanel'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
 
 export let buttons:any[] = [
-    {label:"Create", pressed:false},
-    {label:"Access", pressed:false},
     {label:"Explore", pressed:false},
+    {label:"My Worlds", pressed:false},
     {label:"Builds", pressed:false},
+    {label:"Create", pressed:false},
     {label:"Settings", pressed:false},
+    {label:"Version", pressed:false},
     {label:"Close", pressed:false},
 ]
 
 export function displaySettingsPanel(value: boolean) {
-    showSettingsPanel = value//
+    showSettingsPanel = value
+    if(showSettingsPanel){
+        showAllWorlds()
+    }
 }
 
 export function displaySetting(value:string){
@@ -42,7 +49,7 @@ export function createSettingsPanel() {
                 width: calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width,
                 height: calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).height,
                 positionType: 'absolute',
-                position: { left: (dimensions.width - calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width) / 2, top: (dimensions.height - calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).height) / 2 }
+                position: { left: (dimensions.width - calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width) / 2, bottom: '15%'}
             }}
         // uiBackground={{ color: Color4.Red() }}
         >
@@ -126,13 +133,13 @@ export function createSettingsPanel() {
                     // uiBackground={{color:Color4.Blue()}}
                     >
 
-                    <CreateScenePanel/>
+                    <YourWorlds/>
                     <BuildsPanel/>
-                    <AccessPanel/>
                     <ExplorePanel/>
+                    <CreateScenePanel/>
                     <SettingsPanel/>
+                    <VersionPanel/>
                         
-
                     </UiEntity>
 
                 </UiEntity>
@@ -171,7 +178,19 @@ function generateSettingsButtons(buttons:any[]){
             if(button.label === "Close"){
                 displaySettingsPanel(false)
                 displaySetting('Builds')
-            }else{
+            }else if(button.label === "My Worlds"){
+                showWorlds()
+                displaySetting(button.label)
+            }
+            else if(button.label === "Explore"){
+                showAllWorlds()
+                displaySetting(button.label)
+            }
+            else if(button.label === "Builds"){
+                showYourBuilds()
+                displaySetting(button.label)
+            }
+            else{
                 displaySetting(button.label)
             }
         }}
@@ -182,8 +201,8 @@ function generateSettingsButtons(buttons:any[]){
 }
 
 function getButtonDisplay(button:string){
-    if(button === "Create" || button === "Access"){
-        return world && world.world === "main" ? "none" : 'flex'
+    if(button === "Create" || button === "Version" || button === "Builds"){
+        return isPreview ? 'flex' :  (localUserId && players.get(localUserId)!.homeWorld) ?  'flex' : 'none'
     }else{
         return 'flex'
     }

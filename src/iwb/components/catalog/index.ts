@@ -1,9 +1,13 @@
-import { CatalogItemType } from "../../helpers/types";
+import {items} from "./items";
 
-export let items: Map<string, CatalogItemType> = new Map();
-// items.set('Cube', { code: 1 });
-// items.set('Cylinder', { code: 2 });
-// items.set('Sphere', { code: 3 });
-// items.set('Model', { code: 4 });
-// items.set('Model2', { code: 5 });
+export let styles: string[] = []
 
+export function updateStyles(updates: string[]) {
+    updates.forEach((update) => {
+        styles.push(update)
+    })
+    styles = styles.sort((a, b) => a.localeCompare(b));
+    styles.unshift("All")
+}
+
+export {items}

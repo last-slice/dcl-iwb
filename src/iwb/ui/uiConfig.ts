@@ -1,6 +1,6 @@
 import { localUserId, players } from "../components/player/player"
 import resources from "../helpers/resources"
-import { NOTIFICATION_TYPES } from "../helpers/types"
+import { NOTIFICATION_TYPES, VIEW_MODES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
 import { displayCatalogInfoPanel } from "./Panels/CatalogInfoPanel"
 import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
@@ -15,6 +15,11 @@ import { showNotification } from "./Panels/notificationUI"
 import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBuildConfirmPanel"
 import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
 import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
+import {toggleFlyMode} from "../components/modes/flying";
+import { hideAllPanels } from "./ui"
+import { getImageAtlasMapping } from "./helpers"
+import { log } from "../helpers/functions"
+import { displaySceneInfoPanel, showSceneInfoPanel } from "./Panels/sceneInfoPanel"
 
 export let uiModes: any = {
     0://playmode
@@ -72,14 +77,18 @@ export let topTools: any[] = [
         disabledUV: {
             atlasHeight: 1024,
             atlasWidth: 1024,
-            sourceTop: 128 * 2,
+            sourceTop: 128 * 3,
             sourceLeft: 128 * 3,
             sourceWidth: 128,
             sourceHeight: 128
         },
-        enabled: true,
-        visible: true,
-        fn: () => {
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            toggleFlyMode()
+        },
+        uvOverride:()=>{
+            return players.has(localUserId) ? players.get(localUserId)!.viewMode === VIEW_MODES.GOD ? getImageAtlasMapping(uiSizes.godModeButton) : getImageAtlasMapping(uiSizes.carpenterButton) : getImageAtlasMapping()
         }
     },
     {
@@ -106,39 +115,67 @@ export let topTools: any[] = [
         fn: () => {
             if (showCatalogPanel) {
                 displayCatalogPanel(false)
-
             }
             else {
+                hideAllPanels()
                 displayCatalogPanel(true)
             }
-
         }
     },
     {
-        name: "Image",
+        name: "SceneInfo",
         atlas: "assets/atlas1.png",
         enabledUV: {
             atlasHeight: 1024,
             atlasWidth: 1024,
             sourceTop: 128 * 0,
-            sourceLeft: 128 * 3,
+            sourceLeft: 128 * 1,
             sourceWidth: 128,
             sourceHeight: 128
         },
         disabledUV: {
             atlasHeight: 1024,
             atlasWidth: 1024,
-            sourceTop: 128 * 0,
-            sourceLeft: 128 * 3,
+            sourceTop: 128 * 1,
+            sourceLeft: 128 * 1,
             sourceWidth: 128,
             sourceHeight: 128
         },
-        enabled: true,
-        visible: true,
-        fn: () => {
-            displayRectanglePanel(!showRectanglePanel)
-        }
+        enabled:true,
+        visible:true,
+        fn:()=>{
+            if(showSceneInfoPanel){
+                displaySceneInfoPanel(false)
+            }else{
+                displaySceneInfoPanel(true)
+            }
+        },
     },
+    // {
+    //     name: "Image",
+    //     atlas: "assets/atlas1.png",
+    //     enabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 0,
+    //         sourceLeft: 128 * 3,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     disabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 0,
+    //         sourceLeft: 128 * 3,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     enabled: true,
+    //     visible: true,
+    //     fn: () => {
+    //         displayRectanglePanel(!showRectanglePanel)
+    //     }
+    // },
     // {
     //     name:"Position",
     //     atlas:"assets/atlas1.png",
@@ -502,7 +539,7 @@ export let settingsIconData: any =
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128 * 4,
-        sourceLeft: 128 * 2,
+        sourceLeft: 128 * 6,
         sourceWidth: 128,
         sourceHeight: 128
     },
@@ -510,7 +547,7 @@ export let settingsIconData: any =
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128 * 5,
-        sourceLeft: 128 * 2,
+        sourceLeft: 128 * 6,
         sourceWidth: 128,
         sourceHeight: 128
     },
@@ -526,8 +563,193 @@ export let settingsIconData: any =
     }
 }
 
-export let uiSizes: any = {
-    toggleOn: {
+export let uiSizes:any ={
+        magnifyPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128 * 4,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    magnifyIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128 * 5,
+        sourceLeft: 0,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    scaleIconPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128 * 4,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    scaleIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128 * 4,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rotationIconPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128 * 5,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rotationIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128 * 5,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    positionIconPressed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128 * 6,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    positionIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128 * 6,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    rightArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 874,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upArrow:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    upCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    downCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    leftCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    rightCarot:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 180,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    blackArrowRight:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    blackArrowLeft:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 904,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueSearchBG:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 898,
+        sourceLeft: 47,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueSearchTransparent:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 898,
+        sourceLeft: 288,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueSearchIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueArrowRight:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    opaqueArrowleft:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 934,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    
+    toggleOn:{
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
@@ -670,6 +892,15 @@ export let uiSizes: any = {
         sourceHeight: 511
     },
 
+    horzRectangleOpaque:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 774,
+        sourceLeft: 0,
+        sourceWidth: 331,
+        sourceHeight: 200
+    },
+    
     smallPill: {
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -687,6 +918,16 @@ export let uiSizes: any = {
         sourceWidth: 824,
         sourceHeight: 263
     },
+
+    infoButtonBlack:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 0,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    
     backButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -727,6 +968,16 @@ export let uiSizes: any = {
         sourceWidth: 128,
         sourceHeight: 128
     },
+
+    infoButtonOpaque:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128,
+        sourceLeft: 128,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+
     infoButtonTrans: {
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -906,7 +1157,7 @@ export let uiSizes: any = {
     carpenterButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
-        sourceTop: 386,
+        sourceTop: 384,
         sourceLeft: 384,
         sourceWidth: 128,
         sourceHeight: 128

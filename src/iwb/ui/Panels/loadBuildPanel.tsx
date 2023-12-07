@@ -513,7 +513,7 @@ function CatalogItem(data: any) {
                 uiBackground={{
                     textureMode: 'stretch',
                     texture: {
-                        src: resources.endpoints.proxy + data.item.im
+                        src: data.item.im
                     },
                     uvs: getImageAtlasMapping({
                         atlasHeight: 256,

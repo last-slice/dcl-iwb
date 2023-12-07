@@ -10,6 +10,21 @@ import { displayAssetUploadUI } from "../ui/Panels/assetUploadUI";
 
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
+export function roundVector(object:Vector3, to:number){
+  let x = object.x
+  let y = object.y
+  let z = object.z
+  return Vector3.create(parseFloat(x.toFixed(to)), parseFloat(y.toFixed(to)), parseFloat(z.toFixed(to)))
+}
+
+export function roundQuaternion(object:Quaternion, to:number){
+  let eulers = Quaternion.toEulerAngles(object)
+  let x = eulers.x
+  let y = eulers.y
+  let z = eulers.z
+  return Quaternion.fromEulerDegrees(parseFloat(x.toFixed(to)), parseFloat(y.toFixed(to)), parseFloat(z.toFixed(to)))
+}
+
 export function atHQ(){
   return players.has(localUserId) ? HQParcels.find((p)=> p === players.get(localUserId)!.currentParcel) : true
 }

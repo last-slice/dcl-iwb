@@ -1,47 +1,53 @@
 import {log} from "../../helpers/functions"
-import {SERVER_MESSAGE_TYPES} from "../../helpers/types"
-import {items} from "../catalog"
-import {localUserId, players, removePlayer} from "../player/player"
-import {addBoundariesForParcel} from "../modes/create";
-import { updateWorld } from ".";
-import { setScenes } from "../scenes";
+import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
+import {updateStyles} from "../catalog"
+import {iwbConfig, localUserId, players, removePlayer} from "../player/player"
+import {setWorlds} from "../scenes";
+import {Room} from "colyseus.js";
+import {displayWorldReadyPanel} from "../../ui/Panels/worldReadyPanel";
+import {showNotification} from "../../ui/Panels/notificationUI";
+import {addSceneStateListeners} from "./sceneListeners";
+import {refreshSortedItems, updateItem} from "../catalog/items";
 
 
-export function initiateMessageListeners(room: any) {
+export function initiateMessageListeners(room: Room) {
+
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, (info: any) => {
         log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
-
-        //set world
-        updateWorld(info.world)
 
         //set initial catalog
         let catalog = info.catalog
         for (const key in catalog) {
             if (catalog.hasOwnProperty(key)) {
                 const value = catalog[key];
-                items.set(key, value)
+                updateItem(key, value)
             }
         }
-        log('catalog size is', items.size)
+        refreshSortedItems()
+
+        //set catalog styles
+        updateStyles(info.styles)
 
         //set deployed iwb version
         players.get(localUserId)!.version = info.iwb.v
+        iwbConfig.v = info.iwb.v
+        iwbConfig.updates = info.iwb.updates
 
-        //set scene list
-        setScenes(info.scenes)
+        setWorlds(info.worlds)
 
         //set occupied parcels
         // for (const p of info.occupiedParcels) {
         //     //log('occupied parcel', p)
         //     addBoundariesForParcel(p, false)
-        // }//
+        // }
 
+        addSceneStateListeners(room)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD + ' received', info)
-        if(info){
-            updateWorld(info)
+        if (info) {
+            // updateWorld(info)
         }
     })
 
@@ -52,5 +58,21 @@ export function initiateMessageListeners(room: any) {
 
     room.onMessage(SERVER_MESSAGE_TYPES.CATALOG_UPDATED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.CATALOG_UPDATED + ' received', info)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
+        if (info.owner === localUserId && info.init) {
+            displayWorldReadyPanel(true, info)
+        } else {
+            log('should display something else')
+            showNotification({
+                type: NOTIFICATION_TYPES.MESSAGE,
+                message: info.worldName + " just deployed their world - " + info.ens + "!",
+                animate: {enabled: true, return: true, time: 5}
+            })
+        }
+
+        setWorlds([info])
     })
 }
