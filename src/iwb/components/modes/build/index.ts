@@ -32,17 +32,19 @@ export let playerParentEntities: Map<string, Entity> = new Map()//
 let ITEM_DEPTH_DEFAULT = 4
 let ITEM_HEIGHT_DEFAULT = -.88
 
-export function sendServerEdit(axis: string, direction: number) {
+export function sendServerEdit(axis: string, direction: number, manual?:boolean, manualMod?:EDIT_MODIFIERS, value?:number) {
     sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET,
         {
             item: selectedItem.entity,
             sceneId: selectedItem.sceneId,
             aid: selectedItem.aid,
-            modifier: selectedItem.modifier,
+            modifier: manual ? manualMod : selectedItem.modifier,
             factor: selectedItem.factor,
             axis: axis,
             direction: direction,
-            editType: EDIT_MODIFIERS.TRANSFORM
+            editType: EDIT_MODIFIERS.TRANSFORM,
+            manual:manual,
+            value: value
         }
     )
 }
