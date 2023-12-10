@@ -16,6 +16,7 @@ import {
     PointerEvents,
     PointerEventType,
     Transform,
+    VideoPlayer,
     VisibilityComponent
 } from "@dcl/sdk/ecs"
 import {cRoom, sendServerMessage} from "../../messaging";
@@ -190,7 +191,13 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean) {
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(2, 2, 1)
                 MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else {
+            } else if (selectedItem.itemData.n === "Video") {
+                MeshRenderer.setPlane(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(2, 2, 1)
+                MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
+            }  else {
                 GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
             }
         }
@@ -355,7 +362,21 @@ export function saveItem() {
     openEditComponent("")
 }
 
-export function dropSelectedItem(canceled?: boolean) {
+export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
+
+    if(editing){
+        selectedItem.enabled = false
+        PointerEvents.deleteFrom(selectedItem.entity)
+        addBuildModePointers(selectedItem.entity)
+
+        addAllBuildModePointers()
+
+        if(selectedItem.pointer)
+            engine.removeEntity(selectedItem.pointer)
+
+        return
+    }
+
     const {position, rotation} = Transform.get(engine.PlayerEntity)
     const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
     const finalPosition = Vector3.add(position, forwardVector)
@@ -542,6 +563,12 @@ export function cancelSelectedItem() {
     // }
 }
 
+export function cancelEditingItem() {
+    log('canceled editing item is', selectedItem)
+    openEditComponent("")
+    dropSelectedItem(true, true)
+}
+
 function addGrabbedComponent(){
     log('selected item type is', selectedItem)
     switch(selectedItem.itemData.type){
@@ -558,6 +585,7 @@ function addGrabbedComponent(){
             break;
     }
 }
+
 
 
 export function removeSelectedItem() {
@@ -791,7 +819,7 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
 //
 
 export function updateImageUrl(aid:string, materialComp:any, url:string){
-    log('updateing image url', aid, materialComp, url)
+    log('updating image url', aid, materialComp, url)
     let ent = entitiesFromItemIds.get(aid)
     
     if(ent){
@@ -809,6 +837,29 @@ export function updateImageUrl(aid:string, materialComp:any, url:string){
             // emissiveColor: item.matComp.emissPath !== "" ? item.matComp,
             emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
           })
+    }
+
+}
+
+
+export function updateVideoUrl(aid:string, materialComp:any, url:string){
+    log('updating video url', aid, materialComp, url)
+    let ent = entitiesFromItemIds.get(aid)
+
+    if(ent){
+        VideoPlayer.create(ent, {
+            src: url,
+            playing: true,
+        })
+
+        const videoTexture = Material.Texture.Video({ videoPlayerEntity: ent })
+
+        Material.setPbrMaterial(ent, {
+            texture: videoTexture,
+            roughness: 1.0,
+            specularIntensity: 0,
+            metallic: 0,
+        })
     }
 
 }
