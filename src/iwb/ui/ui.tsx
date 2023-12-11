@@ -74,7 +74,6 @@ const uiComponent = () => [
   createWorldReadyPanel(),
   createScenePanel(),
   createCustomContextMenu(),
-  createSceneInfoPanel(),
 ]
 
 
