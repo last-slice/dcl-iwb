@@ -1,12 +1,27 @@
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont, uiSizer } from '../../helpers'
-import { uiSizes } from '../../uiConfig'
-import { EditTransform } from './EditTransform'
-import { cancelSelectedItem, deleteSelectedItem, saveItem, selectedItem } from '../../../components/modes/build'
-import { EDIT_MODES, EDIT_MODIFIERS } from '../../../helpers/types'
-import { EditObjectDetails } from './EditObjectDetails'
-import { EditObjectData } from './EditObjectDataPanel'
-import { Color4 } from '@dcl/sdk/math'
+import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
+import {
+    addLineBreak,
+    calculateImageDimensions,
+    calculateSquareImageDimensions,
+    dimensions,
+    getAspect,
+    getImageAtlasMapping,
+    sizeFont,
+    uiSizer
+} from '../../helpers'
+import {uiSizes} from '../../uiConfig'
+import {EditTransform} from './EditTransform'
+import {
+    cancelEditingItem,
+    cancelSelectedItem,
+    deleteSelectedItem,
+    saveItem,
+    selectedItem
+} from '../../../components/modes/build'
+import {EDIT_MODES, EDIT_MODIFIERS} from '../../../helpers/types'
+import {EditObjectDetails} from './EditObjectDetails'
+import {EditObjectData, openEditComponent, visibleComponent} from './EditObjectDataPanel'
+import {Color4} from '@dcl/sdk/math'
 
 export function createEditObjectPanel() {
     return (
@@ -21,9 +36,9 @@ export function createEditObjectPanel() {
                 width: calculateImageDimensions(25, 345 / 511).width,
                 height: calculateImageDimensions(30, 345 / 511).height,
                 positionType: 'absolute',
-                position: { right: '4%', bottom:'3%' }
+                position: {right: '4%', bottom: '3%'}
             }}
-        // uiBackground={{ color: Color4.Red() }}
+            // uiBackground={{ color: Color4.Red() }}
         >
             <UiEntity
                 uiTransform={{
@@ -40,94 +55,92 @@ export function createEditObjectPanel() {
                     uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
                 }}
             >
-                <EditObjectDetails />
+                <EditObjectDetails/>
                 <EditObjectData/>
 
-                            {/* button rows */}
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '90%',
-                height: '5%',
-                margin:{top:'1%'}
-            }}
-            // uiBackground={{color:Color4.Green()}}
-        >
+                {/* button rows */}
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '90%',
+                        height: '5%',
+                        margin: {top: '1%'}
+                    }}
+                    // uiBackground={{color:Color4.Green()}}
+                >
 
-{/* save button */}
-<UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-                margin:{left:"1%", right:"1%"}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
-            }}
-            uiText={{value: "Save", fontSize:sizeFont(20,16)}}
-            onMouseDown={()=>{
-                saveItem()
-            }}
-        />
+                    {/* save button */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                            margin: {left: "1%", right: "1%"}
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                        }}
+                        uiText={{value: "Save", fontSize: sizeFont(20, 16)}}
+                        onMouseDown={() => {
+                            saveItem()
+                        }}
+                    />
 
-{/* delete button */}
-<UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-                margin:{left:"1%", right:"1%"}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
-            }}
-            uiText={{value: "Delete", fontSize:sizeFont(20,16)}}
-            onMouseDown={()=>{
-                deleteSelectedItem()
-            }}
-        />
+                    {/* delete button */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                            margin: {left: "1%", right: "1%"}
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                        }}
+                        uiText={{value: "Delete", fontSize: sizeFont(20, 16)}}
+                        onMouseDown={() => {
+                            deleteSelectedItem()
+                        }}
+                    />
 
-{/* cancel button */}
-<UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-                margin:{left:"1%", right:"1%"}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.blackButton)
-            }}
-            uiText={{value: "Cancel", fontSize:sizeFont(20,16)}}
-            onMouseDown={()=>{
-                cancelSelectedItem()
-            }}
-        />
-
-        </UiEntity>
-
+                    {/* cancel button */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                            margin: {left: "1%", right: "1%"}
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.blackButton)
+                        }}
+                        uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
+                        onMouseDown={() => {
+                            cancelEditingItem()
+                        }}
+                    />
                 </UiEntity>
+            </UiEntity>
         </UiEntity>
     )
 }

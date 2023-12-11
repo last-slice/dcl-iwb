@@ -1,7 +1,15 @@
 import { engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
 import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
-import { otherUserPlaceditem, otherUserRemovedSeletedItem, otherUserSelectedItem, removeItem, transformObject, updateImageUrl } from "../modes/build"
+import {
+    otherUserPlaceditem,
+    otherUserRemovedSeletedItem,
+    otherUserSelectedItem,
+    removeItem,
+    transformObject,
+    updateImageUrl,
+    updateVideoUrl
+} from "../modes/build"
 import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
 import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene } from "../scenes"
@@ -96,14 +104,24 @@ export function addSceneStateListeners(room:any){
             log('added new item to state schema', key, asset)
             loadSceneAsset(scene.id, asset)
 
-            asset.visComp.listen("visible", (currentValue:any, previousValue:any) => {
-                log("asset visibility changed", previousValue, currentValue)
-            });
+            if(asset.visComp){
+                asset.visComp.listen("visible", (currentValue:any, previousValue:any) => {
+                    log("asset visibility changed", previousValue, currentValue)
+                });
+            }
 
-            asset.imgComp.listen("url", (currentValue:any, previousValue:any) => {
-                log("asset image url changed", previousValue, currentValue)
-                updateImageUrl(asset.aid, asset.matComp, currentValue)
-            });
+            if(asset.imgComp){
+                asset.imgComp.listen("url", (currentValue:any, previousValue:any) => {
+                    log("asset image url changed", previousValue, currentValue)
+                    updateImageUrl(asset.aid, asset.matComp, currentValue)
+                });
+            }
+            if(asset.vidComp){
+                asset.vidComp.listen("url", (currentValue:any, previousValue:any) => {
+                    log("asset video url changed", previousValue, currentValue)
+                    updateVideoUrl(asset.aid, asset.matComp, currentValue)
+                });
+            }
 
             //position
             asset.p.listen("x", (currentValue:any, previousValue:any) => {
@@ -172,7 +190,6 @@ export function addSceneStateListeners(room:any){
         }
         unloadScene(key)
     })
-
 
     room.state.players.onAdd((player:any, key:string)=>{
         log('player is', player)

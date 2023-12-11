@@ -1,34 +1,25 @@
-import ReactEcs, {
-    Button,
-    Label,
-    ReactEcsRenderer,
-    UiEntity,
-    Position,
-    UiBackgroundProps,
-    Input
-} from '@dcl/sdk/react-ecs'
-import {Color4, Quaternion, Vector3} from '@dcl/sdk/math'
+import ReactEcs, {Input, UiEntity} from '@dcl/sdk/react-ecs'
+import {Color4} from '@dcl/sdk/math'
 import {sizeFont} from '../../helpers'
 import {visibleComponent} from './EditObjectDataPanel'
 import {COMPONENT_TYPES, SERVER_MESSAGE_TYPES} from '../../../helpers/types'
 import {sendServerMessage} from '../../../components/messaging'
 import {selectedItem} from '../../../components/modes/build'
-import {items} from '../../../components/catalog'
 import {sceneBuilds} from '../../../components/scenes'
 
 let value = ""
 
-export function ImageComponentPanel() {
+export function VideoComponentPanel() {
     return (
         <UiEntity
-            key={"editimagecomponentpanel"}
+            key={"editvideocomponentpanel"}
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
-                display: visibleComponent === COMPONENT_TYPES.IMAGE_COMPONENT ? 'flex' : 'none',
+                display: visibleComponent === COMPONENT_TYPES.VIDEO_COMPONENT ? 'flex' : 'none',
             }}
         >
 
@@ -72,7 +63,7 @@ export function ImageComponentPanel() {
                         width: '100%',
                         height: '120%',
                     }}
-                    value={"" + (visibleComponent === COMPONENT_TYPES.IMAGE_COMPONENT ? getImage() : "")}
+                    value={"" + (visibleComponent === COMPONENT_TYPES.VIDEO_COMPONENT ? getImage() : "")}
                     onMouseDown={() => {
                         console.log('clicked')
                     }}
@@ -95,11 +86,10 @@ export function ImageComponentPanel() {
                     }}
                     onMouseDown={() => {
                         sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {
-                            component: COMPONENT_TYPES.IMAGE_COMPONENT,
+                            component: COMPONENT_TYPES.VIDEO_COMPONENT,
                             action: "update",
                             data: {aid: selectedItem.aid, sceneId: selectedItem.sceneId, url: value}
                         })
-
                     }}
                 />
             </UiEntity>
@@ -110,7 +100,7 @@ export function ImageComponentPanel() {
 function getImage() {
     let scene = sceneBuilds.get(selectedItem.sceneId)
     let asset = scene.ass.find((a: any) => a.aid === selectedItem.aid)
-    if (asset && asset.imgComp) {
-        return asset.imgComp.url
+    if (asset && asset.vidComp) {
+        return asset.vidComp.url
     }
 }
