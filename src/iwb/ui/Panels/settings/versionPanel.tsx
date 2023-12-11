@@ -11,7 +11,6 @@ import { showNotification } from '../notificationUI'
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 
 export function VersionPanel() {
-    console.log(players.get(localUserId)?.version, iwbConfig.v)
     return (
         <UiEntity
             key={"versionpanel"}

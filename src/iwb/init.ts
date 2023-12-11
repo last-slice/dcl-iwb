@@ -31,8 +31,8 @@ export function initIWB() {
                 getAssetUploadToken()
             }
 
-            //build IWB HQ
-            createHQ()
+            //build IWB HQ//
+            // createHQ()
 
             //add input listeners
             createInputListeners()
