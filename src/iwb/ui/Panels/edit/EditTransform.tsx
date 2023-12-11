@@ -1,5 +1,5 @@
 
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
+import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input } from '@dcl/sdk/react-ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { cancelSelectedItem, deleteSelectedItem, saveItem, selectedItem, sendServerEdit, toggleEditModifier, toggleModifier } from '../../../components/modes/build'
@@ -22,7 +22,7 @@ export function EditTransform() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: '95%',
+                width: '100%',
                 height: '80%',
                 display: visibleComponent === COMPONENT_TYPES.TRANSFORM_COMPONENT ? 'flex' : 'none',
             }}
@@ -39,6 +39,7 @@ export function EditTransform() {
                 width: '60%',
                 height: '100%',
             }}
+            // uiBackground={{color:Color4.Green()}}//
         >
 
 
@@ -62,8 +63,8 @@ export function EditTransform() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '90%',
-                height: '15%',
+                width: '100%',
+                height: '10%',
                 margin:{top:'1%'}
             }}
         >
@@ -79,8 +80,24 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
+         >
+            <Input
+                onChange={(value) => {
+                    sendServerEdit('x', 1, true, EDIT_MODIFIERS.POSITION, parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ? getRelativePosition("x") : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : "")}
+                />
+
+         </UiEntity>
 
          {/* y cell */}
          <UiEntity
@@ -93,8 +110,24 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("y") : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("y") : ""), fontSize:sizeFont(20,15)}}
+            >
+                <Input
+                onChange={(value) => {
+                    sendServerEdit('y', 1, true,EDIT_MODIFIERS.POSITION, parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ? getRelativePosition("y") : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ? getRelativePosition("y") : "")}
+                />
+
+            </UiEntity>
 
          {/* z cell */}
          <UiEntity
@@ -106,8 +139,23 @@ export function EditTransform() {
                 height: '100%',
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("z") : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("z") : ""), fontSize:sizeFont(20,15)}}
+         >
+            <Input
+                onChange={(value) => {
+                    sendServerEdit('z', 1, true,EDIT_MODIFIERS.POSITION, parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ? getRelativePosition("z") : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ? getRelativePosition("z") : "")}
+                />
+         </UiEntity>
 
 
         </UiEntity>
@@ -132,8 +180,8 @@ export function EditTransform() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '90%',
-                height: '15%',
+                width: '100%',
+                height: '10%',
                 margin:{top:'1%'}
             }}
         >
@@ -149,8 +197,24 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).x.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).x.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
+         >
+            <Input
+                onChange={(value) => {
+                    sendServerEdit('x', 1, true, EDIT_MODIFIERS.ROTATION,parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).x.toFixed(2) : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ?Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).x.toFixed(2) : "")}
+                />
+
+         </UiEntity>
 
          {/* y cell */}
          <UiEntity
@@ -163,8 +227,25 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).y.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).y.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
+         >
+                        <Input
+                onChange={(value) => {
+                    sendServerEdit('y', 1, true, EDIT_MODIFIERS.ROTATION,parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).y.toFixed(2) : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ?Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).y.toFixed(2) : "")}
+                />
+
+
+         </UiEntity>
 
          {/* z cell */}
          <UiEntity
@@ -176,8 +257,24 @@ export function EditTransform() {
                 height: '100%',
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).z.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).z.toFixed(2) : ""), fontSize:sizeFont(20,15)}}
+         >
+                        <Input
+                onChange={(value) => {
+                    sendServerEdit('z', 1, true, EDIT_MODIFIERS.ROTATION,parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ? Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).z.toFixed(2) : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ?Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).z.toFixed(2) : "")}
+                />
+
+         </UiEntity>
 
 
         </UiEntity>
@@ -202,8 +299,8 @@ export function EditTransform() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '90%',
-                height: '15%',
+                width: '100%',
+                height: '10%',
                 margin:{top:'1%'}
             }}
         >
@@ -219,8 +316,24 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem  && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.x : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem  && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.x : ""), fontSize:sizeFont(20,15)}}
+         >
+            <Input
+                onChange={(value) => {
+                    sendServerEdit('x', 1, true,EDIT_MODIFIERS.SCALE, parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ?  Transform.get(selectedItem.entity).scale.x : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ?  Transform.get(selectedItem.entity).scale.x : "")}
+                />
+
+         </UiEntity>
 
          {/* y cell */}
          <UiEntity
@@ -233,8 +346,23 @@ export function EditTransform() {
                 margin:{right:'2%'}
             }}
             uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.y : ""), fontSize:sizeFont(20,15)}}
-         />
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.y : ""), fontSize:sizeFont(20,15)}}
+         >
+            <Input
+                onChange={(value) => {
+                    sendServerEdit('y', 1, true, EDIT_MODIFIERS.SCALE,parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ?  Transform.get(selectedItem.entity).scale.y : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ?  Transform.get(selectedItem.entity).scale.y : "")}
+                />
+         </UiEntity>
 
          {/* z cell */}
          <UiEntity
@@ -245,9 +373,25 @@ export function EditTransform() {
                 width: '30%',
                 height: '100%',
             }}
-            uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.z : ""), fontSize:sizeFont(20,15)}}
-         />
+            uiBackground={{color:Color4.Gray()}}//
+            // uiText={{value:"" + (selectedItem && selectedItem.enabled ? Transform.get(selectedItem.entity).scale.z : ""), fontSize:sizeFont(20,15)}}
+         >
+                                        <Input
+                onChange={(value) => {
+                    sendServerEdit('z', 1, true, EDIT_MODIFIERS.SCALE,parseFloat(value))
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={''+ (selectedItem && selectedItem.enabled ?  Transform.get(selectedItem.entity).scale.z : "")}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                value={"" + (selectedItem && selectedItem.enabled ?  Transform.get(selectedItem.entity).scale.z : "")}
+                />
+
+         </UiEntity>
 
 
         </UiEntity>

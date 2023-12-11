@@ -52,7 +52,7 @@ export function ImageComponentPanel() {
 
         <Input
         onSubmit={(value) => {
-            console.log('submitted value: ' + value)
+            console.log('submitted value: ' + value)//
         }}
         onChange={(input)=>{
             value = input

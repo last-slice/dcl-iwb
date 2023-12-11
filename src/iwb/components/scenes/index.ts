@@ -86,7 +86,8 @@ export function loadScene(info:any){
     if(info.bps.includes(localUserId)){
         players.get(localUserId)!.buildingAllowed = true
     }
-    loadSceneBoundaries(info.id)  
+
+    loadSceneBoundaries(info.id)
 }
 
 export function unloadScene(sceneId:any){
@@ -105,9 +106,11 @@ function loadSceneBoundaries(id:any){
     let info = sceneBuilds.get(id)
     info.entities = []
 
-    info.pcls.forEach((parcel:string)=>{
-        addBoundariesForParcel(parcel, true, true)
-    })
+    if(info.n !== "Realm Lobby"){
+        info.pcls.forEach((parcel:string)=>{
+            addBoundariesForParcel(parcel, true, true)
+        })
+    }   
 
     // create parent entity for scene//
     const [x1, y1] = info.bpcl.split(",")
