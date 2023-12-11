@@ -12,6 +12,7 @@ import { realm } from '../../../components/scenes'
 import { isPreview, log } from '../../../helpers/functions'
 import { localUserId, players } from '../../../components/player/player'
 import { VersionPanel } from './versionPanel'
+import { connected } from '../../../components/messaging'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
@@ -74,20 +75,6 @@ export function createSettingsPanel() {
                 
             >
 
-                {/* header container */}
-                {/* <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                }}
-                // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Settings", fontSize: sizeFont(40,30), color:Color4.Black()}}
-                >
-                </UiEntity> */}
-
                     {/* main content container */}
                 <UiEntity
                 uiTransform={{
@@ -143,6 +130,21 @@ export function createSettingsPanel() {
                     </UiEntity>
 
                 </UiEntity>
+
+
+                {/* connection status label */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '5%',
+                positionType:'absolute',
+                position:{bottom:'10%', left: '25%'}
+            }}
+            uiText={{value:"Status: " + (connected ? "Connected" : "Disconnected"), textAlign:'middle-left', fontSize: sizeFont(20,15), color:Color4.Black()}}
+            />
 
             </UiEntity>
 

@@ -33,6 +33,7 @@ export async function colyseusConnect(data: any, token: string, world?: any) {
 
         room.onLeave((code: number) => {
             log('left room with code', code)
+            connected = false
         })
 
         createIWBEventListeners()

@@ -10,10 +10,11 @@ import {
     updateImageUrl,
     updateVideoUrl
 } from "../modes/build"
-import {deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
+import {addBoundariesForParcel, deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
-import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene } from "../scenes"
+import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
+import { editCurrentSceneParcels } from "../../ui/Panels/CreateScenePanel"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -57,7 +58,12 @@ export function createSceneListeners(room: any) {
             if(info.user !== localUserId){
                 otherUserRemovedSeletedItem(info.user)
             }
-        })//
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.ASSET_OVER_SCENE_LIMIT, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.ASSET_OVER_SCENE_LIMIT + ' received', info)
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "This asset puts your scene over the limits", animate:{enabled:true, return:true, time: 5}})
+        })
 
         // room.onMessage(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, (info:any) => {
         //     log(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET + ' received', info)
@@ -93,6 +99,11 @@ export function createSceneListeners(room: any) {
                 showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on your scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
             }
         })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS + ' received', info)
+            updateSceneEdits(info)
+        })
 }
 
 export function addSceneStateListeners(room:any){
@@ -100,8 +111,19 @@ export function addSceneStateListeners(room:any){
         log('Room Scene Added', key, scene)
         await loadScene(scene)
 
+        scene.pcls.onAdd((parcel:string, parcelKey:any)=>{
+            if(editCurrentSceneParcels){
+                addBoundariesForParcel(parcel, true)
+            }
+        })
+
+        scene.pcls.onRemove((parcel:string, parcelKey:any)=>{
+            if(editCurrentSceneParcels){
+                deleteParcelEntities(parcel)
+            }
+        })
+
         scene.ass.onAdd((asset:any, key:any)=>{
-            log('added new item to state schema', key, asset)
             loadSceneAsset(scene.id, asset)
 
             if(asset.visComp){
@@ -178,6 +200,14 @@ export function addSceneStateListeners(room:any){
         scene.ass.onRemove((asset:any, key:any)=>{
             log("scene asset remove", key, asset)
             removeItem(scene.id, asset)
+        })
+
+        scene.listen("si",(current:any, previous:any)=>{
+            sceneBuilds.get(key).si = current
+        })
+
+        scene.listen("pc",(current:any, previous:any)=>{
+            sceneBuilds.get(key).pc = current
         })
     })
 

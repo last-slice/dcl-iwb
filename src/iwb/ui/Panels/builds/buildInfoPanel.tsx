@@ -1,13 +1,22 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
-import { createTempScene } from '../../../components/modes/create'
-import { displayCreateScenePanel } from '../CreateScenePanel'
-import { SCENE_MODES } from '../../../helpers/types'
 import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from './buildsIndex'
-import { formatDollarAmount } from '../../../helpers/functions'
+import { formatDollarAmount, formatSize } from '../../../helpers/functions'
 import { displayDeleteBuildPanel } from '../deleteBuildPanel'
+import { displaySetting, displaySettingsPanel } from '../settings/settingsIndex'
+import { displayCreateScenePanel } from '../CreateScenePanel'
+import { editCurrentParcels } from '../../../components/modes/create'
+import { sendServerMessage } from '../../../components/messaging'
+import { SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { displaySceneSavedPanel } from '../sceneSavedPanel'
+import { openExternalUrl } from '~system/RestrictedActions'
+
+let settings:any[] = [
+    {label:"Scene Enabled", enabled:true},
+    {label:"Scene Public", enabled:true},
+]
 
 export function BuildInfo() {
     return (
@@ -60,7 +69,7 @@ export function BuildInfo() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Size: " + (scene && scene !== null ? scene.si + "MB" : ""), fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Size: " + (scene && scene !== null ? formatSize(scene.si) + "MB" : ""), fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
             />
 
 
@@ -74,7 +83,7 @@ export function BuildInfo() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Poly Count: "  + (scene && scene !== null ? formatDollarAmount(scene.pcnt) : ""), fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Poly Count: "  + (scene && scene !== null ? formatDollarAmount(scene.pc) : ""), fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
             />
 
 
@@ -83,7 +92,7 @@ export function BuildInfo() {
             {/* scene name */}
             <UiEntity
             uiTransform={{
-                display: 'flex',
+                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -110,7 +119,7 @@ export function BuildInfo() {
 
 
             <Input
-                onChange={(e) =>{ scene?.n === e.trim() }}
+                onChange={(e) =>{ scene!.n = e }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"" + (scene && scene !== null ? scene.n : "")}
                 placeholderColor={Color4.Gray()}
@@ -125,7 +134,7 @@ export function BuildInfo() {
              {/* scene description */}
              <UiEntity
             uiTransform={{
-                display: 'flex',
+                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -167,7 +176,7 @@ export function BuildInfo() {
                {/* scene image link */}
                <UiEntity
             uiTransform={{
-                display: 'flex',
+                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -209,14 +218,14 @@ export function BuildInfo() {
              {/* scene enabled */}
              <UiEntity
             uiTransform={{
-                display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 alignContent:'flex-start',
                 width: '100%',
                 height: '10%',
-                margin:{bottom:'2%'}
+                margin:{bottom:'2%'},
+                display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
             }}
             // uiBackground={{color:Color4.Green()}}
             >
@@ -234,13 +243,86 @@ export function BuildInfo() {
             uiText={{value:"Scene Enabled", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
             />
 
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs:  getButtonState("Enabled")
+        }}
+        onMouseDown={() => {
+            scene!.e = !scene!.e
+        }}
+        />
+
+            </UiEntity>
+
+                         {/* scene public */}
+                         <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                alignContent:'flex-start',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:'2%'},
+                display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+
+                <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '10%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Scene Public", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getButtonState("Public")
+        }}
+        onMouseDown={() => {
+            scene!.priv = !scene!.priv        
+        }}
+        />
+
             </UiEntity>
 
 
             {/* buttons row */}
         <UiEntity
             uiTransform={{
-                display: 'flex',
+                // display: 'flex',
+                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -264,9 +346,50 @@ export function BuildInfo() {
             texture: {
                 src: 'assets/atlas2.png'
             },
+            uvs: getImageAtlasMapping(uiSizes.blueButton)
+        }}
+        onMouseDown={() => {
+            console.log('on clicked')
+            editCurrentParcels(scene!.id)
+            // createTempScene(scene.name, scene.description, scene.enabled)
+            displaySceneInfoPanel(false, null)
+            displaySettingsPanel(false)
+            displaySetting("Explore")
+            displayCreateScenePanel(true, true)
+        }}
+        uiText={{value: "Edit Parcels", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        />            
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(10, getAspect(uiSizes.blueButton)).width,
+            height: calculateImageDimensions(12,getAspect(uiSizes.blueButton)).height,
+            margin:{right:"1%"},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
             uvs: getImageAtlasMapping(uiSizes.positiveButton)
         }}
         onMouseDown={() => {
+            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS,
+                {
+                    sceneId: scene!.id,
+                    name: scene!.n,
+                    desc: scene!.d,
+                    image: scene!.im,
+                    enabled: scene!.e,
+                    priv: scene!.priv
+                })
+
+            displaySceneInfoPanel(false, scene)
+            displaySceneSetting("Info")
+            displaySceneSavedPanel(true)
         }}
         uiText={{value: "Save Edits", color:Color4.Black(), fontSize:sizeFont(30,20)}}
         />
@@ -299,7 +422,45 @@ export function BuildInfo() {
         </UiEntity>
 
 
+
+
+        {/* view image link */}
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '10%',
+                height: '20%',
+                positionType:'absolute',
+                position:{right: '5%', bottom:'40%'}
+            }}
+            uiText={{value:"View Image", fontSize:sizeFont(15,10), color:Color4.Gray(), textAlign:'middle-left'}}
+            onMouseDown={()=>{
+                openExternalUrl({url:"" + scene!.im})
+            }}
+            />
+
         
         </UiEntity>
     )
+}
+
+function getButtonState(button:string){
+    if(scene){
+        switch(button){
+            case 'Enabled':
+                return scene!.e ? getImageAtlasMapping(uiSizes.toggleOn) : getImageAtlasMapping(uiSizes.toggleOff)
+        
+            case 'Public':
+                return scene!.priv ? getImageAtlasMapping(uiSizes.toggleOff) : getImageAtlasMapping(uiSizes.toggleOn)
+    
+            default:
+                return getImageAtlasMapping(uiSizes.toggleOn)
+        }
+    }else{
+        return getImageAtlasMapping(uiSizes.toggleOff)
+    }
+
 }

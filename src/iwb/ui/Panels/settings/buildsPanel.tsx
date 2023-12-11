@@ -5,7 +5,7 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { uiSizes } from '../../uiConfig'
 import { displayDeleteBuildPanel } from '../deleteBuildPanel'
 import { localUserId, players } from '../../../components/player/player'
-import { formatDollarAmount, log } from '../../../helpers/functions'
+import { formatDollarAmount, formatSize, log } from '../../../helpers/functions'
 import { sceneBuilds } from '../../../components/scenes'
 import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from '../builds/buildsIndex'
 
@@ -31,17 +31,17 @@ export function refreshVisibleItems(){
     log('we are here in rewfresh')
     visibleItems.length = 0
 
-    let worlds = [...sceneBuilds.values()]
-    worlds.sort((a, b) => a.n.localeCompare(b.n));
-    log('worlds legnth is', worlds.length)
+    let builds = [...sceneBuilds.values()]
+    builds.sort((a, b) => a.n.localeCompare(b.n));
+    console.log('refresh builds are ', builds)
   
     for(let i = (visibleIndex * 6); i < (visibleIndex * 6) + 6; i++){
-      visibleItems.push(worlds[i])
+      visibleItems.push(builds[i])
       }
   
       let top = (visibleIndex * 6) + 6
-      if(top > worlds.length){
-          for(let i = 0; i < (top - worlds.length); i++){
+      if(top > builds.length){
+          for(let i = 0; i < (top - builds.length); i++){
               visibleItems.pop()
           }
       }
@@ -264,7 +264,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + scene.si + "MB", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "" + formatSize(scene.si) + "MB", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
         />
 
         {/* scene poly count */}
@@ -298,6 +298,7 @@ function generateBuildRows(){
         justifyContent: 'center',
         width: calculateSquareImageDimensions(3.5).width,
         height: calculateSquareImageDimensions(4).height,
+        display: visibleItems[i].n === "Realm Lobby" ? 'none' :'flex'
     }}
     uiBackground={{
         textureMode: 'stretch',

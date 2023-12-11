@@ -33,8 +33,8 @@ import { createWorldReadyPanel } from './Panels/worldReadyPanel'
 import { createCatalogInfoPanel, displayCatalogInfoPanel } from './Panels/CatalogInfoPanel'
 import { createScenePanel } from './Panels/builds/buildsIndex'
 import { createCustomContextMenu } from './contextMenu'
-import { createSceneInfoPanel } from './Panels/sceneInfoPanel'
 import { createEditObjectPanel } from './Panels/edit/EditObjectPanel'
+import { createSceneInfoPanel } from './Panels/sceneInfoPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -43,7 +43,6 @@ export function setupUi() {
 
 const uiComponent = () => [
   createNoWeb3Panel(),
-  createSceneInfoPanel(),
   createCatalogInfoPanel(),
   createSettingsPanel(),
   createPBuildConfirmPanel(),
@@ -74,6 +73,7 @@ const uiComponent = () => [
   createWorldReadyPanel(),
   createScenePanel(),
   createCustomContextMenu(),
+  createSceneInfoPanel()
 ]
 
 

@@ -5,14 +5,24 @@ import {sendServerMessage} from '../../components/messaging'
 import {SCENE_MODES, SERVER_MESSAGE_TYPES} from '../../helpers/types'
 import {localUserId, players, setPlayMode} from '../../components/player/player'
 import resources from '../../helpers/resources'
-import {tempParcels, validateScene} from '../../components/modes/create'
+import {deleteCreationEntities, tempParcels, validateScene} from '../../components/modes/create'
 import {formatDollarAmount, log} from '../../helpers/functions'
 import { uiSizes } from '../uiConfig'
+import { sceneBuilds } from '../../components/scenes'
+import { scene } from './builds/buildsIndex'
 
 export let showCreateScenePanel = false
+export let editCurrentSceneParcels = false
 
-export function displayCreateScenePanel(value: boolean) {
+export function displayCreateScenePanel(value: boolean, current?:boolean) {
     showCreateScenePanel = value
+
+    if(current){
+        console.log("editing current scene parcles")
+        editCurrentSceneParcels = current
+    }else{
+        editCurrentSceneParcels = false
+    }
 }
 
 export function createNewScenePanel() {
@@ -22,7 +32,7 @@ export function createNewScenePanel() {
             key={"createscenepanel"}
             uiTransform={{
                 // display:'flex',
-                display: players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.CREATE_SCENE_MODE ? 'flex' : 'none',
+                display: players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.CREATE_SCENE_MODE || editCurrentSceneParcels ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -271,10 +281,11 @@ export function createNewScenePanel() {
                         uvs: getImageAtlasMapping(uiSizes.positiveButton)
                     }}
                     onMouseDown={() => {
-                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {//
+                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
                             player: localUserId,
                             parcel: players.get(localUserId)!.currentParcel,
-                            scene: players.get(localUserId)?.activeScene?.id
+                            scene: players.get(localUserId)?.activeScene?.id,
+                            current: editCurrentSceneParcels ? scene!.id : undefined
                         })
                     }}
                     uiText={{value: "Toggle Parcel", fontSize:sizeFont(30,20), color:Color4.White()}}
@@ -301,7 +312,11 @@ export function createNewScenePanel() {
                     }}
                     uiText={{value: "Save Scene", fontSize:sizeFont(30,20), color:Color4.White()}}
                     onMouseDown={() => {
-                        validateScene()
+                        if(editCurrentSceneParcels){
+                            displayCreateScenePanel(false)
+                        }else{
+                            validateScene()
+                        }
                     }}
                 >
                 </UiEntity>
@@ -319,6 +334,6 @@ function getParcels() {
     //     return scenesToCreate.get(localUserId).parcels.length
     // } else {
     //     return 0
-    // }
-    return tempParcels.size
+    // }//
+    return editCurrentSceneParcels ? sceneBuilds.get(scene!.id).pcls.length : tempParcels.size
 }

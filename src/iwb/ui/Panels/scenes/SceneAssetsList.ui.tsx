@@ -3,7 +3,7 @@ import {Color4} from '@dcl/sdk/math'
 import {getImageAtlasMapping, sizeFont} from '../../helpers'
 import {uiSizes} from '../../uiConfig'
 import {localPlayer} from '../../../components/player/player'
-import {formatDollarAmount} from '../../../helpers/functions'
+import {formatDollarAmount, formatSize} from '../../../helpers/functions'
 import {items} from "../../../components/catalog";
 import {editItem} from "../../../components/modes/build";
 import {EDIT_MODES} from "../../../helpers/types";
@@ -132,7 +132,7 @@ function generateSceneAssetRows() {
                     }}
                     // uiBackground={{color:Color4.Green()}}
                     uiText={{
-                        value: formatSize(curItem?.si),
+                        value: formatSize(curItem?.si) + "MB",
                         fontSize: sizeFont(15, 12),
                         textAlign: 'middle-left',
                         color: Color4.Black()
@@ -145,10 +145,4 @@ function generateSceneAssetRows() {
     })
 
     return arr
-}
-
-function formatSize(size: number | undefined) {
-    if (!size) return ""
-
-    return (size / (1024 ** 2)).toFixed(2) + "Mb"
 }

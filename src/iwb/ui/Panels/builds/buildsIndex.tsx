@@ -9,14 +9,19 @@ import { sceneBuilds } from '../../../components/scenes'
 import { displaySetting, displaySettingsPanel } from '../settings/settingsIndex'
 import { AccessList } from './accessList'
 import { BuildInfo } from './buildInfoPanel'
+import { SizePanel } from './buildSizePanel'
 
 export let showSettingsPanel = false
 export let buildInfoTab = "Info"
+
+//
 
 export let buttons:any[] = [
     {label:"Info", pressed:false},
     // {label:"Config", pressed:false},
     {label:"Access", pressed:false},
+    {label:"Size", pressed:false},
+    {label:"Spawns", pressed:false},
     // {label:"Delete", pressed:false},
 
     {label:"Back", pressed:false},
@@ -27,7 +32,7 @@ export let scene:IWBScene | null
 
 export function displaySceneInfoPanel(value: boolean, selectedScene:IWBScene | null) {
     showSettingsPanel = value
-    scene = selectedScene
+    selectedScene !== null ? scene = selectedScene : null
 }
 
 export function displaySceneSetting(value:string){
@@ -135,6 +140,7 @@ export function createScenePanel() {
                     {/* add scene panels here */}
                     <AccessList/>
                     <BuildInfo/>
+                    <SizePanel/>
                         
 
                     </UiEntity>

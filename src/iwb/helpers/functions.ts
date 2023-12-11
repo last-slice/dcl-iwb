@@ -10,6 +10,17 @@ import { displayAssetUploadUI } from "../ui/Panels/assetUploadUI";
 
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
+
+export function formatSize(size: number | undefined) {
+  if (!size) return ""
+
+  return (size / (1024 ** 2)).toFixed(2)
+}
+
+export function sceneSizeLimit(){
+  
+}
+
 export function roundVector(object:Vector3, to:number){
   let x = object.x
   let y = object.y

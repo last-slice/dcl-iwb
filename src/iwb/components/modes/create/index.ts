@@ -2,10 +2,12 @@ import {engine, Entity, GltfContainer, Material, MeshRenderer, Transform, Visibi
 import {localUserId, setPlayMode} from "../../player/player"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import {SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types"
-import {displayCreateScenePanel} from "../../../ui/Panels/CreateScenePanel"
+import {displayCreateScenePanel, editCurrentSceneParcels} from "../../../ui/Panels/CreateScenePanel"
 import { log } from "../../../helpers/functions"
 import { sendServerMessage } from "../../messaging"
 import { displaySceneSavedPanel } from "../../../ui/Panels/sceneSavedPanel"
+import { sceneBuilds } from "../../scenes"
+import { scene } from "../../../ui/Panels/builds/buildsIndex"
 
 export let tempScene:any ={}
 export let tempParcels:Map<string, any> = new Map()
@@ -19,22 +21,36 @@ export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
     displayCreateScenePanel(false)
-    if(tempParcels.size){
-        log('we have valid scene, send to server')
-        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: tempScene.name, desc:tempScene.description})
-    }
 
-    // let scene = scenesToCreate.get(localUserId)//
-    // if(scene && scene.parcels.length > 0){//
-    //     log('we have valid scene, send to server')
-    //     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: scene.name, desc:scene.description})
-    // }
-    
+    //to do
+    //check other validations
+
+    if(tempParcels.size > 0){
+        log('we have valid scene, send to server')
+        editCurrentSceneParcels ? 
+
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS, {sceneId: scene!.id})
+
+        : 
+        
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: tempScene.name, desc:tempScene.description, enabled:tempScene.enabled, private:tempScene.priv, image: tempScene.image})
+    }    
 }
 
-export function createTempScene(name:string, desc:string){
+export function editCurrentParcels(id:string){
+    sceneBuilds.forEach((scene)=>{
+        scene.pcls.forEach((parcel:string)=>{
+            scene.id === id ? addBoundariesForParcel(parcel, true) : addBoundariesForParcel(parcel, false)
+        })
+    })
+}
+
+export function createTempScene(name:string, desc:string, image:string, enabled:boolean, priv:boolean){
     tempScene.name = name
     tempScene.description = desc
+    tempScene.enabled = enabled
+    tempScene.priv = priv
+    tempScene.image = image
     tempParcels.clear()
     setPlayMode(localUserId, SCENE_MODES.CREATE_SCENE_MODE)
 }
@@ -69,92 +85,95 @@ export function selectParcel(parcel: any) {
 }
 
 export function addBoundariesForParcel(parcel:string, local:boolean, playMode?:boolean) {
-    let entities: any[] = []
+    if(!tempParcels.has(parcel)){
+        let entities: any[] = []
 
-    let parent = engine.addEntity()
-    let left = engine.addEntity()
-    let right = engine.addEntity()
-    let front = engine.addEntity()
-    let back = engine.addEntity()
-
-    let floor = engine.addEntity()
-
-    entities.push(left)
-    entities.push(right)
-    entities.push(front)
-    entities.push(back)
-    entities.push(floor)
-
-    let [x1, y1] = parcel.split(",")
-    let x = parseInt(x1)
-    let y = parseInt(y1)
-    let centerx = (x * 16) + 8
-    let centery = (y * 16) + 8
-
-    Transform.create(parent)
-
-    Transform.create(floor, {
-        position: Vector3.create(centerx, 0, centery),
-        rotation: Quaternion.fromEulerDegrees(90, 0, 0),
-        scale: Vector3.create(16, 16, 1),
-        parent:parent
-    })
-    MeshRenderer.setPlane(floor)
-    Material.setPbrMaterial(floor, {
-        albedoColor: local ? Color4.create(0, 1, 0, .5) : Color4.Red()
-    })
-    if(local) SelectedFloor.create(floor, {})
-    ParcelFloor.create(floor)
-
-    //left
-    Transform.create(left, {
-        position: Vector3.create(x * 16, 0, y * 16),
-        rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1),
-        parent:parent
-    })
-    GltfContainer.create(left, {src: local ? greenBeam : redBeam})
-
-    //right
-    Transform.create(right, {
-        position: Vector3.create(x * 16 + 16, 0, y * 16),
-        rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1),
-        parent:parent
-    })
-    GltfContainer.create(right, {src: local ? greenBeam : redBeam})
-
-    // front
-    Transform.create(front, {
-        position: Vector3.create(x * 16, 0, y * 16 + 16),
-        rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1),
-        parent:parent
-    })
-    GltfContainer.create(front, {src: local ? greenBeam : redBeam})
-
-    // back
-    Transform.create(back, {
-        position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
-        rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-        scale: Vector3.create(1, 20, 1),
-        parent:parent
-    })
-    GltfContainer.create(back, {src: local ? greenBeam : redBeam})
-
-    VisibilityComponent.create(floor, {visible:playMode ? false : true})
-    VisibilityComponent.create(left, {visible:playMode ? false : true})
-    VisibilityComponent.create(front, {visible:playMode ? false : true})
-    VisibilityComponent.create(right, {visible:playMode ? false : true})
-    VisibilityComponent.create(back, {visible:playMode ? false : true})
-
-    BuildModeVisibilty.create(floor)
-    BuildModeVisibilty.create(left)
-    BuildModeVisibilty.create(front)
-    BuildModeVisibilty.create(right)
-    BuildModeVisibilty.create(back)
-
-    tempParcels.set(parcel, entities)
+        let parent = engine.addEntity()
+        let left = engine.addEntity()
+        let right = engine.addEntity()
+        let front = engine.addEntity()
+        let back = engine.addEntity()
+    
+        let floor = engine.addEntity()
+    
+        entities.push(left)
+        entities.push(right)
+        entities.push(front)
+        entities.push(back)
+        entities.push(floor)
+    
+        let [x1, y1] = parcel.split(",")
+        let x = parseInt(x1)
+        let y = parseInt(y1)
+        let centerx = (x * 16) + 8
+        let centery = (y * 16) + 8
+    
+        Transform.create(parent)
+    
+        Transform.create(floor, {
+            position: Vector3.create(centerx, 0, centery),
+            rotation: Quaternion.fromEulerDegrees(90, 0, 0),
+            scale: Vector3.create(16, 16, 1),
+            parent:parent
+        })
+        MeshRenderer.setPlane(floor)
+        Material.setPbrMaterial(floor, {
+            albedoColor: local ? Color4.create(0, 1, 0, .5) : Color4.Red()
+        })
+        if(local) SelectedFloor.create(floor, {})
+        ParcelFloor.create(floor)
+    
+        //left
+        Transform.create(left, {
+            position: Vector3.create(x * 16, 0, y * 16),
+            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+            scale: Vector3.create(1, 20, 1),
+            parent:parent
+        })
+        // GltfContainer.create(left, {src: local ? greenBeam : redBeam})
+    
+        //right
+        Transform.create(right, {
+            position: Vector3.create(x * 16 + 16, 0, y * 16),
+            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+            scale: Vector3.create(1, 20, 1),
+            parent:parent
+        })
+        // GltfContainer.create(right, {src: local ? greenBeam : redBeam})
+    
+        // front
+        Transform.create(front, {
+            position: Vector3.create(x * 16, 0, y * 16 + 16),
+            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+            scale: Vector3.create(1, 20, 1),
+            parent:parent
+        })
+        // GltfContainer.create(front, {src: local ? greenBeam : redBeam})
+    
+        // back
+        Transform.create(back, {
+            position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
+            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+            scale: Vector3.create(1, 20, 1),
+            parent:parent
+        })
+        // GltfContainer.create(back, {src: local ? greenBeam : redBeam})
+    
+        VisibilityComponent.create(floor, {visible:playMode ? false : true})
+        VisibilityComponent.create(left, {visible:playMode ? false : true})
+        VisibilityComponent.create(front, {visible:playMode ? false : true})
+        VisibilityComponent.create(right, {visible:playMode ? false : true})
+        VisibilityComponent.create(back, {visible:playMode ? false : true})
+    
+        BuildModeVisibilty.create(floor)
+        BuildModeVisibilty.create(left)
+        BuildModeVisibilty.create(front)
+        BuildModeVisibilty.create(right)
+        BuildModeVisibilty.create(back)
+    
+        tempParcels.set(parcel, entities)
+    }
+    
 }
 
 export function deleteParcelEntities(parcel: any) {

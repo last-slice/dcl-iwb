@@ -16,6 +16,7 @@ export enum SERVER_MESSAGE_TYPES {
     PLACE_SELECTED_ASSET = 'place_asset',
     SELECT_CATALOG_ASSET = 'select_catalog_asset',
     PLAYER_CANCELED_CATALOG_ASSET = 'player_canceled_catalog',
+    ASSET_OVER_SCENE_LIMIT = 'asset_over_scene_limit',
 
     // Catalog and Assets
     CATALOG_UPDATED = 'catalog_updated',
@@ -26,7 +27,7 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_SCENES_CATALOG = 'player_scenes_catalog',
     PLAYER_JOINED_USER_WORLD = 'player_joined_private_world',
     PLAYER_EDIT_ASSET = 'player_edit_asset',
-    UPDATE_ITEM_COMPONENT = "update_component",//
+    UPDATE_ITEM_COMPONENT = "update_component",
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
@@ -38,6 +39,10 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_ADD_BP = 'add_build_permissions',
     SCENE_DELETE_BP = 'delete_build_permissions',
     SCENE_DELETE = 'delete_scene',
+    SCENE_UPDATE_PARCELS = 'scene_update_parcels',
+    SCENE_SAVE_EDITS = 'scene_save_edits',
+    SCENE_UPDATE_ENABLED = 'scene_update_enabled',
+    SCENE_UPDATE_PRIVACY = 'scene_update_privacy',
 
     //World
     INIT_WORLD = "init_world",
@@ -143,7 +148,8 @@ export interface IWBScene {
     isdl:boolean,
     e:boolean,
     entities:Entity[],
-    im?:string
+    im?:string,
+    priv:boolean
 }
 
 export interface CatalogItemType {

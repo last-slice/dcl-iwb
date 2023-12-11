@@ -1,11 +1,11 @@
 import { Entity, GltfContainer, Material, MeshCollider, MeshRenderer, RaycastResult, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
-import { COMPONENT_TYPES, NOTIFICATION_TYPES, SCENE_MODES, SceneItem } from "../../helpers/types"
+import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, VIEW_MODES } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
-import { localUserId, players } from "../player/player"
+import { hasBuildPermissions, localUserId, players } from "../player/player"
 import { addBuildModePointers, updateImageUrl } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
 
@@ -136,7 +136,6 @@ function loadSceneBoundaries(id:any){
 
 export function loadSceneAsset(sceneId:string, item:SceneItem){
     let localScene = sceneBuilds.get(sceneId)
-    log('local sene is', localScene)
     if(localScene){
         let parent = localScene.parentEntity
 
@@ -158,11 +157,8 @@ export function loadSceneAsset(sceneId:string, item:SceneItem){
     
             Transform.create(entity, {parent:parent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
             
-            addAssetComponents(entity, item, itemConfig.ty, itemConfig.n)
-            
-            log('local scene item is', item)//
+            addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)
         }
-        log('local scene after asset is', localScene)
         localScene.ass.push(item)
     }
 }
@@ -173,11 +169,32 @@ export function deleteAllRealmObjects(){
     }
 }
 
-function addAssetComponents(entity:Entity, item:SceneItem, type:string, name:string){
+function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:string, name:string){
     if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){
-        log("item includes visibility", item.visComp.visible)
+        let visible = false
+
+        let mode = players.get(localUserId)?.mode
+        if(mode === SCENE_MODES.PLAYMODE){
+            if(scene.o === localUserId){
+                if(scene.e){
+                    visible = true
+                }
+            }else{
+                if(scene.e && !scene.priv){
+                    visible = true
+                }
+            }
+        }
+        else{
+            if(scene.o === localUserId || scene.bps.includes(localUserId)){
+                if(scene.e){
+                    visible = true
+                }
+            }
+        }
+
         VisibilityComponent.create(entity, {
-            visible: item.visComp.visible
+            visible:  visible
         })
     }
     switch(type){
@@ -201,5 +218,23 @@ function addAssetComponents(entity:Entity, item:SceneItem, type:string, name:str
 
         case 'Audio':
             break;
+    }
+}
+
+export function checkSceneVisibility(scene:IWBScene){
+    
+}
+
+export function updateSceneEdits(info:any){
+    console.log('updating scene edits', info)
+    let scene:IWBScene = sceneBuilds.get(info.sceneId ? info.sceneId : "")
+    if(scene){
+        scene.d = info.desc ? info.desc : ""
+        scene.n = info.name ? info.name : ""
+        scene.im = info.image ? info.image : ""
+        scene.e = info.enabled
+        scene.priv = info.priv
+
+        checkSceneVisibility(scene)
     }
 }
