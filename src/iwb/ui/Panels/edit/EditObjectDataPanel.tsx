@@ -1,6 +1,6 @@
 import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
-import {sizeFont} from '../../helpers'
+import {calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont} from '../../helpers'
 import {selectedItem} from '../../../components/modes/build'
 import {sceneBuilds} from '../../../components/scenes'
 import {EDIT_MODES, IWBScene} from '../../../helpers/types'
@@ -8,6 +8,9 @@ import {ImageComponentPanel} from './ImageComponentPanel'
 import {EditTransform} from './EditTransform'
 import {VisibilityComponentPanel} from './VisibiltyComponentPanel'
 import {VideoComponentPanel} from "./VideoComponentPanel";
+import { uiSizes } from '../../uiConfig'
+import { log } from '../../../helpers/functions'
+import { CollisionComponentPanel } from './CollisionComponentPanel'
 
 export let visibleComponent: string = ""
 
@@ -115,11 +118,28 @@ export function EditObjectData() {
                             width: '20%',
                             height: '100%',
                         }}
-                        uiBackground={{color: Color4.Red()}}
-                        onMouseDown={() => {
-                            openEditComponent("")
-                        }}
-                    />
+                    >
+                    <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(2, getAspect(uiSizes.backButton)).width,
+                        height: calculateImageDimensions(2, getAspect(uiSizes.backButton)).height,
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.backButton)
+                    }}
+                    onMouseDown={() => {
+                        openEditComponent("")
+                    }}
+                />
+
+                    </UiEntity>
 
                 </UiEntity>
 
@@ -139,6 +159,7 @@ export function EditObjectData() {
                     <VideoComponentPanel/>
                     <EditTransform/>
                     <VisibilityComponentPanel/>
+                    <CollisionComponentPanel/>
 
                 </UiEntity>
             </UiEntity>
@@ -165,6 +186,7 @@ function generateComponentViews() {
                 uiText={{value: "" + component, fontSize: sizeFont(30, 20)}}
                 onMouseDown={() => {
                     openEditComponent(component)
+                    log('item is', component)
                 }}
             />
         )

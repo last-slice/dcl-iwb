@@ -176,6 +176,17 @@ export function addBoundariesForParcel(parcel:string, local:boolean, playMode?:b
     
 }
 
+export function isParcelInScene(parcel:string){
+    let inScene = false
+    sceneBuilds.forEach((scene)=>{
+        if(scene.pcls.includes(parcel)){
+            inScene = true
+            return
+        }
+    })
+    return inScene
+}
+
 export function deleteParcelEntities(parcel: any) {
     let entities = tempParcels.get(parcel)
 
@@ -209,7 +220,7 @@ export function deleteCreationEntities(player: string) {
             
     //     })
     //     scenesToCreate.delete(player)
-    // }
+    // }//
 }
 
 export function saveNewScene(userId:string) {

@@ -208,3 +208,8 @@ export enum COMPONENT_TYPES {
     COLLISION_COMPONENT = "Collision",
     TRANSFORM_COMPONENT = "Transform"
 }
+
+export enum COLLISION_LAYERS {
+    INVISIBLE = "invisible",
+    VISIBLE = "visible"
+}

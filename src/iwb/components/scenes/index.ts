@@ -5,7 +5,7 @@ import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
-import { hasBuildPermissions, localUserId, players } from "../player/player"
+import { hasBuildPermissions, iwbConfig, localUserId, players } from "../player/player"
 import { addBuildModePointers, updateImageUrl } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
 
@@ -53,7 +53,7 @@ export function setWorlds(config:any){
     if(player!.homeWorld){
         let config = player!.worlds.find((w)=> w.ens === realm)
         if(config){
-            if(config.v < player!.version){
+            if(config.v < iwbConfig.v){
                 log('world version behind deployed version, show notification to update')
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.", animate:{enabled:true, time:10, return:true}})
             }
@@ -197,9 +197,15 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             visible:  visible
         })
     }
+
     switch(type){
         case '3D':
-            GltfContainer.create(entity, {src: "assets/" + item.id + ".glb"})
+            let gltf:any = {
+                src:"assets/" + item.id + ".glb",
+                invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
+                visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
+            }
+            GltfContainer.create(entity, gltf)
             break;
 
         case '2D':
@@ -238,3 +244,5 @@ export function updateSceneEdits(info:any){
         checkSceneVisibility(scene)
     }
 }
+
+//

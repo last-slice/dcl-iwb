@@ -34,7 +34,7 @@ export function VersionPanel() {
             margin:{top:'5%', bottom:"1%"}
         }}
     // uiBackground={{ color: Color4.Teal() }}
-    uiText={{value:"Your World Version: " + (worlds.find((w)=> w.ens === realm) ? worlds.find((w)=> w.ens === realm).v : ""), fontSize:sizeFont(35,25), textAlign:'middle-center', color:Color4.Black()}}
+    uiText={{value:"This World Version: " + (worlds.find((w)=> w.ens === realm) ? worlds.find((w)=> w.ens === realm).v : ""), fontSize:sizeFont(35,25), textAlign:'middle-center', color:Color4.Black()}}
     />
 
         <UiEntity
@@ -71,7 +71,7 @@ export function VersionPanel() {
             width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
             height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
             margin:{top:"1%", bottom:'1%'},
-            // display: localUserId ? (players.get(localUserId)!.version < iwbConfig.v ? 'flex' : 'none') : "none"
+            display: localUserId && players.get(localUserId)!.worlds.find((w)=> w.ens === realm) ? (players.get(localUserId)!.worlds.find((w)=> w.ens === realm).v < iwbConfig.v ? 'flex' : 'none') : "none"
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -93,9 +93,12 @@ export function VersionPanel() {
     )
 }
 
+//
+
+
 function generateUpdateRows(){
     let arr:any[] = []
-    if(iwbConfig.updates && players.get(localUserId)!.version < iwbConfig.v){
+    if(iwbConfig && iwbConfig.updates){
         iwbConfig.updates.forEach((update:string)=>{
             arr.push(
             <UiEntity
@@ -113,7 +116,7 @@ function generateUpdateRows(){
     
             </UiEntity>
             )
-        })
+        })  
     }
     return arr
 }

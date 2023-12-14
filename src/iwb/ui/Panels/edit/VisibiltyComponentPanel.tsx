@@ -1,11 +1,16 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input } from '@dcl/sdk/react-ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { sizeFont } from '../../helpers'
+import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
 import { selectedItem } from '../../../components/modes/build'
+import { uiSizes } from '../../uiConfig'
+
+let settings:any[] = [
+    {label:"Enabled", enabled:true},
+]
 
 export function VisibilityComponentPanel() {
     return (
@@ -21,34 +26,70 @@ export function VisibilityComponentPanel() {
             }}
         >
 
-        {/* url label */}
+
+        {/* main row */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"5%"}
+            }}
+        >
+
+                    {/* url label */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-                margin:{top:"2%"}
+                width: '15%',
+                height: '100%',
             }}
-        uiText={{value:"URL", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{value:"Enabled", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
-                <UiEntity
+            <UiEntity
             uiTransform={{
-                flexDirection: 'row',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '20%',
-                height: '20%',
+                width: '85%',
+                height: '100%',
             }}
-            uiBackground={{color:Color4.Green()}}
-            onMouseDown={()=>{
-                sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.VISBILITY_COMPONENT, action:"toggle", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId}})
-            }}
-            uiText={{value:"Toggle", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-center'}}
-            />
-           
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT ? (selectedItem.itemData.visComp.visible ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
+        }}
+        onMouseDown={() => {
+            sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.VISBILITY_COMPONENT, action:"toggle", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId}})
+            selectedItem.itemData.visComp.visible = !selectedItem.itemData.visComp.visible
+        }}
+        />
+
+
+        </UiEntity>
+
+
+        </UiEntity>
+     
         </UiEntity>
     )
 }
+
+//

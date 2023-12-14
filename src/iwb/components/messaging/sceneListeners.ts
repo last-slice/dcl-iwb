@@ -1,18 +1,19 @@
-import { engine } from "@dcl/sdk/ecs"
+import { GltfContainer, engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
-import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
+import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
 import {
     otherUserPlaceditem,
     otherUserRemovedSeletedItem,
     otherUserSelectedItem,
     removeItem,
     transformObject,
+    updateCollision,
     updateImageUrl,
     updateVideoUrl
 } from "../modes/build"
-import {addBoundariesForParcel, deleteParcelEntities, saveNewScene, selectParcel} from "../modes/create"
+import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
-import { itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateSceneEdits } from "../scenes"
+import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { editCurrentSceneParcels } from "../../ui/Panels/CreateScenePanel"
 
@@ -26,7 +27,9 @@ export function createSceneListeners(room: any) {
 
         room.state.temporaryParcels.onRemove(async(parcel:any, key:string)=>{
             log('temp parcel removed', key, parcel)
-            deleteParcelEntities(parcel)
+            if(!isParcelInScene(parcel)){
+                deleteParcelEntities(parcel)
+            }
         })
 
         room.onMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, (info: any) => {
@@ -142,6 +145,18 @@ export function addSceneStateListeners(room:any){
                 asset.vidComp.listen("url", (currentValue:any, previousValue:any) => {
                     log("asset video url changed", previousValue, currentValue)
                     updateVideoUrl(asset.aid, asset.matComp, currentValue)
+                });
+            }
+
+            if(asset.colComp){
+                asset.colComp.listen("iMask", (currentValue:any, previousValue:any) => {
+                    log("invisible collision mask changed", previousValue, currentValue)
+                    updateCollision(asset.aid, COLLISION_LAYERS.INVISIBLE, currentValue)
+                });
+
+                asset.colComp.listen("vMask", (currentValue:any, previousValue:any) => {
+                    log("visible collision mask changed", previousValue, currentValue)
+                    updateCollision(asset.aid, COLLISION_LAYERS.VISIBLE, currentValue)
                 });
             }
 

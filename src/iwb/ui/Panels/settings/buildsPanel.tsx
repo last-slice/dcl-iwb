@@ -32,7 +32,20 @@ export function refreshVisibleItems(){
     visibleItems.length = 0
 
     let builds = [...sceneBuilds.values()]
-    builds.sort((a, b) => a.n.localeCompare(b.n));
+
+    builds.sort((a:any, b:any) => {
+        // Check if either of the names is "Realm Lobby"
+        if (a.name === "Realm Lobby" && b.name !== "Realm Lobby") {
+          return -1; // "Realm Lobby" comes first
+        } else if (a.name !== "Realm Lobby" && b.name === "Realm Lobby") {
+          return 1; // "Realm Lobby" comes first
+        } else {
+          // Both names are not "Realm Lobby", sort by parcel size (high to low)
+          return b.pcnt - a.pcnt;
+        }
+    })
+
+    // builds.sort((a, b) => a.n.localeCompare(b.n));
     console.log('refresh builds are ', builds)
   
     for(let i = (visibleIndex * 6); i < (visibleIndex * 6) + 6; i++){

@@ -34,7 +34,7 @@ export function createEditObjectPanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: calculateImageDimensions(25, 345 / 511).width,
-                height: calculateImageDimensions(30, 345 / 511).height,
+                height: calculateImageDimensions(27, 345 / 511).height,
                 positionType: 'absolute',
                 position: {right: '4%', bottom: '3%'}
             }}

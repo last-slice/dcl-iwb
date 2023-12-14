@@ -8,13 +8,14 @@ import ReactEcs, {
     Input
 } from '@dcl/sdk/react-ecs'
 import {Color4, Quaternion, Vector3} from '@dcl/sdk/math'
-import {sizeFont} from '../../helpers'
+import {getImageAtlasMapping, sizeFont} from '../../helpers'
 import {visibleComponent} from './EditObjectDataPanel'
 import {COMPONENT_TYPES, SERVER_MESSAGE_TYPES} from '../../../helpers/types'
 import {sendServerMessage} from '../../../components/messaging'
 import {selectedItem} from '../../../components/modes/build'
 import {items} from '../../../components/catalog'
 import {sceneBuilds} from '../../../components/scenes'
+import { uiSizes } from '../../uiConfig'
 
 let value = ""
 
@@ -86,7 +87,13 @@ export function ImageComponentPanel() {
                         width: '20%',
                         height: '100%',
                     }}
-                    uiBackground={{color: Color4.Green()}}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                    }}
                     uiText={{
                         value: "Save",
                         fontSize: sizeFont(25, 15),

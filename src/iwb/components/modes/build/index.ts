@@ -20,9 +20,9 @@ import {
     VisibilityComponent
 } from "@dcl/sdk/ecs"
 import {cRoom, sendServerMessage} from "../../messaging";
-import {EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SelectedItem, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
+import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SelectedItem, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
 import {displayCatalogPanel} from "../../../ui/Panels/CatalogPanel"
-import {entitiesFromItemIds, itemIdsFromEntities, sceneBuilds} from "../../scenes"
+import {entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
 import { displaySceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
@@ -441,7 +441,7 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
                         id: selectedItem.catalogId,
                         position: roundVector(t.position, 2),
                         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-                        scale: roundVector(t.scale, 2)
+                        scale: roundVector(t.scale, 2),
                     }
                 }
             )
@@ -466,6 +466,7 @@ export function duplicateItem(entity: Entity) {
     }
 }
 
+
 export function grabItem(entity: Entity) {
     hideAllPanels()
 
@@ -483,7 +484,8 @@ export function grabItem(entity: Entity) {
                     user: localUserId,
                     catalogId: sceneItem.id,
                     assetId: assetId,
-                    sceneId: scene.id
+                    sceneId: scene.id,
+
                 })
 
                 let transform = Transform.get(entity)
@@ -512,9 +514,11 @@ export function grabItem(entity: Entity) {
                 addUseItemPointers(selectedItem.entity)
 
                 let scale: any
-                scale = Vector3.One()
+                scale = transScal
 
-                if (selectedItem.itemData.v && selectedItem.itemData.v > players.get(localUserId)!.version) {
+                let config = players.get(localUserId)!.worlds.find((w)=> w.ens === realm)
+
+                if (selectedItem.itemData.v && selectedItem.itemData.v > config.v) {
                     log('this asset is not ready for viewing, need to add temporary asset')
                     MeshRenderer.setBox(selectedItem.entity)
 
@@ -530,16 +534,18 @@ export function grabItem(entity: Entity) {
 
                     addGrabbedComponent()
                 }
-                Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
+
+                addUseItemPointers(entity)
+                Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, scale: scale, parent: engine.PlayerEntity})
             }
         })
     }
-    addUseItemPointers(entity)
+    // addUseItemPointers(entity)
     // let transform = Transform.getMutable(entity)
     // let rot = Quaternion.toEulerAngles(transform.rotation)
     // rot.y += 180
     // transform.rotation = Quaternion.fromEulerDegrees(rot.x, rot.y, rot.z)
-    Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
+    // Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
 }
 
 export function deleteSelectedItem() {
@@ -818,7 +824,6 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
         }
     }
 }
-//
 
 export function updateImageUrl(aid:string, materialComp:any, url:string){
     log('updating image url', aid, materialComp, url)
@@ -864,4 +869,20 @@ export function updateVideoUrl(aid:string, materialComp:any, url:string){
         })
     }
 
+}
+
+export function updateCollision(assetId:string, layer:string, value:number){
+    let entity = entitiesFromItemIds.get(assetId)
+    if(entity){
+        let gltf = GltfContainer.getMutable(entity)
+        if(gltf){
+            if(layer === COLLISION_LAYERS.INVISIBLE){
+                gltf.invisibleMeshesCollisionMask = value
+            }
+
+            if(layer === COLLISION_LAYERS.VISIBLE){
+                gltf.visibleMeshesCollisionMask = value
+            }
+        }
+    }
 }
