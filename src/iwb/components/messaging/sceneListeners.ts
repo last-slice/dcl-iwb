@@ -7,15 +7,13 @@ import {
     otherUserSelectedItem,
     removeItem,
     transformObject,
-    updateCollision,
-    updateImageUrl,
-    updateVideoUrl
 } from "../modes/build"
 import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
 import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { editCurrentSceneParcels } from "../../ui/Panels/CreateScenePanel"
+import { updateCollision, updateImageUrl, updateVideoAutostart, updateVideoPlaying, updateVideoUrl, updateVideoVolume } from "../scenes/components"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -145,6 +143,26 @@ export function addSceneStateListeners(room:any){
                 asset.vidComp.listen("url", (currentValue:any, previousValue:any) => {
                     log("asset video url changed", previousValue, currentValue)
                     updateVideoUrl(asset.aid, asset.matComp, currentValue)
+                });
+
+                asset.vidComp.listen("volume", (currentValue:any, previousValue:any) => {
+                    log("asset video volume changed", previousValue, currentValue)
+                    updateVideoVolume(asset.aid, currentValue)
+                });
+
+                asset.vidComp.listen("loop", (currentValue:any, previousValue:any) => {
+                    log("asset video loop changed", previousValue, currentValue)
+                    updateVideoVolume(asset.aid, currentValue)
+                });
+
+                asset.vidComp.listen("autostart", (currentValue:any, previousValue:any) => {
+                    log("asset video loop changed", previousValue, currentValue)
+                    updateVideoAutostart(asset.aid, currentValue)
+                });
+
+                asset.vidComp.listen("playing", (currentValue:any, previousValue:any) => {
+                    log("asset video playing changed", previousValue, currentValue)
+                    updateVideoPlaying(asset.aid, currentValue)
                 });
             }
 

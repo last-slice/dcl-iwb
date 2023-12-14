@@ -6,8 +6,9 @@ import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
 import { hasBuildPermissions, iwbConfig, localUserId, players } from "../player/player"
-import { addBuildModePointers, updateImageUrl } from "../modes/build"
+import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
+import { createGltfComponent, createVideoComponent, createVisibilityComponent, updateImageUrl } from "./components"
 
 export let realm:string = ""
 export let scenes:any[] = []
@@ -170,42 +171,12 @@ export function deleteAllRealmObjects(){
 }
 
 function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:string, name:string){
-    if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){
-        let visible = false
 
-        let mode = players.get(localUserId)?.mode
-        if(mode === SCENE_MODES.PLAYMODE){
-            if(scene.o === localUserId){
-                if(scene.e){
-                    visible = true
-                }
-            }else{
-                if(scene.e && !scene.priv){
-                    visible = true
-                }
-            }
-        }
-        else{
-            if(scene.o === localUserId || scene.bps.includes(localUserId)){
-                if(scene.e){
-                    visible = true
-                }
-            }
-        }
-
-        VisibilityComponent.create(entity, {
-            visible:  visible
-        })
-    }
+    createVisibilityComponent(scene, entity, item)
 
     switch(type){
         case '3D':
-            let gltf:any = {
-                src:"assets/" + item.id + ".glb",
-                invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
-                visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
-            }
-            GltfContainer.create(entity, gltf)
+            createGltfComponent(entity, item)
             break;
 
         case '2D':
@@ -218,6 +189,7 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
                     break;
 
                 case 'Video':
+                    createVideoComponent(entity, item)
                     break;
             }
             break;
@@ -245,4 +217,3 @@ export function updateSceneEdits(info:any){
     }
 }
 
-//

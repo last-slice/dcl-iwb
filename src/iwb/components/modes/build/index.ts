@@ -1,4 +1,4 @@
-import {Quaternion, Vector3} from "@dcl/sdk/math"
+import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import {getRandomString, log, roundVector} from "../../../helpers/functions"
 import {items} from "../../catalog"
 import {localPlayer, localUserId, players} from "../../player/player"
@@ -28,7 +28,7 @@ import { displaySceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
 
 export let selectedItem: SelectedItem
-export let playerParentEntities: Map<string, Entity> = new Map()//
+export let playerParentEntities: Map<string, Entity> = new Map()
 
 let ITEM_DEPTH_DEFAULT = 4
 let ITEM_HEIGHT_DEFAULT = -.88
@@ -821,68 +821,6 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
             VisibilityComponent.createOrReplace(entity, {
                 visible: true
             })
-        }
-    }
-}
-
-export function updateImageUrl(aid:string, materialComp:any, url:string){
-    log('updating image url', aid, materialComp, url)
-    let ent = entitiesFromItemIds.get(aid)
-    
-    if(ent){
-        let texture = Material.Texture.Common({
-            src: "" + url
-        })
-        
-        Material.setPbrMaterial(ent, {
-            // albedoColor: Color4.create(parseFloat(matComp.color[0]), parseFloat(matComp.color[1]), parseFloat(matComp.color[2]), parseFloat(matComp.color[3])),
-            metallic: parseFloat(materialComp.metallic),
-            roughness:parseFloat(materialComp.roughness),
-            specularIntensity:parseFloat(materialComp.intensity),
-            emissiveIntensity: materialComp.emissPath !== "" ? parseFloat(materialComp.emissInt) : undefined,
-            texture: texture,
-            // emissiveColor: item.matComp.emissPath !== "" ? item.matComp,
-            emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
-          })
-    }
-
-}
-
-
-export function updateVideoUrl(aid:string, materialComp:any, url:string){
-    log('updating video url', aid, materialComp, url)
-    let ent = entitiesFromItemIds.get(aid)
-
-    if(ent){
-        VideoPlayer.create(ent, {
-            src: url,
-            playing: true,
-        })
-
-        const videoTexture = Material.Texture.Video({ videoPlayerEntity: ent })
-
-        Material.setPbrMaterial(ent, {
-            texture: videoTexture,
-            roughness: 1.0,
-            specularIntensity: 0,
-            metallic: 0,
-        })
-    }
-
-}
-
-export function updateCollision(assetId:string, layer:string, value:number){
-    let entity = entitiesFromItemIds.get(assetId)
-    if(entity){
-        let gltf = GltfContainer.getMutable(entity)
-        if(gltf){
-            if(layer === COLLISION_LAYERS.INVISIBLE){
-                gltf.invisibleMeshesCollisionMask = value
-            }
-
-            if(layer === COLLISION_LAYERS.VISIBLE){
-                gltf.visibleMeshesCollisionMask = value
-            }
         }
     }
 }
