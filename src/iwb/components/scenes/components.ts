@@ -1,8 +1,8 @@
-import { Entity, GltfContainer, VideoPlayer, Material, VisibilityComponent } from "@dcl/sdk/ecs";
+import { Entity, GltfContainer, VideoPlayer, Material, VisibilityComponent, MeshCollider } from "@dcl/sdk/ecs";
 import { COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, SCENE_MODES, SceneItem } from "../../helpers/types";
 import { Color4 } from "@dcl/sdk/math";
 import { localUserId, players } from "../player/player";
-import { entitiesFromItemIds } from ".";
+import { entitiesFromItemIds, sceneBuilds } from ".";
 import { log } from "../../helpers/functions";
 
 export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:SceneItem){
@@ -132,17 +132,31 @@ export function updateVideoUrl(aid:string, materialComp:any, url:string){
     }
 }
 
-export function updateCollision(assetId:string, layer:string, value:number){
+export function updateCollision(sceneId:string, assetId:string, layer:string, value:number){
     let entity = entitiesFromItemIds.get(assetId)
-    if(entity){
-        let gltf = GltfContainer.getMutable(entity)
-        if(gltf){
-            if(layer === COLLISION_LAYERS.INVISIBLE){
-                gltf.invisibleMeshesCollisionMask = value
-            }
+    let scene = sceneBuilds.get(sceneId)
+    if(scene){
+        let asset = scene.ass.find((asset:any)=> asset.aid === assetId)
+        if(asset){
+            switch(asset.type){
+                case '3D':
+                    if(entity){
+                        let gltf = GltfContainer.getMutable(entity)
+                        if(gltf){
+                            if(layer === COLLISION_LAYERS.INVISIBLE){
+                                gltf.invisibleMeshesCollisionMask = value
+                            }
+                
+                            if(layer === COLLISION_LAYERS.VISIBLE){
+                                gltf.visibleMeshesCollisionMask = value
+                            }
+                        }
+                    }
+                    break;
 
-            if(layer === COLLISION_LAYERS.VISIBLE){
-                gltf.visibleMeshesCollisionMask = value
+                case '2D':
+                    log('update 2d collision')
+                    break;
             }
         }
     }
