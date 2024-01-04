@@ -89,7 +89,7 @@ export function NFTComponentPanel() {
         >
 
                         <Dropdown
-                    key={"invisible-collider-dropdown"}
+                    key={"chain-type-dropdown"}
                     options={chains}
                     selectedIndex={getChainIndex()}
                     onChange={selectChain}

@@ -14,6 +14,14 @@ import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sc
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { editCurrentSceneParcels } from "../../ui/Panels/CreateScenePanel"
 import { updateCollision, updateImageUrl, updateNFTFrame, updateVideoAutostart, updateVideoPlaying, updateVideoUrl, updateVideoVolume } from "../scenes/components"
+import { textComponentListener } from "./listeners/TextComponent"
+import { collisionComponentListener } from "./listeners/CollisionComponent"
+import { imageComponentListener } from "./listeners/ImageComponent"
+import { videoComponentListener } from "./listeners/VideoComponent"
+import { transformComponentListener } from "./listeners/TransformComponent"
+import { nftComponentListener } from "./listeners/NFTComponent"
+import { sceneListeners } from "./Scene"
+import { assetListener } from "./Asset"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -112,151 +120,8 @@ export function addSceneStateListeners(room:any){
         log('Room Scene Added', key, scene)
         await loadScene(scene)
 
-        scene.pcls.onAdd((parcel:string, parcelKey:any)=>{
-            if(editCurrentSceneParcels){
-                addBoundariesForParcel(parcel, true)
-            }
-        })
-
-        scene.pcls.onRemove((parcel:string, parcelKey:any)=>{
-            if(editCurrentSceneParcels){
-                deleteParcelEntities(parcel)
-            }
-        })
-
-        scene.ass.onAdd((asset:any, key:any)=>{
-            loadSceneAsset(scene.id, asset)
-
-            //editing asset
-            asset.listen("editing", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined && previousValue && !currentValue){
-                    log('done editing asset', asset)
-                    updateAsset(asset)
-                }
-            });
-
-            if(asset.visComp){
-                asset.visComp.listen("visible", (currentValue:any, previousValue:any) => {
-                    log("asset visibility changed", previousValue, currentValue)
-                });
-            }
-
-            if(asset.imgComp){
-                asset.imgComp.listen("url", (currentValue:any, previousValue:any) => {
-                    log("asset image url changed", previousValue, currentValue)
-                    updateImageUrl(asset.aid, asset.matComp, currentValue)
-                });
-            }
-            if(asset.vidComp){
-                asset.vidComp.listen("url", (currentValue:any, previousValue:any) => {
-                    log("asset video url changed", previousValue, currentValue)
-                    updateVideoUrl(asset.aid, asset.matComp, currentValue)
-                });
-
-                asset.vidComp.listen("volume", (currentValue:any, previousValue:any) => {
-                    log("asset video volume changed", previousValue, currentValue)
-                    updateVideoVolume(asset.aid, currentValue)
-                });
-
-                asset.vidComp.listen("loop", (currentValue:any, previousValue:any) => {
-                    log("asset video loop changed", previousValue, currentValue)
-                    updateVideoVolume(asset.aid, currentValue)
-                });
-
-                asset.vidComp.listen("autostart", (currentValue:any, previousValue:any) => {
-                    log("asset video loop changed", previousValue, currentValue)
-                    updateVideoAutostart(asset.aid, currentValue)
-                });
-
-                asset.vidComp.listen("playing", (currentValue:any, previousValue:any) => {
-                    log("asset video playing changed", previousValue, currentValue)
-                    updateVideoPlaying(asset.aid, currentValue)
-                });
-            }
-
-            if(asset.colComp){
-                asset.colComp.listen("iMask", (currentValue:any, previousValue:any) => {
-                    log("invisible collision mask changed", previousValue, currentValue)
-                    updateCollision(scene.id, asset.aid, COLLISION_LAYERS.INVISIBLE, currentValue)
-                });
-
-                asset.colComp.listen("vMask", (currentValue:any, previousValue:any) => {
-                    log("visible collision mask changed", previousValue, currentValue)
-                    updateCollision(scene.id, asset.aid, COLLISION_LAYERS.VISIBLE, currentValue)
-                });
-            }
-
-            if(asset.nftComp){
-                asset.nftComp.listen("style", (currentValue:any, previousValue:any) => {
-                    log("asset image url changed", previousValue, currentValue)
-                    updateNFTFrame(asset.aid, asset.matComp, asset.nftComp)
-                });
-            }
-
-            //position
-            asset.p.listen("x", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "x", currentValue)
-                }
-            });
-            asset.p.listen("y", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "y", currentValue)
-                }
-            });
-            asset.p.listen("z", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.POSITION, "z", currentValue)
-                }
-            });
-
-            //rotation
-            asset.r.listen("x", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "x", currentValue)
-                }
-            });
-            asset.r.listen("y", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "y", currentValue)
-                }
-            });
-            asset.r.listen("z", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.ROTATION, "z", currentValue)
-                }
-            });
-
-            //scale
-            asset.s.listen("x", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "x", currentValue)
-                }
-            });
-            asset.s.listen("y", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "y", currentValue)
-                }
-            });
-            asset.s.listen("z", (currentValue:any, previousValue:any) => {
-                if(previousValue !== undefined){
-                    transformObject(scene.id,asset.aid, EDIT_MODIFIERS.SCALE, "z", currentValue)
-                }
-            });
-        })
-
-        scene.ass.onRemove((asset:any, key:any)=>{
-            log("scene asset remove", key, asset)
-            removeItem(scene.id, asset)
-        })
-
-        scene.listen("si",(current:any, previous:any)=>{
-            sceneBuilds.get(key).si = current
-        })
-
-        scene.listen("pc",(current:any, previous:any)=>{
-            sceneBuilds.get(key).pc = current
-        })
+        sceneListeners(scene,key)
+        assetListener(scene)
     })
 
     room.state.scenes.onRemove((scene:any, key:string)=>{
@@ -284,5 +149,3 @@ export function addSceneStateListeners(room:any){
         })
     })
 }
-
-//

@@ -15,6 +15,7 @@ import {
     MeshRenderer,
     PointerEvents,
     PointerEventType,
+    TextShape,
     Transform,
     VideoPlayer,
     VisibilityComponent
@@ -193,6 +194,12 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean) {
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(2, 2, 1)
                 MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
+            } else if (selectedItem.itemData.n === "Text") {
+                log('dropping text item')
+                TextShape.create(selectedItem.entity, {text: "Text", fontSize:1})
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(2, 2, 1)
             } else if (selectedItem.itemData.n === "Video") {
                 MeshRenderer.setPlane(selectedItem.entity)
                 itemPosition = {x: 0, y: .5, z: itemDepth}
@@ -842,6 +849,10 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
             //add collision for 2D objects in build mode1
             if(sceneItem.type === "2D"){
                 MeshCollider.setPlane(entity)
+            }
+
+            if(sceneItem.type === "2D" && sceneItem.textComp){
+                MeshRenderer.setPlane(entity)
             }
         }
     }

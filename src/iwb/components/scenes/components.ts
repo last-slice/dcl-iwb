@@ -1,4 +1,4 @@
-import { Entity, GltfContainer, VideoPlayer, Material, VisibilityComponent, MeshCollider, NftShape, NftFrameType } from "@dcl/sdk/ecs";
+import { Entity, GltfContainer, VideoPlayer, Material, VisibilityComponent, MeshCollider, NftShape, NftFrameType, TextShape, Font } from "@dcl/sdk/ecs";
 import { COLLISION_LAYERS, COMPONENT_TYPES, EDIT_MODES, IWBScene, SCENE_MODES, SceneItem } from "../../helpers/types";
 import { Color4 } from "@dcl/sdk/math";
 import { localPlayer, localUserId, players } from "../player/player";
@@ -188,6 +188,23 @@ export function updateNFTFrame(aid:string, materialComp:any, nftComp:any){
         //     texture: texture,
         //     // emissiveColor: item.matComp.emissPath !== "" ? item.matComp,
         //     emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
-        //   })
+        //   })//
+    }
+}
+
+export function updateTextComponent(aid:string, materialComp:any, textComp:any){
+    log('updating text component', aid, materialComp, textComp)
+    let ent = entitiesFromItemIds.get(aid)
+    
+    if(ent){
+        TextShape.createOrReplace(ent,{
+            text: textComp.text,
+            textColor: textComp.color,
+            font: textComp.font,
+            fontSize: textComp.fontSize,
+            textAlign: textComp.align,
+            outlineWidth: textComp.outlineWidth > 0 ? textComp.outlineWidth : undefined,
+            outlineColor: textComp.outlineWidth > 0 ? textComp.outlineColor : undefined
+        })
     }
 }

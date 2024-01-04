@@ -8,7 +8,7 @@ import { RealmEntityComponent } from "../../helpers/Components"
 import { hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
-import { createGltfComponent, createVideoComponent, createVisibilityComponent, updateImageUrl, updateNFTFrame } from "./components"
+import { createGltfComponent, createVideoComponent, createVisibilityComponent, updateImageUrl, updateNFTFrame, updateTextComponent } from "./components"
 
 export let realm:string = ""
 export let scenes:any[] = []
@@ -197,6 +197,10 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
 
                 case 'NFT Frame':
                     updateNFTFrame(item.aid, item.matComp, item.nftComp)
+                    break;
+
+                 case 'Text':
+                    updateTextComponent(item.aid, item.matComp, item.textComp)
                     break;
             }
             break;

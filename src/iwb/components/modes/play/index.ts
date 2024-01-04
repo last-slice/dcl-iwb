@@ -1,4 +1,4 @@
-import { ColliderLayer, Entity, MeshCollider, VisibilityComponent } from "@dcl/sdk/ecs";
+import { ColliderLayer, Entity, MeshCollider, MeshRenderer, VisibilityComponent } from "@dcl/sdk/ecs";
 import { COLLISION_LAYERS, IWBScene } from "../../../helpers/types";
 import { itemIdsFromEntities } from "../../scenes";
 import { log } from "../../../helpers/functions";
@@ -19,9 +19,13 @@ export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
             })
 
             //check 2d collision 
-            if(sceneItem.nftComp){
+            if(sceneItem.type === "2D"){
                 if(sceneItem.colComp.vMask !== 1){
                     MeshCollider.deleteFrom(entity)
+                }
+
+                if(sceneItem.textComp){
+                    MeshRenderer.deleteFrom(entity)
                 }
             }
         }

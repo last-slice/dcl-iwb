@@ -12,6 +12,7 @@ import { uiSizes } from '../../uiConfig'
 import { log } from '../../../helpers/functions'
 import { CollisionComponentPanel } from './CollisionComponentPanel'
 import { NFTComponentPanel } from './NFTComponentPanel'
+import { TextComponentPanel } from './TextComponentPanel'
 
 export let visibleComponent: string = ""
 
@@ -162,6 +163,7 @@ export function EditObjectData() {
                     <VisibilityComponentPanel/>
                     <CollisionComponentPanel/>
                     <NFTComponentPanel/>
+                    <TextComponentPanel/>
 
                 </UiEntity>
             </UiEntity>
@@ -188,7 +190,7 @@ function generateComponentViews() {
                 uiText={{value: "" + component, fontSize: sizeFont(30, 20)}}
                 onMouseDown={() => {
                     openEditComponent(component)
-                    log('item is', component)
+                    log('item is', component)//
                 }}
             />
         )
