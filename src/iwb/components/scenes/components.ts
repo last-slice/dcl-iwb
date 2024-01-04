@@ -193,7 +193,7 @@ export function updateNFTFrame(aid:string, materialComp:any, nftComp:any){
 }
 
 export function updateTextComponent(aid:string, materialComp:any, textComp:any){
-    log('updating text component', aid, materialComp, textComp)
+    log('updating text component', aid, materialComp, textComp)//
     let ent = entitiesFromItemIds.get(aid)
     
     if(ent){

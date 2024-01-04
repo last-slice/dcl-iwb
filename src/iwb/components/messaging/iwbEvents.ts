@@ -8,8 +8,11 @@ import { Entity, GltfContainer, Material, engine } from "@dcl/sdk/ecs";
 import { BuildModeVisibilty, ParcelFloor, greenBeam, redBeam } from "../modes/create";
 import { Color4 } from "@dcl/sdk/math";
 import { sceneBuilds } from "../scenes";
-import { addBuildModePointers, resetEntityForBuildMode } from "../modes/build";
+import { addBuildModePointers, hideAllOtherPointers, resetEntityForBuildMode } from "../modes/build";
 import { resetEntityForPlayMode } from "../modes/play";
+import { InputListenSystem } from "../systems/InputListenSystem";
+import { PlayModeInputSystem } from "../systems/PlayModeInputSystem";
+import { hideAllPanels } from "../../ui/ui";
 
 let created = false
 export function createIWBEventListeners(){
@@ -36,6 +39,9 @@ export function createIWBEventListeners(){
                 }
             }
 
+            hideAllOtherPointers()
+            hideAllPanels()
+
             sceneBuilds.forEach((scene,key)=>{
                 scene.entities.forEach((entity:Entity)=>{
                     if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
@@ -46,6 +52,14 @@ export function createIWBEventListeners(){
                     }
                 })
             })
+
+            if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
+                engine.removeSystem(PlayModeInputSystem)
+                engine.addSystem(InputListenSystem)
+            }else{
+                engine.removeSystem(InputListenSystem)
+                engine.addSystem(PlayModeInputSystem)
+            }
         })
     }
 }

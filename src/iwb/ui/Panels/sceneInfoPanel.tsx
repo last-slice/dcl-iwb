@@ -8,11 +8,11 @@ import { showCatalogInfoPanel } from './CatalogInfoPanel'
 import { log, paginateArray } from '../../helpers/functions'
 import { Entity, MeshRenderer, Transform, VisibilityComponent, engine } from '@dcl/sdk/ecs'
 import { items } from '../../components/catalog'
-import { sendServerDelete } from '../../components/modes/build'
+import { editItem, sendServerDelete } from '../../components/modes/build'
 import { entitiesFromItemIds } from '../../components/scenes'
 import { displaySceneInfoPanel, displaySceneSetting } from './builds/buildsIndex'
 import { sendServerMessage } from '../../components/messaging'
-import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
+import { EDIT_MODES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
 import { showNotification } from './notificationUI'
 
 export let showSceneInfoPanel = false
@@ -234,6 +234,7 @@ export function createSceneInfoPanel() {
                     }}
                     onMouseUp={() => {
                         // pressed.Save = false
+                        editItem(selectedEntity as Entity, EDIT_MODES.EDIT)
                     }}
                     uiText={{value: "Edit", color: Color4.Black(), fontSize: sizeFont(30, 20)}}
                 />

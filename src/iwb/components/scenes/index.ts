@@ -17,6 +17,7 @@ export let worlds:any[] = []
 export let sceneBuilds:Map<string, any> = new Map()
 export let itemIdsFromEntities:Map<number,any> = new Map()
 export let entitiesFromItemIds:Map<string,Entity> = new Map()
+export let actions:any[] = []
 
 export function updateRealm(value:string){
     realm = value
@@ -83,6 +84,7 @@ export function setScenes(info:any){
 
 export function loadScene(info:any){
     sceneBuilds.set(info.id, {...info})
+    sceneBuilds.get(info.id).actions = []
 
     if(info.bps.includes(localUserId)){
         players.get(localUserId)!.buildingAllowed = true
@@ -236,3 +238,4 @@ export function updateAsset(asset:any){
     }
 
 }
+//

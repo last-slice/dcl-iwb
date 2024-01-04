@@ -1,11 +1,13 @@
 import { log } from "../../helpers/functions";
 import { removeItem } from "../modes/build";
 import { loadSceneAsset, updateAsset } from "../scenes";
+import { actionComponentListener } from "./listeners/ActionComponent";
 import { collisionComponentListener } from "./listeners/CollisionComponent";
 import { imageComponentListener } from "./listeners/ImageComponent";
 import { nftComponentListener } from "./listeners/NFTComponent";
 import { textComponentListener } from "./listeners/TextComponent";
 import { transformComponentListener } from "./listeners/TransformComponent";
+import { triggerComponentListener } from "./listeners/TriggerComponent";
 import { videoComponentListener } from "./listeners/VideoComponent";
 
 
@@ -27,6 +29,8 @@ export function assetListener(scene:any){
         nftComponentListener(asset)
         textComponentListener(asset)
         transformComponentListener(scene, asset)
+        triggerComponentListener(asset)
+        actionComponentListener(scene, asset)
     })
 
     scene.ass.onRemove((asset:any, key:any)=>{

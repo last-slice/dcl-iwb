@@ -151,7 +151,8 @@ export interface IWBScene {
     e:boolean,
     entities:Entity[],
     im?:string,
-    priv:boolean
+    priv:boolean,
+    actions:any[]
 }
 
 export interface CatalogItemType {
@@ -186,6 +187,9 @@ export interface SceneItem extends CatalogItemType{
     matComp:any
     nftComp:any
     textComp:any
+    clickComp:any
+    trigComp:any
+    actComp:any
 }
 
 export interface SelectedItem {
@@ -212,8 +216,13 @@ export enum COMPONENT_TYPES {
     COLLISION_COMPONENT = "Collision",
     TRANSFORM_COMPONENT = "Transform",
     NFT_COMPONENT = "NFT",
-    TEXT_COMPONENT = "Text"
+    TEXT_COMPONENT = "Text",
+    TRIGGER_COMPONENT = "Trigger",
+    ACTION_COMPONENT = 'Action',
+    CLICK_COMPONENT = "Click"
 }
+
+//
 
 export enum COLLISION_LAYERS {
     INVISIBLE = "invisible",
@@ -251,28 +260,53 @@ export enum NFT_FRAMES {
     NFT_NONE = "none",
 }
 
-// export declare enum NftFrameType {
-//     NFT_CLASSIC = 0,
-//     NFT_BAROQUE_ORNAMENT = 1,
-//     NFT_DIAMOND_ORNAMENT = 2,
-//     NFT_MINIMAL_WIDE = 3,
-//     NFT_MINIMAL_GREY = 4,
-//     NFT_BLOCKY = 5,
-//     NFT_GOLD_EDGES = 6,
-//     NFT_GOLD_CARVED = 7,
-//     NFT_GOLD_WIDE = 8,
-//     NFT_GOLD_ROUNDED = 9,
-//     NFT_METAL_MEDIUM = 10,
-//     NFT_METAL_WIDE = 11,
-//     NFT_METAL_SLIM = 12,
-//     NFT_METAL_ROUNDED = 13,
-//     NFT_PINS = 14,
-//     NFT_MINIMAL_BLACK = 15,
-//     NFT_MINIMAL_WHITE = 16,
-//     NFT_TAPE = 17,
-//     NFT_WOOD_SLIM = 18,
-//     NFT_WOOD_WIDE = 19,
-//     NFT_WOOD_TWIGS = 20,
-//     NFT_CANVAS = 21,
-//     NFT_NONE = 22
-// }
+export enum Actions {
+    START_TWEEN = "start_tween",
+    PLAY_SOUND = "play_sound",
+    STOP_SOUND = "stop_sound",
+    SET_VISIBILITY = "set_vis",
+    ATTACH_PLAYER = "attach_player",
+    DETACH_PLAYER = "detach_player",
+    PLAY_VIDEO = 'play_video',
+    PLAYER_VIDEO_STREAM = 'play_video_stream',
+    STOP_VIDEO = 'stop_video',
+    STOP_VIDEO_STREAM = 'stop_video_stream',
+    PLAY_AUDIO = 'play_audio',
+    PLAY_AUDIO_STREAM = 'play_audio_stream',
+    STOP_AUDIO = 'stop_audio',
+    STOP_AUDIO_STREAM = 'stop_audio_stream',
+    TELEPORT_PLAYER = 'telport',
+    EMOTE = 'emote',
+    OPEN_LINK = 'open_link',
+    SHOW_TOAST = 'show_toast',
+    HIDE_TOAS = 'hide_toast',
+    START_DELAY = 'start_delay',
+    STOP_DELAY = 'stop_delay',
+    START_LOOP = 'start_loop',
+    STOP_LOOP = 'stop_loop',
+    CLONE = 'clone',
+    REMOVE = 'remove',
+    SHOW_IMAGE = 'show_image',
+    HIDE_IMAGE = 'hide_image'
+}
+
+export enum Triggers {
+    ON_CLICK = "on_click",
+    ON_SPAWN = "on_spawn"
+}
+
+export let ENTITY_ACTIONS_LABELS:any[] = [
+    "Open Link"
+]
+
+export let ENTITY_ACTIONS_SLUGS:any[] = [
+    Actions.OPEN_LINK
+]
+
+export let ENTITY_TRIGGER_LABELS:any[] = [
+    "On Click"
+]
+
+export let ENTITY_TRIGGER_SLUGS:any[] = [
+    Triggers.ON_CLICK
+]

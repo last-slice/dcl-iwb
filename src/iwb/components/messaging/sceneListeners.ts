@@ -55,7 +55,7 @@ export function createSceneListeners(room: any) {
     
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW + ' received', info)
-            // setScenes(info.info)//
+            // setScenes(info.info)
         })
 
         room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, (info:any) => {
@@ -149,3 +149,5 @@ export function addSceneStateListeners(room:any){
         })
     })
 }
+
+//

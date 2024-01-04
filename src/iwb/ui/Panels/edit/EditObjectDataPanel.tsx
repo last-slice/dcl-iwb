@@ -13,6 +13,9 @@ import { log } from '../../../helpers/functions'
 import { CollisionComponentPanel } from './CollisionComponentPanel'
 import { NFTComponentPanel } from './NFTComponentPanel'
 import { TextComponentPanel } from './TextComponentPanel'
+import { ClickComponent } from './ClickComponent'
+import { ActionComponent } from './ActionComponent'
+import { TriggerComponent } from './TriggerComponent'
 
 export let visibleComponent: string = ""
 
@@ -164,6 +167,9 @@ export function EditObjectData() {
                     <CollisionComponentPanel/>
                     <NFTComponentPanel/>
                     <TextComponentPanel/>
+                    <ActionComponent/>
+                    {/* <ClickComponent/> */}
+                    <TriggerComponent/>
 
                 </UiEntity>
             </UiEntity>
@@ -190,7 +196,7 @@ function generateComponentViews() {
                 uiText={{value: "" + component, fontSize: sizeFont(30, 20)}}
                 onMouseDown={() => {
                     openEditComponent(component)
-                    log('item is', component)//
+                    log('item is', component)
                 }}
             />
         )
@@ -212,3 +218,5 @@ function getComponents() {
     }
     return components
 }
+
+//

@@ -27,6 +27,8 @@ import {entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../.
 import {hideAllPanels} from "../../../ui/ui"
 import { displaySceneAssetInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
+import { InputListenSystem } from "../../systems/InputListenSystem"
+import { PlayModeInputSystem } from "../../systems/PlayModeInputSystem"
 
 export let selectedItem: SelectedItem
 export let playerParentEntities: Map<string, Entity> = new Map()
