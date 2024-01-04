@@ -1,7 +1,7 @@
-import { Entity, GltfContainer, VideoPlayer, Material, VisibilityComponent, MeshCollider } from "@dcl/sdk/ecs";
-import { COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, SCENE_MODES, SceneItem } from "../../helpers/types";
+import { Entity, GltfContainer, VideoPlayer, Material, VisibilityComponent, MeshCollider, NftShape, NftFrameType } from "@dcl/sdk/ecs";
+import { COLLISION_LAYERS, COMPONENT_TYPES, EDIT_MODES, IWBScene, SCENE_MODES, SceneItem } from "../../helpers/types";
 import { Color4 } from "@dcl/sdk/math";
-import { localUserId, players } from "../player/player";
+import { localPlayer, localUserId, players } from "../player/player";
 import { entitiesFromItemIds, sceneBuilds } from ".";
 import { log } from "../../helpers/functions";
 
@@ -34,7 +34,6 @@ export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:Sc
         })
     }
 }
-
 
 export function createGltfComponent(entity:Entity, item:SceneItem){
     let gltf:any = {
@@ -156,8 +155,39 @@ export function updateCollision(sceneId:string, assetId:string, layer:string, va
 
                 case '2D':
                     log('update 2d collision')
+
                     break;
             }
         }
+    }
+}
+
+export function updateNFTFrame(aid:string, materialComp:any, nftComp:any){
+    log('updating nft image', aid, materialComp, nftComp)
+    let ent = entitiesFromItemIds.get(aid)
+    
+    if(ent){
+        NftShape.createOrReplace(ent, {
+            urn: 'urn:decentraland:ethereum:erc1155:' + nftComp.contract + ':' + nftComp.tokenId,
+            style: nftComp.style
+          })
+
+        if(localPlayer.mode === SCENE_MODES.BUILD_MODE && !MeshCollider.has(ent)){
+            MeshCollider.setBox(ent)
+        }
+        // let texture = Material.Texture.Common({
+        //     src: "" + url
+        // })
+        
+        // Material.setPbrMaterial(ent, {
+        //     // albedoColor: Color4.create(parseFloat(matComp.color[0]), parseFloat(matComp.color[1]), parseFloat(matComp.color[2]), parseFloat(matComp.color[3])),
+        //     metallic: parseFloat(materialComp.metallic),
+        //     roughness:parseFloat(materialComp.roughness),
+        //     specularIntensity:parseFloat(materialComp.intensity),
+        //     emissiveIntensity: materialComp.emissPath !== "" ? parseFloat(materialComp.emissInt) : undefined,
+        //     texture: texture,
+        //     // emissiveColor: item.matComp.emissPath !== "" ? item.matComp,
+        //     emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
+        //   })
     }
 }

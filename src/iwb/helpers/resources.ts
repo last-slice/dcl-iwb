@@ -4,7 +4,7 @@ import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 export default {
 
     DEBUG: true,
-    allowNoWeb3:true,//
+    allowNoWeb3:true,
 
     lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
 

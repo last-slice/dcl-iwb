@@ -5,6 +5,7 @@ import {addPlayerScenes, localPlayer} from "../player/player"
 import {Room} from "colyseus.js"
 import {iwbEvents} from "."
 import {refreshSortedItems, setAllItems, updateItem} from "../catalog/items";
+import { displayDownloadPendingPanel } from "../../ui/Panels/downloadPendingPanel"
 
 
 export function createPlayerListeners(room: Room) {
@@ -48,11 +49,17 @@ export function createPlayerListeners(room: Room) {
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE + ' received', info)
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "" + info, animate:{enabled:true, return:true, time:5}})
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
         localPlayer.mode = info.mode
         iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: info.mode})
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
+        displayDownloadPendingPanel(true, info.link)
     })
 }

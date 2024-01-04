@@ -11,6 +11,7 @@ import {VideoComponentPanel} from "./VideoComponentPanel";
 import { uiSizes } from '../../uiConfig'
 import { log } from '../../../helpers/functions'
 import { CollisionComponentPanel } from './CollisionComponentPanel'
+import { NFTComponentPanel } from './NFTComponentPanel'
 
 export let visibleComponent: string = ""
 
@@ -160,6 +161,7 @@ export function EditObjectData() {
                     <EditTransform/>
                     <VisibilityComponentPanel/>
                     <CollisionComponentPanel/>
+                    <NFTComponentPanel/>
 
                 </UiEntity>
             </UiEntity>

@@ -5,10 +5,10 @@ import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
-import { hasBuildPermissions, iwbConfig, localUserId, players } from "../player/player"
+import { hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
-import { createGltfComponent, createVideoComponent, createVisibilityComponent, updateImageUrl } from "./components"
+import { createGltfComponent, createVideoComponent, createVisibilityComponent, updateImageUrl, updateNFTFrame } from "./components"
 
 export let realm:string = ""
 export let scenes:any[] = []
@@ -179,17 +179,24 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             createGltfComponent(entity, item)
             break;
 
-        case '2D':
-            MeshRenderer.setPlane(entity)
-            MeshCollider.setPlane(entity)
-            
+        case '2D':           
+            if(item.colComp.vMask === 1){
+                MeshCollider.setPlane(entity)
+            }
+
             switch(name){
                 case 'Image':
+                    MeshRenderer.setPlane(entity)
                     updateImageUrl(item.aid, item.matComp, item.imgComp.url)
                     break;
 
                 case 'Video':
+                    MeshRenderer.setPlane(entity)
                     createVideoComponent(entity, item)
+                    break;
+
+                case 'NFT Frame':
+                    updateNFTFrame(item.aid, item.matComp, item.nftComp)
                     break;
             }
             break;
@@ -217,3 +224,11 @@ export function updateSceneEdits(info:any){
     }
 }
 
+export function updateAsset(asset:any){
+    //check if NFT component was updated
+    if(asset.type === "2D" && asset.nftComp){
+        log('we just updated nftasset')
+        updateNFTFrame(asset.aid, asset.matComp, asset.nftComp)
+    }
+
+}

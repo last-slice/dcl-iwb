@@ -10,6 +10,11 @@ import { displayAssetUploadUI } from "../ui/Panels/assetUploadUI";
 
 export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
+export function paginateArray(array:any[], page:number, itemsPerPage:number){
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  return array.slice(startIndex, endIndex)
+}
 
 export function formatSize(size: number | undefined) {
   if (!size) return ""

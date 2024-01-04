@@ -19,7 +19,7 @@ import {toggleFlyMode} from "../components/modes/flying";
 import { hideAllPanels } from "./ui"
 import { getImageAtlasMapping } from "./helpers"
 import { log } from "../helpers/functions"
-import { displaySceneInfoPanel, showSceneInfoPanel } from "./Panels/sceneInfoPanel"
+import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "./Panels/sceneInfoPanel"
 
 export let uiModes: any = {
     0://playmode
@@ -145,9 +145,10 @@ export let topTools: any[] = [
         visible:true,
         fn:()=>{
             if(showSceneInfoPanel){
-                displaySceneInfoPanel(false)
+                displaySceneAssetInfoPanel(false)
             }else{
-                displaySceneInfoPanel(true)
+                hideAllPanels()
+                displaySceneAssetInfoPanel(true)
             }
         },
     },

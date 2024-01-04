@@ -27,14 +27,15 @@ export function refreshVisibleItems(){
       visibleItems.push(worlds[i])
       }
 
-      log('visible items first area', visibleItems)
+      log('visible items first area', visibleIndex, visibleItems)
   
-      let top = (visibleIndex * 6) + 6
-      if(top > visibleItems.length && visibleItems.length === 6){
-          for(let i = 0; i < (top - visibleItems.length); i++){
-              visibleItems.pop()
-          }
-      }//
+    //   let top = (visibleIndex * 6) + 6
+    //   if(top > visibleItems.length){//} && visibleItems.length === 6){
+    //     console.log('top is too long')
+    //       for(let i = 0; i < (top - (visibleIndex * 6)); i++){
+    //           visibleItems.pop()
+    //       }
+    //   }//
 
       log('visible itmes are ', visibleItems)
   }
@@ -307,10 +308,10 @@ export function ExplorePanel() {
                 log('clickding right')
                 visibleIndex++
                 refreshVisibleItems()
-                if((visibleIndex + 1) * 6 < worlds.length){
+                // if((visibleIndex + 1) * 6 < worlds.length){
                     visibleIndex++
                     refreshVisibleItems()
-                }
+                // }
             }}
             />
 

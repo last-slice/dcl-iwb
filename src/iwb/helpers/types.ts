@@ -13,6 +13,7 @@ export enum SERVER_MESSAGE_TYPES {
     PLAY_MODE_CHANGED = 'play_mode_changed',
     SELECTED_SCENE_ASSET = 'selected_scene_asset',
     EDIT_SCENE_ASSET = 'edit_scene_asset',
+    EDIT_SCENE_ASSET_DONE = 'edit_scene_asset_done',
     PLACE_SELECTED_ASSET = 'place_asset',
     SELECT_CATALOG_ASSET = 'select_catalog_asset',
     PLAYER_CANCELED_CATALOG_ASSET = 'player_canceled_catalog',
@@ -43,6 +44,7 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_SAVE_EDITS = 'scene_save_edits',
     SCENE_UPDATE_ENABLED = 'scene_update_enabled',
     SCENE_UPDATE_PRIVACY = 'scene_update_privacy',
+    SCENE_DOWNLOAD = 'scene_download',
 
     //World
     INIT_WORLD = "init_world",
@@ -182,6 +184,7 @@ export interface SceneItem extends CatalogItemType{
     imgComp:any
     vidComp:any
     matComp:any
+    nftComp:any
 }
 
 export interface SelectedItem {
@@ -206,10 +209,68 @@ export enum COMPONENT_TYPES {
     VIDEO_COMPONENT = 'Video',
     MATERIAL_COMPONENT = "Material",
     COLLISION_COMPONENT = "Collision",
-    TRANSFORM_COMPONENT = "Transform"
+    TRANSFORM_COMPONENT = "Transform",
+    NFT_COMPONENT = "NFT"
 }
 
 export enum COLLISION_LAYERS {
     INVISIBLE = "invisible",
     VISIBLE = "visible"
 }
+
+export enum BLOCKCHAINS {
+    ETH = "eth",
+    POLYGON = "polygon"
+}
+
+export enum NFT_FRAMES {
+    NFT_CLASSIC = "classic",
+    NFT_BAROQUE_ORNAMENT = "baroque",
+    NFT_DIAMOND_ORNAMENT = "diamond",
+    NFT_MINIMAL_WIDE = "minimal wide",
+    NFT_MINIMAL_GREY = 'minimal grey',
+    NFT_BLOCKY = 'blocky',
+    NFT_GOLD_EDGES = 'gold edges',
+    NFT_GOLD_CARVED = 'gold carved',
+    NFT_GOLD_WIDE = 'gold wide',
+    NFT_GOLD_ROUNDED = 'gold rounded',
+    NFT_METAL_MEDIUM = 'metal medium',
+    NFT_METAL_WIDE = 'metal wide',
+    NFT_METAL_SLIM = 'metal slim',
+    NFT_METAL_ROUNDED = 'metal rounded',
+    NFT_PINS = 'pins',
+    NFT_MINIMAL_BLACK = 'minimal black',
+    NFT_MINIMAL_WHITE = 'minimal white',
+    NFT_TAPE = 'tape',
+    NFT_WOOD_SLIM = 'slim',
+    NFT_WOOD_WIDE = 'wood wide',
+    NFT_WOOD_TWIGS = 'wood twigs',
+    NFT_CANVAS = 'canvas',
+    NFT_NONE = "none",
+}
+
+// export declare enum NftFrameType {
+//     NFT_CLASSIC = 0,
+//     NFT_BAROQUE_ORNAMENT = 1,
+//     NFT_DIAMOND_ORNAMENT = 2,
+//     NFT_MINIMAL_WIDE = 3,
+//     NFT_MINIMAL_GREY = 4,
+//     NFT_BLOCKY = 5,
+//     NFT_GOLD_EDGES = 6,
+//     NFT_GOLD_CARVED = 7,
+//     NFT_GOLD_WIDE = 8,
+//     NFT_GOLD_ROUNDED = 9,
+//     NFT_METAL_MEDIUM = 10,
+//     NFT_METAL_WIDE = 11,
+//     NFT_METAL_SLIM = 12,
+//     NFT_METAL_ROUNDED = 13,
+//     NFT_PINS = 14,
+//     NFT_MINIMAL_BLACK = 15,
+//     NFT_MINIMAL_WHITE = 16,
+//     NFT_TAPE = 17,
+//     NFT_WOOD_SLIM = 18,
+//     NFT_WOOD_WIDE = 19,
+//     NFT_WOOD_TWIGS = 20,
+//     NFT_CANVAS = 21,
+//     NFT_NONE = 22
+// }

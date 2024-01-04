@@ -19,12 +19,12 @@ import {
     VideoPlayer,
     VisibilityComponent
 } from "@dcl/sdk/ecs"
-import {cRoom, sendServerMessage} from "../../messaging";
+import {sendServerMessage} from "../../messaging";
 import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SelectedItem, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
 import {displayCatalogPanel} from "../../../ui/Panels/CatalogPanel"
 import {entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
-import { displaySceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
+import { displaySceneAssetInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
 
 export let selectedItem: SelectedItem
@@ -187,7 +187,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean) {
 
             //to do
             //add different asset types here//
-            if (selectedItem.itemData.n === "Image") {
+            if (selectedItem.itemData.n === "Image" || selectedItem.itemData.n === "NFT Frame") {
                 MeshRenderer.setPlane(selectedItem.entity)
                 itemPosition = {x: 0, y: .5, z: itemDepth}
                 selectedItem.initialHeight = .88
@@ -209,7 +209,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean) {
 
         Transform.create(selectedItem.entity, {position: itemPosition, scale, parent: engine.PlayerEntity})
 
-        cRoom.send(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {
+        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {
             user: localUserId,
             catalogId: id,
             assetId: selectedItem.aid
@@ -332,7 +332,7 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
                     position: Vector3.create(0, itemdata!.bb.z + 1, 0),
                     parent: selectedItem.entity
                 })
-                // cRoom.send(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {user:localUserId, catalogId: sceneItem.id, assetId:assetId})
+                sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {user:localUserId, item:{catalogId: sceneItem.id, aid:assetId, sceneId: selectedItem.sceneId}})
                 return
             }
         })
@@ -353,9 +353,15 @@ export function saveItem() {
     //     PointerEvents.deleteFrom(selectedItem.entity)
     //     addBuildModePointers(selectedItem.entity)
 
-    //     // sendServerMessage(
-    //     //     SERVER_MESSAGE_TYPES.SCENE_UPDATE_ITEM,
-    //     //     {baseParcel: scene.bpcl, item: {sceneId:scene.id, id: selectedItem.catalogId, position: roundVector(t.position, 2), rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2), scale: roundVector(t.scale, 2)}})
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_DONE, 
+        {
+            user:localUserId, 
+            item:{
+                catalogId: selectedItem.catalogId, 
+                aid: selectedItem.aid, 
+                sceneId: selectedItem.sceneId
+            }
+        })
 
     //     selectedItem.enabled = false
     // }
@@ -451,6 +457,8 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
     })
 }
 
+//
+
 export function duplicateItem(entity: Entity) {
     let assetId = itemIdsFromEntities.get(entity)
     console.log('found asset id', assetId)
@@ -480,7 +488,7 @@ export function grabItem(entity: Entity) {
             let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
             console.log('scene item is', sceneItem)
             if (sceneItem) {
-                cRoom.send(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
+                sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
                     user: localUserId,
                     catalogId: sceneItem.id,
                     assetId: assetId,
@@ -575,6 +583,15 @@ export function cancelEditingItem() {
     log('canceled editing item is', selectedItem)
     openEditComponent("")
     dropSelectedItem(true, true)
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_DONE, 
+        {
+            user:localUserId, 
+            item:{
+                catalogId: selectedItem.catalogId, 
+                aid: selectedItem.aid, 
+                sceneId: selectedItem.sceneId
+            }
+        })
 }
 
 function addGrabbedComponent(){
@@ -623,7 +640,7 @@ export function checkBuildPermissions(player: Player) {
     } else {
         player.canBuild = false
         player.activeScene = null
-        displaySceneInfoPanel(false)
+        displaySceneAssetInfoPanel(false)
         
         if (selectedItem && selectedItem.enabled) {
             // selectedItem.enabled = false
@@ -821,6 +838,11 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
             VisibilityComponent.createOrReplace(entity, {
                 visible: true
             })
+
+            //add collision for 2D objects in build mode1
+            if(sceneItem.type === "2D"){
+                MeshCollider.setPlane(entity)
+            }
         }
     }
 }

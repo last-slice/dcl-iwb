@@ -10,10 +10,10 @@ import {
 } from "../modes/build"
 import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
-import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateSceneEdits } from "../scenes"
+import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateAsset, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { editCurrentSceneParcels } from "../../ui/Panels/CreateScenePanel"
-import { updateCollision, updateImageUrl, updateVideoAutostart, updateVideoPlaying, updateVideoUrl, updateVideoVolume } from "../scenes/components"
+import { updateCollision, updateImageUrl, updateNFTFrame, updateVideoAutostart, updateVideoPlaying, updateVideoUrl, updateVideoVolume } from "../scenes/components"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -127,6 +127,14 @@ export function addSceneStateListeners(room:any){
         scene.ass.onAdd((asset:any, key:any)=>{
             loadSceneAsset(scene.id, asset)
 
+            //editing asset
+            asset.listen("editing", (currentValue:any, previousValue:any) => {
+                if(previousValue !== undefined && previousValue && !currentValue){
+                    log('done editing asset', asset)
+                    updateAsset(asset)
+                }
+            });
+
             if(asset.visComp){
                 asset.visComp.listen("visible", (currentValue:any, previousValue:any) => {
                     log("asset visibility changed", previousValue, currentValue)
@@ -175,6 +183,13 @@ export function addSceneStateListeners(room:any){
                 asset.colComp.listen("vMask", (currentValue:any, previousValue:any) => {
                     log("visible collision mask changed", previousValue, currentValue)
                     updateCollision(scene.id, asset.aid, COLLISION_LAYERS.VISIBLE, currentValue)
+                });
+            }
+
+            if(asset.nftComp){
+                asset.nftComp.listen("style", (currentValue:any, previousValue:any) => {
+                    log("asset image url changed", previousValue, currentValue)
+                    updateNFTFrame(asset.aid, asset.matComp, asset.nftComp)
                 });
             }
 
@@ -269,3 +284,5 @@ export function addSceneStateListeners(room:any){
         })
     })
 }
+
+//

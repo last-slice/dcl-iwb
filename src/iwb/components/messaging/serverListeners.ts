@@ -68,7 +68,7 @@ export function initiateMessageListeners(room: Room) {
             log('should display something else')
             showNotification({
                 type: NOTIFICATION_TYPES.MESSAGE,
-                message: info.worldName + " just deployed their world - " + info.ens + "!",
+                message: " New world deployed !\n " + info.ens + "!",
                 animate: {enabled: true, return: true, time: 5}
             })
         }

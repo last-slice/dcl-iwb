@@ -31,10 +31,11 @@ import { createSceneSavedPanel } from './Panels/sceneSavedPanel'
 import { createInitalizeWorldPanel } from './Panels/initaliteWorldPanel'
 import { createWorldReadyPanel } from './Panels/worldReadyPanel'
 import { createCatalogInfoPanel, displayCatalogInfoPanel } from './Panels/CatalogInfoPanel'
-import { createScenePanel } from './Panels/builds/buildsIndex'
+import { createScenePanel, displaySceneInfoPanel } from './Panels/builds/buildsIndex'
 import { createCustomContextMenu } from './contextMenu'
 import { createEditObjectPanel } from './Panels/edit/EditObjectPanel'
-import { createSceneInfoPanel } from './Panels/sceneInfoPanel'
+import { createSceneInfoPanel, displaySceneAssetInfoPanel } from './Panels/sceneInfoPanel'
+import { createDownloadPendingPanel } from './Panels/downloadPendingPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -73,13 +74,17 @@ const uiComponent = () => [
   createWorldReadyPanel(),
   createScenePanel(),
   createCustomContextMenu(),
-  createSceneInfoPanel()
+  createSceneInfoPanel(),
+  createDownloadPendingPanel()
 ]
 
 
 export function hideAllPanels(){
+  displaySceneInfoPanel(false, null)
+  displayCatalogPanel(false)
   displayCatalogInfoPanel(false)
   displayCatalogPanel(false)
   displaySettingsPanel(false)
   displayAssetUploadUI(false)
+  displaySceneAssetInfoPanel(false)
 }
