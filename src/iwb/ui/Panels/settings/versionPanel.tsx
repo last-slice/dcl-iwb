@@ -9,6 +9,7 @@ import { log } from '../../../helpers/functions'
 import { cRoom } from '../../../components/messaging'
 import { showNotification } from '../notificationUI'
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { newItems } from '../../../components/catalog/items'
 
 export function VersionPanel() {
     return (
@@ -71,7 +72,7 @@ export function VersionPanel() {
             width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
             height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
             margin:{top:"1%", bottom:'1%'},
-            display: localUserId && players.get(localUserId)!.worlds.find((w)=> w.ens === realm) ? (players.get(localUserId)!.worlds.find((w)=> w.ens === realm).v < iwbConfig.v ? 'flex' : 'none') : "none"
+            // display: localUserId && players.get(localUserId)!.worlds.find((w)=> w.ens === realm) ?  (players.get(localUserId)!.worlds.find((w)=> w.ens === realm).v < iwbConfig.v ? 'flex' : 'none') : "none"
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -117,6 +118,25 @@ function generateUpdateRows(){
             </UiEntity>
             )
         })  
+
+        if(newItems.size > 0){
+            arr.push(
+                <UiEntity
+                key={'version-update-row-new-items'}
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '70%',
+                    height: '10%',
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiText={{value:"- New Catalog items - " + newItems.size, fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+                >
+        
+                </UiEntity>
+                )
+        }
     }
     return arr
 }

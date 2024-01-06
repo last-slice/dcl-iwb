@@ -41,7 +41,7 @@ export async function colyseusConnect(data: any, token: string, world?: any) {
         initiateMessageListeners(room)
         createSceneListeners(room)
         createPlayerListeners(room)
-        console.log(cRoom.serializer)
+        // console.log(cRoom.serializer)
 
     }).catch((err) => {
         console.error('colyseus connection error', err)
@@ -59,5 +59,11 @@ export async function joinWorld(world?: any) {
 }
 
 export function sendServerMessage(type: string, data: any) {
-    cRoom.send(type, data)
+    log('sending server message', type, data)
+    try{
+        connected ? cRoom.send(type, data) : undefined
+    }
+    catch(e){
+        log('error sending message to server', e)
+    }
 }

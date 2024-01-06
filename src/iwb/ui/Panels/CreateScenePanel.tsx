@@ -3,7 +3,7 @@ import {Color4} from '@dcl/sdk/math'
 import {calculateImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont} from '../helpers'
 import {sendServerMessage} from '../../components/messaging'
 import {SCENE_MODES, SERVER_MESSAGE_TYPES} from '../../helpers/types'
-import {localUserId, players, setPlayMode} from '../../components/player/player'
+import {localPlayer, localUserId, players, setPlayMode} from '../../components/player/player'
 import resources from '../../helpers/resources'
 import {deleteCreationEntities, tempParcels, validateScene} from '../../components/modes/create'
 import {formatDollarAmount, log} from '../../helpers/functions'
@@ -284,8 +284,8 @@ export function createNewScenePanel() {
                         sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
                             player: localUserId,
                             parcel: players.get(localUserId)!.currentParcel,
-                            scene: players.get(localUserId)?.activeScene?.id,
-                            current: editCurrentSceneParcels ? scene!.id : undefined
+                            scene: localPlayer.activeScene ? localPlayer.activeScene.id : 0,
+                            current: editCurrentSceneParcels ? scene!.id : 0
                         })
                     }}
                     uiText={{value: "Toggle Parcel", fontSize:sizeFont(30,20), color:Color4.White()}}

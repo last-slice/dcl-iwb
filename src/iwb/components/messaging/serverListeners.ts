@@ -7,7 +7,7 @@ import {Room} from "colyseus.js";
 import {displayWorldReadyPanel} from "../../ui/Panels/worldReadyPanel";
 import {showNotification} from "../../ui/Panels/notificationUI";
 import {addSceneStateListeners} from "./sceneListeners";
-import {refreshSortedItems, updateItem} from "../catalog/items";
+import {refreshSortedItems, setNewItems, updateItem} from "../catalog/items";
 
 
 export function initiateMessageListeners(room: Room) {
@@ -34,6 +34,7 @@ export function initiateMessageListeners(room: Room) {
         iwbConfig.updates = info.iwb.updates
 
         setWorlds(info.worlds)
+        setNewItems()
 
         //set occupied parcels
         // for (const p of info.occupiedParcels) {

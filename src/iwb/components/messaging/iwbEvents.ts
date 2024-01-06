@@ -56,9 +56,13 @@ export function createIWBEventListeners(){
             if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
                 engine.removeSystem(PlayModeInputSystem)
                 engine.addSystem(InputListenSystem)
-            }else{
+            }else if(players.get(localUserId)?.mode === SCENE_MODES.PLAYMODE){
                 engine.removeSystem(InputListenSystem)
                 engine.addSystem(PlayModeInputSystem)
+            }else{
+                console.log('here')
+                engine.removeSystem(InputListenSystem)
+                engine.removeSystem(PlayModeInputSystem)
             }
         })
     }

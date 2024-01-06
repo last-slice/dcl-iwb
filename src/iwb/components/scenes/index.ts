@@ -138,6 +138,7 @@ function loadSceneBoundaries(id:any){
 }
 
 export function loadSceneAsset(sceneId:string, item:SceneItem){
+    log('loading new scene asset', sceneId, item)
     let localScene = sceneBuilds.get(sceneId)
     if(localScene){
         let parent = localScene.parentEntity
@@ -238,4 +239,3 @@ export function updateAsset(asset:any){
     }
 
 }
-//

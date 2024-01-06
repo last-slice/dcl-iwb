@@ -36,6 +36,7 @@ export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:Sc
 }
 
 export function createGltfComponent(entity:Entity, item:SceneItem){
+    log('creating gltf component', item.id)
     let gltf:any = {
         src:"assets/" + item.id + ".glb",
         invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,

@@ -12,14 +12,6 @@ import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewSc
 import { localUserId, setPlayMode } from "../player/player"
 import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateAsset, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
-import { editCurrentSceneParcels } from "../../ui/Panels/CreateScenePanel"
-import { updateCollision, updateImageUrl, updateNFTFrame, updateVideoAutostart, updateVideoPlaying, updateVideoUrl, updateVideoVolume } from "../scenes/components"
-import { textComponentListener } from "./listeners/TextComponent"
-import { collisionComponentListener } from "./listeners/CollisionComponent"
-import { imageComponentListener } from "./listeners/ImageComponent"
-import { videoComponentListener } from "./listeners/VideoComponent"
-import { transformComponentListener } from "./listeners/TransformComponent"
-import { nftComponentListener } from "./listeners/NFTComponent"
 import { sceneListeners } from "./Scene"
 import { assetListener } from "./Asset"
 
@@ -80,7 +72,7 @@ export function createSceneListeners(room: any) {
         //         log('need to show pickup asset for other user')
         //             otherUserSelectedItem(info)
         //     }
-        // })//
+        // })
 
         room.onMessage(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET, (info:any) => {
             log(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET + ' received', info)
@@ -149,5 +141,3 @@ export function addSceneStateListeners(room:any){
         })
     })
 }
-
-//

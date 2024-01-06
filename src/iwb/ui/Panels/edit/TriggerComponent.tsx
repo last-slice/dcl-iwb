@@ -77,7 +77,7 @@ export function TriggerComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled ? (selectedItem.itemData.trigComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigComp ? (selectedItem.itemData.trigComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
         }}
         onMouseDown={() => {
             updateTrigger('toggle', "enabled", !selectedItem.itemData.trigComp.enabled)
