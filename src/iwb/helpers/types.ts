@@ -29,6 +29,7 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_JOINED_USER_WORLD = 'player_joined_private_world',
     PLAYER_EDIT_ASSET = 'player_edit_asset',
     UPDATE_ITEM_COMPONENT = "update_component",
+    UPDATE_GRAB_Y_AXIS = 'update_grab_y_axix',
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
@@ -190,6 +191,8 @@ export interface SceneItem extends CatalogItemType{
     clickComp:any
     trigComp:any
     actComp:any
+    editing:boolean
+    editor:string
 }
 
 export interface SelectedItem {
@@ -206,6 +209,7 @@ export interface SelectedItem {
     transform?:TransformType
     pointer?:Entity
     initialHeight: number
+    duplicate:boolean
 }
 
 export enum COMPONENT_TYPES {

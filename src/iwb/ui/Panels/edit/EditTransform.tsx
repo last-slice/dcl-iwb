@@ -64,7 +64,7 @@ export function EditTransform() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '10%',
+                height: '20%',
                 margin:{top:'1%'}
             }}
         >
@@ -181,7 +181,7 @@ export function EditTransform() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '10%',
+                height: '20%',
                 margin:{top:'1%'}
             }}
         >
@@ -300,7 +300,7 @@ export function EditTransform() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '10%',
+                height: '20%',
                 margin:{top:'1%'}
             }}
         >
@@ -444,7 +444,7 @@ export function EditTransform() {
                         uvs: getImageAtlasMapping(uiSizes.upArrow)
                     }}
                     onMouseDown={()=>{
-                        sendServerEdit('y', 1)
+                        sendServerEdit('y', 1, false)
 
                         pressed.left = true
                     }}
@@ -466,7 +466,7 @@ export function EditTransform() {
                         uvs: getImageAtlasMapping(uiSizes.upCarot)
                     }}
                     onMouseDown={()=>{
-                        sendServerEdit('z', 1)
+                        sendServerEdit('z', 1, false)
                         pressed.left = true
                     }}
                     />
@@ -528,7 +528,7 @@ export function EditTransform() {
                         uvs: getImageAtlasMapping(getIcon('left'))
                     }}
                     onMouseDown={()=>{
-                        sendServerEdit('x', -1)
+                        sendServerEdit('x', -1, false)
                         pressed.left = true
                     }}
                     onMouseUp={()=>{
@@ -577,7 +577,7 @@ export function EditTransform() {
                         uvs: getImageAtlasMapping(uiSizes.rightCarot)
                     }}
                     onMouseDown={()=>{
-                        sendServerEdit('x', 1)
+                        sendServerEdit('x', 1, false)
                         pressed.left = true
                     }}
                     />
@@ -617,7 +617,7 @@ export function EditTransform() {
                         uvs: getImageAtlasMapping(uiSizes.downArrow)
                     }}
                     onMouseDown={()=>{
-                        sendServerEdit('y', -1)
+                        sendServerEdit('y', -1, false)
                         pressed.down = true
                     }}
                     />
@@ -639,7 +639,7 @@ export function EditTransform() {
                         uvs: getImageAtlasMapping(uiSizes.downCarot)
                     }}
                     onMouseDown={()=>{
-                        sendServerEdit('z', -1)
+                        sendServerEdit('z', -1, false)
                         pressed.left = true
                     }}
                     />
@@ -741,9 +741,9 @@ function getModifierIcon(){
         switch(selectedItem.modifier){
             case EDIT_MODIFIERS.POSITION:
                 if(pressed.modifer){
-                    return uiSizes.positionIconPressed
+                    return uiSizes.scaleIconPressed
                 }else{
-                    return uiSizes.positionIcon
+                    return uiSizes.scaleIcon
                 }
 
             case EDIT_MODIFIERS.ROTATION:
@@ -755,12 +755,14 @@ function getModifierIcon(){
 
             case EDIT_MODIFIERS.SCALE:
                 if(pressed.modifer){
-                    return uiSizes.scaleIconPressed
+                    return uiSizes.positionIconPressed
                 }else{
-                    return uiSizes.scaleIcon
+                    return uiSizes.positionIcon
                 }
         }
     }else{
         return ""
     }
 }
+
+//

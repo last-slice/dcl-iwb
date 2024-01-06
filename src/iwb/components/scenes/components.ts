@@ -36,7 +36,7 @@ export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:Sc
 }
 
 export function createGltfComponent(entity:Entity, item:SceneItem){
-    log('creating gltf component', item.id)
+    // log('creating gltf component', item.id)
     let gltf:any = {
         src:"assets/" + item.id + ".glb",
         invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
@@ -67,9 +67,9 @@ export function createVideoComponent(entity:Entity, item:SceneItem){
 }
 
 
-export function updateImageUrl(aid:string, materialComp:any, url:string){
-    log('updating image url', aid, materialComp, url)
-    let ent = entitiesFromItemIds.get(aid)
+export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){
+    // log('updating image url', aid, materialComp, url)
+    let ent = entity ? entity : entitiesFromItemIds.get(aid)
     
     if(ent){
         let texture = Material.Texture.Common({
@@ -115,7 +115,7 @@ export function updateVideoVolume(aid:string, volume:number){
 }
 
 export function updateVideoUrl(aid:string, materialComp:any, url:string){
-    log('updating video url', aid, materialComp, url)
+    // log('updating video url', aid, materialComp, url)
     let ent = entitiesFromItemIds.get(aid)
 
     if(ent){
@@ -163,39 +163,25 @@ export function updateCollision(sceneId:string, assetId:string, layer:string, va
     }
 }
 
-export function updateNFTFrame(aid:string, materialComp:any, nftComp:any){
-    log('updating nft image', aid, materialComp, nftComp)
-    let ent = entitiesFromItemIds.get(aid)
+export function updateNFTFrame(aid:string, materialComp:any, nftComp:any, entity?:Entity){
+    // log('updating nft image', aid, materialComp, nftComp)
+    let ent = entity ? entity : entitiesFromItemIds.get(aid)
     
     if(ent){
         NftShape.createOrReplace(ent, {
-            urn: 'urn:decentraland:ethereum:erc1155:' + nftComp.contract + ':' + nftComp.tokenId,
+            urn: 'urn:decentraland:ethereum:erc721:' + nftComp.contract + ':' + nftComp.tokenId,
             style: nftComp.style
           })
 
         if(localPlayer.mode === SCENE_MODES.BUILD_MODE && !MeshCollider.has(ent)){
             MeshCollider.setBox(ent)
         }
-        // let texture = Material.Texture.Common({
-        //     src: "" + url
-        // })
-        
-        // Material.setPbrMaterial(ent, {
-        //     // albedoColor: Color4.create(parseFloat(matComp.color[0]), parseFloat(matComp.color[1]), parseFloat(matComp.color[2]), parseFloat(matComp.color[3])),
-        //     metallic: parseFloat(materialComp.metallic),
-        //     roughness:parseFloat(materialComp.roughness),
-        //     specularIntensity:parseFloat(materialComp.intensity),
-        //     emissiveIntensity: materialComp.emissPath !== "" ? parseFloat(materialComp.emissInt) : undefined,
-        //     texture: texture,
-        //     // emissiveColor: item.matComp.emissPath !== "" ? item.matComp,
-        //     emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
-        //   })//
     }
 }
 
-export function updateTextComponent(aid:string, materialComp:any, textComp:any){
-    log('updating text component', aid, materialComp, textComp)//
-    let ent = entitiesFromItemIds.get(aid)
+export function updateTextComponent(aid:string, materialComp:any, textComp:any, entity?:Entity){
+    // log('updating text component', aid, materialComp, textComp)
+    let ent = entity ? entity : entitiesFromItemIds.get(aid)
     
     if(ent){
         TextShape.createOrReplace(ent,{

@@ -1,4 +1,4 @@
-import {Entity, InputAction, inputSystem, PointerEvents, PointerEventType} from "@dcl/sdk/ecs"
+import {engine, Entity, InputAction, inputSystem, PointerEvents, PointerEventType} from "@dcl/sdk/ecs"
 import {setButtonState} from "../listeners/inputListeners"
 import {
     cancelCatalogItem,
@@ -17,6 +17,21 @@ import {log} from "../../helpers/functions"
 import {localUserId, players} from "../player/player"
 import {EDIT_MODES, SCENE_MODES} from "../../helpers/types"
 import {displayHover, updateContextEvents} from "../../ui/contextMenu"
+
+
+export let added = false
+
+export function addInputSystem(){
+    if(!added){
+        added = true
+        engine.addSystem(InputListenSystem)
+    }
+}
+
+export function removeInputSystem(){
+    engine.removeSystem(InputListenSystem)
+    added = false
+}
 
 
 export function InputListenSystem(dt: number) {

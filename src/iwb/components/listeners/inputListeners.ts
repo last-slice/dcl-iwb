@@ -1,6 +1,6 @@
 import {engine, InputAction} from "@dcl/sdk/ecs";
 import {InputListenSystem} from "../systems/InputListenSystem";
-import { PlayModeInputSystem } from "../systems/PlayModeInputSystem";
+import { addPlayModeSystem, PlayModeInputSystem } from "../systems/PlayModeInputSystem";
 
 export let buttonsPressed: Map<number, { id: number | null }> = new Map()
 
@@ -27,5 +27,5 @@ export function createInputListeners() {
     buttonsPressed.set(InputAction.IA_JUMP, {id: null})
 
     // engine.addSystem(InputListenSystem)
-    engine.addSystem(PlayModeInputSystem)
+    addPlayModeSystem()
 }

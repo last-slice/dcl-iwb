@@ -10,8 +10,8 @@ import { Color4 } from "@dcl/sdk/math";
 import { sceneBuilds } from "../scenes";
 import { addBuildModePointers, hideAllOtherPointers, resetEntityForBuildMode } from "../modes/build";
 import { resetEntityForPlayMode } from "../modes/play";
-import { InputListenSystem } from "../systems/InputListenSystem";
-import { PlayModeInputSystem } from "../systems/PlayModeInputSystem";
+import { InputListenSystem, addInputSystem, removeInputSystem } from "../systems/InputListenSystem";
+import { PlayModeInputSystem, addPlayModeSystem, removePlayModSystem } from "../systems/PlayModeInputSystem";
 import { hideAllPanels } from "../../ui/ui";
 
 let created = false
@@ -54,15 +54,14 @@ export function createIWBEventListeners(){
             })
 
             if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
-                engine.removeSystem(PlayModeInputSystem)
-                engine.addSystem(InputListenSystem)
+                removePlayModSystem()
+                addInputSystem()
             }else if(players.get(localUserId)?.mode === SCENE_MODES.PLAYMODE){
-                engine.removeSystem(InputListenSystem)
-                engine.addSystem(PlayModeInputSystem)
+                removeInputSystem()
+                addPlayModeSystem()
             }else{
-                console.log('here')
-                engine.removeSystem(InputListenSystem)
-                engine.removeSystem(PlayModeInputSystem)
+                removeInputSystem()
+                removePlayModSystem()
             }
         })
     }

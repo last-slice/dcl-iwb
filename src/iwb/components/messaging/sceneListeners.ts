@@ -7,6 +7,7 @@ import {
     otherUserSelectedItem,
     removeItem,
     transformObject,
+    updateGrabbedYAxis,
 } from "../modes/build"
 import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
 import { localUserId, setPlayMode } from "../player/player"
@@ -94,7 +95,7 @@ export function createSceneListeners(room: any) {
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP + ' received', info)
             if(info.user === localUserId){
-                showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builde permissions were removed for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
+                showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builder permissions were removed for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
             }
             else{
                 showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on your scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
@@ -104,6 +105,13 @@ export function createSceneListeners(room: any) {
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS + ' received', info)
             updateSceneEdits(info)
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.UPDATE_GRAB_Y_AXIS, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.UPDATE_GRAB_Y_AXIS + ' received', info)
+            if(info.user !== localUserId){
+                updateGrabbedYAxis(info)
+            }
         })
 }
 
@@ -135,7 +143,7 @@ export function addSceneStateListeners(room:any){
                     otherUserRemovedSeletedItem(player.address)
                 }else{
                     current.user = player.address
-                    otherUserSelectedItem(current, true)
+                    otherUserSelectedItem(current)
                 }
             }
         })

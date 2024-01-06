@@ -1,4 +1,4 @@
-import {Entity, InputAction, inputSystem, PointerEvents, PointerEventType} from "@dcl/sdk/ecs"
+import {engine, Entity, InputAction, inputSystem, PointerEvents, PointerEventType} from "@dcl/sdk/ecs"
 import {setButtonState} from "../listeners/inputListeners"
 import {
     cancelCatalogItem,
@@ -19,6 +19,19 @@ import {EDIT_MODES, ENTITY_TRIGGER_SLUGS, SCENE_MODES, Triggers} from "../../hel
 import {displayHover, updateContextEvents} from "../../ui/contextMenu"
 import { findTriggerActionForEntity } from "../modes/play"
 
+export let added = false
+
+export function addPlayModeSystem(){
+    if(!added){
+        added = true
+        engine.addSystem(PlayModeInputSystem)
+    }
+}
+
+export function removePlayModSystem(){
+    engine.removeSystem(PlayModeInputSystem)
+    added = false
+}
 
 export function PlayModeInputSystem(dt: number) {
 
