@@ -101,7 +101,7 @@ export function CollisionComponentPanel() {
                         <Dropdown
                     key={"invisible-collider-dropdown"}
                     options={invisibleLayers}
-                    selectedIndex={invisibleIndex}
+                    selectedIndex={selectedItem && selectedItem.enabled && selectedItem.itemData.colComp ? selectedItem.itemData.colComp.iMask : invisibleIndex}
                     onChange={selectInvisibleLayer}
                     uiTransform={{
                         width: '100%',
@@ -151,10 +151,9 @@ export function CollisionComponentPanel() {
         >
 
                         <Dropdown
-                    key={"invisible-collider-dropdown"}
+                    key={"visible-collider-dropdown"}
                     options={visibleLayers}
-                    selectedIndex={visibleIndex}
-                    onChange={selectVisibleLayer}
+                    selectedIndex={selectedItem && selectedItem.enabled && selectedItem.itemData.colComp ? selectedItem.itemData.colComp.vMask : visibleIndex}                    onChange={selectVisibleLayer}
                     uiTransform={{
                         width: '100%',
                         height: '120%',
@@ -176,16 +175,18 @@ export function CollisionComponentPanel() {
     )
 }
 
-function selectInvisibleLayer(index: number) {
+function selectVisibleLayer(index: number) {
     if(index !== visibleIndex){
+        visibleIndex = index
+        sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.COLLISION_COMPONENT, action:"toggle", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, layer:'vMask', value: visibleIndex}})
+    }    
+}
+
+function selectInvisibleLayer(index: number) {
+    if(index !== invisibleIndex){
         invisibleIndex = index
         sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.COLLISION_COMPONENT, action:"toggle", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, layer:'iMask', value: invisibleIndex}})
     }    
 }
 
-function selectVisibleLayer(index: number) {
-    if(index !== invisibleIndex){
-        visibleIndex = index
-        sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.COLLISION_COMPONENT, action:"toggle", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, layer:'vMask', value: visibleIndex}})
-    }    
-}
+//
