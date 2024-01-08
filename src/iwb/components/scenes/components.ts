@@ -1,9 +1,19 @@
-import { Entity, GltfContainer, VideoPlayer, Material, VisibilityComponent, MeshCollider, NftShape, NftFrameType, TextShape, Font } from "@dcl/sdk/ecs";
-import { COLLISION_LAYERS, COMPONENT_TYPES, EDIT_MODES, IWBScene, SCENE_MODES, SceneItem } from "../../helpers/types";
-import { Color4 } from "@dcl/sdk/math";
-import { localPlayer, localUserId, players } from "../player/player";
-import { entitiesFromItemIds, sceneBuilds } from ".";
-import { log } from "../../helpers/functions";
+import {
+    AudioSource,
+    Entity,
+    GltfContainer,
+    Material,
+    MeshCollider,
+    NftShape,
+    TextShape,
+    VideoPlayer,
+    VisibilityComponent
+} from "@dcl/sdk/ecs";
+import {COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, SCENE_MODES, SceneItem} from "../../helpers/types";
+import {Color4} from "@dcl/sdk/math";
+import {localPlayer, localUserId, players} from "../player/player";
+import {entitiesFromItemIds, sceneBuilds} from ".";
+import {log} from "../../helpers/functions";
 
 export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:SceneItem){
     if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){
@@ -70,12 +80,12 @@ export function createVideoComponent(entity:Entity, item:SceneItem){
 export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){
     // log('updating image url', aid, materialComp, url)
     let ent = entity ? entity : entitiesFromItemIds.get(aid)
-    
+
     if(ent){
         let texture = Material.Texture.Common({
             src: "" + url
         })
-        
+
         Material.setPbrMaterial(ent, {
             // albedoColor: Color4.create(parseFloat(matComp.color[0]), parseFloat(matComp.color[1]), parseFloat(matComp.color[2]), parseFloat(matComp.color[3])),
             metallic: parseFloat(materialComp.metallic),
@@ -132,6 +142,44 @@ export function updateVideoUrl(aid:string, materialComp:any, url:string){
     }
 }
 
+export function createAudioComponent(entity:Entity, item:SceneItem){
+    AudioSource.create(entity, {
+        audioClipUrl: item.audComp.url,
+        playing: item.audComp.autostart,
+        volume: item.audComp.volume,
+        loop: item.audComp.loop
+    })
+}
+
+export function updateAudioUrl(aid:string, audComp:any, url:string){
+    log('updating audio url', aid, audComp, url)
+    let ent = entitiesFromItemIds.get(aid)
+
+    if(ent){
+        let audio = AudioSource.getMutable(ent)
+        if(audio){
+            let restart = false
+            if(audio.playing){
+                restart = true
+                audio.playing = false
+            }
+            audio.audioClipUrl = url
+            audio.playing = restart
+        }
+    }
+}
+
+export function updateAudioPlaying(aid:string, playing:boolean){
+    let ent = entitiesFromItemIds.get(aid)
+
+    if(ent){
+        let audioSource = AudioSource.getMutable(ent)
+        if(audioSource){
+            audioSource.playing = playing
+        }
+    }
+}
+
 export function updateCollision(sceneId:string, assetId:string, layer:string, value:number){
     let entity = entitiesFromItemIds.get(assetId)
     let scene = sceneBuilds.get(sceneId)
@@ -146,7 +194,7 @@ export function updateCollision(sceneId:string, assetId:string, layer:string, va
                             if(layer === COLLISION_LAYERS.INVISIBLE){
                                 gltf.invisibleMeshesCollisionMask = value
                             }
-                
+
                             if(layer === COLLISION_LAYERS.VISIBLE){
                                 gltf.visibleMeshesCollisionMask = value
                             }
@@ -166,7 +214,7 @@ export function updateCollision(sceneId:string, assetId:string, layer:string, va
 export function updateNFTFrame(aid:string, materialComp:any, nftComp:any, entity?:Entity){
     // log('updating nft image', aid, materialComp, nftComp)
     let ent = entity ? entity : entitiesFromItemIds.get(aid)
-    
+
     if(ent){
         NftShape.createOrReplace(ent, {
             urn: 'urn:decentraland:ethereum:erc721:' + nftComp.contract + ':' + nftComp.tokenId,
@@ -182,7 +230,7 @@ export function updateNFTFrame(aid:string, materialComp:any, nftComp:any, entity
 export function updateTextComponent(aid:string, materialComp:any, textComp:any, entity?:Entity){
     // log('updating text component', aid, materialComp, textComp)
     let ent = entity ? entity : entitiesFromItemIds.get(aid)
-    
+
     if(ent){
         TextShape.createOrReplace(ent,{
             text: textComp.text,

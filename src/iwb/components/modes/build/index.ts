@@ -28,7 +28,7 @@ import {entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../.
 import {hideAllPanels} from "../../../ui/ui"
 import { displaySceneAssetInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
-import { updateImageUrl, updateNFTFrame, updateTextComponent } from "../../scenes/components"
+import {updateAudioUrl, updateImageUrl, updateNFTFrame, updateTextComponent} from "../../scenes/components"
 
 export let editAssets:Map<string, Entity> = new Map()
 export let grabbedAssets:Map<string, Entity> = new Map()
@@ -211,11 +211,16 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(2, 2, 1)
                 MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
+            } else if (selectedItem.itemData.n === "Custom Sound") {
+                MeshRenderer.setBox(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(.5, .5, .5)
+                MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
             }  else {
                 GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
             }
         }
-
 
         log(itemPosition)
 
@@ -413,7 +418,7 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
         if (scene.pcls.find((sc: string) => sc === parcel) && localPlayer.canBuild) {
             log('we can drop item here')
 
-            PointerEvents.deleteFrom(selectedItem.entity)
+            if(PointerEvents.has(selectedItem.entity)) PointerEvents.deleteFrom(selectedItem.entity)
             addBuildModePointers(selectedItem.entity)
 
             addAllBuildModePointers()
@@ -438,10 +443,15 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
 
                 t.rotation.y = rotation.y
                 t.rotation.w = rotation.w
+
+                // TODO testing rotation values -matt
+                // t.rotation.y += rotation.y
+                // t.rotation.x += rotation.x
+                // t.rotation.z += rotation.z
+                // t.rotation.w += rotation.w
             }
 
             t.parent = curSceneParent
-
 
             log('new transform is', t)
 
@@ -610,44 +620,44 @@ export function cancelEditingItem() {
         })
 }
 
-function addGrabbedComponent(entity:Entity, catalogId:string, itemData:any){
+function addGrabbedComponent(entity:Entity, catalogId:string, itemData:any) {
     let catalogItem = items.get(catalogId)
-    if(catalogItem){
-        switch(catalogItem.ty){
+    if (catalogItem) {
+        switch (catalogItem.ty) {
             case '3D':
                 GltfContainer.create(entity, {src: "assets/" + catalogId + ".glb"})
                 break;
-    
+
             case '2D':
-                switch(catalogItem!.n){
+                switch (catalogItem!.n) {
                     case 'Image':
                     case 'Video':
                         MeshRenderer.setPlane(entity)
                         MeshCollider.setPlane(entity)
-                        if(itemData){
+                        if (itemData) {
                             updateImageUrl(itemData.aid, itemData.matComp, itemData.imgComp.url, entity)
                         }
                         break;
-                    
+
                     case 'NFT Frame':
-                        if(itemData){
+                        if (itemData) {
                             log('we have nft data to update!', itemData.nftComp)
                             NftShape.createOrReplace(entity, {
                                 urn: 'urn:decentraland:ethereum:erc721:' + itemData.nftComp.contract + ':' + itemData.nftComp.tokenId,
                                 style: itemData.nftComp.style
                             })
                             updateNFTFrame(itemData.aid, itemData.matComp, itemData.nftComp, entity)
-                        }else{
+                        } else {
                             MeshRenderer.setPlane(entity)
                             MeshCollider.setPlane(entity)
                         }
                         break;
 
                     case 'Text':
-                        if(itemData){
+                        if (itemData) {
                             updateTextComponent(itemData.aid, itemData.matComp, itemData.textComp, entity)
-                        }else{
-                            TextShape.createOrReplace(entity,{
+                        } else {
+                            TextShape.createOrReplace(entity, {
                                 text: "Text",
                             })
                         }
@@ -655,12 +665,16 @@ function addGrabbedComponent(entity:Entity, catalogId:string, itemData:any){
 
                 }
                 break;
-    
+
             case 'Audio':
+                if(itemData && itemData.audComp) {
+                    updateAudioUrl(itemData.aid, itemData.audComp, itemData.audComp.url)
+                }
+                MeshRenderer.setBox(selectedItem.entity)
+                MeshCollider.setBox(selectedItem.entity)
                 break;
         }
     }
-
 }
 
 
@@ -764,6 +778,7 @@ function addUseItemPointers(ent: Entity) {
         ]
     })
 }
+
 
 export function addBuildModePointers(ent: Entity) {
     PointerEvents.createOrReplace(ent, {

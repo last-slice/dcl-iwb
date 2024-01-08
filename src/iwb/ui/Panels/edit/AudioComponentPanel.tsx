@@ -9,17 +9,17 @@ import {sceneBuilds} from '../../../components/scenes'
 
 let value = ""
 
-export function VideoComponentPanel() {
+export function AudioComponentPanel() {
     return (
         <UiEntity
-            key={"editvideocomponentpanel"}
+            key={"editaudiocomponentpanel"}
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
-                display: visibleComponent === COMPONENT_TYPES.VIDEO_COMPONENT ? 'flex' : 'none',
+                display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? 'flex' : 'none',
             }}
         >
 
@@ -57,13 +57,13 @@ export function VideoComponentPanel() {
                     }}
                     color={Color4.White()}
                     fontSize={sizeFont(25, 15)}
-                    placeholder={'new video link'}
+                    placeholder={'new audio link'}
                     placeholderColor={Color4.White()}
                     uiTransform={{
                         width: '100%',
                         height: '120%',
                     }}
-                    value={"" + (visibleComponent === COMPONENT_TYPES.VIDEO_COMPONENT ? getImage() : "")}
+                    value={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getImage() : "")}
                     onMouseDown={() => {
                         console.log('clicked')
                     }}
@@ -86,7 +86,7 @@ export function VideoComponentPanel() {
                     }}
                     onMouseDown={() => {
                         sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {
-                            component: COMPONENT_TYPES.VIDEO_COMPONENT,
+                            component: COMPONENT_TYPES.AUDIO_COMPONENT,
                             action: "update",
                             data: {aid: selectedItem.aid, sceneId: selectedItem.sceneId, url: value}
                         })
@@ -100,7 +100,7 @@ export function VideoComponentPanel() {
 function getImage() {
     let scene = sceneBuilds.get(selectedItem.sceneId)
     let asset = scene.ass.find((a: any) => a.aid === selectedItem.aid)
-    if (asset && asset.vidComp) {
-        return asset.vidComp.url
+    if (asset && asset.audComp) {
+        return asset.audComp.url
     }
 }

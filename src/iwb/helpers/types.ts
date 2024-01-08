@@ -193,6 +193,7 @@ export interface SceneItem extends CatalogItemType{
     actComp:any
     editing:boolean
     editor:string
+    audComp:any
 }
 
 export interface SelectedItem {
@@ -216,6 +217,7 @@ export enum COMPONENT_TYPES {
     VISBILITY_COMPONENT = "Visibility",
     IMAGE_COMPONENT = "Image",
     VIDEO_COMPONENT = 'Video',
+    AUDIO_COMPONENT = 'Audio',
     MATERIAL_COMPONENT = "Material",
     COLLISION_COMPONENT = "Collision",
     TRANSFORM_COMPONENT = "Transform",

@@ -4,9 +4,11 @@ import { transformObject } from "../../modes/build";
 
 
 export function triggerComponentListener(asset:any){
-    asset.trigComp.listen("enabled", (currentValue:any, previousValue:any) => {
-        if(previousValue !== undefined){
-            log('need to toggle trigger component for asset', currentValue)
-        }
-    });
+    if(asset.trigComp){
+        asset.trigComp.listen("enabled", (currentValue:any, previousValue:any) => {
+            if(previousValue !== undefined){
+                log('need to toggle trigger component for asset', currentValue)
+            }
+        });
+    }
 }
