@@ -9,7 +9,7 @@ import {CatalogItemType, EDIT_MODES, SCENE_MODES} from '../../helpers/types'
 import {uiSizes} from '../uiConfig'
 import {localUserId, players} from '../../components/player/player'
 import {displayCatalogInfoPanel, setSelectedInfoItem} from './CatalogInfoPanel'
-import {items, original, Sorted2D, Sorted3D, sortedAll} from "../../components/catalog/items";
+import {items, original, Sorted2D, Sorted3D, sortedAll, SortedAudio} from "../../components/catalog/items";
 
 let catalogInitialized = false
 export let showCatalogPanel = false
@@ -20,7 +20,7 @@ export let itemsToShow: CatalogItemType[] = []
 
 export let styleFilter = "All"
 export let typeFilter = "All"
-let assetTypeSelectedIndex = 2
+let assetTypeSelectedIndex = 3
 export let searchFilter = ""
 
 
@@ -97,6 +97,9 @@ function filterCatalog() {
             break;
         case '2D':
             toFilter = Sorted2D;
+            break
+        case 'Audio':
+            toFilter = SortedAudio;
             break;
         default:
             toFilter = sortedAll;
@@ -126,7 +129,7 @@ function filterCatalog() {
         filteredResult = [...result]
     }
 
-    filtered = [...filteredResult]
+    filtered = filteredResult
     totalPages = Math.ceil(filtered.length / (columns * rows));
 
     refreshView()
@@ -345,7 +348,7 @@ export function createCatalogPanel() {
 
                 <Dropdown
                     key={"type-dropdown"}
-                    options={[`3D`, `2D`, `All`]}
+                    options={[`3D`, `2D`, `Audio`, `All`]}
                     selectedIndex={assetTypeSelectedIndex}
                     onChange={selectDimension}
                     uiTransform={{
@@ -725,6 +728,10 @@ function selectDimension(index: number) {
             totalPages = Math.ceil(Sorted2D.length / (columns * rows));
             break;
         case 2:
+            typeFilter = 'Audio';
+            totalPages = Math.ceil(SortedAudio.length / (columns * rows));
+            break;
+        case 3:
             typeFilter = 'All';
             totalPages = Math.ceil(sortedAll.length / (columns * rows));
             break;

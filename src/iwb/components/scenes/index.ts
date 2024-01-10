@@ -8,7 +8,15 @@ import { RealmEntityComponent } from "../../helpers/Components"
 import { hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
-import { createGltfComponent, createVideoComponent, createVisibilityComponent, updateImageUrl, updateNFTFrame, updateTextComponent } from "./components"
+import {
+    createAudioComponent,
+    createGltfComponent,
+    createVideoComponent,
+    createVisibilityComponent,
+    updateImageUrl,
+    updateNFTFrame,
+    updateTextComponent
+} from "./components"
 
 export let realm:string = ""
 export let scenes:any[] = []
@@ -180,7 +188,7 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             createGltfComponent(entity, item)
             break;
 
-        case '2D':           
+        case '2D':
             if(item.colComp.vMask === 1){
                 MeshCollider.setPlane(entity)
             }
@@ -207,6 +215,11 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             break;
 
         case 'Audio':
+            MeshRenderer.setBox(entity)
+            MeshCollider.setBox(entity)
+
+            createAudioComponent(entity, item)
+
             break;
     }
 }

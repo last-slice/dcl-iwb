@@ -11,6 +11,7 @@ import { textComponentListener } from "./listeners/TextComponent";
 import { transformComponentListener } from "./listeners/TransformComponent";
 import { triggerComponentListener } from "./listeners/TriggerComponent";
 import { videoComponentListener } from "./listeners/VideoComponent";
+import {audioComponentListener} from "./listeners/AudioComponent";
 
 export function assetListener(scene:any){
     scene.ass.onAdd((asset:any, key:any)=>{
@@ -41,6 +42,7 @@ export function assetListener(scene:any){
 
         imageComponentListener(asset)
         videoComponentListener(asset)
+        audioComponentListener(asset)
         collisionComponentListener(scene,asset)
         nftComponentListener(asset)
         textComponentListener(asset)

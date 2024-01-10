@@ -581,7 +581,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    scaleIconPressed:{
+    positionIconPressed:{
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -589,7 +589,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    scaleIcon:{
+    positionIcon:{
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128,
@@ -613,7 +613,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    positionIconPressed:{
+    scaleIconPressed:{
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -621,7 +621,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    positionIcon:{
+    scaleIcon:{
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128,

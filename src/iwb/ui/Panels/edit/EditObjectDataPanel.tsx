@@ -8,14 +8,14 @@ import {ImageComponentPanel} from './ImageComponentPanel'
 import {EditTransform} from './EditTransform'
 import {VisibilityComponentPanel} from './VisibiltyComponentPanel'
 import {VideoComponentPanel} from "./VideoComponentPanel";
-import { uiSizes } from '../../uiConfig'
-import { log } from '../../../helpers/functions'
-import { CollisionComponentPanel } from './CollisionComponentPanel'
-import { NFTComponentPanel } from './NFTComponentPanel'
-import { TextComponentPanel } from './TextComponentPanel'
-import { ClickComponent } from './ClickComponent'
-import { ActionComponent } from './ActionComponent'
-import { TriggerComponent } from './TriggerComponent'
+import {uiSizes} from '../../uiConfig'
+import {log} from '../../../helpers/functions'
+import {CollisionComponentPanel} from './CollisionComponentPanel'
+import {NFTComponentPanel} from './NFTComponentPanel'
+import {TextComponentPanel} from './TextComponentPanel'
+import {ActionComponent} from './ActionComponent'
+import {TriggerComponent} from './TriggerComponent'
+import {AudioComponentPanel} from "./AudioComponentPanel";
 
 export let visibleComponent: string = ""
 
@@ -162,6 +162,7 @@ export function EditObjectData() {
                 >
                     <ImageComponentPanel/>
                     <VideoComponentPanel/>
+                    <AudioComponentPanel/>
                     <EditTransform/>
                     <VisibilityComponentPanel/>
                     <CollisionComponentPanel/>
