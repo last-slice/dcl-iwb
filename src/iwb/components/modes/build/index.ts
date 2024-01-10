@@ -767,11 +767,12 @@ function addUseItemPointers(ent: Entity) {
 
 export function addBuildModePointers(ent: Entity) {
     PointerEvents.createOrReplace(ent, {
-        pointerEvents: [
+        pointerEvents: [//
             {
                 eventType: PointerEventType.PET_HOVER_ENTER,
                 eventInfo: {
-                    showFeedback:false
+                    showFeedback:false,
+                    maxDistance:500
                 }
             },
             {

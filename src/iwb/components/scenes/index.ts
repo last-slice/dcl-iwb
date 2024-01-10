@@ -109,11 +109,9 @@ function loadSceneBoundaries(id:any){
     let info = sceneBuilds.get(id)
     info.entities = []
 
-    if(info.n !== "Realm Lobby"){
-        info.pcls.forEach((parcel:string)=>{
-            addBoundariesForParcel(parcel, true, true)
-        })
-    }   
+    info.pcls.forEach((parcel:string)=>{
+        addBoundariesForParcel(parcel, true, info.n === "Realm Lobby" ? true : false, true)
+    })
 
     // create parent entity for scene//
     const [x1, y1] = info.bpcl.split(",")

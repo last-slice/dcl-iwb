@@ -40,7 +40,7 @@ export function validateScene(){
 export function editCurrentParcels(id:string){
     sceneBuilds.forEach((scene)=>{
         scene.pcls.forEach((parcel:string)=>{
-            scene.id === id ? addBoundariesForParcel(parcel, true) : addBoundariesForParcel(parcel, false)
+            scene.id === id ? addBoundariesForParcel(parcel, true,false) : addBoundariesForParcel(parcel, false, false)
         })
     })
 }
@@ -57,7 +57,7 @@ export function createTempScene(name:string, desc:string, image:string, enabled:
 
 export function selectParcel(parcel: any) {
     if(!tempParcels.has(parcel)){
-        addBoundariesForParcel(parcel, true)
+        addBoundariesForParcel(parcel, true, false)
     }
     // let scene = scenesToCreate.get(info.player)
     // if (scene) {
@@ -84,29 +84,81 @@ export function selectParcel(parcel: any) {
     // }//
 }
 
-export function addBoundariesForParcel(parcel:string, local:boolean, playMode?:boolean) {
+export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boolean, playMode?:boolean) {
     if(!tempParcels.has(parcel)){
         let entities: any[] = []
 
         let parent = engine.addEntity()
-        let left = engine.addEntity()
-        let right = engine.addEntity()
-        let front = engine.addEntity()
-        let back = engine.addEntity()
-    
-        let floor = engine.addEntity()
-    
-        entities.push(left)
-        entities.push(right)
-        entities.push(front)
-        entities.push(back)
-        entities.push(floor)
-    
+
         let [x1, y1] = parcel.split(",")
         let x = parseInt(x1)
         let y = parseInt(y1)
         let centerx = (x * 16) + 8
         let centery = (y * 16) + 8
+
+        if(lobby){
+            let left = engine.addEntity()
+            let right = engine.addEntity()
+            let front = engine.addEntity()
+            let back = engine.addEntity()
+
+            entities.push(left)
+            entities.push(right)
+            entities.push(front)
+            entities.push(back)
+
+            //left
+            Transform.create(left, {
+                position: Vector3.create(x * 16, 0, y * 16),
+                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+                scale: Vector3.create(1, 20, 1),
+                parent:parent
+            })
+            GltfContainer.create(left, {src: local ? greenBeam : redBeam})
+    
+            //right
+            Transform.create(right, {
+                position: Vector3.create(x * 16 + 16, 0, y * 16),
+                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+                scale: Vector3.create(1, 20, 1),
+                parent:parent
+            })
+            GltfContainer.create(right, {src: local ? greenBeam : redBeam})
+    
+            // front
+            Transform.create(front, {
+                position: Vector3.create(x * 16, 0, y * 16 + 16),
+                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+                scale: Vector3.create(1, 20, 1),
+                parent:parent
+            })
+            GltfContainer.create(front, {src: local ? greenBeam : redBeam})
+    
+            // back
+            Transform.create(back, {
+                position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
+                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+                scale: Vector3.create(1, 20, 1),
+                parent:parent
+            })
+            GltfContainer.create(back, {src: local ? greenBeam : redBeam})
+
+            VisibilityComponent.create(left, {visible:playMode ? false : true})
+            VisibilityComponent.create(front, {visible:playMode ? false : true})
+            VisibilityComponent.create(right, {visible:playMode ? false : true})
+            VisibilityComponent.create(back, {visible:playMode ? false : true})
+
+                
+            BuildModeVisibilty.create(left)
+            BuildModeVisibilty.create(front)
+            BuildModeVisibilty.create(right)
+            BuildModeVisibilty.create(back)
+
+        }
+        
+    
+        let floor = engine.addEntity()
+        entities.push(floor)
     
         Transform.create(parent)
     
@@ -123,57 +175,15 @@ export function addBoundariesForParcel(parcel:string, local:boolean, playMode?:b
         if(local) SelectedFloor.create(floor, {})
         ParcelFloor.create(floor)
     
-        //left
-        Transform.create(left, {
-            position: Vector3.create(x * 16, 0, y * 16),
-            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-            scale: Vector3.create(1, 20, 1),
-            parent:parent
-        })
-        // GltfContainer.create(left, {src: local ? greenBeam : redBeam})
-    
-        //right
-        Transform.create(right, {
-            position: Vector3.create(x * 16 + 16, 0, y * 16),
-            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-            scale: Vector3.create(1, 20, 1),
-            parent:parent
-        })
-        // GltfContainer.create(right, {src: local ? greenBeam : redBeam})
-    
-        // front
-        Transform.create(front, {
-            position: Vector3.create(x * 16, 0, y * 16 + 16),
-            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-            scale: Vector3.create(1, 20, 1),
-            parent:parent
-        })
-        // GltfContainer.create(front, {src: local ? greenBeam : redBeam})
-    
-        // back
-        Transform.create(back, {
-            position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
-            rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-            scale: Vector3.create(1, 20, 1),
-            parent:parent
-        })
-        // GltfContainer.create(back, {src: local ? greenBeam : redBeam})
-    
-        VisibilityComponent.create(floor, {visible:playMode ? false : true})
-        VisibilityComponent.create(left, {visible:playMode ? false : true})
-        VisibilityComponent.create(front, {visible:playMode ? false : true})
-        VisibilityComponent.create(right, {visible:playMode ? false : true})
-        VisibilityComponent.create(back, {visible:playMode ? false : true})
-    
+        VisibilityComponent.create(floor, {visible:playMode ? false : true})    
         BuildModeVisibilty.create(floor)
-        BuildModeVisibilty.create(left)
-        BuildModeVisibilty.create(front)
-        BuildModeVisibilty.create(right)
-        BuildModeVisibilty.create(back)
-    
         tempParcels.set(parcel, entities)
     }
     
+}
+
+export function addLobbyBoundaries(){
+
 }
 
 export function isParcelInScene(parcel:string){

@@ -29,7 +29,7 @@ export function sceneListeners(scene:any, key:any){
 
     scene.pcls.onAdd((parcel:string, parcelKey:any)=>{
         if(editCurrentSceneParcels){
-            addBoundariesForParcel(parcel, true)
+            addBoundariesForParcel(parcel, true, scene.name === "Realm Lobby" ? true : false)
         }
     })
 
