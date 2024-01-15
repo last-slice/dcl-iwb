@@ -1,8 +1,9 @@
-import { AudioSource, ColliderLayer, Entity, InputAction, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs";
+import { AudioSource, AudioStream, ColliderLayer, Entity, InputAction, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs";
 import { Actions, COLLISION_LAYERS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
 import { itemIdsFromEntities, sceneBuilds } from "../../scenes";
 import { log } from "../../../helpers/functions";
 import { openExternalUrl } from "~system/RestrictedActions";
+import { items } from "../../catalog";
 
 export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
     let assetId = itemIdsFromEntities.get(entity)
@@ -16,6 +17,35 @@ export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
             check2DCollision(entity, sceneItem)
             checkPointers(entity, sceneItem)
             checkAudio(entity, sceneItem)
+            checkVideo(entity, sceneItem)
+        }
+    }
+}
+
+export function getSceneItem(scene:IWBScene, entity:Entity){
+    let assetId = itemIdsFromEntities.get(entity)
+    if(assetId){
+        let sceneItem = scene.ass.find((a)=> a.aid === assetId)
+        if(sceneItem){
+            return sceneItem
+        }else{
+            return false
+        }
+    }else{
+        return false
+    }
+}
+
+export function disableEntityForPlayMode(sceneId:string, entity:Entity){
+    let scene = sceneBuilds.get(sceneId)
+    if(scene){
+        let assetId = itemIdsFromEntities.get(entity)
+        if(assetId){
+            let sceneItem = scene.ass.find((a:any)=> a.aid === assetId)
+            if(sceneItem){
+                disableAudio(entity, sceneItem)
+                disableVideo(entity, sceneItem)
+            }
         }
     }
 }
@@ -97,27 +127,64 @@ function checkPointers(entity:Entity, sceneItem: SceneItem){
     }
 }
 
-function checkAudio(entity:Entity, sceneItem: SceneItem){
+export function checkAudio(entity:Entity, sceneItem: SceneItem){
     if(sceneItem.audComp){
-        MeshRenderer.deleteFrom(entity)
-        MeshCollider.deleteFrom(entity)
-        TextShape.deleteFrom(entity)
+        log('checking audio component for play mode')
 
-        let audio = AudioSource.getMutable(entity)
+        let audio = AudioSource.getMutableOrNull(entity)
 
         //check position
         if(sceneItem.audComp.attachedPlayer){
             Transform.createOrReplace(entity, {parent:engine.PlayerEntity})
         }
 
-        //check autostart
-        if(sceneItem.audComp.autostart){
-            audio.playing = sceneItem.audComp.autostart
-        }
+        if(audio){
+            //check autostart
+            if(sceneItem.audComp.autostart){
+                audio.playing = sceneItem.audComp.autostart
+            }
 
-        //check loop
-        if(sceneItem.audComp.loop){
-            audio.loop = sceneItem.audComp.loop
+            //check loop
+            if(sceneItem.audComp.loop){
+                audio.loop = sceneItem.audComp.loop
+            }
         }
+    }
+}
+
+export function checkVideo(entity:Entity, sceneItem: SceneItem){
+    if(sceneItem.vidComp && sceneItem.vidComp.autostart){
+        let video = VideoPlayer.getMutableOrNull(entity)
+        if(video){
+            log('setting new video', sceneItem, video)
+            video.playing = true
+            video.position = 0
+            log('setting new video', sceneItem, video)
+        }
+    }
+}
+
+function disableAudio(entity:Entity, sceneItem: SceneItem){
+    if(sceneItem.audComp){
+        log('disabling audio component for play mode')
+        MeshRenderer.deleteFrom(entity)
+        MeshCollider.deleteFrom(entity)
+        TextShape.deleteFrom(entity)
+
+        let itemData = items.get(sceneItem.id)
+        if(itemData){
+            log('audio item data is', itemData)
+            if(itemData.sty === "Local"){
+                AudioSource.getMutable(entity).playing = false
+            }else{
+                AudioStream.getMutable(entity).playing = false
+            }
+        }    
+    }
+}
+
+function disableVideo(entity:Entity, sceneItem: SceneItem){
+    if(sceneItem.vidComp){
+        VideoPlayer.getMutable(entity).playing = false
     }
 }

@@ -1,24 +1,19 @@
 import {engine, InputAction, PointerEventType, Transform} from "@dcl/sdk/ecs"
 import {localPlayer} from "../player/player"
 import {EDIT_MODES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../../helpers/types"
-import {checkBuildPermissions, selectedItem} from "../modes/build"
+import {selectedItem} from "../modes/build"
 import {Vector3} from "@dcl/sdk/math";
 import {flyBox} from "../modes/flying";
 import {getWorldPosition} from "@dcl-sdk/utils";
 import {buttonsPressed} from "../listeners/inputListeners";
 import { sendServerMessage } from "../messaging";
+import { checkScenePermissions } from "../scenes";
 
 let lastPlayerPos: Vector3 | undefined = undefined
 
 let time = 1
 
 export function PlayerTrackingSystem(dt: number) {
-    // if(localUserId && players.has(localUserId)){
-    //     let pos = Transform.get(engine.PlayerEntity).position
-    //     let player = players.get(localUserId)
-    //     player!.currentParcel = "" + Math.floor(pos.x / 16).toFixed(0) + "," + "" + Math.floor(pos.z / 16).toFixed(0)
-    //     checkBuildPermissions(player!)
-    // }
     if(time > 0){
         time -= dt
     }
@@ -26,7 +21,8 @@ export function PlayerTrackingSystem(dt: number) {
     let playerTransform = Transform.get(engine.PlayerEntity)
     let playerPos = playerTransform.position
     localPlayer.currentParcel = "" + Math.floor(playerPos.x / 16).toFixed(0) + "," + "" + Math.floor(playerPos.z / 16).toFixed(0)
-    checkBuildPermissions(localPlayer)
+    
+    checkScenePermissions(localPlayer)
 
     const cameraWorldHeight = getWorldPosition(localPlayer.cameraParent).y
 

@@ -31,7 +31,7 @@ export function setAllItems(updates: SceneItem[]) {
     updates.forEach((update) => {
         items.set(update.id, update)
     })
-    refreshSortedItems()//
+    refreshSortedItems()
 }
 
 export function updateItem(id: string, update: SceneItem) {

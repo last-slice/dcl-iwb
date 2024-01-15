@@ -1,5 +1,6 @@
 import {
     AudioSource,
+    AudioStream,
     Entity,
     GltfContainer,
     Material,
@@ -17,6 +18,9 @@ import {Color4} from "@dcl/sdk/math";
 import {localPlayer, localUserId, players} from "../player/player";
 import {entitiesFromItemIds, sceneBuilds} from ".";
 import {log} from "../../helpers/functions";
+import { AudioLoadedComponent, VideoLoadedComponent } from "../../helpers/Components";
+import { selectedItem } from "../modes/build";
+import { items } from "../catalog";
 
 export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:SceneItem){
     if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){
@@ -61,10 +65,10 @@ export function createGltfComponent(entity:Entity, item:SceneItem){
     }
 }
 
-export function createVideoComponent(entity:Entity, item:SceneItem){
+export function createVideoComponent(sceneId:string, entity:Entity, item:SceneItem){
     VideoPlayer.create(entity, {
         src: item.vidComp.url,
-        playing: item.vidComp.autostart,
+        playing: false,
         volume: item.vidComp.volume,
         loop: item.vidComp.loop
     })
@@ -80,6 +84,8 @@ export function createVideoComponent(entity:Entity, item:SceneItem){
         emissiveIntensity: 1,
         emissiveTexture: videoTexture
     })
+
+    VideoLoadedComponent.create(entity, {init:false, sceneId:sceneId})
 }
 
 
@@ -157,14 +163,15 @@ export function updateVideoUrl(aid:string, materialComp:any, url:string){
     }
 }
 
-export function createAudioComponent(entity:Entity, item:SceneItem){
+export function createAudioComponent(sceneId:string, entity:Entity, item:SceneItem){
     AudioSource.create(entity, {
         audioClipUrl: item.audComp.url,
-        playing: item.audComp.autostart,
+        playing: false,
         volume: item.audComp.volume,
         loop: item.audComp.loop
     })
     updateAudioAttach(item.aid, item.audComp)
+    AudioLoadedComponent.create(entity, {init:false, sceneId:sceneId})
 }
 
 export function updateAudioComponent(aid:string, audComp:any,){
@@ -332,5 +339,35 @@ export function updateMaterialComponent(aid:string, materialComp:any, entity?:En
               })
         }else{
         }
+    }
+}
+
+
+export function playAudioFile(){
+    let audio:any
+    let itemData = items.get(selectedItem.catalogId)
+
+    if(itemData){
+        if(itemData.sty === "Local"){
+            audio = AudioSource.getMutable(selectedItem.entity)
+        }else{
+            audio = AudioStream.getMutable(selectedItem.entity)
+        }
+        audio.playing = true
+        audio.loop = false
+    }
+}
+
+export function stopAudioFile(){
+    let audio:any
+    let itemData = items.get(selectedItem.catalogId)
+
+    if(itemData){
+        if(itemData.sty === "Local"){
+            audio = AudioSource.getMutable(selectedItem.entity)
+        }else{
+            audio = AudioStream.getMutable(selectedItem.entity)
+        }
+        audio.playing = false
     }
 }

@@ -120,6 +120,7 @@ export interface Player {
     uploadToken:string,
     version: number
     activeScene: IWBScene | null,
+    activeSceneId:string,
     canBuild:boolean,
     objects:any[],
     selectedEntity:Entity | null
@@ -181,6 +182,7 @@ export interface SceneItem extends CatalogItemType{
     s: {x:number, y:number, z:number}
     entity?:Entity
     type:string
+    sty:string
     comps:any[]
     visComp:any
     colComp:any

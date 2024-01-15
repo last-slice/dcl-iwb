@@ -699,33 +699,6 @@ export function removeSelectedItem() {
     addAllBuildModePointers()
 }
 
-export function checkBuildPermissions(player: Player) {
-    let canbuild = false
-    let activeScene = null
-    sceneBuilds.forEach((scene: IWBScene, key: string) => {
-        if (scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
-            // console.log('player is on current owned parcel')
-            canbuild = true
-            activeScene = scene
-        }
-    })
-
-    player.activeScene = activeScene
-
-    if (canbuild) {
-        player.canBuild = true
-    } else {
-        player.canBuild = false
-        player.activeScene = null
-        displaySceneAssetInfoPanel(false)
-        
-        if (selectedItem && selectedItem.enabled) {
-            // selectedItem.enabled = false
-        }
-    }
-    // log('player active scene', player.activeScene)
-}
-
 function addUseCatalogItemPointers(ent: Entity) {
     PointerEvents.createOrReplace(ent, {
         pointerEvents: [
@@ -916,16 +889,15 @@ export function addAllBuildModePointers() {
 export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
     let assetId = itemIdsFromEntities.get(entity)
     if(assetId){
-        log("found asset id")
         let sceneItem = scene.ass.find((a)=> a.aid === assetId)
         if(sceneItem){
-            log('found scene item', sceneItem)
             VisibilityComponent.createOrReplace(entity, {
                 visible: true
             })
 
             check2DCollision(entity, sceneItem)
             checkAudio(entity, sceneItem, scene.parentEntity)
+            checkVideo(entity, sceneItem)
         }
     }
 }
@@ -933,6 +905,7 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
 export function addSelectionPointer(itemdata:any){
     selectedItem.pointer = engine.addEntity()
     MeshRenderer.setBox(selectedItem.pointer)
+    console.log('item data selected is', itemdata)
     Transform.createOrReplace(selectedItem.pointer, {
         position: Vector3.create(0, itemdata!.bb.z + 1, 0),
         parent: selectedItem.entity
@@ -978,14 +951,11 @@ function check2DCollision(entity:Entity, sceneItem: SceneItem){
 
 function checkAudio(entity:Entity, sceneItem: SceneItem, parent:Entity){
     if(sceneItem.audComp){
-        console.log('we have audio component for entity', sceneItem.audComp)
         MeshRenderer.setBox(entity)
         MeshCollider.setBox(entity)
 
         let audio = AudioSource.getMutable(entity)
         Transform.createOrReplace(entity, {parent:parent, position:sceneItem.p, rotation:Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z), scale:sceneItem.s})
-
-        //check position
 
         Material.setPbrMaterial(entity,{
             albedoColor: Color4.create(0,0,1,.5)
@@ -999,5 +969,11 @@ function checkAudio(entity:Entity, sceneItem: SceneItem, parent:Entity){
         }
 
         audio.playing = false
+    }
+}
+
+function checkVideo(entity:Entity, sceneItem: SceneItem){
+    if(sceneItem.vidComp){
+        VideoPlayer.getMutable(entity).playing = false
     }
 }

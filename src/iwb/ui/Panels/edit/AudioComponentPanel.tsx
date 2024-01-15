@@ -7,6 +7,7 @@ import {sendServerMessage} from '../../../components/messaging'
 import {selectedItem} from '../../../components/modes/build'
 import {sceneBuilds} from '../../../components/scenes'
 import { uiSizes } from '../../uiConfig'
+import { playAudioFile, stopAudioFile } from '../../../components/scenes/components'
 
 let value = ""
 
@@ -24,6 +25,20 @@ export function AudioComponentPanel() {
             }}
         >
 
+
+                {/* `url row` */}
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '20%',
+                    margin: {top: "2%"},
+                    display: selectedItem && selectedItem.itemData.ugc ? 'none' : 'flex'
+                }}
+            >
+
             {/* url label */}
             <UiEntity
                 uiTransform={{
@@ -31,11 +46,12 @@ export function AudioComponentPanel() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    height: '10%',
-                    margin: {top: "2%"}
+                    height: '20%',
                 }}
                 uiText={{value: "URL", fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
             />
+
+
 
             {/* url input info */}
             <UiEntity
@@ -44,8 +60,8 @@ export function AudioComponentPanel() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    height: '10%',
-                    margin: {top: "2%"}
+                    height: '60%',
+                    margin: {top: "5%"},
                 }}
             >
 
@@ -56,6 +72,7 @@ export function AudioComponentPanel() {
                     onChange={(input) => {
                         value = input
                     }}
+                    disabled={selectedItem && selectedItem.itemData.ugc ? true  : false}
                     color={Color4.White()}
                     fontSize={sizeFont(25, 15)}
                     placeholder={'new audio link'}
@@ -64,7 +81,7 @@ export function AudioComponentPanel() {
                         width: '100%',
                         height: '120%',
                     }}
-                    value={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getImage() : "")}
+                    value={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getAudioUrl() : "")}
                     onMouseDown={() => {
                         console.log('clicked')
                     }}
@@ -93,6 +110,8 @@ export function AudioComponentPanel() {
                         })
                     }}
                 />
+            </UiEntity>
+
             </UiEntity>
 
                     {/* attach player row */}
@@ -142,7 +161,7 @@ export function AudioComponentPanel() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT ? (selectedItem.itemData.audComp.attachedPlayer ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && selectedItem.itemData.audComp ? (selectedItem.itemData.audComp.attachedPlayer ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
         }}
         onMouseDown={() => {
             sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {
@@ -259,15 +278,73 @@ export function AudioComponentPanel() {
 
             </UiEntity>
 
+
+                    {/* play button row */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignContent:'flex-start',
+                alignItems:'flex-start',
+                width: '100%',
+                height: '10%',
+                margin:{top:"1%"}
+            }}
+            >
+
+             <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '30%',
+                    height: '100%',
+                    margin: {left: "1%", right: "1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.blueButton)
+                }}
+                uiText={{value: "Play", fontSize: sizeFont(20, 16)}}
+                onMouseDown={() => {
+                    playAudioFile()
+                }}
+            />
+
+<UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '30%',
+                    height: '100%',
+                    margin: {left: "1%", right: "1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                }}
+                uiText={{value: "Stop", fontSize: sizeFont(20, 16)}}
+                onMouseDown={() => {
+                    stopAudioFile()
+                }}
+            />
+
+            </UiEntity>
+
         </UiEntity>
     )
 }
 
-function getImage() {
-    let scene = sceneBuilds.get(selectedItem.sceneId)
-    let asset = scene.ass.find((a: any) => a.aid === selectedItem.aid)
-    if (asset && asset.audComp) {
-        return asset.audComp.url
+function getAudioUrl() {
+    if (selectedItem && selectedItem.itemData.audComp) {
+        return selectedItem.itemData.audComp.url
     }
 }
 

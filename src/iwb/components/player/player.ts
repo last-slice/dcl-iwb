@@ -31,7 +31,8 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
         canBuild: false,
         homeWorld: false,
         worlds: [],
-        uploads: []
+        uploads: [],
+        activeSceneId:""
     }
 
     if (!local) {

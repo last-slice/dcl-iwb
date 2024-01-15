@@ -22,8 +22,8 @@ export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 export function validateScene(){
     displayCreateScenePanel(false)
 
-    //to do
-    //check other validations
+    //to do//
+    //check other validations//
 
     if(tempParcels.size > 0){
         log('we have valid scene, send to server')

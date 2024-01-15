@@ -1,10 +1,10 @@
 import { Entity, Material, MeshCollider, MeshRenderer, RaycastResult, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
-import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, VIEW_MODES } from "../../helpers/types"
+import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, Player, SCENE_MODES, SceneItem, VIEW_MODES } from "../../helpers/types"
 import { SelectedFloor, addBoundariesForParcel, deleteParcelEntities } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
-import { RealmEntityComponent } from "../../helpers/Components"
+import { AudioLoadedComponent, RealmEntityComponent, VideoLoadedComponent } from "../../helpers/Components"
 import { hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
@@ -18,6 +18,9 @@ import {
     updateNFTFrame,
     updateTextComponent
 } from "./components"
+import { hideAllPanels } from "../../ui/ui"
+import { checkAudio, checkVideo, disableEntityForPlayMode, getSceneItem } from "../modes/play"
+import { displaySceneAssetInfoPanel } from "../../ui/Panels/sceneInfoPanel"
 
 export let realm:string = ""
 export let scenes:any[] = []
@@ -26,6 +29,17 @@ export let sceneBuilds:Map<string, any> = new Map()
 export let itemIdsFromEntities:Map<number,any> = new Map()
 export let entitiesFromItemIds:Map<string,Entity> = new Map()
 export let actions:any[] = []
+
+export let buildModeCheckedAssets:any[] = []
+export let playModeCheckedAssets:any[] = []
+export let lastScene:any
+
+export let playModeReset:boolean = true
+
+export function updatePlayModeReset(value:boolean){
+    log('updating playmode reset', value)
+    playModeReset = value
+}
 
 export function updateRealm(value:string){
     realm = value
@@ -206,7 +220,7 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
 
                 case 'Video':
                     MeshRenderer.setPlane(entity)
-                    createVideoComponent(entity, item)
+                    createVideoComponent(scene.id, entity, item)
                     break;
 
                 case 'NFT Frame':
@@ -224,7 +238,7 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             break;
 
         case 'Audio':
-            createAudioComponent(entity, item)
+            createAudioComponent(scene.id, entity, item)
             break;
     }
 }
@@ -254,4 +268,104 @@ export function updateAsset(asset:any){
         updateNFTFrame(asset.aid, asset.matComp, asset.nftComp)
     }
 }
-//
+
+export function checkScenePermissions(player: Player) {
+    let canbuild = false
+    let activeScene:any
+    sceneBuilds.forEach((scene: IWBScene, key: string) => {
+        if (scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
+            console.log('player is on current owned parcel')
+            canbuild = true
+            activeScene = scene
+        }
+    })
+
+    player.activeScene = activeScene
+
+    if (canbuild) {
+        player.canBuild = true
+    } else {
+        player.canBuild = false
+        // player.activeScene = null
+        displaySceneAssetInfoPanel(false)
+    }
+
+    if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+        playModeCheckedAssets.length = 0
+    }else{
+        if(playModeReset){
+            if(activeScene){
+                if(lastScene){
+                    if(lastScene !== activeScene.id){
+                        disableSceneEntities(lastScene)
+                    }
+                    enableSceneEntities(activeScene.id)
+                }else{
+                    enableSceneEntities(activeScene.id)
+                }
+            }else{
+                disableSceneEntities(lastScene)
+            }
+            lastScene = activeScene ? activeScene.id : undefined
+        }
+    }
+}
+
+function disableSceneEntities(sceneId:string){
+    // for(let i = 0; i < playModeCheckedAssets.length; i++){
+    //     let entity = playModeCheckedAssets.shift()
+    //     disableEntityForPlayMode(sceneId, entity)
+    // }
+    console.log('disabling scene entities for scene', sceneId)
+
+    let scene = sceneBuilds.get(sceneId)
+    if(scene){
+        for(let i = 0; i < scene.entities.length; i++){
+            let entity = scene.entities[i]
+
+            //check video
+            if(VideoLoadedComponent.has(entity)){
+                VideoLoadedComponent.getMutable(entity).init = false
+            }
+
+            //check audio
+            if(AudioLoadedComponent.has(entity)){
+                AudioLoadedComponent.getMutable(entity).init = false
+            }
+
+            disableEntityForPlayMode(scene.id, entity)
+        }
+    }
+
+}
+
+function enableSceneEntities(sceneId:string){
+    let scene = sceneBuilds.get(sceneId)
+    if(scene){
+        for(let i = 0; i < scene.entities.length; i++){
+            let entity = scene.entities[i]
+
+            //check video
+            if(VideoLoadedComponent.has(entity) && !VideoLoadedComponent.get(entity).init){
+                let sceneItem = getSceneItem(scene, entity)
+                if(sceneItem){
+                    checkVideo(entity, sceneItem)
+                }
+                VideoLoadedComponent.getMutable(entity).init = true
+            }
+
+
+            //check audio
+            if(AudioLoadedComponent.has(entity) && !AudioLoadedComponent.get(entity).init){
+                let sceneItem = getSceneItem(scene, entity)
+                if(sceneItem){
+                    checkAudio(entity, sceneItem)
+                }
+                AudioLoadedComponent.getMutable(entity).init = true
+            }
+
+            playModeCheckedAssets.push(entity)
+            // resetEntityForPlayMode(scene, entity)
+        }
+    }
+}

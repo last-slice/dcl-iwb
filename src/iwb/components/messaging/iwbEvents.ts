@@ -7,12 +7,12 @@ import { localUserId, players } from "../player/player";//
 import { Entity, GltfContainer, Material, engine } from "@dcl/sdk/ecs";
 import { BuildModeVisibilty, ParcelFloor, greenBeam, redBeam } from "../modes/create";
 import { Color4 } from "@dcl/sdk/math";
-import { sceneBuilds } from "../scenes";
+import { sceneBuilds, updatePlayModeReset } from "../scenes";
 import { addBuildModePointers, hideAllOtherPointers, resetEntityForBuildMode } from "../modes/build";
-import { resetEntityForPlayMode } from "../modes/play";
 import { InputListenSystem, addInputSystem, removeInputSystem } from "../systems/InputListenSystem";
 import { PlayModeInputSystem, addPlayModeSystem, removePlayModSystem } from "../systems/PlayModeInputSystem";
 import { hideAllPanels } from "../../ui/ui";
+import { disableEntityForPlayMode } from "../modes/play";
 
 let created = false
 export function createIWBEventListeners(){
@@ -48,14 +48,18 @@ export function createIWBEventListeners(){
                         addBuildModePointers(entity)
                         resetEntityForBuildMode(scene, entity)
                     }else{
-                        resetEntityForPlayMode(scene, entity)
+                        // resetEntityForPlayMode(scene, entity)
+                        disableEntityForPlayMode(scene.id, entity)
                     }
                 })
             })
 
+            updatePlayModeReset(true)
+
             if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
                 removePlayModSystem()
                 addInputSystem()
+                updatePlayModeReset(false)
             }else if(players.get(localUserId)?.mode === SCENE_MODES.PLAYMODE){
                 removeInputSystem()
                 addPlayModeSystem()

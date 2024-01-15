@@ -9,6 +9,7 @@ import {PlayerTrackingSystem} from "./components/systems/playerTracking";
 import { BuildModeVisibiltyComponents } from "./components/systems/BuildModeVisibilty";
 import { getRealm } from "~system/Runtime";
 import { realm, updateRealm } from "./components/scenes";
+import { utils } from "./helpers/libraries";
 
 export function initIWB() {
     setupUi()
@@ -24,10 +25,11 @@ export function initIWB() {
                 let realmData = await getRealm({})
                 updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld.dcl.eth" : realmData.realmInfo.realmName : "")
 
-                engine.addSystem(PlayerTrackingSystem)
                 engine.addSystem(BuildModeVisibiltyComponents)
 
                 getAssetUploadToken()
+
+                engine.addSystem(PlayerTrackingSystem)
             }
 
             //add input listeners
