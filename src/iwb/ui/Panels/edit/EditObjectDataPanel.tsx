@@ -16,6 +16,7 @@ import {TextComponentPanel} from './TextComponentPanel'
 import {ActionComponent} from './ActionComponent'
 import {TriggerComponent} from './TriggerComponent'
 import {AudioComponentPanel} from "./AudioComponentPanel";
+import { MaterialComponentPanel } from './MaterialComponentPanel'
 
 export let visibleComponent: string = ""
 
@@ -169,6 +170,7 @@ export function EditObjectData() {
                     <NFTComponentPanel/>
                     <TextComponentPanel/>
                     <ActionComponent/>
+                    <MaterialComponentPanel/>
                     {/* <ClickComponent/> */}
                     <TriggerComponent/>
 

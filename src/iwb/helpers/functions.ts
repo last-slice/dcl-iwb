@@ -174,7 +174,7 @@ export function setUVs(rows: number, cols: number) {
     0, // upper-left corner
     rows,
 
-    cols, // upper-right corner
+    cols, // upper-right corner//
     rows,
   ]
 }

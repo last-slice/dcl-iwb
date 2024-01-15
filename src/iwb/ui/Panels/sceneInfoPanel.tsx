@@ -9,7 +9,7 @@ import { log, paginateArray } from '../../helpers/functions'
 import { Entity, MeshRenderer, Transform, VisibilityComponent, engine } from '@dcl/sdk/ecs'
 import { items } from '../../components/catalog'
 import { editItem, sendServerDelete } from '../../components/modes/build'
-import { entitiesFromItemIds } from '../../components/scenes'
+import { entitiesFromItemIds, sceneBuilds } from '../../components/scenes'
 import { displaySceneInfoPanel, displaySceneSetting } from './builds/buildsIndex'
 import { sendServerMessage } from '../../components/messaging'
 import { EDIT_MODES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
@@ -28,7 +28,7 @@ export function displaySceneAssetInfoPanel(value: boolean) {
         if (!showSceneInfoPanel || !localPlayer || !localPlayer.activeScene) return null
 
         localScene = true
-        visibleItems = paginateArray([...localPlayer.activeScene!.ass], visibleIndex, visibleRows)
+        visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
 
         sceneInfoEntitySelector = engine.addEntity()
         MeshRenderer.setBox(sceneInfoEntitySelector)
@@ -153,7 +153,7 @@ export function createSceneInfoPanel() {
             onMouseDown={()=>{
                 displaySceneAssetInfoPanel(false)
                 displaySceneSetting("Info")
-                displaySceneInfoPanel(true, localPlayer.activeScene!)
+                displaySceneInfoPanel(true, sceneBuilds.get(localPlayer.activeScene!.id))
             }}
             />
 
@@ -164,7 +164,8 @@ export function createSceneInfoPanel() {
                 height: calculateSquareImageDimensions(3.5).height,
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin:{left:'2%'}
+                margin:{left:'2%'},
+                display: localUserId && players.get(localUserId) && players.get(localUserId)?.homeWorld ? 'flex' : 'none',
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -266,7 +267,6 @@ export function createSceneInfoPanel() {
                         sendServerDelete(selectedEntity as Entity)
                         VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
                         deselectRow()
-                        visibleItems = paginateArray([...localPlayer.activeScene!.ass], visibleIndex, visibleRows)
                     }}
                     uiText={{value: "Delete", color: Color4.Black(), fontSize: sizeFont(30, 20)}}
                 />
@@ -295,7 +295,7 @@ export function createSceneInfoPanel() {
                             deselectRow()
                             visibleIndex--
                             log('visible index is now ', visibleIndex)
-                            visibleItems = paginateArray([...localPlayer.activeScene!.ass], visibleIndex, visibleRows)
+                            visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
                         }
                     }}
                 />
@@ -321,9 +321,7 @@ export function createSceneInfoPanel() {
                     onMouseDown={() => {
                         // pressed.Load = true
                         deselectRow()
-                        visibleIndex++
-                        log('visible index is now', visibleIndex)
-                        visibleItems = paginateArray([...localPlayer.activeScene!.ass], visibleIndex, visibleRows)
+                        visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
                     }}
 
                 />

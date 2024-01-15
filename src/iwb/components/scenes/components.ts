@@ -4,12 +4,15 @@ import {
     GltfContainer,
     Material,
     MeshCollider,
+    MeshRenderer,
     NftShape,
     TextShape,
+    Transform,
     VideoPlayer,
-    VisibilityComponent
+    VisibilityComponent,
+    engine
 } from "@dcl/sdk/ecs";
-import {COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, SCENE_MODES, SceneItem} from "../../helpers/types";
+import {COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, MATERIAL_TYPES, Materials, SCENE_MODES, SceneItem} from "../../helpers/types";
 import {Color4} from "@dcl/sdk/math";
 import {localPlayer, localUserId, players} from "../player/player";
 import {entitiesFromItemIds, sceneBuilds} from ".";
@@ -46,13 +49,16 @@ export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:Sc
 }
 
 export function createGltfComponent(entity:Entity, item:SceneItem){
-    // log('creating gltf component', item.id)
-    let gltf:any = {
-        src:"assets/" + item.id + ".glb",
-        invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
-        visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
+    if(item.pending){
+        MeshRenderer.setBox(entity)
+    }else{
+        let gltf:any = {
+            src:"assets/" + item.id + ".glb",
+            invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
+            visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
+        }
+        GltfContainer.create(entity, gltf)
     }
-    GltfContainer.create(entity, gltf)
 }
 
 export function createVideoComponent(entity:Entity, item:SceneItem){
@@ -79,23 +85,32 @@ export function createVideoComponent(entity:Entity, item:SceneItem){
 
 export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){
     // log('updating image url', aid, materialComp, url)
-    let ent = entity ? entity : entitiesFromItemIds.get(aid)
+    let ent = entity ? entity : entitiesFromItemIds.get(aid)//
 
     if(ent){
         let texture = Material.Texture.Common({
             src: "" + url
         })
 
-        Material.setPbrMaterial(ent, {
-            // albedoColor: Color4.create(parseFloat(matComp.color[0]), parseFloat(matComp.color[1]), parseFloat(matComp.color[2]), parseFloat(matComp.color[3])),
-            metallic: parseFloat(materialComp.metallic),
-            roughness:parseFloat(materialComp.roughness),
-            specularIntensity:parseFloat(materialComp.intensity),
-            emissiveIntensity: materialComp.emissPath !== "" ? parseFloat(materialComp.emissInt) : undefined,
-            texture: texture,
-            // emissiveColor: item.matComp.emissPath !== "" ? item.matComp,
-            emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
-          })
+        if(materialComp.type === Materials.PBR){
+            console.log('updating pbr material')
+            Material.setPbrMaterial(ent, {
+                // albedoColor: Color4.create(parseFloat(matComp.color[0]), parseFloat(matComp.color[1]), parseFloat(matComp.color[2]), parseFloat(matComp.color[3])),
+                metallic: parseFloat(materialComp.metallic),
+                roughness:parseFloat(materialComp.roughness),
+                specularIntensity:parseFloat(materialComp.intensity),
+                // emissiveIntensity: materialComp.emiss ? parseFloat(materialComp.emissInt) : undefined,
+                texture: texture,
+                // emissiveColor: materialComp.emiss ? materialComp.matComp.emissColor : undefined,
+                // emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
+              })
+        }
+        if(materialComp.type === Materials.BASIC){
+            console.log('updating basic material')
+            Material.setBasicMaterial(ent, {
+                texture: texture,
+              })
+        }
     }
 }
 
@@ -149,6 +164,12 @@ export function createAudioComponent(entity:Entity, item:SceneItem){
         volume: item.audComp.volume,
         loop: item.audComp.loop
     })
+    updateAudioAttach(item.aid, item.audComp)
+}
+
+export function updateAudioComponent(aid:string, audComp:any,){
+    updateAudioUrl(aid, audComp, audComp)
+    updateAudioAttach(aid, audComp)
 }
 
 export function updateAudioUrl(aid:string, audComp:any, url:string){
@@ -165,6 +186,52 @@ export function updateAudioUrl(aid:string, audComp:any, url:string){
             }
             audio.audioClipUrl = url
             audio.playing = restart
+        }
+    }
+}
+
+export function updateAudioAttach(aid:string, audComp:any, ){
+    log('updating audio attached player', aid, audComp)
+    let ent = entitiesFromItemIds.get(aid)
+
+    if(ent){
+        console.log('audio entity does exist', ent)
+        Material.setPbrMaterial(ent,{
+            albedoColor: Color4.create(0,0,1,.5)
+        })//
+
+        if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+
+            if(audComp.attachedPlayer){
+                TextShape.createOrReplace(ent,{text:"Audio\nAttached", fontSize: 3})
+            }
+            else{
+                TextShape.createOrReplace(ent,{text:"Audio\nPlaced", fontSize: 3})
+            }
+        }
+    }
+}
+
+export function updateAudioLoop(aid:string, audComp:any){
+    log('updating audio loop', aid, audComp)
+    let ent = entitiesFromItemIds.get(aid)
+
+    if(ent){
+        let audio = AudioSource.getMutable(ent)
+        if(audio){
+            audio.loop = audComp.loop
+        }
+    }
+}
+
+export function updateAudio(key:string, aid:string, audComp:any){
+    log('updating audio loop', aid, audComp)
+    let ent = entitiesFromItemIds.get(aid)
+
+    if(ent){
+        let audio:any = AudioSource.getMutable(ent)
+        if(audio){
+            audio[key] = audComp[key]
         }
     }
 }
@@ -188,7 +255,7 @@ export function updateCollision(sceneId:string, assetId:string, layer:string, va
         if(asset){
             switch(asset.type){
                 case '3D':
-                    if(entity){
+                    if(entity && !asset.pending){
                         let gltf = GltfContainer.getMutable(entity)
                         if(gltf){
                             if(layer === COLLISION_LAYERS.INVISIBLE){
@@ -241,5 +308,29 @@ export function updateTextComponent(aid:string, materialComp:any, textComp:any, 
             outlineWidth: textComp.outlineWidth > 0 ? textComp.outlineWidth : undefined,
             outlineColor: textComp.outlineWidth > 0 ? textComp.outlineColor : undefined
         })
+    }
+}
+
+export function updateMaterialComponent(aid:string, materialComp:any, entity?:Entity){
+    let ent = entity ? entity : entitiesFromItemIds.get(aid)
+
+    if(ent){
+        // let texture = Material.Texture.Common({
+        //     src: "" + url
+        // })
+
+        if(materialComp.type === "pbr"){
+            Material.setPbrMaterial(ent, {
+        
+                albedoColor: Color4.create(parseFloat(materialComp.color[0]), parseFloat(materialComp.color[1]), parseFloat(materialComp.color[2]), parseFloat(materialComp.color[3])),
+                metallic: parseFloat(materialComp.metallic),
+                roughness:parseFloat(materialComp.roughness),
+                specularIntensity:parseFloat(materialComp.intensity),
+                emissiveIntensity: materialComp.emissPath !== "" ? parseFloat(materialComp.emissInt) : undefined,
+                emissiveColor: materialComp.emissColor.length > 0 ? Color4.create(parseFloat(materialComp.color[0]), parseFloat(materialComp.color[1]), parseFloat(materialComp.color[2]), parseFloat(materialComp.color[3])) : undefined,
+                emissiveTexture: materialComp.emissPath !== "" ? materialComp.emissPath : undefined
+              })
+        }else{
+        }
     }
 }

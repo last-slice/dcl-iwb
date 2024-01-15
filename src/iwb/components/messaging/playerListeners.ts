@@ -1,10 +1,10 @@
 import {log} from "../../helpers/functions"
 import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {showNotification} from "../../ui/Panels/notificationUI"
-import {addPlayerScenes, localPlayer} from "../player/player"
+import {addPendingAsset, addPlayerScenes, localPlayer} from "../player/player"
 import {Room} from "colyseus.js"
 import {iwbEvents} from "."
-import {refreshSortedItems, setAllItems, updateItem} from "../catalog/items";
+import {refreshSortedItems, updateItem} from "../catalog/items";
 import { displayDownloadPendingPanel } from "../../ui/Panels/downloadPendingPanel"
 
 
@@ -20,16 +20,19 @@ export function createPlayerListeners(room: Room) {
         })
         if (info) {
             updateItem(info.id, info)
+            addPendingAsset(info)
             refreshSortedItems()
         }
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG + ' received', info)
-
-        if (info) {
-            console.log('setting all items')
-            setAllItems(info)
+        if(info){
+            if(info.pending){
+                addPendingAsset(info)
+                delete info.pending
+            }
+            updateItem(info.id, info)
         }
     })
 

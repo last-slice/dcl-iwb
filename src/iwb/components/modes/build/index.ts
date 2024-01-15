@@ -1,8 +1,9 @@
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import {getRandomString, log, roundVector} from "../../../helpers/functions"
 import {items} from "../../catalog"
-import {localPlayer, localUserId, players} from "../../player/player"
+import {iwbConfig, localPlayer, localUserId, players} from "../../player/player"
 import {
+    AudioSource,
     AvatarAnchorPointType,
     AvatarAttach,
     ColliderLayer,
@@ -23,12 +24,13 @@ import {
 } from "@dcl/sdk/ecs"
 import {sendServerMessage} from "../../messaging";
 import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SceneItem, SelectedItem, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
-import {displayCatalogPanel} from "../../../ui/Panels/CatalogPanel"
+import {displayCatalogPanel, selectedSetting} from "../../../ui/Panels/CatalogPanel"
 import {entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
-import { displaySceneAssetInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
+import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
-import {updateAudioUrl, updateImageUrl, updateNFTFrame, updateTextComponent} from "../../scenes/components"
+import {updateAudioComponent, updateAudioUrl, updateImageUrl, updateNFTFrame, updateTextComponent} from "../../scenes/components"
+import { displaySceneInfoPanel } from "../../../ui/Panels/builds/buildsIndex"
 
 export let editAssets:Map<string, Entity> = new Map()
 export let grabbedAssets:Map<string, Entity> = new Map()
@@ -50,7 +52,8 @@ export function sendServerEdit(axis: string, direction: number, manual?:boolean,
             direction: direction,
             editType: EDIT_MODIFIERS.TRANSFORM,
             manual:manual,
-            value: value ? value : 0
+            value: value ? value : 0,
+            ugc: selectedItem.ugc
         }
     )
 }
@@ -139,7 +142,6 @@ export function toggleEditModifier(modifier?: EDIT_MODIFIERS) {
 }
 
 export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, duplicate?:any) {
-
     if (selectedItem && selectedItem.enabled && selectedItem.entity && selectedItem.mode === EDIT_MODES.GRAB) {
         log("Already holding item")
         return
@@ -162,7 +164,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             enabled: true,
             already: already,
             initialHeight: ITEM_HEIGHT_DEFAULT,
-            duplicate: duplicate ? duplicate : null
+            duplicate: duplicate ? duplicate : null,
+            ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false
         }
 
         if (already) {
@@ -180,19 +183,19 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
 
-        if (selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version) {
+        if ((selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.worlds.find((w:any)=> w.ens === realm).cv) || (selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)){
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
 
             if (selectedItem.itemData.bb) {
-                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.y, selectedItem.itemData.bb.z)
+                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.z, selectedItem.itemData.bb.y)
             }
 
         } else {
             log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
 
-            //to do
-            //add different asset types here//
+            //to do//
+            //add different asset types here
             if (selectedItem.itemData.n === "Image" || selectedItem.itemData.n === "NFT Frame") {
                 MeshRenderer.setPlane(selectedItem.entity)
                 itemPosition = {x: 0, y: .5, z: itemDepth}
@@ -218,9 +221,13 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 scale = Vector3.create(.5, .5, .5)
                 MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
             }  else {
-                GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
+                if(selectedItem.itemData.pending){
+                    MeshRenderer.setBox(selectedItem.entity)
+                }else{
+                    GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
+                }
             }
-        }
+        }//
 
         log(itemPosition)
 
@@ -229,7 +236,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {
             user: localUserId,
             catalogId: id,
-            assetId: selectedItem.aid
+            assetId: selectedItem.aid,
+            ugc: selectedItem.ugc
         })
     }
 }
@@ -344,7 +352,8 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
                         position: transPos,
                         rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z),
                         scale: transScal
-                    }
+                    },
+                    ugc: sceneItem.ugc
                 }
                 log('selected item is', selectedItem)
 
@@ -476,7 +485,8 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
                         position: roundVector(t.position, 2),
                         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
                         scale: roundVector(t.scale, 2),
-                        duplicate: selectedItem.duplicate
+                        duplicate: selectedItem.duplicate,
+                        ugc: selectedItem.ugc
                     }
                 }
             )
@@ -544,7 +554,8 @@ export function grabItem(entity: Entity) {
                         rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z),
                         scale: transScal
                     },
-                    initialHeight: transPos.y - .88
+                    initialHeight: transPos.y - .88,
+                    ugc: sceneItem.ugc
                 }
                 addUseItemPointers(selectedItem.entity)
 
@@ -668,7 +679,7 @@ function addGrabbedComponent(entity:Entity, catalogId:string, itemData:any) {
 
             case 'Audio':
                 if(itemData && itemData.audComp) {
-                    updateAudioUrl(itemData.aid, itemData.audComp, itemData.audComp.url)
+                    updateAudioComponent(itemData.aid, itemData.audComp)
                 }
                 MeshRenderer.setBox(selectedItem.entity)
                 MeshCollider.setBox(selectedItem.entity)
@@ -874,9 +885,15 @@ export function removeItem(sceneId: string, info: any) {
             if (assetIndex >= 0) {
                 scene.entities.splice(assetIndex, 1)
             }
+
+            if(showSceneInfoPanel){
+                displaySceneAssetInfoPanel(true)
+            }
         }
     }
 }
+
+//
 
 export function hideAllOtherPointers() {
     sceneBuilds.forEach((scene, key) => {
@@ -907,14 +924,8 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
                 visible: true
             })
 
-            //add collision for 2D objects in build mode1
-            if(sceneItem.type === "2D"){
-                MeshCollider.setPlane(entity)
-            }
-
-            if(sceneItem.type === "2D" && sceneItem.textComp){
-                MeshRenderer.setPlane(entity)
-            }
+            check2DCollision(entity, sceneItem)
+            checkAudio(entity, sceneItem, scene.parentEntity)
         }
     }
 }
@@ -951,4 +962,42 @@ export function removeEditSelectionPointer(aid:string){
         engine.removeEntity(ent)
     }
     editAssets.delete(aid)
+}
+
+
+function check2DCollision(entity:Entity, sceneItem: SceneItem){
+    //add collision for 2D objects in build mode1
+    if(sceneItem.type === "2D"){
+        MeshCollider.setPlane(entity)
+    }
+
+    if(sceneItem.type === "2D" && sceneItem.textComp){
+        MeshRenderer.setPlane(entity)
+    }
+}
+
+function checkAudio(entity:Entity, sceneItem: SceneItem, parent:Entity){
+    if(sceneItem.audComp){
+        console.log('we have audio component for entity', sceneItem.audComp)
+        MeshRenderer.setBox(entity)
+        MeshCollider.setBox(entity)
+
+        let audio = AudioSource.getMutable(entity)
+        Transform.createOrReplace(entity, {parent:parent, position:sceneItem.p, rotation:Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z), scale:sceneItem.s})
+
+        //check position
+
+        Material.setPbrMaterial(entity,{
+            albedoColor: Color4.create(0,0,1,.5)
+        })
+
+        if(sceneItem.audComp.attachedPlayer){
+            TextShape.createOrReplace(entity,{text:"Audio\nAttached", fontSize: 3})
+
+        }else{
+            TextShape.createOrReplace(entity,{text:"Audio\nPlaced", fontSize: 3})
+        }
+
+        audio.playing = false
+    }
 }

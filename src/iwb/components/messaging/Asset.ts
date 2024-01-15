@@ -12,6 +12,7 @@ import { transformComponentListener } from "./listeners/TransformComponent";
 import { triggerComponentListener } from "./listeners/TriggerComponent";
 import { videoComponentListener } from "./listeners/VideoComponent";
 import {audioComponentListener} from "./listeners/AudioComponent";
+import { materialComponentListener } from "./listeners/MaterialComponent";
 
 export function assetListener(scene:any){
     scene.ass.onAdd((asset:any, key:any)=>{
@@ -49,6 +50,7 @@ export function assetListener(scene:any){
         transformComponentListener(scene, asset)
         triggerComponentListener(asset)
         actionComponentListener(scene, asset)
+        materialComponentListener(scene, asset)
     })
 
     scene.ass.onRemove((asset:any, key:any)=>{

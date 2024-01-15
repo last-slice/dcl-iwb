@@ -125,6 +125,7 @@ export interface Player {
     selectedEntity:Entity | null
     homeWorld:boolean
     cameraParent:Entity
+    uploads:any
 }
 
 export interface IWBScene {
@@ -192,6 +193,8 @@ export interface SceneItem extends CatalogItemType{
     trigComp:any
     actComp:any
     editing:boolean
+    ugc:boolean
+    pending:boolean
     editor:string
     audComp:any
 }
@@ -211,6 +214,7 @@ export interface SelectedItem {
     pointer?:Entity
     initialHeight: number
     duplicate:boolean
+    ugc:boolean
 }
 
 export enum COMPONENT_TYPES {
@@ -301,6 +305,12 @@ export enum Triggers {
     ON_SPAWN = "on_spawn"
 }
 
+export enum Materials {
+    PBR = "PBR",
+    BASIC = "Basic",
+    TEXTURE = "Texture"
+}
+
 export let ENTITY_ACTIONS_LABELS:any[] = [
     "Open Link"
 ]
@@ -315,4 +325,10 @@ export let ENTITY_TRIGGER_LABELS:any[] = [
 
 export let ENTITY_TRIGGER_SLUGS:any[] = [
     Triggers.ON_CLICK
+]
+
+export let MATERIAL_TYPES:Materials[] =[
+    Materials.PBR, 
+    Materials.BASIC,
+    Materials.TEXTURE,
 ]

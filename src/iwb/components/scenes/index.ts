@@ -1,7 +1,7 @@
-import { Entity, GltfContainer, Material, MeshCollider, MeshRenderer, RaycastResult, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Entity, Material, MeshCollider, MeshRenderer, RaycastResult, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
 import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, VIEW_MODES } from "../../helpers/types"
-import { SelectedFloor, addBoundariesForParcel } from "../modes/create"
+import { SelectedFloor, addBoundariesForParcel, deleteParcelEntities } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { RealmEntityComponent } from "../../helpers/Components"
@@ -14,6 +14,7 @@ import {
     createVideoComponent,
     createVisibilityComponent,
     updateImageUrl,
+    updateMaterialComponent,
     updateNFTFrame,
     updateTextComponent
 } from "./components"
@@ -21,7 +22,6 @@ import {
 export let realm:string = ""
 export let scenes:any[] = []
 export let worlds:any[] = []
-
 export let sceneBuilds:Map<string, any> = new Map()
 export let itemIdsFromEntities:Map<number,any> = new Map()
 export let entitiesFromItemIds:Map<string,Entity> = new Map()
@@ -54,6 +54,7 @@ export function setWorlds(config:any){
         let playerWorld = player?.worlds.find((w) => w.name === world.worldName)
         if(playerWorld){
             playerWorld.v = world.v
+            playerWorld.cv = world.cv
             playerWorld.updated = world.updated
             playerWorld.builds = world.builds            
             playerWorld.init = true   
@@ -110,6 +111,10 @@ export function unloadScene(sceneId:any){
             itemIdsFromEntities.delete(entity)
             entitiesFromItemIds.delete(aid)
         })
+        localScene.pcls.forEach((parcel:string)=>{
+            deleteParcelEntities(parcel)
+        })
+        
     }
 }
 
@@ -211,15 +216,15 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
                  case 'Text':
                     updateTextComponent(item.aid, item.matComp, item.textComp)
                     break;
+                    
+                case 'Plane':
+                    updateMaterialComponent(item.aid, item.matComp)
+                    break;
             }
             break;
 
         case 'Audio':
-            MeshRenderer.setBox(entity)
-            MeshCollider.setBox(entity)
-
             createAudioComponent(entity, item)
-
             break;
     }
 }
@@ -248,5 +253,5 @@ export function updateAsset(asset:any){
         log('we just updated nftasset')
         updateNFTFrame(asset.aid, asset.matComp, asset.nftComp)
     }
-
 }
+//

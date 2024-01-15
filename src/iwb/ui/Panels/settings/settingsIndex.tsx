@@ -13,6 +13,7 @@ import { isPreview, log } from '../../../helpers/functions'
 import { localUserId, players } from '../../../components/player/player'
 import { VersionPanel } from './versionPanel'
 import { connected } from '../../../components/messaging'
+import { StatusPanel } from './StatusPanel'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
@@ -23,7 +24,7 @@ export let buttons:any[] = [
     {label:"Builds", pressed:false},
     {label:"Create", pressed:false},
     {label:"Settings", pressed:false},
-    {label:"Version", pressed:false},
+    {label:"Status", pressed:false},
     {label:"Close", pressed:false},
 ]
 
@@ -125,7 +126,7 @@ export function createSettingsPanel() {
                     <ExplorePanel/>
                     <CreateScenePanel/>
                     <SettingsPanel/>
-                    <VersionPanel/>
+                    <StatusPanel/>
                         
                     </UiEntity>
 
@@ -203,7 +204,7 @@ function generateSettingsButtons(buttons:any[]){
 }
 
 function getButtonDisplay(button:string){
-    if(button === "Create" || button === "Version" || button === "Builds"){
+    if(button === "Create" || button === "Status" || button === "Builds"){
         return isPreview ? 'flex' :  (localUserId && players.get(localUserId)!.homeWorld) ?  'flex' : 'none'
     }else{
         return 'flex'

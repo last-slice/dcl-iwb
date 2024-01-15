@@ -9,7 +9,7 @@ import {CatalogItemType, EDIT_MODES, SCENE_MODES} from '../../helpers/types'
 import {uiSizes} from '../uiConfig'
 import {localUserId, players} from '../../components/player/player'
 import {displayCatalogInfoPanel, setSelectedInfoItem} from './CatalogInfoPanel'
-import {items, original, Sorted2D, Sorted3D, sortedAll, SortedAudio} from "../../components/catalog/items";
+import {items, original, refreshSortedItems, Sorted2D, Sorted3D, sortedAll, SortedAudio} from "../../components/catalog/items";
 
 let catalogInitialized = false
 export let showCatalogPanel = false
@@ -56,11 +56,24 @@ let totalPages = 0
 
 let settings: any[] = [
     {label: "Public", enabled: true},
+    {label: "Private", enabled: false},
 ]
+
+export let selectedSetting = 0
 
 let alphabet = [
     "A", "B", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 ]
+
+function updateSelectedSetting(){
+    if(selectedSetting === 0){
+        selectedSetting = 1
+    }else{
+        selectedSetting = 0
+    }
+    refreshSortedItems()
+    filterCatalog()//
+}
 
 function findPageForLetter(letter: string): number | null {
     //let start = 0;
@@ -267,9 +280,10 @@ export function createCatalogPanel() {
                             texture: {
                                 src: 'assets/atlas2.png'
                             },
-                            uvs: getButtonState(settings[0].label)
+                            uvs: getButtonState(settings[selectedSetting].label)
                         }}
                         onMouseDown={() => {
+                            updateSelectedSetting()
                             // settings.find((set:any)=>set.label === setting.label).enabled = !settings.find((set:any)=>set.label === setting.label).enabled
                         }}
                     />
@@ -283,7 +297,7 @@ export function createCatalogPanel() {
                             height: '100%',
                             margin: {left: "1%",},
                         }}
-                        uiText={{value: settings[0].label, color: Color4.White(), fontSize: sizeFont(20, 15)}}
+                        uiText={{value: settings[selectedSetting].label, color: Color4.White(), fontSize: sizeFont(20, 15)}}
                     />
 
 
@@ -749,5 +763,3 @@ function getButtonState(button: string) {
         return getImageAtlasMapping(uiSizes.toggleOffTrans)
     }
 }
-
-//

@@ -182,10 +182,6 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
     
 }
 
-export function addLobbyBoundaries(){
-
-}
-
 export function isParcelInScene(parcel:string){
     let inScene = false
     sceneBuilds.forEach((scene)=>{

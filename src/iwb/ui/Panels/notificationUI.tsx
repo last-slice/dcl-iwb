@@ -251,7 +251,7 @@ export function createNotificationUI(){
           alignSelf:'center',
           padding:{left:"5%"}
         }}
-        uiText={{color:Color4.Black(), value: addLineBreak(currentNotification.text, undefined, 35), fontSize:sizeFont(35,25)}}
+        uiText={{color:Color4.Black(), value: addLineBreak(currentNotification.text, undefined, 35), fontSize:sizeFont(25,20)}}
       />
 </UiEntity>
 

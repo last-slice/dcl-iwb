@@ -10,13 +10,14 @@ import { cRoom } from '../../../components/messaging'
 import { showNotification } from '../notificationUI'
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { newItems } from '../../../components/catalog/items'
+import { statusView } from './StatusPanel'
 
 export function VersionPanel() {
     return (
         <UiEntity
             key={"versionpanel"}
             uiTransform={{
-                display: showSetting === "Version" ? 'flex' : 'none',
+                display: statusView === "Version" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',

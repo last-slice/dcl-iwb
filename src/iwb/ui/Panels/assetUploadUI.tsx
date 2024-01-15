@@ -12,7 +12,7 @@ export function displayAssetUploadUI(value: boolean) {
 export function createAssetUploadUI() {
     return (
         <UiEntity
-            key={"pillpanel"}
+            key={"assetuploaduiprompt"}
             uiTransform={{
                 display: showAssetUI ? "flex" : "none",
                 flexDirection: 'column',
@@ -85,8 +85,8 @@ export function createAssetUploadUI() {
         <Label
         value={addLineBreak("To upload assets, please click on the link below to launch the Asset Uploader", undefined, 50)}
         color={Color4.Black()}
-        fontSize={29}
-        font="serif"//
+        fontSize={sizeFont(25,20)}
+        font="serif"
         textAlign="middle-center"
         />
         </UiEntity>
@@ -130,14 +130,8 @@ export function createAssetUploadUI() {
             onMouseDown={()=>{
                 displayAssetUploadUI(false)
             }}
+            uiText={{value:"Close", fontSize:sizeFont(30,20), color:Color4.White()}}
         >
-            <Label
-                value="Close"
-                color={Color4.White()}
-                fontSize={sizeFont(30,20)}
-                font="serif"
-                textAlign="middle-center"
-                />
         </UiEntity>
 
 
@@ -170,15 +164,8 @@ export function createAssetUploadUI() {
                 displayAssetUploadUI(false)
                 attemptAssetUploader()
             }}
+            uiText={{value:"Open Asset Loader", fontSize:sizeFont(30,20), color:Color4.White()}}
         >
-            <Label
-                value="Open Asset Loader"
-                color={Color4.White()}
-                fontSize={sizeFont(30,20)}
-                font="serif"
-                textAlign="middle-center"
-
-                />
     </UiEntity>
 
         </UiEntity>

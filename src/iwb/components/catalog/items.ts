@@ -1,31 +1,37 @@
 import {SceneItem} from "../../helpers/types";
+import { selectedSetting } from "../../ui/Panels/CatalogPanel";
 import {realm, worlds} from "../scenes";
 
 export let items: Map<string, SceneItem> = new Map();
 export let newItems: Map<string, SceneItem> = new Map();
 
 export let original: SceneItem[] = []
+export let playerItemsOriginal: SceneItem[] = []
+
 export let sortedAll: SceneItem[] = []
 export let Sorted3D: SceneItem[] = []
 export let Sorted2D: SceneItem[] = []
 export let SortedAudio: SceneItem[] = []
 
 export function refreshSortedItems() {
-    original = [...items.values()]
+    original = [...items.values()].filter((it:any)=> !it.ugc)
+    playerItemsOriginal = [...items.values()].filter((it:any)=> it.ugc)
 
-    sortedAll = sortByType(original)
-    Sorted3D = sortByType(original, "3D")
-    Sorted2D = sortByType(original, "2D")
-    SortedAudio = sortByType(original, "Audio")
+    console.log('player items', playerItemsOriginal)//
+
+    sortedAll = sortByType(selectedSetting === 0 ? original : playerItemsOriginal)
+    Sorted3D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "3D")
+    Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")
+    SortedAudio = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Audio")
+
+    console.log('sortal all is ', sortedAll)
 }
 
 export function setAllItems(updates: SceneItem[]) {
     updates.forEach((update) => {
         items.set(update.id, update)
     })
-    refreshSortedItems()
-
-
+    refreshSortedItems()//
 }
 
 export function updateItem(id: string, update: SceneItem) {
@@ -49,3 +55,5 @@ export function setNewItems() {
     }
 
 }
+
+//

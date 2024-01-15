@@ -5,6 +5,7 @@ import { atHQ, log } from "../../helpers/functions"
 import { SCENE_MODES } from "../../helpers/types"
 import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
 import { uiModes, topTools, bottomTools, settingsIconData } from "../uiConfig"
+import { connected } from "../../components/messaging"
 
 //
 export let showToolsPanel = false
@@ -19,7 +20,7 @@ export function createToolsPanel() {
             key={"toolspanel"}
             uiTransform={{
                 // display: checkModeAndPermissions(),
-                display:'flex',
+                display: connected ? 'flex' :'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -187,7 +188,7 @@ function getDisplay(config:any){
             return 'flex'
 
         case 'SceneInfo':
-            return players.has(localUserId) && players.get(localUserId)?.activeScene && players.get(localUserId)?.activeScene !== null ? 'flex' : 'none'
+            return players.has(localUserId) && players.get(localUserId)?.activeScene && players.get(localUserId)?.activeScene !== null && players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE ? 'flex' : 'none'
 
         default:
             return players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none'

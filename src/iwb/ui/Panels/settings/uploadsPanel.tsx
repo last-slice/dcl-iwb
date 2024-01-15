@@ -1,76 +1,50 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { displaySettingsPanel, showSetting } from './settingsIndex'
+import { displaySetting, displaySettingsPanel, showSetting } from './settingsIndex'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
-import { localUserId } from '../../../components/player/player'
+import { iwbConfig, localPlayer, localUserId, players } from '../../../components/player/player'
 import { realm, worlds } from '../../../components/scenes'
-import { displayRealmTravelPanel } from '../realmTravelPanel'
 import { log, paginateArray } from '../../../helpers/functions'
+import { cRoom } from '../../../components/messaging'
+import { showNotification } from '../notificationUI'
+import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { newItems } from '../../../components/catalog/items'
+import { statusView } from './StatusPanel'
 
-let visibleIndex = 1
+let visibleIndex = 0
 let visibleItems:any[] = []
+let visibleItemsPerPage:number = 7
 
-export function showAllWorlds(){
-    visibleIndex = 1
+export function showUploads(){
+    visibleIndex = 0
     visibleItems.length = 0
     refreshVisibleItems()
 }
 
 export function refreshVisibleItems(){
-    visibleItems.length = 0
+    visibleItems = paginateArray([...localPlayer.uploads], visibleIndex + 1, visibleItemsPerPage)
+}
 
-    worlds.sort((a, b) => a.name.localeCompare(b.name));
 
-    visibleItems = paginateArray([...worlds], visibleIndex, 6)
-  }
-
-export function ExplorePanel() {
+export function UploadsPanel() {
     return (
         <UiEntity
-            key={"explorepanel"}
+            key={"uploadspanel"}
             uiTransform={{
-                display: showSetting === "Explore" ? 'flex' : 'none',
+                display: statusView === "Uploads" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
+                margin:{top:"3%"}
             }}
-        >
-
-            {/* realm button row */}
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '11%',
-            }}
-            // uiBackground={{color:Color4.Blue()}}
+        // uiBackground={{ color: Color4.Teal() }}
             >
 
-            {/* current realm text */}
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '100%',
-            }}
-            uiText={{value:"Current Realm: " + realm,  textAlign:'middle-left', color:Color4.Black(), fontSize:sizeFont(20,15)}}
-            />
-
-
-
-            </UiEntity>
-
-            {/* explore creators table */}
-            <UiEntity
+                        {/* explore creators table */}
+                        <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -81,7 +55,7 @@ export function ExplorePanel() {
             // uiBackground={{color:Color4.Gray()}}
             >
 
-            {/* explore table bg */}
+            {/* asset table bg */}
             <UiEntity
             uiTransform={{
                 display: 'flex',
@@ -128,11 +102,11 @@ export function ExplorePanel() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '60%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Creator Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            uiText={{value:"Asset Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
             />
 
             <UiEntity
@@ -145,7 +119,7 @@ export function ExplorePanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Last Update", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value:"Type", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
             />
 
             <UiEntity
@@ -158,40 +132,13 @@ export function ExplorePanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Builds", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Status", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
             />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '10%',
-                height: '100%',
-            }}
-
-            uiText={{value:"Go", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
-            />
-
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '10%',
-                height: '100%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"<3", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
-            />
-
 
 
         </UiEntity>
 
-            {/* builds row */}
+            {/* assets row */}
         <UiEntity
             uiTransform={{
                 display: 'flex',
@@ -204,10 +151,7 @@ export function ExplorePanel() {
             // uiBackground={{color:Color4.Yellow()}}
         >
 
-
-            {generateCreatorRows()}
-
-
+            {generateRows()}
 
         </UiEntity>
 
@@ -223,16 +167,44 @@ export function ExplorePanel() {
             }}
             // uiBackground={{color:Color4.Black()}}
         >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
+            height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+            margin:{top:"1%", bottom:'1%'},
+            // display: localUserId && players.get(localUserId)!.worlds.find((w)=> w.ens === realm) ?  (players.get(localUserId)!.worlds.find((w)=> w.ens === realm).v < iwbConfig.v ? 'flex' : 'none') : "none"
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+        }}
+        onMouseDown={() => {
+            displaySettingsPanel(false)
+            displaySetting("Explore")
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
+            cRoom.send(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
+        }}
+        uiText={{value:"Update", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        />
+
              <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
+                alignContent:'flex-start',
                 justifyContent: 'center',
-                width: '85%',
+                width: '62%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Black()}}
+            uiText={{value:"Total Pending Assets: " + (localPlayer ? localPlayer.uploads.length : ""), fontSize:sizeFont(20,15), color:Color4.Black()}}
         >
         </UiEntity>
 
@@ -293,6 +265,10 @@ export function ExplorePanel() {
                 log('clickding right')
                 visibleIndex++
                 refreshVisibleItems()
+                // if((visibleIndex + 1) * 6 < worlds.length){
+                    visibleIndex++
+                    refreshVisibleItems()
+                // }
             }}
             />
 
@@ -302,18 +278,19 @@ export function ExplorePanel() {
 
             </UiEntity>
 
-        
+
         </UiEntity>
     )
 }
 
-function generateCreatorRows(){
+
+function generateRows(){
     let arr:any[] = []
     if(localUserId){
-        visibleItems.forEach((world:any, i:number)=>{
+        visibleItems.forEach((asset:any, i:number)=>{
             arr.push(
             <UiEntity
-            key={"world row - " + world.ens}
+            key={"upload-asset-row-" + i}
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -327,29 +304,29 @@ function generateCreatorRows(){
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
+                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalLightestButton)
 
-                : //
+                : 
 
-                getImageAtlasMapping(uiSizes.normalLightestButton)
+                getImageAtlasMapping(uiSizes.normalButton)
             }}
             >
 
-            {/* scene name */}
+            {/* asset name */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent:'flex-start',
-                width: '40%',
+                width: '60%',
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: world.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+            uiText={{value: asset.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
             />
 
-            {/* world last updated */}
+            {/* asset type */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -359,10 +336,10 @@ function generateCreatorRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "" + Math.floor((Math.floor(Date.now()/1000) - world.updated) / 86400) + " days ago", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "" + asset.type, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
             />
 
-            {/* world build counts */}
+            {/* asset status */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -372,71 +349,8 @@ function generateCreatorRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "" + world.builds, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "" + asset.status, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
             />
-
-            {/* go button */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '10%',
-                height: '100%',
-                display:'flex'
-            }}
-            >
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateImageDimensions(2, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
-            }}
-            uiText={{value: "GO", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
-            onMouseDown={()=>{
-               displaySettingsPanel(false)
-               displayRealmTravelPanel(true, world)
-            }}
-            />
-            </UiEntity>
-
-            {/* favorite button */}
-            <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '10%',
-            height: '80%',
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
-        }}
-        onMouseDown={() => {
-            // pressed.Save = true
-        }}
-        onMouseUp={()=>{
-            // pressed.Save = false
-        }}
-        uiText={{value: "FV", color:Color4.Black(), fontSize:sizeFont(20,15)}}
-        />
-
-
 
                 </UiEntity>
                 )

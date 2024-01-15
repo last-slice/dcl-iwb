@@ -7,6 +7,7 @@ import { BLOCKCHAINS, COMPONENT_TYPES, EDIT_MODES, NFT_FRAMES, SERVER_MESSAGE_TY
 import { sendServerMessage } from '../../../components/messaging'
 import { selectedItem } from '../../../components/modes/build'
 import { log } from '../../../helpers/functions'
+import { colors, colorsLabels } from '../../../helpers/resources'
 
 let fontStyles:string[] = [
     "Sans Serif",
@@ -24,32 +25,6 @@ let textLabelAlignment:string[] = [
     "Bottom Left",
     "Bottom Center",
     "Bottom Right",
-]
-
-let colorsLabels:string[] = [
-    "Black",
-    "Blue",
-    "Gray",
-    "Green",
-    "Magenta",
-    "Purple",
-    "Red",
-    "Teal",
-    "Yellow",
-    "White",
-]
-
-let colors:Color4[] = [
-    Color4.Black(),
-    Color4.Blue(),
-    Color4.Gray(),
-    Color4.Green(),
-    Color4.Magenta(),
-    Color4.Purple(),
-    Color4.Red(),
-    Color4.Teal(),
-    Color4.Yellow(),
-    Color4.White(),
 ]
 
 let textAlignment:string[] = [

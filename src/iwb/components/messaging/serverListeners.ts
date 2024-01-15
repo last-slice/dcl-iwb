@@ -23,6 +23,16 @@ export function initiateMessageListeners(room: Room) {
                 updateItem(key, value)
             }
         }
+
+        //set realm assets
+        let realmAssets = info.realmAssets
+        for (const key in realmAssets) {
+            if (realmAssets.hasOwnProperty(key)) {
+                const value = realmAssets[key];
+                updateItem(key, value)
+            }
+        }
+
         refreshSortedItems()
 
         //set catalog styles

@@ -8,6 +8,7 @@ import {changeRealm} from "~system/RestrictedActions";
 import {log} from "../../helpers/functions";
 import resources from "../../helpers/resources";
 import {Vector3} from "@dcl/sdk/math";
+import { refreshVisibleItems } from "../../ui/Panels/settings/uploadsPanel";//
 
 export let localUserId: string
 export let localPlayer: Player
@@ -30,6 +31,7 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
         canBuild: false,
         homeWorld: false,
         worlds: [],
+        uploads: []
     }
 
     if (!local) {
@@ -141,4 +143,9 @@ export function worldTravel(world: any) {
 
 export function hasBuildPermissions() {
     return players.get(localUserId)!.canBuild || players.get(localUserId)!.homeWorld
+}
+
+export function addPendingAsset(info:any){
+    localPlayer.uploads.push({type:info.ty, name: info.n, status:"READY"})
+    refreshVisibleItems()
 }

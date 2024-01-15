@@ -123,6 +123,35 @@ export let topTools: any[] = [
         }
     },
     {
+        name: "Upload",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) {
+                displayAssetUploadUI(true)
+            } else {
+                displayNoWeb3(true)
+            }
+        }
+    },
+    {
         name: "SceneInfo",
         atlas: "assets/atlas1.png",
         enabledUV: {
