@@ -35,6 +35,8 @@ import { createCustomContextMenu } from './contextMenu'
 import { createEditObjectPanel } from './Panels/edit/EditObjectPanel'
 import { createSceneInfoPanel, displaySceneAssetInfoPanel } from './Panels/sceneInfoPanel'
 import { createDownloadPendingPanel } from './Panels/downloadPendingPanel'
+import { createDeployPendingPanel } from './Panels/deployConfirmationPanel'
+import { createAddSpawnPointPanel } from './Panels/builds/addSpawnPointPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -74,7 +76,9 @@ const uiComponent = () => [
   createScenePanel(),
   createCustomContextMenu(),
   createSceneInfoPanel(),
-  createDownloadPendingPanel()
+  createDownloadPendingPanel(),
+  createDeployPendingPanel(),
+  createAddSpawnPointPanel()
 ]
 
 

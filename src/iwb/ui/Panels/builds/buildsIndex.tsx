@@ -11,6 +11,8 @@ import { AccessList } from './accessList'
 import { BuildInfo } from './buildInfoPanel'
 import { SizePanel } from './buildSizePanel'
 import { DownloadPanel } from './downloadInfoPanel'
+import { ExportPanel, updateExportPanelView } from './ExportPanel'
+import { SpawnPanel, showSpawnPanel } from './buildSpawnPanel'
 
 export let showSettingsPanel = false
 export let buildInfoTab = "Info"
@@ -23,7 +25,7 @@ export let buttons:any[] = [
     {label:"Access", pressed:false},
     {label:"Size", pressed:false},
     {label:"Spawns", pressed:false},
-    {label:"Download", pressed:false},
+    {label:"Export", pressed:false},
     // {label:"Delete", pressed:false},
 
     {label:"Back", pressed:false},
@@ -143,7 +145,9 @@ export function createScenePanel() {
                     <AccessList/>
                     <BuildInfo/>
                     <SizePanel/>
-                    <DownloadPanel/>                        
+                    {/* <DownloadPanel/>       */}
+                    <ExportPanel/>          
+                    <SpawnPanel/>        
 
                     </UiEntity>
 
@@ -189,8 +193,13 @@ function generateBuildbuttons(buttons:any[]){
                 displaySetting("Builds")
                 displaySettingsPanel(true)
             }
+            else if(button.label === "Spawns"){
+                showSpawnPanel()
+                buildInfoTab = "Spawns"
+            }
             else{
                 displaySceneSetting(button.label)
+                updateExportPanelView("main")
             }
         }}
         uiText={{value: button.label, color:Color4.Black(), fontSize:sizeFont(30,20)}}

@@ -32,7 +32,16 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
         homeWorld: false,
         worlds: [],
         uploads: [],
-        activeSceneId:""
+        activeSceneId:"",
+        worldsAvailable:[],
+        landsAvailable:[
+            {name:"Test Land", size:2, type:"own"},
+            {name:"Test Land2", size:2, type:"own"},
+            {name:"Test Land3", size:2, type:"deploy"},
+            {name:"Test Land4", size:2, type:"deploy"},
+            {name:"Test Land5", size:2, type:"own"},
+            {name:"Test Land6", size:2, type:"own"},
+        ]
     }
 
     if (!local) {
@@ -89,9 +98,42 @@ export async function getPlayerNames() {
                 init: false,
                 version: 0
             })
-        })
+        })//
     }
+}
 
+export async function getPlayerLand(){
+    let res = await fetch(resources.endpoints.dclLandGraph, {
+        headers: {"content-type": "application/json"},
+        method: "POST",
+        body: JSON.stringify({
+            "operationName": "Land",
+            "variables": {
+              "address": "0xaabe0ecfaf9e028d63cf7ea7e772cf52d662691a",
+              "tenantTokenIds": [],
+              "lessorTokenIds": []
+            },
+            "query": "query Land($address: Bytes, $tenantTokenIds: [String!], $lessorTokenIds: [String!]) {\n  tenantParcels: parcels(\n    first: 1000\n    skip: 0\n    where: {tokenId_in: $tenantTokenIds}\n  ) {\n    ...parcelFields\n  }\n  tenantEstates: estates(first: 1000, skip: 0, where: {id_in: $tenantTokenIds}) {\n    ...estateFields\n  }\n  lessorParcels: parcels(\n    first: 1000\n    skip: 0\n    where: {tokenId_in: $lessorTokenIds}\n  ) {\n    ...parcelFields\n  }\n  lessorEstates: estates(first: 1000, skip: 0, where: {id_in: $lessorTokenIds}) {\n    ...estateFields\n  }\n  ownerParcels: parcels(\n    first: 1000\n    skip: 0\n    where: {estate: null, owner: $address}\n  ) {\n    ...parcelFields\n  }\n  ownerEstates: estates(first: 1000, skip: 0, where: {owner: $address}) {\n    ...estateFields\n  }\n  updateOperatorParcels: parcels(\n    first: 1000\n    skip: 0\n    where: {updateOperator: $address}\n  ) {\n    ...parcelFields\n  }\n  updateOperatorEstates: estates(\n    first: 1000\n    skip: 0\n    where: {updateOperator: $address}\n  ) {\n    ...estateFields\n  }\n  ownerAuthorizations: authorizations(\n    first: 1000\n    skip: 0\n    where: {owner: $address, type: \"UpdateManager\"}\n  ) {\n    operator\n    isApproved\n    tokenAddress\n  }\n  operatorAuthorizations: authorizations(\n    first: 1000\n    skip: 0\n    where: {operator: $address, type: \"UpdateManager\"}\n  ) {\n    owner {\n      address\n      parcels(first: 1000, skip: 0, where: {estate: null}) {\n        ...parcelFields\n      }\n      estates(first: 1000) {\n        ...estateFields\n      }\n    }\n    isApproved\n    tokenAddress\n  }\n}\n\nfragment parcelFields on Parcel {\n  x\n  y\n  tokenId\n  owner {\n    address\n  }\n  updateOperator\n  data {\n    name\n    description\n  }\n}\n\nfragment estateFields on Estate {\n  id\n  owner {\n    address\n  }\n  updateOperator\n  size\n  parcels(first: 1000) {\n    x\n    y\n    tokenId\n  }\n  data {\n    name\n    description\n  }\n}\n"
+          })
+    })
+
+    let json = await res.json()
+    console.log("player lands are ", json)
+
+    let ownedLand:any[] = []
+    json.data.ownerParcels.forEach((parcel:any)=>{
+        ownedLand.push({name:parcel.data.name.substring(0,12), size:1, type:"own", x:parcel.x, y:parcel.y})
+    })
+
+    let deployLand:any[] = []
+    json.data.updateOperatorParcels.forEach((parcel:any)=>{
+        if(!ownedLand.find((land:any)=> land.x === parcel.x && land.y === parcel.y)){
+            deployLand.push({name:"Operator Land", size:1, type:"deploy", x:parcel.x, y:parcel.y})
+        }
+    })
+
+    localPlayer.landsAvailable = ownedLand.concat(deployLand)
+    console.log('land ava', localPlayer.landsAvailable)
 }
 
 
@@ -112,7 +154,7 @@ export function removePlayer(user: string) {
         }
 
 
-        players.delete(user)//
+        players.delete(user)
     }
 }
 

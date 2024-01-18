@@ -1,9 +1,10 @@
 import { AudioSource, AudioStream, ColliderLayer, Entity, InputAction, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs";
 import { Actions, COLLISION_LAYERS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
 import { itemIdsFromEntities, sceneBuilds } from "../../scenes";
-import { log } from "../../../helpers/functions";
-import { openExternalUrl } from "~system/RestrictedActions";
+import { getRandomIntInclusive, log } from "../../../helpers/functions";
+import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { items } from "../../catalog";
+import { displaySettingsPanel } from "../../../ui/Panels/settings/settingsIndex";
 
 export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
     let assetId = itemIdsFromEntities.get(entity)
@@ -187,4 +188,27 @@ function disableVideo(entity:Entity, sceneItem: SceneItem){
     if(sceneItem.vidComp){
         VideoPlayer.getMutable(entity).playing = false
     }
+}
+
+export function teleportToScene(scene:IWBScene){
+    let rand = getRandomIntInclusive(0, scene.sp.length-1)
+    let parent = Transform.get(scene.parentEntity).position
+
+    let position = {x:0, y:0, z:0}
+    let camera = {x:0, y:0, z:0}
+
+    let [sx,sy,sz] = scene.sp[rand].split(",")
+    let [cx,cy,cz] = scene.cp[rand].split(",")
+
+    position.x = parent.x + parseInt(sx)
+    position.y = parent.y + parseInt(sy)
+    position.z = parent.z + parseInt(sz)
+
+    camera.x = parent.x + parseInt(cx)
+    camera.y = parent.y + parseInt(cy)
+    camera.z = parent.z + parseInt(cz)
+
+    displaySettingsPanel(false)
+
+    movePlayerTo({newRelativePosition:position, cameraTarget:camera})
 }

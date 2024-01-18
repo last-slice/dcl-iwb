@@ -5,7 +5,7 @@ import { SelectedFloor, addBoundariesForParcel, deleteParcelEntities } from "../
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
 import { AudioLoadedComponent, RealmEntityComponent, VideoLoadedComponent } from "../../helpers/Components"
-import { hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
+import { getPlayerLand, hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import {
@@ -35,6 +35,7 @@ export let playModeCheckedAssets:any[] = []
 export let lastScene:any
 
 export let playModeReset:boolean = true
+export let disabledEntities:boolean = false
 
 export function updatePlayModeReset(value:boolean){
     log('updating playmode reset', value)
@@ -47,11 +48,11 @@ export function updateRealm(value:string){
     if(value !== "BuilderWorld"){
         let player = players.get(localUserId)
         if(player){
-            player.worlds.forEach((world)=>{
+            player.worlds.forEach(async (world)=>{
                 log('world is', world)
                 if((world.ens === value)){
                     player!.homeWorld = true
-                    log('player is in home world')
+                    await getPlayerLand()
                     return
                 }
             })
@@ -238,7 +239,7 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             break;
 
         case 'Audio':
-            createAudioComponent(scene.id, entity, item)
+            createAudioComponent(scene, entity, item)
             break;
     }
 }
@@ -269,13 +270,15 @@ export function updateAsset(asset:any){
     }
 }
 
-export function checkScenePermissions(player: Player) {
+export async function checkScenePermissions(player: Player) {
     let canbuild = false
     let activeScene:any
     sceneBuilds.forEach((scene: IWBScene, key: string) => {
         if (scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
-            console.log('player is on current owned parcel')
             canbuild = true
+        }
+
+        if(scene.pcls.find((parcel) => parcel === player!.currentParcel)){
             activeScene = scene
         }
     })
@@ -286,7 +289,7 @@ export function checkScenePermissions(player: Player) {
         player.canBuild = true
     } else {
         player.canBuild = false
-        // player.activeScene = null
+        // player.activeScene = null//
         displaySceneAssetInfoPanel(false)
     }
 
@@ -297,9 +300,9 @@ export function checkScenePermissions(player: Player) {
             if(activeScene){
                 if(lastScene){
                     if(lastScene !== activeScene.id){
-                        disableSceneEntities(lastScene)
+                        await disableSceneEntities(lastScene)
+                        enableSceneEntities(activeScene.id)
                     }
-                    enableSceneEntities(activeScene.id)
                 }else{
                     enableSceneEntities(activeScene.id)
                 }
@@ -311,35 +314,38 @@ export function checkScenePermissions(player: Player) {
     }
 }
 
-function disableSceneEntities(sceneId:string){
-    // for(let i = 0; i < playModeCheckedAssets.length; i++){
-    //     let entity = playModeCheckedAssets.shift()
-    //     disableEntityForPlayMode(sceneId, entity)
-    // }
-    console.log('disabling scene entities for scene', sceneId)
+async function disableSceneEntities(sceneId:string){
+    if(!disabledEntities){
+        // for(let i = 0; i < playModeCheckedAssets.length; i++){
+        //     let entity = playModeCheckedAssets.shift()
+        //     disableEntityForPlayMode(sceneId, entity)
+        // }
+        // console.log('disabling scene entities for scene', sceneId)
 
-    let scene = sceneBuilds.get(sceneId)
-    if(scene){
-        for(let i = 0; i < scene.entities.length; i++){
-            let entity = scene.entities[i]
+        let scene = sceneBuilds.get(sceneId)
+        if(scene){
+            for(let i = 0; i < scene.entities.length; i++){
+                let entity = scene.entities[i]
 
-            //check video
-            if(VideoLoadedComponent.has(entity)){
-                VideoLoadedComponent.getMutable(entity).init = false
+                //check video
+                if(VideoLoadedComponent.has(entity)){
+                    VideoLoadedComponent.getMutable(entity).init = false
+                }
+
+                //check audio
+                if(AudioLoadedComponent.has(entity)){
+                    AudioLoadedComponent.getMutable(entity).init = false
+                }
+
+                disableEntityForPlayMode(scene.id, entity)
             }
-
-            //check audio
-            if(AudioLoadedComponent.has(entity)){
-                AudioLoadedComponent.getMutable(entity).init = false
-            }
-
-            disableEntityForPlayMode(scene.id, entity)
         }
+        disabledEntities = true
     }
-
 }
 
 function enableSceneEntities(sceneId:string){
+    log('enable scene entities for play mode')
     let scene = sceneBuilds.get(sceneId)
     if(scene){
         for(let i = 0; i < scene.entities.length; i++){
@@ -367,5 +373,6 @@ function enableSceneEntities(sceneId:string){
             playModeCheckedAssets.push(entity)
             // resetEntityForPlayMode(scene, entity)
         }
+        disabledEntities = false//
     }
 }

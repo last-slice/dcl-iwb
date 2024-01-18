@@ -40,7 +40,7 @@ export let playerParentEntities: Map<string, Entity> = new Map()
 let ITEM_DEPTH_DEFAULT = 4
 let ITEM_HEIGHT_DEFAULT = -.88
 
-export function sendServerEdit(axis: string, direction: number, manual?:boolean, manualMod?:EDIT_MODIFIERS, value?:number) {
+export function sendServerEdit(axis: string, direction: number, manual:boolean, manualMod?:EDIT_MODIFIERS, value?:number) {
     sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET,
         {
             item: selectedItem.entity,
@@ -53,7 +53,7 @@ export function sendServerEdit(axis: string, direction: number, manual?:boolean,
             editType: EDIT_MODIFIERS.TRANSFORM,
             manual:manual,
             value: value ? value : 0,
-            ugc: selectedItem.ugc
+            // ugc: selectedItem.hasOwnProperty("ugc") ? selectedItem.ugc : false
         }
     )
 }
@@ -164,8 +164,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             enabled: true,
             already: already,
             initialHeight: ITEM_HEIGHT_DEFAULT,
-            duplicate: duplicate ? duplicate : null,
-            ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false
+            duplicate: duplicate ? duplicate : false,
+            ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false//
         }
 
         if (already) {
@@ -486,7 +486,7 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
                         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
                         scale: roundVector(t.scale, 2),
                         duplicate: selectedItem.duplicate,
-                        ugc: selectedItem.ugc
+                        ugc: selectedItem.ugc//
                     }
                 }
             )
@@ -513,7 +513,7 @@ export function duplicateItem(entity: Entity) {
 
 
 export function grabItem(entity: Entity) {
-    hideAllPanels()
+    hideAllPanels()//
 
     hideAllOtherPointers()
     PointerEvents.deleteFrom(entity)

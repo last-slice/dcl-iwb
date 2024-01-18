@@ -321,6 +321,7 @@ export function createSceneInfoPanel() {
                     onMouseDown={() => {
                         // pressed.Load = true
                         deselectRow()
+                        visibleIndex++
                         visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
                     }}
 

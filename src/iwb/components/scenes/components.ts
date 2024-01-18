@@ -19,7 +19,7 @@ import {localPlayer, localUserId, players} from "../player/player";
 import {entitiesFromItemIds, sceneBuilds} from ".";
 import {log} from "../../helpers/functions";
 import { AudioLoadedComponent, VideoLoadedComponent } from "../../helpers/Components";
-import { selectedItem } from "../modes/build";
+import { resetEntityForBuildMode, selectedItem } from "../modes/build";
 import { items } from "../catalog";
 
 export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:SceneItem){
@@ -163,15 +163,19 @@ export function updateVideoUrl(aid:string, materialComp:any, url:string){
     }
 }
 
-export function createAudioComponent(sceneId:string, entity:Entity, item:SceneItem){
+export function createAudioComponent(scene:any, entity:Entity, item:SceneItem){
     AudioSource.create(entity, {
-        audioClipUrl: item.audComp.url,
+        audioClipUrl: item.ugc ? "assets/" + item.id + ".mp3" : item.audComp.url,
         playing: false,
         volume: item.audComp.volume,
         loop: item.audComp.loop
     })
     updateAudioAttach(item.aid, item.audComp)
-    AudioLoadedComponent.create(entity, {init:false, sceneId:sceneId})
+    AudioLoadedComponent.create(entity, {init:false, sceneId:scene.id})
+
+    if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+        resetEntityForBuildMode(scene, entity)
+    }
 }
 
 export function updateAudioComponent(aid:string, audComp:any,){
@@ -208,7 +212,6 @@ export function updateAudioAttach(aid:string, audComp:any, ){
         })//
 
         if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
-
             if(audComp.attachedPlayer){
                 TextShape.createOrReplace(ent,{text:"Audio\nAttached", fontSize: 3})
             }

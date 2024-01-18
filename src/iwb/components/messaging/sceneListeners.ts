@@ -10,11 +10,15 @@ import {
     updateGrabbedYAxis,
 } from "../modes/build"
 import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
-import { localUserId, setPlayMode } from "../player/player"
+import { localPlayer, localUserId, setPlayMode } from "../player/player"
 import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateAsset, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { sceneListeners } from "./Scene"
 import { assetListener } from "./Asset"
+import { updateExportPanelView } from "../../ui/Panels/builds/ExportPanel"
+import { displaySceneInfoPanel, displaySceneSetting } from "../../ui/Panels/builds/buildsIndex"
+import { openExternalUrl } from "~system/RestrictedActions"
+import { displayDeployPendingPanel } from "../../ui/Panels/deployConfirmationPanel"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -111,6 +115,22 @@ export function createSceneListeners(room: any) {
             log(SERVER_MESSAGE_TYPES.UPDATE_GRAB_Y_AXIS + ' received', info)
             if(info.user !== localUserId){
                 updateGrabbedYAxis(info)
+            }
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY + ' received', info)
+            updateExportPanelView('main')
+            displaySceneSetting("Info")
+            displaySceneInfoPanel(false,null)
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: info.msg, animate:{enabled:true, return:true, time: 5}})
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY, (info:any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY + ' received', info)
+            if(info && info.link){
+                localPlayer.deploymentLink = info.link
+                displayDeployPendingPanel(true)
             }
         })
 }

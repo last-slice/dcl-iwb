@@ -28,7 +28,7 @@ export let colors:Color4[] = [
 ]
 
 export default {
-    DEBUG: true,
+    DEBUG: false,
     allowNoWeb3:false,
 
     lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
@@ -46,7 +46,8 @@ export default {
         validateTest: "http://localhost:2751",
 
         assetSign: "/scene/sign",
-        dclNamesGraph:"https://api.thegraph.com/subgraphs/name/decentraland/marketplace"
+        dclNamesGraph:"https://api.thegraph.com/subgraphs/name/decentraland/marketplace",
+        dclLandGraph:"https://api.thegraph.com/subgraphs/name/decentraland/land-manager"
     },
     colors:{
         transparent: Color4.create(0,0,0,0),

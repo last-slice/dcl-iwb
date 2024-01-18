@@ -46,7 +46,11 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_UPDATE_ENABLED = 'scene_update_enabled',
     SCENE_UPDATE_PRIVACY = 'scene_update_privacy',
     SCENE_DOWNLOAD = 'scene_download',
-
+    SCENE_DEPLOY = 'scene_deploy',
+    SCENE_DEPLOY_READY = 'scene_deploy_ready',
+    SCENE_ADDED_SPAWN = "scene_added_spawn",
+    SCENE_DELETE_SPAWN = "scene_delete_spawn",
+    
     //World
     INIT_WORLD = "init_world",
     NEW_WORLD_CREATED = 'new_world_created',
@@ -127,6 +131,9 @@ export interface Player {
     homeWorld:boolean
     cameraParent:Entity
     uploads:any
+    landsAvailable:any[]
+    worldsAvailable:any[]
+    deploymentLink:string
 }
 
 export interface IWBScene {
@@ -144,6 +151,7 @@ export interface IWBScene {
     rev:string[],
     pcls:string[],
     sp:string[],
+    cp:string[],
     cd:number,
     upd:number,
     si:number,

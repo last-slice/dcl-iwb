@@ -8,6 +8,7 @@ import { localUserId, players } from '../../../components/player/player'
 import { formatDollarAmount, formatSize, log } from '../../../helpers/functions'
 import { sceneBuilds } from '../../../components/scenes'
 import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from '../builds/buildsIndex'
+import { teleportToScene } from '../../../components/modes/play'
 
 let visibleIndex = 0
 let visibleItems:any[] = []
@@ -328,7 +329,7 @@ function generateBuildRows(){
 
     </UiEntity>
 
-        {/* go button */}
+        {/* go button// */}
         <UiEntity
     uiTransform={{
         flexDirection: 'column',
@@ -347,6 +348,7 @@ function generateBuildRows(){
     }}
     onMouseDown={() => {
         // pressed.Save = true
+        teleportToScene(scene)
     }}
     onMouseUp={()=>{
         // pressed.Save = false
