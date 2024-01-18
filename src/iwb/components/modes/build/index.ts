@@ -165,7 +165,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             already: already,
             initialHeight: ITEM_HEIGHT_DEFAULT,
             duplicate: duplicate ? duplicate : false,
-            ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false//
+            ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false,
+            isCatalogSelect: true
         }
 
         if (already) {
@@ -415,8 +416,8 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
         return
     }
 
-    const {position, rotation} = Transform.get(engine.PlayerEntity)
-    const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)
+    const {position, rotation: playerRotation} = Transform.get(engine.PlayerEntity)
+    const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), playerRotation)
     const finalPosition = Vector3.add(position, forwardVector)
 
     console.log('final position is', finalPosition)
@@ -450,19 +451,28 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
                 t.position.y = t.position.y + .88
                 t.position.z = finalPosition.z
 
-                t.rotation.y = rotation.y
-                t.rotation.w = rotation.w
+                if(selectedItem.isCatalogSelect){
+                    //console.log('not a catalog select')
+                    t.rotation.y = playerRotation.y
+                    t.rotation.w = playerRotation.w
 
-                // TODO testing rotation values -matt
-                // t.rotation.y += rotation.y
-                // t.rotation.x += rotation.x
-                // t.rotation.z += rotation.z
-                // t.rotation.w += rotation.w
+                } else {
+
+                    let eulRot = Quaternion.toEulerAngles(t.rotation)
+                    let pEulRot = Quaternion.toEulerAngles(playerRotation)
+
+                    t.rotation = Quaternion.fromEulerDegrees(
+                        eulRot.x,
+                        eulRot.y + pEulRot.y,
+                        eulRot.z
+                    )
+                }
             }
 
             t.parent = curSceneParent
 
             log('new transform is', t)
+            log('new rot is', Quaternion.toEulerAngles(t.rotation))
 
             // if(selectedItem.already){
             //     log('dropping already selected item')
@@ -516,7 +526,7 @@ export function grabItem(entity: Entity) {
     hideAllPanels()//
 
     hideAllOtherPointers()
-    PointerEvents.deleteFrom(entity)
+    if(PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
 
     let assetId = itemIdsFromEntities.get(entity)
     if (assetId) {
@@ -578,8 +588,20 @@ export function grabItem(entity: Entity) {
                     addGrabbedComponent(selectedItem.entity, selectedItem.itemData.id, selectedItem.itemData)
                 }
 
+
                 addUseItemPointers(entity)
-                Transform.create(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, scale: scale, parent: engine.PlayerEntity})
+
+                const {rotation:playerRot} = Transform.get(engine.PlayerEntity)
+                const euler = Quaternion.toEulerAngles(playerRot)
+
+                Transform.create(
+                    selectedItem.entity,
+                    {
+                        position: {x: 0, y: -.88, z: 4},
+                        scale: scale,
+                        rotation:Quaternion.fromEulerDegrees(euler.x - transRot.x, transRot.y - euler.y , euler.z - transRot.z) ,
+                        parent: engine.PlayerEntity
+                    })
 
                 grabbedAssets.set(selectedItem.itemData.aid, entity)
             }
