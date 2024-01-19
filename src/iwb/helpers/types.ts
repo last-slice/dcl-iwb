@@ -227,6 +227,7 @@ export interface SelectedItem {
     initialHeight: number
     duplicate:boolean
     ugc:boolean
+    isCatalogSelect?:boolean
 }
 
 export enum COMPONENT_TYPES {
