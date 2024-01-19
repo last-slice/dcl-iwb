@@ -38,21 +38,14 @@ export function createCatalogInfoPanel() {
                 width: calculateImageDimensions(25, 345 / 511).width,
                 height: calculateImageDimensions(25, 345 / 511).height,
                 positionType: 'absolute',
-                position: { right: '3%', bottom: '3%' }//
+                position: { right: '3%', bottom: '3%' }
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas1.png',
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 514,
-                    sourceLeft: 384,
-                    sourceWidth: 345,
-                    sourceHeight: 511
-                })
+                uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
             }}
         >
 

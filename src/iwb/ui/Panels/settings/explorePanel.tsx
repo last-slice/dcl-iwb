@@ -313,7 +313,7 @@ function generateCreatorRows(){
         visibleItems.forEach((world:any, i:number)=>{
             arr.push(
             <UiEntity
-            key={"world row - " + world.ens}
+            key={"world-row-" + i}
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',

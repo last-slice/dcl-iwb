@@ -212,7 +212,9 @@ export interface SceneItem extends CatalogItemType{
 export interface SelectedItem {
     mode:EDIT_MODES
     modifier: EDIT_MODIFIERS
-    factor: number
+    pFactor: number
+    sFactor: number
+    rFactor: number
     entity:Entity
     catalogId:string
     sceneId:string

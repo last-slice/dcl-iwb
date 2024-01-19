@@ -73,7 +73,7 @@ export function initiateMessageListeners(room: Room) {
 
     room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
-        if (info.owner === localUserId && info.init) {
+        if (info.owner.toLowerCase() === localUserId && info.init) {
             displayWorldReadyPanel(true, info)
         } else {
             log('should display something else')

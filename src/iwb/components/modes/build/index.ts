@@ -40,14 +40,27 @@ export let playerParentEntities: Map<string, Entity> = new Map()
 let ITEM_DEPTH_DEFAULT = 4
 let ITEM_HEIGHT_DEFAULT = -.88
 
-export function sendServerEdit(axis: string, direction: number, manual:boolean, manualMod?:EDIT_MODIFIERS, value?:number) {
+function getFactor(mod:EDIT_MODIFIERS){
+    switch(mod){
+        case EDIT_MODIFIERS.POSITION:
+            return selectedItem.pFactor
+
+        case EDIT_MODIFIERS.ROTATION:
+            return selectedItem.rFactor
+
+        case EDIT_MODIFIERS.SCALE:
+            return selectedItem.sFactor
+    }
+}
+
+export function sendServerEdit(modifier:EDIT_MODIFIERS, axis: string, direction: number, manual:boolean, manualMod?:EDIT_MODIFIERS, value?:number) {
     sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET,
         {
             item: selectedItem.entity,
             sceneId: selectedItem.sceneId,
             aid: selectedItem.aid,
-            modifier: manual ? manualMod : selectedItem.modifier,
-            factor: selectedItem.factor,
+            modifier: manual ? manualMod : modifier,
+            factor: getFactor(modifier),
             axis: axis,
             direction: direction,
             editType: EDIT_MODIFIERS.TRANSFORM,
@@ -91,55 +104,63 @@ export function transformObject(sceneId: string, aid: string, edit: EDIT_MODIFIE
     }
 }
 
-export function toggleModifier() {
-    switch (selectedItem.modifier) {
+export function toggleModifier(mod:EDIT_MODIFIERS) {
+    switch (mod) {
         case EDIT_MODIFIERS.POSITION:
+            if (selectedItem.pFactor === 1) {
+                selectedItem.pFactor = 0.1
+            } else if (selectedItem.pFactor === 0.1) {
+                selectedItem.pFactor = 0.01
+            } else if (selectedItem.pFactor === 0.01) {
+                selectedItem.pFactor = 0.001
+            } else if (selectedItem.pFactor === 0.001) {
+                selectedItem.pFactor = 1
+            }
         case EDIT_MODIFIERS.SCALE:
-            if (selectedItem.factor === 1) {
-                selectedItem.factor = 0.1
-            } else if (selectedItem.factor === 0.1) {
-                selectedItem.factor = 0.01
-            } else if (selectedItem.factor === 0.01) {
-                selectedItem.factor = 0.001
-            } else if (selectedItem.factor === 0.001) {
-                selectedItem.factor = 1
+            if (selectedItem.sFactor === 1) {
+                selectedItem.sFactor = 0.1
+            } else if (selectedItem.sFactor === 0.1) {
+                selectedItem.sFactor = 0.01
+            } else if (selectedItem.sFactor === 0.01) {
+                selectedItem.sFactor = 0.001
+            } else if (selectedItem.sFactor === 0.001) {
+                selectedItem.sFactor = 1
             }
             break;
-
 
         case EDIT_MODIFIERS.ROTATION:
-            if (selectedItem.factor === 90) {
-                selectedItem.factor = 45
-            } else if (selectedItem.factor === 45) {
-                selectedItem.factor = 15
-            } else if (selectedItem.factor === 15) {
-                selectedItem.factor = 5
-            } else if (selectedItem.factor === 5) {
-                selectedItem.factor = 1
-            } else if (selectedItem.factor === 1) {
-                selectedItem.factor = 90
+            if (selectedItem.rFactor === 90) {
+                selectedItem.rFactor = 45
+            } else if (selectedItem.rFactor === 45) {
+                selectedItem.rFactor = 15
+            } else if (selectedItem.rFactor === 15) {
+                selectedItem.rFactor = 5
+            } else if (selectedItem.rFactor === 5) {
+                selectedItem.rFactor = 1
+            } else if (selectedItem.rFactor === 1) {
+                selectedItem.rFactor = 90
             }
             break;
     }
 }
 
-export function toggleEditModifier(modifier?: EDIT_MODIFIERS) {
-    if (modifier) {
-        selectedItem.modifier = modifier
-    } else {
-        if (selectedItem.modifier === EDIT_MODIFIERS.POSITION) {
-            selectedItem.modifier = EDIT_MODIFIERS.ROTATION
-            selectedItem.factor = 90
-        } else if (selectedItem.modifier === EDIT_MODIFIERS.ROTATION) {
-            selectedItem.modifier = EDIT_MODIFIERS.SCALE
-            selectedItem.factor = 1
-        } else if (selectedItem.modifier === EDIT_MODIFIERS.SCALE) {
-            selectedItem.modifier = EDIT_MODIFIERS.POSITION
-            selectedItem.factor = 1
-        }
-    }
-    console.log('modifier is now', selectedItem)
-}
+// export function toggleEditModifier(modifier?: EDIT_MODIFIERS) {
+//     if (modifier) {
+//         selectedItem.modifier = modifier
+//     } else {
+//         if (selectedItem.modifier === EDIT_MODIFIERS.POSITION) {
+//             selectedItem.modifier = EDIT_MODIFIERS.ROTATION
+//             selectedItem.factor = 90
+//         } else if (selectedItem.modifier === EDIT_MODIFIERS.ROTATION) {
+//             selectedItem.modifier = EDIT_MODIFIERS.SCALE
+//             selectedItem.factor = 1
+//         } else if (selectedItem.modifier === EDIT_MODIFIERS.SCALE) {
+//             selectedItem.modifier = EDIT_MODIFIERS.POSITION
+//             selectedItem.factor = 1
+//         }
+//     }
+//     console.log('modifier is now', selectedItem)
+// }
 
 export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, duplicate?:any) {
     if (selectedItem && selectedItem.enabled && selectedItem.entity && selectedItem.mode === EDIT_MODES.GRAB) {
@@ -155,7 +176,9 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         selectedItem = {
             mode: mode,
             modifier: EDIT_MODIFIERS.POSITION,
-            factor: 1,
+            pFactor: 1,
+            sFactor:1,
+            rFactor:90,
             entity: engine.addEntity(),
             aid: getRandomString(6),
             catalogId: id,
@@ -339,7 +362,9 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
                     duplicate:false,
                     mode: mode,
                     modifier: EDIT_MODIFIERS.POSITION,
-                    factor: 1,
+                    pFactor:1,
+                    sFactor:1,
+                    rFactor:90,
                     entity: entity,
                     aid: assetId,
                     catalogId: sceneItem.id,
@@ -541,7 +566,9 @@ export function grabItem(entity: Entity) {
                     duplicate:false,
                     mode: EDIT_MODES.GRAB,
                     modifier: EDIT_MODIFIERS.POSITION,
-                    factor: 1,
+                    pFactor:1,
+                    sFactor:1,
+                    rFactor:90,
                     entity: engine.addEntity(),
                     aid: sceneItem.aid,
                     catalogId: sceneItem.id,

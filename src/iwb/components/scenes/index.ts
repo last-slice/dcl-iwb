@@ -64,7 +64,18 @@ export function setWorlds(config:any){
     let player = players.get(localUserId)
 
     config.forEach((world:any)=>{
-        worlds.push({name: world.worldName, v:world.v, owner:world.owner, ens:world.ens, builds: world.builds, updated: world.updated})
+
+        if(world.init){
+            worlds.push({name: world.worldName, v:world.v, owner:world.owner, ens:world.ens, builds: world.builds, updated: world.updated})
+        }else{
+            let w = worlds.find((wo:any)=> wo.ens === world.ens)
+            if(w){
+                w.updated = world.updated
+                w.v = world.v
+            }else{
+                worlds.push({name: world.worldName, v:world.v, owner:world.owner, ens:world.ens, builds: world.builds, updated: world.updated})
+            }
+        }
 
         let playerWorld = player?.worlds.find((w) => w.name === world.worldName)
         if(playerWorld){

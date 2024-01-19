@@ -916,10 +916,10 @@ export let uiSizes:any ={
     vertRectangleOpaque: {
         atlasHeight: 1024,
         atlasWidth: 1024,
-        sourceTop: 514,
-        sourceLeft: 384,
-        sourceWidth: 345,
-        sourceHeight: 511
+        sourceTop: 646,
+        sourceLeft: 510,
+        sourceWidth: 258,
+        sourceHeight: 383
     },
 
     horzRectangleOpaque:{
