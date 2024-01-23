@@ -1,5 +1,11 @@
 import { log } from "../../../helpers/functions";
-import { updateVideoAutostart, updateVideoPlaying, updateVideoUrl, updateVideoVolume } from "../../scenes/components";
+import {
+    updateVideoAutostart,
+    updateVideoLoop,
+    updateVideoPlaying,
+    updateVideoUrl,
+    updateVideoVolume
+} from "../../scenes/components";
 
 export function videoComponentListener(asset:any){
     if(asset.vidComp){
@@ -15,11 +21,11 @@ export function videoComponentListener(asset:any){
 
         asset.vidComp.listen("loop", (currentValue:any, previousValue:any) => {
             log("asset video loop changed", previousValue, currentValue)
-            updateVideoVolume(asset.aid, currentValue)
+            updateVideoLoop(asset.aid, currentValue)
         });
 
         asset.vidComp.listen("autostart", (currentValue:any, previousValue:any) => {
-            log("asset video loop changed", previousValue, currentValue)
+            log("asset video autostart changed", previousValue, currentValue)
             updateVideoAutostart(asset.aid, currentValue)
         });
 

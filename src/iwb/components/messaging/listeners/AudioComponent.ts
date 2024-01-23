@@ -19,6 +19,11 @@ export function audioComponentListener(asset: any) {
             updateAudioLoop(asset.aid, asset.audComp)
         });
 
+        asset.audComp.listen("volume", (currentValue: any, previousValue: any) => {
+            log("volume audio changed", previousValue, currentValue)
+            updateAudio('volume', asset.aid, asset.audComp)
+        });
+
         asset.audComp.listen("autostart", (currentValue: any, previousValue: any) => {
             log("autostart audio changed", previousValue, currentValue)
             updateAudio('autostart', asset.aid, asset.audComp)
