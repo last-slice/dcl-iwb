@@ -14,6 +14,8 @@ import { localUserId, players } from '../../../components/player/player'
 import { VersionPanel } from './versionPanel'
 import { connected } from '../../../components/messaging'
 import { StatusPanel } from './StatusPanel'
+import { playSound } from '../../../components/sounds'
+import { SOUND_TYPES } from '../../../helpers/types'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
@@ -196,6 +198,7 @@ function generateSettingsButtons(buttons:any[]){
             else{
                 displaySetting(button.label)
             }
+            playSound(SOUND_TYPES.WOOD_3)
         }}
         uiText={{value: button.label, color:Color4.Black(), fontSize:sizeFont(30,20)}}
         />)

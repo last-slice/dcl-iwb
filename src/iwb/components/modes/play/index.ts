@@ -1,12 +1,14 @@
-import { AudioSource, AudioStream, ColliderLayer, Entity, InputAction, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs";
+import { AudioSource, AudioStream, ColliderLayer, Entity, InputAction, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
 import { Actions, COLLISION_LAYERS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
-import { itemIdsFromEntities, sceneBuilds } from "../../scenes";
+import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes";
 import { getRandomIntInclusive, log } from "../../../helpers/functions";
 import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { items } from "../../catalog";
 import { displaySettingsPanel } from "../../../ui/Panels/settings/settingsIndex";
+import { localPlayer } from "../../player/player";
 
 export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
+    log('resetting enttiy for play mode')
     let assetId = itemIdsFromEntities.get(entity)
     if(assetId){
         let sceneItem = scene.ass.find((a)=> a.aid === assetId)
@@ -46,12 +48,14 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
             if(sceneItem){
                 disableAudio(entity, sceneItem)
                 disableVideo(entity, sceneItem)
+                PointerEvents.deleteFrom(entity)
             }
         }
     }
 }
 
 export function findTriggerActionForEntity(entity:Entity, type:Triggers){
+    log('finding trigger action for entity')
     sceneBuilds.forEach((scene,key)=>{
         let ent = scene.entities.find((e:any)=>e === entity)
         if(ent){
@@ -64,7 +68,7 @@ export function findTriggerActionForEntity(entity:Entity, type:Triggers){
                         let triggers = sceneItem.trigComp.triggers.filter((trig:any)=> trig.type === type)
                         log('found triggers', triggers)
                         triggers.forEach((trigger:any)=>{
-                            runTrigger(trigger.actions)
+                            runTrigger(sceneItem, trigger.actions)
                         })
                     }
                 }
@@ -76,29 +80,47 @@ export function findTriggerActionForEntity(entity:Entity, type:Triggers){
     })
 }
 
-export function runTrigger(actions:any){
+export function runTrigger(sceneItem:SceneItem, actions:any){
     log('actions are', actions)
-    actions.forEach((action:any, key:string)=>{
+    actions.forEach((id:any)=>{
+        let action = sceneItem.actComp.actions[id]
+        let assetId:any
+        let entity:any
+
+        console.log('action is ', action)
+
         switch(action.type){
             case Actions.OPEN_LINK:
-                log('opening external url', action)
-                openExternalUrl({url:"" + action.url})
+                log('opening external url')
+                // openExternalUrl({url:"" + action.url})//
+                break;
+
+            case Actions.PLAY_AUDIO:
+                log('playing audio')
+                assetId = sceneItem.actComp.actions[id].aid
+                entity = entitiesFromItemIds.get(assetId)
+
+                if(entity){
+                    if(sceneItem.sty !== "Stream"){
+                        AudioSource.getMutable(entity).playing = true
+                    }
+                }
+                break;
+
+            case Actions.TOGGLE_VIDEO:
+                log('toggling video')
+                assetId = sceneItem.actComp.actions[id].aid
+                entity = entitiesFromItemIds.get(assetId)
+
+                if(entity){
+                    VideoPlayer.getMutable(entity).playing = !VideoPlayer.get(entity).playing
+                }
                 break;
         }
     })
-
-    // for(let key in actions){
-    //     let action = actions[key]
-    //     switch(action.type){
-    //         case Actions.OPEN_LINK:
-    //             log('opening external url')
-    //             openExternalUrl({url:"" + action.url})
-    //             break;
-    //     }
-    // }
 }
 
-function check2DCollision(entity:Entity, sceneItem: SceneItem){
+export function check2DCollision(entity:Entity, sceneItem: SceneItem){
     //check 2d collision 
     if(sceneItem.type === "2D"){
         if(sceneItem.colComp.vMask !== 1){
@@ -111,8 +133,10 @@ function check2DCollision(entity:Entity, sceneItem: SceneItem){
     }
 }
 
-function checkPointers(entity:Entity, sceneItem: SceneItem){
+export function checkPointers(entity:Entity, sceneItem: SceneItem){
+    log('checking pointers for play asset', sceneItem)
     if(sceneItem.trigComp && sceneItem.trigComp.triggers.length > 0){
+        log('we have play pointers')
         PointerEvents.createOrReplace(entity,{
             pointerEvents:[
                 {
@@ -132,8 +156,14 @@ export function checkAudio(entity:Entity, sceneItem: SceneItem){
     if(sceneItem.audComp){
         log('checking audio component for play mode')
 
-        let audio = AudioSource.getMutableOrNull(entity)
-
+        let audio:any
+        if(sceneItem.sty !== "Stream"){
+            audio = AudioSource.getMutableOrNull(entity)
+        }
+        else{
+            audio = AudioStream.getMutableOrNull(entity)
+        }
+        
         //check position
         if(sceneItem.audComp.attachedPlayer){
             Transform.createOrReplace(entity, {parent:engine.PlayerEntity})
@@ -178,7 +208,7 @@ function disableAudio(entity:Entity, sceneItem: SceneItem){
             if(itemData.sty === "Local"){
                 AudioSource.getMutable(entity).playing = false
             }else{
-                AudioStream.getMutable(entity).playing = false
+                //AudioStream.getMutable(entity).playing = false//
             }
         }    
     }

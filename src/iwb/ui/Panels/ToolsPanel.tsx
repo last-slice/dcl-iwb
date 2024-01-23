@@ -2,10 +2,11 @@ import { Color4 } from "@dcl/sdk/math"
 import ReactEcs, { UiEntity, Label } from "@dcl/sdk/react-ecs"
 import { players, localUserId, setPlayMode, hasBuildPermissions, localPlayer } from "../../components/player/player"
 import { atHQ, log } from "../../helpers/functions"
-import { SCENE_MODES } from "../../helpers/types"
+import { SCENE_MODES, SOUND_TYPES } from "../../helpers/types"
 import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
 import { uiModes, topTools, bottomTools, settingsIconData } from "../uiConfig"
 import { connected } from "../../components/messaging"
+import { playSound } from "../../components/sounds"
 
 //
 export let showToolsPanel = false
@@ -176,6 +177,7 @@ function CreateToolIcon(data:any){
         if(config.fn){
             config.fn()
         }
+        playSound(SOUND_TYPES.WOOD_3)
     }}
     >     
     </UiEntity>  

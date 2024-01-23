@@ -4,7 +4,7 @@ import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, Player, SCEN
 import { SelectedFloor, addBoundariesForParcel, deleteParcelEntities } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
-import { AudioLoadedComponent, RealmEntityComponent, VideoLoadedComponent } from "../../helpers/Components"
+import { AudioLoadedComponent, PointersLoadedComponent, RealmEntityComponent, VideoLoadedComponent } from "../../helpers/Components"
 import { getPlayerLand, hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
@@ -19,7 +19,7 @@ import {
     updateTextComponent
 } from "./components"
 import { hideAllPanels } from "../../ui/ui"
-import { checkAudio, checkVideo, disableEntityForPlayMode, getSceneItem } from "../modes/play"
+import { check2DCollision, checkAudio, checkPointers, checkVideo, disableEntityForPlayMode, getSceneItem } from "../modes/play"
 import { displaySceneAssetInfoPanel } from "../../ui/Panels/sceneInfoPanel"
 
 export let realm:string = ""
@@ -213,10 +213,11 @@ export function deleteAllRealmObjects(){
 function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:string, name:string){
 
     createVisibilityComponent(scene, entity, item)
+    PointersLoadedComponent.create(entity, {init:false, sceneId:scene.id})
 
     switch(type){
         case '3D':
-            createGltfComponent(entity, item)
+            createGltfComponent(scene, entity, item)
             break;
 
         case '2D':
@@ -348,6 +349,11 @@ async function disableSceneEntities(sceneId:string){
                     AudioLoadedComponent.getMutable(entity).init = false
                 }
 
+                //check pointers
+                if(PointersLoadedComponent.has(entity)){
+                    PointersLoadedComponent.getMutable(entity).init = false
+                }
+
                 disableEntityForPlayMode(scene.id, entity)
             }
         }
@@ -362,27 +368,37 @@ function enableSceneEntities(sceneId:string){
         for(let i = 0; i < scene.entities.length; i++){
             let entity = scene.entities[i]
 
-            //check video
-            if(VideoLoadedComponent.has(entity) && !VideoLoadedComponent.get(entity).init){
-                let sceneItem = getSceneItem(scene, entity)
-                if(sceneItem){
+            let sceneItem = getSceneItem(scene, entity)
+            if(sceneItem){
+                //check video
+                if(VideoLoadedComponent.has(entity) && !VideoLoadedComponent.get(entity).init){
                     checkVideo(entity, sceneItem)
+                    VideoLoadedComponent.getMutable(entity).init = true
                 }
-                VideoLoadedComponent.getMutable(entity).init = true
-            }
 
-
-            //check audio
-            if(AudioLoadedComponent.has(entity) && !AudioLoadedComponent.get(entity).init){
-                let sceneItem = getSceneItem(scene, entity)
-                if(sceneItem){
+                //check audio
+                if(AudioLoadedComponent.has(entity) && !AudioLoadedComponent.get(entity).init){
                     checkAudio(entity, sceneItem)
+                    AudioLoadedComponent.getMutable(entity).init = true
                 }
-                AudioLoadedComponent.getMutable(entity).init = true
-            }
 
-            playModeCheckedAssets.push(entity)
-            // resetEntityForPlayMode(scene, entity)
+                playModeCheckedAssets.push(entity)
+                // resetEntityForPlayMode(scene, entity)
+
+                //check pointers
+                VisibilityComponent.createOrReplace(entity, {
+                    visible: sceneItem.visComp.visible
+                })
+
+                // check2DCollision(entity, sceneItem)
+
+
+                if(PointersLoadedComponent.has(entity) && !PointersLoadedComponent.get(entity).init){
+                    checkPointers(entity, sceneItem)
+                    PointersLoadedComponent.getMutable(entity).init = true
+                }
+               
+                }
         }
         disabledEntities = false//
     }

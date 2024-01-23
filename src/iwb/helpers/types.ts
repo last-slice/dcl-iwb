@@ -163,7 +163,7 @@ export interface IWBScene {
     entities:Entity[],
     im?:string,
     priv:boolean,
-    actions:any[]
+    // actions:any[]
 }
 
 export interface CatalogItemType {
@@ -242,7 +242,6 @@ export enum COMPONENT_TYPES {
     TEXT_COMPONENT = "Text",
     TRIGGER_COMPONENT = "Trigger",
     ACTION_COMPONENT = 'Action',
-    CLICK_COMPONENT = "Click"
 }
 
 //
@@ -291,6 +290,7 @@ export enum Actions {
     ATTACH_PLAYER = "attach_player",
     DETACH_PLAYER = "detach_player",
     PLAY_VIDEO = 'play_video',
+    TOGGLE_VIDEO = 'toggle_video',
     PLAYER_VIDEO_STREAM = 'play_video_stream',
     STOP_VIDEO = 'stop_video',
     STOP_VIDEO_STREAM = 'stop_video_stream',
@@ -325,11 +325,17 @@ export enum Materials {
 }
 
 export let ENTITY_ACTIONS_LABELS:any[] = [
-    "Open Link"
+    "Open Link",
+    "Play Audio",
+    "Play Video",
+    "Toggle Video"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
-    Actions.OPEN_LINK
+    Actions.OPEN_LINK,
+    Actions.PLAY_AUDIO,
+    Actions.PLAY_VIDEO,
+    Actions.TOGGLE_VIDEO
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
@@ -345,3 +351,9 @@ export let MATERIAL_TYPES:Materials[] =[
     Materials.BASIC,
     Materials.TEXTURE,
 ]
+
+
+export enum SOUND_TYPES {
+    ATMOS_BLESSING = "atmos_blessing",
+    WOOD_3 = "wood_3"
+}

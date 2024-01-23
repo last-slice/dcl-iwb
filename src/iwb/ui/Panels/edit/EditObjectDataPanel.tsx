@@ -14,13 +14,17 @@ import {CollisionComponentPanel} from './CollisionComponentPanel'
 import {NFTComponentPanel} from './NFTComponentPanel'
 import {TextComponentPanel} from './TextComponentPanel'
 import {ActionComponent} from './ActionComponent'
-import {TriggerComponent} from './TriggerComponent'
+import {TriggerComponent, updateTriggerActions} from './TriggerComponent'
 import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
 
 export let visibleComponent: string = ""
 
 export function openEditComponent(value: string) {
+    if(value === "Trigger"){
+        updateTriggerActions()
+    }
+
     visibleComponent = value
 }
 

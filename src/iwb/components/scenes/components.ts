@@ -18,7 +18,7 @@ import {Color4} from "@dcl/sdk/math";
 import {localPlayer, localUserId, players} from "../player/player";
 import {entitiesFromItemIds, sceneBuilds} from ".";
 import {log} from "../../helpers/functions";
-import { AudioLoadedComponent, VideoLoadedComponent } from "../../helpers/Components";
+import { AudioLoadedComponent, GLTFLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../../helpers/Components";
 import { resetEntityForBuildMode, selectedItem } from "../modes/build";
 import { items } from "../catalog";
 
@@ -49,10 +49,11 @@ export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:Sc
         VisibilityComponent.create(entity, {
             visible:  visible
         })
+        VisibleLoadedComponent.create(entity, {init:false, sceneId:scene.id})
     }
 }
 
-export function createGltfComponent(entity:Entity, item:SceneItem){
+export function createGltfComponent(scene:IWBScene, entity:Entity, item:SceneItem){
     if(item.pending){
         MeshRenderer.setBox(entity)
     }else{
@@ -63,6 +64,7 @@ export function createGltfComponent(entity:Entity, item:SceneItem){
         }
         GltfContainer.create(entity, gltf)
     }
+    GLTFLoadedComponent.create(entity, {init:false, sceneId:scene.id})
 }
 
 export function createVideoComponent(sceneId:string, entity:Entity, item:SceneItem){
@@ -161,7 +163,7 @@ export function updateVideoUrl(aid:string, materialComp:any, url:string){
             video.playing = restart
         }
     }
-}
+}//
 
 export function createAudioComponent(scene:any, entity:Entity, item:SceneItem){
     AudioSource.create(entity, {
@@ -345,13 +347,14 @@ export function updateMaterialComponent(aid:string, materialComp:any, entity?:En
     }
 }
 
-
 export function playAudioFile(){
     let audio:any
     let itemData = items.get(selectedItem.catalogId)
 
+    console.log("audio to play is", )
+
     if(itemData){
-        if(itemData.sty === "Local"){
+        if(itemData.sty !== "Stream"){
             audio = AudioSource.getMutable(selectedItem.entity)
         }else{
             audio = AudioStream.getMutable(selectedItem.entity)

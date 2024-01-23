@@ -1,5 +1,5 @@
 import {log} from "../../helpers/functions"
-import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
+import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES} from "../../helpers/types"
 import {updateStyles} from "../catalog"
 import {iwbConfig, localUserId, players, removePlayer} from "../player/player"
 import {setWorlds} from "../scenes";
@@ -8,11 +8,12 @@ import {displayWorldReadyPanel} from "../../ui/Panels/worldReadyPanel";
 import {showNotification} from "../../ui/Panels/notificationUI";
 import {addSceneStateListeners} from "./sceneListeners";
 import {refreshSortedItems, setNewItems, updateItem} from "../catalog/items";
+import { createSounds, playSound } from "../sounds";
 
 
 export function initiateMessageListeners(room: Room) {
 
-    room.onMessage(SERVER_MESSAGE_TYPES.INIT, (info: any) => {
+    room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
         //set initial catalog
@@ -53,6 +54,7 @@ export function initiateMessageListeners(room: Room) {
         // }
 
         addSceneStateListeners(room)
+        await createSounds()
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {

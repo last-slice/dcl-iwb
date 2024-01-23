@@ -239,7 +239,7 @@ export function createCatalogInfoPanel() {
                             height: '20%',
                             margin:{bottom:"5%"}
                         }}
-                        uiText={{ value: `Catalog Name ${selectedItem?.cat}`, fontSize: sizeFont(25, 15), textAlign:'middle-left'}}
+                        uiText={{ value: `Catalog: ${selectedItem?.cat}`, fontSize: sizeFont(25, 15), textAlign:'middle-left'}}
                     />
 
                     <UiEntity
@@ -314,7 +314,7 @@ export function createCatalogInfoPanel() {
                     alignContent: 'center',
                     height: 'auto',
                 }}
-                uiText={{ value: `Catalog:   ${selectedItem?.d}`,  fontSize: sizeFont(25, 15), textAlign:'middle-left' }}
+                uiText={{ value: `Type: ${selectedItem?.ty}`,  fontSize: sizeFont(25, 15), textAlign:'middle-left' }}
             />
 
             </UiEntity>

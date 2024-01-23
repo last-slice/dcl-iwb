@@ -1,5 +1,6 @@
 import { engine } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
+import { SOUND_TYPES } from "./types"
 
 export let colorsLabels:string[] = [
     "Black",
@@ -28,7 +29,7 @@ export let colors:Color4[] = [
 ]
 
 export default {
-    DEBUG: false,//
+    DEBUG: false,
     allowNoWeb3:false,
 
     lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
@@ -57,5 +58,12 @@ export default {
     textures:{
         atlas1:"assets/atlas1.png",
         atlas2:"assets/atlas2.png"
-    }//
+    },
+    
+
+    audioClips:[
+        {key:SOUND_TYPES.ATMOS_BLESSING, name:"Blessing Stereo", loop:false, attach:true, volume:.5},
+        {key:SOUND_TYPES.WOOD_3, name:"Wood 3", loop:false, attach:true, volume:.5},
+    ]
 }
+

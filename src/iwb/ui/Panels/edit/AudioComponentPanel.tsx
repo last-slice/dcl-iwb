@@ -35,7 +35,7 @@ export function AudioComponentPanel() {
                     width: '100%',
                     height: '20%',
                     margin: {top: "2%"},
-                    display: selectedItem && selectedItem.itemData.ugc ? 'none' : 'flex'
+                    display: selectedItem && selectedItem.itemData.sty !== "Stream" ? 'none' : 'flex'
                 }}
             >
 
@@ -72,7 +72,7 @@ export function AudioComponentPanel() {
                     onChange={(input) => {
                         value = input
                     }}
-                    disabled={selectedItem && selectedItem.itemData.ugc ? true  : false}
+                    disabled={selectedItem && selectedItem.itemData.sty !== "Stream" ? true  : false}
                     color={Color4.White()}
                     fontSize={sizeFont(25, 15)}
                     placeholder={'new audio link'}

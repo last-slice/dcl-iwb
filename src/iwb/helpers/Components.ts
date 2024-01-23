@@ -17,6 +17,25 @@ export const AudioLoadedComponent = engine.defineComponent("iwb::asset::audio::l
     sceneId:Schemas.String
 })
 
+export const VisibleLoadedComponent = engine.defineComponent("iwb::asset::visibl3::loaded::component", {
+    init:Schemas.Boolean,
+    sceneId:Schemas.String
+})
+
+export const CollisionLoadedComponent = engine.defineComponent("iwb::asset::twodcollision::loaded::component", {
+    init:Schemas.Boolean,
+    sceneId:Schemas.String
+})
+
+export const PointersLoadedComponent = engine.defineComponent("iwb::asset::pointers::loaded::component", {
+    init:Schemas.Boolean,
+    sceneId:Schemas.String
+})
+
+export const GLTFLoadedComponent = engine.defineComponent("iwb::asset::gltf::loaded::component", {
+    init:Schemas.Boolean,
+    sceneId:Schemas.String
+})
 
 export let AssetComponentList:any = {
     Animator: Animator,

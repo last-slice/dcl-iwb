@@ -3,14 +3,16 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
-import { COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
 import { selectedItem } from '../../../components/modes/build'
 import { uiSizes } from '../../uiConfig'
+import { ActionLinkComponent, url } from './Actions/ActionLinkData'
+import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selectedAudioIndex } from './Actions/ActionPlayAudioComponent'
+import { log } from '../../../helpers/functions'
 
 let view = "list"
 let newName:string = ""
-let url:string = ""
 let selectedIndex:number = 0
 
 export function updateActionView(v:string){
@@ -224,60 +226,7 @@ export function ActionComponent() {
             // uiBackground={{color:Color4.Blue()}}
         >
 
-                        {/* url action panel */}
-                        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '100%',
-                display:'flex'
-            }}
-        >
-             <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '15%',
-                margin:{bottom:'5%'}
-            }}
-        uiText={{value:"Url", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
-        />
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '70%',
-            }}
-        >
-        <Input
-            onChange={(value)=>{
-                url = value
-            }}
-            fontSize={sizeFont(20,12)}
-            value={url}
-            placeholder={'link'}
-            placeholderColor={Color4.White()}
-            color={Color4.White()}
-            uiTransform={{
-                width: '100%',
-                height: '120',
-            }}
-            ></Input>
-
-        </UiEntity>
-
-
-
-                        </UiEntity>
-
-
+            {getActionDataPanel()}
 
             </UiEntity>
 
@@ -512,11 +461,41 @@ function selectAction(index:number){
 }
 
 function buildAction(){
-    updateAction("add", "new", {name: newName, action:{type:ENTITY_ACTIONS_SLUGS[selectedIndex], url:url, hoverText:"Visit Link"}})
+    updateAction("add", "new", {name: newName, action:getActionData()})
 }
 
 function updateAction(action:any, type:string, value:any){
-    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.ACTION_COMPONENT, action:action, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
+    console.log()
+    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.ACTION_COMPONENT, action:action, type:type, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, value:value}})
 }
 
-//
+function getActionData(){
+    switch(selectedIndex){
+        case 0:
+            return {url: url, type:Actions.OPEN_LINK}
+
+        case 1:
+            return {aid:audioAssetIds[selectedAudioIndex], type:Actions.PLAY_AUDIO}
+
+        case 2:
+            return {aid:selectedItem.aid, type:Actions.PLAY_VIDEO}
+
+        case 3:
+            return {aid:selectedItem.aid, type:Actions.TOGGLE_VIDEO}
+    }
+}
+
+function getActionDataPanel(){
+    switch(selectedIndex){
+        case 0:
+            //open link
+        return <ActionLinkComponent/>
+
+        case 1:
+            getSceneAudioComponents()
+            return <ActionPlayAudioComponent/>
+
+        case 2:
+            return
+    }
+}

@@ -85,7 +85,7 @@ export function ExportPanel() {
             }}
             />
 
-            <UiEntity
+            {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -105,7 +105,7 @@ export function ExportPanel() {
             onMouseDown={()=>{
                 showGenesisCityExportPane()
             }}
-            />
+            /> */}
 
             {/* <UiEntity
             uiTransform={{

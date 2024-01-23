@@ -11,8 +11,10 @@ import { sceneBuilds } from '../../../components/scenes'
 import { log } from '../../../helpers/functions'
 
 let view = "list"
-let newName:string = ""
 let selectedIndex:number = 0
+
+let actionNames:string[] = []
+let actionIds:string[] = []
 
 export function updateActionView(v:string){
     view = v
@@ -263,7 +265,7 @@ export function TriggerComponent() {
 
             <Dropdown
         key={"trigger-action-dropdown-dropdown"}
-        options={getSceneActions()}
+        options={[...actionNames]}
         selectedIndex={selectedIndex}
         onChange={selectAction}
         uiTransform={{
@@ -376,11 +378,6 @@ function generateRows(){
 
 function TriggerRow(trigger:any){
     let data = trigger.data
-    let actions:any[] = []
-    data.actions.forEach((item:any, key:any)=>{
-        actions.push(item)
-    })
-
     return(
         <UiEntity
         key={"trigger-row-"+ trigger.rowCount}
@@ -458,13 +455,11 @@ function TriggerRow(trigger:any){
             </UiEntity>
 
 
-            {generateActionRows(actions)}
+            {generateActionRows(data.actions)}
 
             </UiEntity>
     )
 }
-
-//
 
 function generateActionRows(actions:any){
     let arr:any[] = []
@@ -477,6 +472,7 @@ function generateActionRows(actions:any){
 }
 
 function TriggerActionRow(data:any){
+    let actionId = data.data
     return(
         <UiEntity
         key={"trigger-action-row-"+ data.rowCount}
@@ -537,7 +533,7 @@ function TriggerActionRow(data:any){
                 width: '50%',
                 height: '100%',
             }}
-            uiText={{value:"" + data.data.name, fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"" + (selectedItem && selectedItem.enabled && selectedItem.itemData.trigComp ? selectedItem.itemData.actComp.actions[actionId].name : ""), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 
@@ -550,9 +546,8 @@ function TriggerActionRow(data:any){
                 width: '50%',
                 height: '100%',
             }}
-            uiText={{value:"" + ENTITY_ACTIONS_LABELS[ENTITY_ACTIONS_SLUGS.findIndex((es)=> es === data.data.type)], fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"" + ENTITY_ACTIONS_LABELS[ENTITY_ACTIONS_SLUGS.findIndex((es)=> es === selectedItem.itemData.actComp.actions[actionId].type)], fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             />
-
             </UiEntity>
 
 
@@ -569,7 +564,7 @@ function selectAction(index:number){
 function buildTrigger(){
     let scene:IWBScene = sceneBuilds.get(selectedItem.sceneId)
     if(scene){
-        updateTrigger("add", "new", scene.actions[selectedIndex])
+        updateTrigger("add", "new", actionIds[selectedIndex])
     }
 }
 
@@ -577,17 +572,13 @@ function updateTrigger(action:string, type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.TRIGGER_COMPONENT, action:action, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
 }
 
-function getSceneActions(){
-    let actions:any[] = []
+export function updateTriggerActions(){
+    actionNames.length = 0
+    actionIds.length = 0
     if(selectedItem && selectedItem.enabled){
-        let scene:IWBScene = sceneBuilds.get(selectedItem.sceneId)
-        if(scene){
-            scene.actions.forEach((action, key)=>{
-                actions.push(action.name)
-            })
-        }
+        selectedItem.itemData.actComp.actions.forEach((action:any, key:any)=>{
+            actionNames.push(action.name)
+            actionIds.push(key)
+        })
     }
-    return actions
 }
-
-//
