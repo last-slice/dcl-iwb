@@ -145,6 +145,18 @@ export function updateVideoVolume(aid:string, volume:number){
     }
 }
 
+export function updateVideoLoop(aid:string, looping:boolean){
+    let ent = entitiesFromItemIds.get(aid)
+
+    if(ent){
+        let video = VideoPlayer.getMutable(ent)
+        if(video){
+            video.loop = looping
+        }
+    }
+}
+
+
 export function updateVideoUrl(aid:string, materialComp:any, url:string){
     // log('updating video url', aid, materialComp, url)
     let ent = entitiesFromItemIds.get(aid)
@@ -372,5 +384,26 @@ export function stopAudioFile(){
             audio = AudioStream.getMutable(selectedItem.entity)
         }
         audio.playing = false
+    }
+}
+
+
+export function playVideoFile(){
+    let video:any
+    let itemData = items.get(selectedItem.catalogId)
+
+    if(itemData){
+        video = VideoPlayer.getMutable(selectedItem.entity)
+        video.playing = true
+    }
+}
+
+export function stopVideoFile(){
+    let video:any
+    let itemData = items.get(selectedItem.catalogId)
+
+    if(itemData){
+        video = VideoPlayer.getMutable(selectedItem.entity)
+        video.playing = false
     }
 }
