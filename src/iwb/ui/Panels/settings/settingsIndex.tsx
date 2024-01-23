@@ -26,7 +26,7 @@ export let buttons:any[] = [
     {label:"Builds", pressed:false},
     {label:"Create", pressed:false},
     {label:"Settings", pressed:false},
-    {label:"Status", pressed:false},
+    {label:"Info", pressed:false},
     {label:"Close", pressed:false},
 ]
 
@@ -207,7 +207,7 @@ function generateSettingsButtons(buttons:any[]){
 }
 
 function getButtonDisplay(button:string){
-    if(button === "Create" || button === "Status" || button === "Builds"){
+    if(button === "Create" || button === "Info" || button === "Builds"){
         return isPreview ? 'flex' :  (localUserId && players.get(localUserId)!.homeWorld) ?  'flex' : 'none'
     }else{
         return 'flex'

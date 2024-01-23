@@ -422,8 +422,8 @@ function getAutostart(){
 
 function selectStart(index:number){
     if(index !== getAutostart()){
-        updateAudio("autostart", index === 0 ? true : false)//
-    }    
+        updateAudio("autostart", index === 0 ? true : false)
+    }    //
 }
 
 function updateAudio(type:string, value:any){
@@ -431,7 +431,6 @@ function updateAudio(type:string, value:any){
 }
 
 function getVolume(){
-    console.log('volumne is', selectedItem && selectedItem.enabled && selectedItem.itemData.audComp ? selectedItem.itemData.audComp.volume : 1)
     return selectedItem && selectedItem.enabled && selectedItem.itemData.audComp ? selectedItem.itemData.audComp.volume : 1
 }
 

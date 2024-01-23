@@ -11,6 +11,8 @@ import { cRoom, sendServerMessage } from '../../../components/messaging'
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { showNotification } from '../notificationUI'
 import { ExportGenesisCityPanel, showGenesisCityExportPane } from './ExportGenesisCityPanel'
+import { ExportDCLWorldsPanel, showExportWorlds } from './ExportWorldsPanel'
+import { ExportConfirmPanel } from './ExportConfirmPanel'
 
 export let exportPanel = "main"
 
@@ -107,7 +109,7 @@ export function ExportPanel() {
             }}
             /> */}
 
-            {/* <UiEntity
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -123,15 +125,18 @@ export function ExportPanel() {
                 },
                 uvs: getImageAtlasMapping(uiSizes.blueButton)
             }}
-            uiText={{value: "Worlds", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "DCL Worlds", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
             onMouseDown={()=>{
+                showExportWorlds()
             }}
-            /> */}
+            />
         
 
             </UiEntity>
 
             <ExportGenesisCityPanel/>
+            <ExportDCLWorldsPanel/>
+            <ExportConfirmPanel/>
 
         </UiEntity>
     )

@@ -8,6 +8,7 @@ import { displayCatalogPanel } from './CatalogPanel';
 import { formatDollarAmount } from '../../helpers/functions';
 import { localUserId, players } from '../../components/player/player';
 import { selectCatalogItem } from '../../components/modes/build';
+import { playAudioFile, stopAudioFile } from '../../components/scenes/components';
 
 export let showCatalogInfoPanel = false
 
@@ -20,6 +21,7 @@ let selectedItem: CatalogItemType | null = null;
 
 export function setSelectedInfoItem(item: CatalogItemType | null) {
     selectedItem = item;
+    console.log('selected item is', selectedItem)
     displayCatalogInfoPanel(true)
 }
 
@@ -138,6 +140,50 @@ export function createCatalogInfoPanel() {
                     }  
                 }}
                 uiText={{ value: "Place", color: Color4.White(), fontSize: sizeFont(25, 20) }}
+            />
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
+                    height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
+                    margin:{bottom:"2%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.blueButton)
+                }}
+                onMouseDown={() => {
+                    playAudioFile(selectedItem!.id)
+                }}
+                uiText={{ value: "Play", color: Color4.White(), fontSize: sizeFont(25, 20) }}
+            />
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
+                    height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
+                    margin:{bottom:"2%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                }}
+                onMouseDown={() => {
+                    stopAudioFile(selectedItem?.id)
+                }}
+                uiText={{ value: "Stop", color: Color4.White(), fontSize: sizeFont(25, 20) }}
             />
 
                 <UiEntity

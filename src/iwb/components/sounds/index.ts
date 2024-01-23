@@ -1,4 +1,4 @@
-import { AudioSource, Transform, engine } from "@dcl/sdk/ecs";
+import { AudioSource, AudioStream, Entity, Transform, engine } from "@dcl/sdk/ecs";
 import resources from "../../helpers/resources";
 import { items } from "../catalog";
 import { SOUND_TYPES } from "../../helpers/types";
@@ -6,8 +6,13 @@ import { log } from "../../helpers/functions";
 
 export let sounds:Map<string,any> = new Map()
 export let audioClips = new Map<string, any>()
+export let catalogSoundEntity:Entity
 
 export async function createSounds(){
+    catalogSoundEntity = engine.addEntity()
+    Transform.create(catalogSoundEntity, {parent:engine.PlayerEntity})
+    AudioSource.create(catalogSoundEntity)
+    AudioStream.create(catalogSoundEntity)
 
     let catalog = [...items.values()].filter((it:any)=> !it.ugc)
 

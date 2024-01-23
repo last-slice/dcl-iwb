@@ -21,6 +21,7 @@ import {log} from "../../helpers/functions";
 import { AudioLoadedComponent, GLTFLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../../helpers/Components";
 import { resetEntityForBuildMode, selectedItem } from "../modes/build";
 import { items } from "../catalog";
+import { catalogSoundEntity } from "../sounds";
 
 export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:SceneItem){
     if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){
@@ -359,37 +360,43 @@ export function updateMaterialComponent(aid:string, materialComp:any, entity?:En
     }
 }
 
-export function playAudioFile(){
+export function playAudioFile(catalogId?:string){
     let audio:any
-    let itemData = items.get(selectedItem.catalogId)
-
-    console.log("audio to play is", )
+    let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
+    let entity = catalogId ? catalogSoundEntity : selectedItem.entity
 
     if(itemData){
         if(itemData.sty !== "Stream"){
-            audio = AudioSource.getMutable(selectedItem.entity)
+            audio = AudioSource.getMutable(entity)
+
+            if(catalogId){
+                audio.audioClipUrl = "assets/" + catalogId + ".mp3"
+            } 
         }else{
-            audio = AudioStream.getMutable(selectedItem.entity)
+            audio = AudioStream.getMutable(entity)
         }
+
+        console.log('audio is now ', audio)
+
         audio.playing = true
         audio.loop = false
     }
 }
 
-export function stopAudioFile(){
+export function stopAudioFile(catalogId?:string){
     let audio:any
-    let itemData = items.get(selectedItem.catalogId)
+    let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
+    let entity = catalogId ? catalogSoundEntity : selectedItem.entity
 
     if(itemData){
         if(itemData.sty === "Local"){
-            audio = AudioSource.getMutable(selectedItem.entity)
+            audio = AudioSource.getMutable(entity)
         }else{
-            audio = AudioStream.getMutable(selectedItem.entity)
+            audio = AudioStream.getMutable(entity)
         }
         audio.playing = false
     }
 }
-
 
 export function playVideoFile(){
     let video:any

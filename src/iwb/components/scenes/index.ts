@@ -400,6 +400,6 @@ function enableSceneEntities(sceneId:string){
                
                 }
         }
-        disabledEntities = false//
+        disabledEntities = false
     }
 }

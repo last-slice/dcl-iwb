@@ -94,6 +94,28 @@ export function StatusPanel() {
             uiText={{value:"Uploads", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />
 
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                margin:{top:"1%", bottom:'1%', left:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("Help")
+            }}
+            onMouseDown={() => {
+                displayStatusView("Help")
+            }}
+            uiText={{value:"Help", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            />
+
             {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
