@@ -114,7 +114,7 @@ export function AudioComponentPanel() {
 
             </UiEntity>
 
-                    {/* attach player row */}
+     {/* attach player row */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'row',
@@ -278,6 +278,64 @@ export function AudioComponentPanel() {
 
             </UiEntity>
 
+    {/* volume setting */}
+    <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin: {top: "1%"}
+                }}
+            >
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '70%',
+                        height: '100%',
+                    }}
+                    uiText={{
+                        value: "Volume",
+                        fontSize: sizeFont(25, 15),
+                        color: Color4.White(),
+                        textAlign: 'middle-left'
+                    }}
+                />
+
+
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '30%',
+                        height: '100%',
+                    }}
+                >
+
+                    <Input
+                        uiTransform={{
+                            width: '100%',
+                            height: '120%',
+                        }}
+                        // uiBackground={{color:Color4.Purple()}}//
+                        placeholderColor={Color4.White()}
+                        placeholder={"" + getVolume()}
+                        color={Color4.White()}
+                        fontSize={sizeFont(20, 15)}
+                        textAlign='middle-center'
+                        onChange={(input) => {
+                            updateVolume("volume", parseFloat(input))
+                        }}
+                        value={"" + getVolume()}
+
+                    />
+
+                </UiEntity>
+
+            </UiEntity>
 
                     {/* play button row */}
             <UiEntity
@@ -364,10 +422,19 @@ function getAutostart(){
 
 function selectStart(index:number){
     if(index !== getAutostart()){
-        updateAudio("autostart", index === 0 ? true : false)
+        updateAudio("autostart", index === 0 ? true : false)//
     }    
 }
 
 function updateAudio(type:string, value:any){
+    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.AUDIO_COMPONENT, action:"update", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
+}
+
+function getVolume(){
+    console.log('volumne is', selectedItem && selectedItem.enabled && selectedItem.itemData.audComp ? selectedItem.itemData.audComp.volume : 1)
+    return selectedItem && selectedItem.enabled && selectedItem.itemData.audComp ? selectedItem.itemData.audComp.volume : 1
+}
+
+function updateVolume(type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.AUDIO_COMPONENT, action:"update", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
 }
