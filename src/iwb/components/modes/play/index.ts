@@ -1,4 +1,4 @@
-import { AudioSource, AudioStream, ColliderLayer, Entity, InputAction, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
+import { AudioSource, AudioStream, ColliderLayer, Entity, InputAction, Material, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
 import { Actions, COLLISION_LAYERS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes";
 import { getRandomIntInclusive, log } from "../../../helpers/functions";
@@ -6,6 +6,8 @@ import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { items } from "../../catalog";
 import { displaySettingsPanel } from "../../../ui/Panels/settings/settingsIndex";
 import { localPlayer } from "../../player/player";
+import { utils } from "../../../helpers/libraries";
+import { Color3 } from "@dcl/sdk/math";
 
 export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
     log('resetting enttiy for play mode')
@@ -48,6 +50,7 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
             if(sceneItem){
                 disableAudio(entity, sceneItem)
                 disableVideo(entity, sceneItem)
+                disableSmartItems(entity, sceneItem)
                 PointerEvents.deleteFrom(entity)
             }
         }
@@ -92,7 +95,7 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
         switch(action.type){
             case Actions.OPEN_LINK:
                 log('opening external url')
-                // openExternalUrl({url:"" + action.url})//
+                openExternalUrl({url:"" + action.url})
                 break;
 
             case Actions.PLAY_AUDIO:
@@ -108,12 +111,12 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                 break;
 
             case Actions.TOGGLE_VIDEO:
-                log('toggling video')
                 assetId = sceneItem.actComp.actions[id].aid
                 entity = entitiesFromItemIds.get(assetId)
 
                 if(entity){
                     VideoPlayer.getMutable(entity).playing = !VideoPlayer.get(entity).playing
+                    console.log('video player is', VideoPlayer.get(entity))
                 }
                 break;
         }
@@ -220,6 +223,20 @@ function disableVideo(entity:Entity, sceneItem: SceneItem){
     }
 }
 
+function disableSmartItems(entity:Entity, sceneItem: SceneItem){
+    if(sceneItem.trigArComp){
+        switch(items.get(sceneItem.id)?.n){
+            case 'Trigger Area':
+                MeshRenderer.deleteFrom(entity)
+                MeshCollider.deleteFrom(entity)
+                Material.deleteFrom(entity)
+                // utils.triggers.removeTrigger(entity)
+                console.log('disabling trigger area')
+                break;
+        }
+    }
+}
+
 export function teleportToScene(scene:IWBScene){
     let rand = getRandomIntInclusive(0, scene.sp.length-1)
     let parent = Transform.get(scene.parentEntity).position
@@ -241,4 +258,19 @@ export function teleportToScene(scene:IWBScene){
     displaySettingsPanel(false)
 
     movePlayerTo({newRelativePosition:position, cameraTarget:camera})
+}
+
+
+export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
+    console.log("checking smart item for play mode", sceneItem)
+    switch(items.get(sceneItem.id)?.n){
+        case 'Trigger Area':
+            console.log('need to enable all trigger areas')
+            MeshRenderer.deleteFrom(entity)
+            MeshCollider.deleteFrom(entity)
+            Material.deleteFrom(entity)
+
+            utils.triggers.enableTrigger(entity, true)
+            break;
+    }
 }

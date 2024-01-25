@@ -12,6 +12,7 @@ export let sortedAll: SceneItem[] = []
 export let Sorted3D: SceneItem[] = []
 export let Sorted2D: SceneItem[] = []
 export let SortedAudio: SceneItem[] = []
+export let SortedSmartItems: SceneItem[] = []
 
 export function refreshSortedItems() {
     original = [...items.values()].filter((it:any)=> !it.ugc)
@@ -23,8 +24,7 @@ export function refreshSortedItems() {
     Sorted3D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "3D")
     Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")
     SortedAudio = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Audio")
-
-    console.log('sortal all is ', sortedAll)
+    SortedSmartItems = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "SM")
 }
 
 export function setAllItems(updates: SceneItem[]) {

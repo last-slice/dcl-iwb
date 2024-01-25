@@ -5,11 +5,12 @@ import {styles} from '../../components/catalog'
 import {calculateImageDimensions, calculateSquareImageDimensions, getImageAtlasMapping, sizeFont} from '../helpers'
 import {log} from '../../helpers/functions'
 import {selectCatalogItem} from '../../components/modes/build'
-import {CatalogItemType, EDIT_MODES, SCENE_MODES} from '../../helpers/types'
+import {CatalogItemType, EDIT_MODES, SCENE_MODES, SOUND_TYPES} from '../../helpers/types'
 import {uiSizes} from '../uiConfig'
 import {localUserId, players} from '../../components/player/player'
 import {displayCatalogInfoPanel, setSelectedInfoItem} from './CatalogInfoPanel'
-import {items, original, refreshSortedItems, Sorted2D, Sorted3D, sortedAll, SortedAudio} from "../../components/catalog/items";
+import {items, original, refreshSortedItems, Sorted2D, Sorted3D, sortedAll, SortedAudio, SortedSmartItems} from "../../components/catalog/items";
+import { playSound } from '../../components/sounds'
 
 let catalogInitialized = false
 export let showCatalogPanel = false
@@ -20,7 +21,7 @@ export let itemsToShow: CatalogItemType[] = []
 
 export let styleFilter = "All"
 export let typeFilter = "All"
-let assetTypeSelectedIndex = 3
+let assetTypeSelectedIndex = 0
 export let searchFilter = ""
 
 
@@ -114,6 +115,9 @@ function filterCatalog() {
         case 'Audio':
             toFilter = SortedAudio;
             break;
+        case 'SM':
+            toFilter = SortedSmartItems;
+            break;
         default:
             toFilter = sortedAll;
     }
@@ -145,7 +149,7 @@ function filterCatalog() {
     filtered = filteredResult
     totalPages = Math.ceil(filtered.length / (columns * rows));
 
-    refreshView()
+    refreshView()//
 }
 
 export function createCatalogPanel() {
@@ -355,7 +359,7 @@ export function createCatalogPanel() {
 
                 <Dropdown
                     key={"type-dropdown"}
-                    options={[`3D`, `2D`, `Audio`, `All`]}
+                    options={[`All`, `3D`, `2D`, `Audio`, `SM`]}
                     selectedIndex={assetTypeSelectedIndex}
                     onChange={selectDimension}
                     uiTransform={{
@@ -712,7 +716,6 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         setSelectedInfoItem(item)
                         displayCatalogInfoPanel(true)
                         displayCatalogPanel(false)
-
                     }}
                 />
 
@@ -727,24 +730,28 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
 function selectDimension(index: number) {
     switch (index) {
         case 0:
-            typeFilter = '3D';
-            totalPages = Math.ceil(Sorted3D.length / (columns * rows));
-            break;
-        case 1:
-            typeFilter = '2D';
-            totalPages = Math.ceil(Sorted2D.length / (columns * rows));
-            break;
-        case 2:
-            typeFilter = 'Audio';
-            totalPages = Math.ceil(SortedAudio.length / (columns * rows));
-            break;
-        case 3:
             typeFilter = 'All';
             totalPages = Math.ceil(sortedAll.length / (columns * rows));
             break;
+        case 1:
+            typeFilter = '3D';
+            totalPages = Math.ceil(Sorted3D.length / (columns * rows));
+            break;
+        case 2:
+            typeFilter = '2D';
+            totalPages = Math.ceil(Sorted2D.length / (columns * rows));
+            break;
+        case 3:
+            typeFilter = 'Audio';
+            totalPages = Math.ceil(SortedAudio.length / (columns * rows));
+            break;
+        case 4:
+            typeFilter = 'SM';
+            totalPages = Math.ceil(SortedSmartItems.length / (columns * rows));
+            break;
     }
 
-    currentPage = 0;
+    currentPage = 0;//
 
     filterCatalog()
 }

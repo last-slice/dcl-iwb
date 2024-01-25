@@ -2,10 +2,11 @@ import * as utils from '@dcl-sdk/utils'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { InputAction, MeshCollider, MeshRenderer, Texture, Transform, engine, pointerEventsSystem } from '@dcl/sdk/ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { NOTIFICATION_DETAIL, NOTIFICATION_TYPES } from '../../helpers/types'
+import { NOTIFICATION_DETAIL, NOTIFICATION_TYPES, SOUND_TYPES } from '../../helpers/types'
 import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import { calculateImageDimensions, dimensions, getImageAtlasMapping, addLineBreak, sizeFont, calculateSquareImageDimensions } from '../helpers'
+import { playSound } from '../../components/sounds'
 
 export let queue:any[] = []
 export let showingNotification = false
@@ -55,6 +56,9 @@ export function showNextNotification(data:NOTIFICATION_DETAIL){
         currentNotification.type = data.type
         currentNotification.image = data.image ? data.image : ""
         startAnimating(data.animate)
+
+        //check if play founds
+        playSound(SOUND_TYPES.DOORBELL)
     }
 }
 

@@ -67,7 +67,7 @@ export function AudioComponentPanel() {
 
                 <Input
                     onSubmit={(value) => {
-                        console.log('submitted value: ' + value)
+                        // console.log('submitted value: ' + value)
                     }}
                     onChange={(input) => {
                         value = input
@@ -83,7 +83,7 @@ export function AudioComponentPanel() {
                     }}
                     value={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getAudioUrl() : "")}
                     onMouseDown={() => {
-                        console.log('clicked')
+                        // console.log('clicked')
                     }}
                 ></Input>
 
@@ -423,7 +423,7 @@ function getAutostart(){
 function selectStart(index:number){
     if(index !== getAutostart()){
         updateAudio("autostart", index === 0 ? true : false)
-    }    //
+    }
 }
 
 function updateAudio(type:string, value:any){

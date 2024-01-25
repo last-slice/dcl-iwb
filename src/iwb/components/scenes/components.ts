@@ -14,14 +14,16 @@ import {
     engine
 } from "@dcl/sdk/ecs";
 import {COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, MATERIAL_TYPES, Materials, SCENE_MODES, SceneItem} from "../../helpers/types";
-import {Color4} from "@dcl/sdk/math";
+import {Color3, Color4} from "@dcl/sdk/math";
 import {localPlayer, localUserId, players} from "../player/player";
-import {entitiesFromItemIds, sceneBuilds} from ".";
+import {entitiesFromItemIds, realmActions, sceneBuilds} from ".";
 import {log} from "../../helpers/functions";
-import { AudioLoadedComponent, GLTFLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../../helpers/Components";
+import { AudioLoadedComponent, GLTFLoadedComponent, SmartItemLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../../helpers/Components";
 import { resetEntityForBuildMode, selectedItem } from "../modes/build";
 import { items } from "../catalog";
 import { catalogSoundEntity } from "../sounds";
+import { utils } from "../../helpers/libraries";
+import { runTrigger } from "../modes/play";
 
 export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:SceneItem){
     if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){
@@ -91,6 +93,51 @@ export function createVideoComponent(sceneId:string, entity:Entity, item:SceneIt
     VideoLoadedComponent.create(entity, {init:false, sceneId:sceneId})
 }
 
+export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
+    SmartItemLoadedComponent.create(entity, {init:false, sceneId:scene.id})
+
+    log('creating smart item component', name)
+
+    switch(name){
+        case 'Trigger Area':
+            addTriggerArea(scene, entity, item, name)
+            
+            if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+                resetEntityForBuildMode(scene, entity)
+            }
+            break;
+    }
+}
+
+export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
+    utils.triggers.addTrigger(
+        entity, utils.NO_LAYERS, utils.LAYER_1,
+        [{type: 'box', position: {x: 0, y: 0, z: 0}, scale:{x:item.s.x, y:item.s.y,z:item.s.z }}],//
+        // [{type: 'sphere', position: {x: 0, y: 0, z: 0}, radius:133}],//
+        ()=>{
+            log('entered trigger area')
+            item.trigArComp.eActions.forEach((action:any)=>{
+                console.log('trig comp action is', action)
+                let sceneAction = realmActions.find((act:any)=> act.id === action)
+                console.log('scene action is', sceneAction)
+                if(sceneAction){
+                    let scene = sceneBuilds.get(sceneAction.sceneId)
+                    console.log('scene is', scene)
+                    if(scene){
+                        let sceneItem = scene.ass.find((asset:any)=> asset.aid === sceneAction.action.aid)
+                        console.log('scene item is', sceneItem)
+                        if(sceneItem){
+                            runTrigger(sceneItem, [action])  
+                        }
+                    }
+                }
+            })
+        },
+        ()=>{
+            log('left trigger area')
+        }, Color3.Teal()
+    )
+}
 
 export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){
     // log('updating image url', aid, materialComp, url)
@@ -224,7 +271,7 @@ export function updateAudioAttach(aid:string, audComp:any, ){
         console.log('audio entity does exist', ent)
         Material.setPbrMaterial(ent,{
             albedoColor: Color4.create(0,0,1,.5)
-        })//
+        })
 
         if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
             if(audComp.attachedPlayer){

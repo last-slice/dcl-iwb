@@ -37,6 +37,12 @@ export const GLTFLoadedComponent = engine.defineComponent("iwb::asset::gltf::loa
     sceneId:Schemas.String
 })
 
+export const SmartItemLoadedComponent = engine.defineComponent("iwb::asset::smartitem::loaded::component", {
+    init:Schemas.Boolean,
+    sceneId:Schemas.String
+})
+
+
 export let AssetComponentList:any = {
     Animator: Animator,
     Visibility: VisibilityComponent,

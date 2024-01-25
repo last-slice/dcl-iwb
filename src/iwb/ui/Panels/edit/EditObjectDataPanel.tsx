@@ -17,12 +17,17 @@ import {ActionComponent} from './ActionComponent'
 import {TriggerComponent, updateTriggerActions} from './TriggerComponent'
 import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
+import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerAreaComponentPanel'
 
 export let visibleComponent: string = ""
 
 export function openEditComponent(value: string) {
     if(value === "Trigger"){
         updateTriggerActions()
+    }
+
+    if(value === "Trigger Area"){
+        updateTriggerAreaActionView("main")
     }
 
     visibleComponent = value
@@ -175,8 +180,8 @@ export function EditObjectData() {
                     <TextComponentPanel/>
                     <ActionComponent/>
                     <MaterialComponentPanel/>
-                    {/* <ClickComponent/> */}
                     <TriggerComponent/>
+                    <TriggerAreaComponent/>
 
                 </UiEntity>
             </UiEntity>
@@ -203,7 +208,6 @@ function generateComponentViews() {
                 uiText={{value: "" + component, fontSize: sizeFont(30, 20)}}
                 onMouseDown={() => {
                     openEditComponent(component)
-                    log('item is', component)
                 }}
             />
         )

@@ -13,6 +13,7 @@ import { InputListenSystem, addInputSystem, removeInputSystem } from "../systems
 import { PlayModeInputSystem, addPlayModeSystem, removePlayModSystem } from "../systems/PlayModeInputSystem";
 import { hideAllPanels } from "../../ui/ui";
 import { disableEntityForPlayMode } from "../modes/play";
+import { utils } from "../../helpers/libraries";
 
 let created = false
 export function createIWBEventListeners(){
@@ -60,12 +61,15 @@ export function createIWBEventListeners(){
                 removePlayModSystem()
                 addInputSystem()
                 updatePlayModeReset(false)
+                utils.triggers.enableDebugDraw(true)
             }else if(players.get(localUserId)?.mode === SCENE_MODES.PLAYMODE){
                 removeInputSystem()
                 addPlayModeSystem()
+                utils.triggers.enableDebugDraw(false)
             }else{
                 removeInputSystem()
                 removePlayModSystem()
+                utils.triggers.enableDebugDraw(false)
             }
         })
     }

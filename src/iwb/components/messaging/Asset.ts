@@ -13,6 +13,7 @@ import { triggerComponentListener } from "./listeners/TriggerComponent";
 import { videoComponentListener } from "./listeners/VideoComponent";
 import {audioComponentListener} from "./listeners/AudioComponent";
 import { materialComponentListener } from "./listeners/MaterialComponent";
+import { utils } from "../../helpers/libraries";
 
 export function assetListener(scene:any){
     scene.ass.onAdd((asset:any, key:any)=>{

@@ -64,6 +64,9 @@ export default {
     audioClips:[
         {key:SOUND_TYPES.ATMOS_BLESSING, name:"Blessing Stereo", loop:false, attach:true, volume:.5},
         {key:SOUND_TYPES.WOOD_3, name:"Wood 3", loop:false, attach:true, volume:.5},
+        {key:SOUND_TYPES.DOORBELL, name:"Doorbell Stereo", loop:false, attach:true, volume:.5},
+        {key:SOUND_TYPES.DROP_1_STEREO, name:"Drop 1 Stereo", loop:false, attach:true, volume:.5},
+        {key:SOUND_TYPES.SELECT_3, name:"Select 3 Stereo", loop:false, attach:true, volume:.5},
+        {key:SOUND_TYPES.ERROR_2, name:"Error 2 Stereo", loop:false, attach:true, volume:.5},
     ]
 }
-

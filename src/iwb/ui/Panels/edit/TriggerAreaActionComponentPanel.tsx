@@ -10,6 +10,7 @@ import { uiSizes } from '../../uiConfig'
 import { ActionLinkComponent, url } from './Actions/ActionLinkData'
 import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selectedAudioIndex } from './Actions/ActionPlayAudioComponent'
 import { log } from '../../../helpers/functions'
+import { actionView, triggerAreaView } from './TriggerAreaComponentPanel'
 
 let view = "list"
 let newName:string = ""
@@ -19,19 +20,32 @@ export function updateActionView(v:string){
     view = v
 }
 
-export function ActionComponent() {
+export function TriggerAreaActionComponent() {
     return (
         <UiEntity
-            key={"editactioncomponentpanel"}
+            key={"edittriggeractioncomponentpanel"}
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
-                display: visibleComponent === COMPONENT_TYPES.ACTION_COMPONENT ? 'flex' : 'none',
+                display: visibleComponent === COMPONENT_TYPES.TRIGGER_AREA_COMPONENT && triggerAreaView !== "main" ? 'flex' : 'none',
             }}
         >
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin: {top: "2%"}
+                }}
+                uiBackground={{color: Color4.Black()}}
+                uiText={{value: "" + (actionView === "eActions" ? "Enter Trigger Actions" : "Exit Trigger Actions"), fontSize: sizeFont(30, 20)}}
+            />
 
         {/* add action button row */}
         <UiEntity
@@ -466,13 +480,13 @@ function buildAction(){
 
 function updateAction(action:any, type:string, value:any){
     console.log()
-    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.ACTION_COMPONENT, action:action, type:type, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, value:value}})
+    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.TRIGGER_AREA_COMPONENT, action:action, type:type, data:{aid:selectedItem.aid, triggerTrype: actionView, sceneId:selectedItem.sceneId, value:value}})
 }
 
 function getActionData(){
     switch(selectedIndex){
-        case 0://
-            return {aid:selectedItem.aid, url: url, type:Actions.OPEN_LINK}
+        case 0:
+            return {url: url, type:Actions.OPEN_LINK}
 
         case 1:
             return {aid:audioAssetIds[selectedAudioIndex], type:Actions.PLAY_AUDIO}

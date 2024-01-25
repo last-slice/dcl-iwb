@@ -4,13 +4,14 @@ import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, Player, SCEN
 import { SelectedFloor, addBoundariesForParcel, deleteParcelEntities } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
-import { AudioLoadedComponent, PointersLoadedComponent, RealmEntityComponent, VideoLoadedComponent } from "../../helpers/Components"
+import { AudioLoadedComponent, PointersLoadedComponent, RealmEntityComponent, SmartItemLoadedComponent, VideoLoadedComponent } from "../../helpers/Components"
 import { getPlayerLand, hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import {
     createAudioComponent,
     createGltfComponent,
+    createSmartItemComponent,
     createVideoComponent,
     createVisibilityComponent,
     updateImageUrl,
@@ -19,7 +20,7 @@ import {
     updateTextComponent
 } from "./components"
 import { hideAllPanels } from "../../ui/ui"
-import { check2DCollision, checkAudio, checkPointers, checkVideo, disableEntityForPlayMode, getSceneItem } from "../modes/play"
+import { check2DCollision, checkAudio, checkPointers, checkSmartItem, checkVideo, disableEntityForPlayMode, getSceneItem } from "../modes/play"
 import { displaySceneAssetInfoPanel } from "../../ui/Panels/sceneInfoPanel"
 
 export let realm:string = ""
@@ -28,7 +29,7 @@ export let worlds:any[] = []
 export let sceneBuilds:Map<string, any> = new Map()
 export let itemIdsFromEntities:Map<number,any> = new Map()
 export let entitiesFromItemIds:Map<string,Entity> = new Map()
-export let actions:any[] = []
+export let realmActions:any[] = []
 
 export let buildModeCheckedAssets:any[] = []
 export let playModeCheckedAssets:any[] = []
@@ -215,6 +216,16 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
     createVisibilityComponent(scene, entity, item)
     PointersLoadedComponent.create(entity, {init:false, sceneId:scene.id})
 
+    if(item.actComp){
+        // let actions = [...item.actComp.actions.values()]
+        // console.log('item actions area', actions)
+
+        item.actComp.actions.forEach((action:any, key:any)=>{
+            realmActions.push({id:key, sceneId:scene.id, action})
+        })
+       
+    }
+
     switch(type){
         case '3D':
             createGltfComponent(scene, entity, item)
@@ -253,7 +264,13 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
         case 'Audio':
             createAudioComponent(scene, entity, item)
             break;
+
+        case 'SM':
+            createSmartItemComponent(scene, entity, item, name)
+            break;
+            
     }
+    console.log('realm actions are', realmActions)
 }
 
 export function checkSceneVisibility(scene:IWBScene){
@@ -392,6 +409,15 @@ function enableSceneEntities(sceneId:string){
 
                 // check2DCollision(entity, sceneItem)
 
+
+                //check smart items
+                console.log('about to check smart items for play mod')
+                if(SmartItemLoadedComponent.has(entity) && !SmartItemLoadedComponent.get(entity).init){
+                    console.log('need to check for smart item play mode')
+                    checkSmartItem(entity, sceneItem)
+                    SmartItemLoadedComponent.getMutable(entity).init = true
+                }
+                
 
                 if(PointersLoadedComponent.has(entity) && !PointersLoadedComponent.get(entity).init){
                     checkPointers(entity, sceneItem)

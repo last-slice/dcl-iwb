@@ -23,14 +23,16 @@ import {
     VisibilityComponent
 } from "@dcl/sdk/ecs"
 import {sendServerMessage} from "../../messaging";
-import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SceneItem, SelectedItem, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
+import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, Player, SceneItem, SelectedItem, SERVER_MESSAGE_TYPES, SOUND_TYPES} from "../../../helpers/types";
 import {displayCatalogPanel, selectedSetting} from "../../../ui/Panels/CatalogPanel"
 import {entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
-import {updateAudioComponent, updateAudioUrl, updateImageUrl, updateNFTFrame, updateTextComponent} from "../../scenes/components"
+import {addTriggerArea, updateAudioComponent, updateAudioUrl, updateImageUrl, updateNFTFrame, updateTextComponent} from "../../scenes/components"
 import { displaySceneInfoPanel } from "../../../ui/Panels/builds/buildsIndex"
+import { playSound } from "../../sounds"
+import { utils } from "../../../helpers/libraries"
 
 export let editAssets:Map<string, Entity> = new Map()
 export let grabbedAssets:Map<string, Entity> = new Map()
@@ -170,6 +172,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
 
     displayCatalogPanel(false)
+    playSound(SOUND_TYPES.SELECT_3)
 
     let itemData = items.get(id)
     if (itemData) {
@@ -243,7 +246,14 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 itemPosition = {x: 0, y: .5, z: itemDepth}
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(.5, .5, .5)
-                MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
+                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
+            } 
+            else if (selectedItem.itemData.ty === "SM") {
+                MeshRenderer.setBox(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(1,1,1)
+                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
             }  else {
                 if(selectedItem.itemData.pending){
                     MeshRenderer.setBox(selectedItem.entity)
@@ -424,6 +434,15 @@ export function saveItem() {
 
     hideAllPanels()
     openEditComponent("")
+
+    //check Trigger Area Items
+    if(selectedItem.itemData.trigArComp){
+        utils.triggers.removeTrigger(selectedItem.entity)
+        let scene = sceneBuilds.get(selectedItem.sceneId)
+        if(scene){
+            addTriggerArea(scene, selectedItem.entity, selectedItem.itemData, items.get(selectedItem.catalogId)!.n)
+        }
+    }
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
@@ -452,9 +471,10 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
     sceneBuilds.forEach((scene, key) => {
         if (scene.pcls.find((sc: string) => sc === parcel) && localPlayer.canBuild) {
             log('we can drop item here')
+            playSound(SOUND_TYPES.DROP_1_STEREO)
 
             if(PointerEvents.has(selectedItem.entity)) PointerEvents.deleteFrom(selectedItem.entity)
-            addBuildModePointers(selectedItem.entity)
+            // addBuildModePointers(selectedItem.entity)
 
             addAllBuildModePointers()
 
@@ -527,6 +547,8 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
             )
             selectedItem.enabled = false
             return
+        }else{
+            playSound(SOUND_TYPES.ERROR_2)
         }
     })
 }
@@ -947,6 +969,7 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
             check2DCollision(entity, sceneItem)
             checkAudio(entity, sceneItem, scene.parentEntity)
             checkVideo(entity, sceneItem)
+            checkSmartItems(entity, sceneItem)
         }
     }
 }
@@ -1024,5 +1047,16 @@ function checkAudio(entity:Entity, sceneItem: SceneItem, parent:Entity){
 function checkVideo(entity:Entity, sceneItem: SceneItem){
     if(sceneItem.vidComp){
         VideoPlayer.getMutable(entity).playing = false
+    }
+}
+
+function checkSmartItems(entity:Entity, sceneItem: SceneItem){
+    if(sceneItem.trigArComp){
+        MeshCollider.setBox(entity)
+        MeshRenderer.setBox(entity)
+        Material.setPbrMaterial(entity,{
+            albedoColor: Color4.create(1,1,0,.5)
+        })
+        utils.triggers.enableTrigger(entity, false)
     }
 }

@@ -275,7 +275,7 @@ export function TriggerComponent() {
         // uiBackground={{color:Color4.Purple()}}
         color={Color4.White()}
         fontSize={sizeFont(20, 15)}
-    />
+            />
 
         </UiEntity>
 

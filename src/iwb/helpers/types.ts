@@ -202,11 +202,12 @@ export interface SceneItem extends CatalogItemType{
     clickComp:any
     trigComp:any
     actComp:any
+    audComp:any
+    trigArComp:any
     editing:boolean
     ugc:boolean
     pending:boolean
     editor:string
-    audComp:any
 }
 
 export interface SelectedItem {
@@ -242,9 +243,8 @@ export enum COMPONENT_TYPES {
     TEXT_COMPONENT = "Text",
     TRIGGER_COMPONENT = "Trigger",
     ACTION_COMPONENT = 'Action',
+    TRIGGER_AREA_COMPONENT = "Trigger Area",
 }
-
-//
 
 export enum COLLISION_LAYERS {
     INVISIBLE = "invisible",
@@ -355,5 +355,9 @@ export let MATERIAL_TYPES:Materials[] =[
 
 export enum SOUND_TYPES {
     ATMOS_BLESSING = "atmos_blessing",
-    WOOD_3 = "wood_3"
+    WOOD_3 = "wood_3",
+    DOORBELL = "doorbell",
+    DROP_1_STEREO = "drop_1",
+    SELECT_3 = "select_3",
+    ERROR_2 = "error_2",
 }
