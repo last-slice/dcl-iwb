@@ -112,36 +112,21 @@ export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:Sce
 export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
     utils.triggers.addTrigger(
         entity, utils.NO_LAYERS, utils.LAYER_1,
-        [{type: 'box', position: {x: 0, y: 0, z: 0}, scale:{x:item.s.x, y:item.s.y,z:item.s.z }}],//
-        // [{type: 'sphere', position: {x: 0, y: 0, z: 0}, radius:133}],//
+        [{type: 'box', position: {x: 0, y: 0, z: 0}, scale:{x:item.s.x, y:item.s.y,z:item.s.z }}],
         ()=>{
             log('entered trigger area')
-            item.trigArComp.eActions.forEach((action:any)=>{
-                console.log('trig comp action is', action)
-                let sceneAction = realmActions.find((act:any)=> act.id === action)
-                console.log('scene action is', sceneAction)
-                if(sceneAction){
-                    let scene = sceneBuilds.get(sceneAction.sceneId)
-                    console.log('scene is', scene)
-                    if(scene){
-                        let sceneItem = scene.ass.find((asset:any)=> asset.aid === sceneAction.action.aid)
-                        console.log('scene item is', sceneItem)
-                        if(sceneItem){
-                            runTrigger(sceneItem, [action])  
-                        }
-                    }
-                }
-            })
+            runTrigger(item, item.trigArComp.eActions)
         },
         ()=>{
             log('left trigger area')
-        }, Color3.Teal()
+            runTrigger(item, item.trigArComp.eActions)
+        }, Color3.create(236/255,209/255,92/255)
     )
+    utils.triggers.enableTrigger(entity, item.trigArComp.enabled)
 }
 
 export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){
-    // log('updating image url', aid, materialComp, url)
-    let ent = entity ? entity : entitiesFromItemIds.get(aid)//
+    let ent = entity ? entity : entitiesFromItemIds.get(aid)
 
     if(ent){
         let texture = Material.Texture.Common({

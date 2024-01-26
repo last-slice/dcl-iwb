@@ -78,5 +78,4 @@ export function getSceneAudioComponents(){
             audioAssets.push(items.get(asset.id) ? items.get(asset.id)!.n : "")
         }
     })
-    log('audio assets are ', audioAssets)
 }

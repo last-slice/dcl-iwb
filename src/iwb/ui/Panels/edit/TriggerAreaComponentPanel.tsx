@@ -10,6 +10,7 @@ import { uiSizes } from '../../uiConfig'
 import { sceneBuilds } from '../../../components/scenes'
 import { TriggerAreaActionComponent } from './TriggerAreaActionComponentPanel'
 import { localPlayer } from '../../../components/player/player'
+import { utils } from '../../../helpers/libraries'
 
 export let triggerAreaView = "main"
 export let actionView:string = ""
@@ -17,8 +18,10 @@ let selectedIndex:number = 0
 
 let actionNames:string[] = []
 let actionIds:string[] = []
+let actionLabels:any[] = []
 
 let currentActions:any[] = []
+let currentActionIds:any[] = []
 
 export function updateTriggerAreaActionView(v:string, type?:boolean){
     triggerAreaView = v
@@ -222,6 +225,19 @@ export function TriggerAreaComponent() {
             }}
             // uiBackground={{color:Color4.Green()}}
             >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '10%',
+                margin:{top:'1%', bottom:'1%'}
+            }}
+            uiText={{value:"Current Actions", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
                 {generateActionRows()}
                 </UiEntity>
 
@@ -236,7 +252,7 @@ export function TriggerAreaComponent() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '80%',
-                display: triggerAreaView === "add" ? "flex" : "none"
+                display: triggerAreaView === "add" && actionView === "eActions" ? "flex" : "none"
             }}
             >
                  <UiEntity
@@ -338,6 +354,208 @@ export function TriggerAreaComponent() {
 
                 </UiEntity>
 
+        {/* leave actions */}
+                {/* enter actions panel /// */}
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '80%',
+                display: actionView === "lActions" && triggerAreaView === "lActions" ? "flex" : "none"
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:'5%'}
+            }}
+        uiText={{value:"Leave Trigger Actions", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+                {/* add Trigger button row */}
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:"2%"},
+            }}
+            >
+        
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '30%',
+            height: '100%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+        }}
+        uiText={{value: "Add Leave Action", fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            updateTriggerActions()
+            updateTriggerAreaActionView("add")
+        }}
+    />
+
+        </UiEntity>
+
+        {/* trigger actions row */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '80%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '10%',
+                margin:{top:'1%', bottom:'1%'}
+            }}
+            uiText={{value:"Current Actions", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+                {generateActionRows()}
+                </UiEntity>
+
+
+            </UiEntity>
+
+                {/* select new enter action panel */}
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '80%',
+                display: triggerAreaView === "add" && actionView === "lActions" ? "flex" : "none"
+            }}
+            >
+                 <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:'5%'}
+            }}
+        uiText={{value:"Choose Leave Action", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            {/* action dropdown panel */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+            }}
+        >
+
+            <Dropdown
+        key={"trigger-area-leave-action-dropdown-dropdown"}
+        options={[...actionNames]}
+        selectedIndex={selectedIndex}
+        onChange={selectAction}
+        uiTransform={{
+            width: '100%',
+            height: '120%',
+        }}
+        // uiBackground={{color:Color4.Purple()}}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}
+            />
+
+        </UiEntity>
+
+             {/* add trigger confirm buttons */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+                margin:{top:"2%"}
+            }}
+            >
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '30%',
+            height: '100%'
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+        }}
+        uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            buildTrigger()
+            updateTriggerAreaActionView("main", true)
+        }}
+    />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+                margin:{left:"5%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+            }}
+            uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
+            onMouseDown={() => {
+                updateTriggerAreaActionView("main",)
+            }}
+        />
+
+        </UiEntity>
+
+                </UiEntity>
+
         </UiEntity>
 
     )
@@ -362,12 +580,34 @@ function updateCurrentActions(){
     if(actionView === "eActions"){
         if(localPlayer.activeScene){
             let triggerAreaActions:any[] = selectedItem.itemData.trigArComp.eActions
+
+            triggerAreaActions.forEach((taction)=>{
+                console.log('t action is', taction)
+
+                localPlayer.activeScene!.ass.forEach((asset)=>{
+                    if(asset.actComp){
+                        let assetActions = asset.actComp.actions
+                        if(assetActions[taction.id]){
+                            let action = assetActions[taction.id]
+                            console.log("found asset with action", action)
+
+                            currentActions.push(action.name)
+                            currentActionIds.push(taction)
+                        }
+                    }
+                })    
+            })
+        }
+    }
+
+    if(actionView === "lActions"){
+        if(localPlayer.activeScene){
+            let triggerAreaActions:any[] = selectedItem.itemData.trigArComp.lActions
             let sceneActions:any[] = []
 
             localPlayer.activeScene.ass.forEach((asset)=>{
                 if(asset.actComp){
                     asset.actComp.actions.forEach((action:any, key:any)=>{
-                        console.log('action is', key, action)
                         sceneActions.push({id:key, action:action})
                     })
                 }
@@ -379,35 +619,81 @@ function updateCurrentActions(){
                 console.log('asset action is', assetAction)
                 if(assetAction){
                     currentActions.push(assetAction.action.name)
+                    currentActionIds.push(taction)
                 }
             })
         }
     }
-
-    if(actionView === "lActions"){
-        
-    }
-
-    console.log('current actions are ', currentActions)
 }
-
+//
 function generateActionRows(){
     let arr:any[] = []
     currentActions.forEach((action:any, i:number)=>{
+        console.log('curren ction is', action)
         arr.push(
             <UiEntity
             key={"trigger-area-action-row" + i}
             uiTransform={{
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'flex-start',
+                justifyContent: 'center',
                 width: '100%',
                 height: '15%',
                 margin:{top:"1", bottom:'1%'}
             }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '80%',
+                height: '100%',
+            }}
              uiBackground={{color:Color4.Black()}}
             uiText={{value:"" + action, fontSize:sizeFont(20,15), color:Color4.White()}}
             />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '20%',
+                height: '100%',
+            }}
+            >
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '95%',
+                    height: '100%',
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                }}
+                uiText={{value: "Delete", fontSize: sizeFont(20, 16)}}
+                onMouseDown={() => {
+                    updateTrigger("delete", "", {type:actionView, action:currentActionIds[i]})
+                    utils.timers.setTimeout(()=>{
+                        updateCurrentActions()
+                    }, 1000 * 1)
+                }}
+            />
+
+
+            </UiEntity>
+
+
+
+            </UiEntity>
         )
     })
     return arr
@@ -416,15 +702,16 @@ function generateActionRows(){
 export function updateTriggerActions(){
     actionNames.length = 0
     actionIds.length = 0
+    actionLabels.length = 0
     if(localPlayer.activeScene){
         localPlayer.activeScene.ass.forEach((asset)=>{
             if(asset.actComp){
                 asset.actComp.actions.forEach((action:any, key:any)=>{
                     actionNames.push(action.name)
                     actionIds.push(key)
+                    actionLabels.push(action.type)
                 })
             }
         })
     }
 }
-

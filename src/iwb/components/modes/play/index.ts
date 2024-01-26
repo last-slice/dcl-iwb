@@ -57,21 +57,21 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
     }
 }
 
-export function findTriggerActionForEntity(entity:Entity, type:Triggers){
-    log('finding trigger action for entity')
+export function findTriggerActionForEntity(entity:Entity, type:Triggers, pointer:InputAction){
+    log('finding trigger action for entity', entity, type, pointer)
     sceneBuilds.forEach((scene,key)=>{
         let ent = scene.entities.find((e:any)=>e === entity)
         if(ent){
             try{
                 let assetId = itemIdsFromEntities.get(entity)
                 if(assetId){
-                    let sceneItem = scene.ass.find((a:any)=> a.aid === assetId)
-                    if(sceneItem){
-                        log('found an asset with a trigger component', sceneItem, type)
-                        let triggers = sceneItem.trigComp.triggers.filter((trig:any)=> trig.type === type)
+                    let triggerAsset = scene.ass.find((a:any)=> a.aid === assetId)
+                    if(triggerAsset){
+                        log('found an asset with a trigger component', triggerAsset, type)
+                        let triggers = triggerAsset.trigComp.triggers.filter((trig:any)=> trig.type === type && trig.pointer === pointer)
                         log('found triggers', triggers)
                         triggers.forEach((trigger:any)=>{
-                            runTrigger(sceneItem, trigger.actions)
+                            runTrigger(triggerAsset, trigger.actions)
                         })
                     }
                 }
@@ -85,40 +85,49 @@ export function findTriggerActionForEntity(entity:Entity, type:Triggers){
 
 export function runTrigger(sceneItem:SceneItem, actions:any){
     log('actions are', actions)
-    actions.forEach((id:any)=>{
-        let action = sceneItem.actComp.actions[id]
-        let assetId:any
+    actions.forEach((data:any)=>{
+        console.log('action data is ', data)
+
         let entity:any
+        let asset = localPlayer.activeScene?.ass.find((asset:any)=> asset.aid === data.aid)
+        if(asset && asset.actComp){
+            let action = asset.actComp.actions[data.id]
+            console.log('entity action is', action)
 
-        console.log('action is ', action)
-
-        switch(action.type){
-            case Actions.OPEN_LINK:
-                log('opening external url')
-                openExternalUrl({url:"" + action.url})
-                break;
-
-            case Actions.PLAY_AUDIO:
-                log('playing audio')
-                assetId = sceneItem.actComp.actions[id].aid
-                entity = entitiesFromItemIds.get(assetId)
-
-                if(entity){
-                    if(sceneItem.sty !== "Stream"){
-                        AudioSource.getMutable(entity).playing = true
-                    }
+            entity = entitiesFromItemIds.get(asset.aid)
+            if(entity){
+                switch(action.type){
+                    case Actions.OPEN_LINK:
+                        // log('opening external url')
+                        openExternalUrl({url:"" + action.url})
+                        break;
+        
+                    case Actions.PLAY_AUDIO:
+                        // log('playing audio')
+        
+                        if(asset.sty !== "Stream"){
+                            AudioSource.getMutable(entity).playing = true
+                        }else{
+                            AudioStream.getMutable(entity).playing = true
+                        }
+                        break;
+        
+                    case Actions.STOP_AUDIO:
+                        // log('stopping audio')
+        
+                        if(asset.sty !== "Stream"){
+                            AudioSource.getMutable(entity).playing = false
+                        }else{
+                            AudioStream.getMutable(entity).playing = false
+                        }
+                        break;
+        
+                    case Actions.TOGGLE_VIDEO:
+                        VideoPlayer.getMutable(entity).playing = !VideoPlayer.get(entity).playing
+                        console.log('video player is', VideoPlayer.get(entity))
+                        break;
                 }
-                break;
-
-            case Actions.TOGGLE_VIDEO:
-                assetId = sceneItem.actComp.actions[id].aid
-                entity = entitiesFromItemIds.get(assetId)
-
-                if(entity){
-                    VideoPlayer.getMutable(entity).playing = !VideoPlayer.get(entity).playing
-                    console.log('video player is', VideoPlayer.get(entity))
-                }
-                break;
+            }
         }
     })
 }
@@ -139,18 +148,24 @@ export function check2DCollision(entity:Entity, sceneItem: SceneItem){
 export function checkPointers(entity:Entity, sceneItem: SceneItem){
     log('checking pointers for play asset', sceneItem)
     if(sceneItem.trigComp && sceneItem.trigComp.triggers.length > 0){
-        log('we have play pointers')
-        PointerEvents.createOrReplace(entity,{
-            pointerEvents:[
+        log('we have play pointers', sceneItem.trigComp.triggers)
+
+        let pointers:any[] = []
+        sceneItem.trigComp.triggers.forEach((trigger:any, i:number)=>{
+            pointers.push(
                 {
                     eventType: PointerEventType.PET_DOWN,
                     eventInfo: {
-                        button: InputAction.IA_POINTER,
-                        hoverText: "" + "Click Here",
+                        button: trigger.pointer,
+                        hoverText: "" + trigger.hoverText,
                         maxDistance: 5
                     }
                 }
-            ]
+            )
+        })
+
+        PointerEvents.createOrReplace(entity,{
+            pointerEvents:pointers
         })
     }
 }
@@ -230,8 +245,7 @@ function disableSmartItems(entity:Entity, sceneItem: SceneItem){
                 MeshRenderer.deleteFrom(entity)
                 MeshCollider.deleteFrom(entity)
                 Material.deleteFrom(entity)
-                // utils.triggers.removeTrigger(entity)
-                console.log('disabling trigger area')
+                utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
                 break;
         }
     }
@@ -260,7 +274,6 @@ export function teleportToScene(scene:IWBScene){
     movePlayerTo({newRelativePosition:position, cameraTarget:camera})
 }
 
-
 export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
     console.log("checking smart item for play mode", sceneItem)
     switch(items.get(sceneItem.id)?.n){
@@ -270,7 +283,7 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
             MeshCollider.deleteFrom(entity)
             Material.deleteFrom(entity)
 
-            utils.triggers.enableTrigger(entity, true)
+            utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
             break;
     }
 }

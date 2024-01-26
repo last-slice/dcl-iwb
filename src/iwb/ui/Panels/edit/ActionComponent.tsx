@@ -192,7 +192,7 @@ export function ActionComponent() {
         >
 
                         <Dropdown
-                    key={"invisible-collider-dropdown"}
+                    key={"action-selector-dropdown"}
                     options={ENTITY_ACTIONS_LABELS}
                     selectedIndex={selectedIndex}
                     onChange={selectAction}
@@ -478,9 +478,12 @@ function getActionData(){
             return {aid:audioAssetIds[selectedAudioIndex], type:Actions.PLAY_AUDIO}
 
         case 2:
-            return {aid:selectedItem.aid, type:Actions.PLAY_VIDEO}
+            return {aid:selectedItem.aid, type:Actions.STOP_AUDIO}
 
         case 3:
+            return {aid:selectedItem.aid, type:Actions.PLAY_VIDEO}
+
+        case 4:
             return {aid:selectedItem.aid, type:Actions.TOGGLE_VIDEO}
     }
 }
@@ -492,10 +495,8 @@ function getActionDataPanel(){
         return <ActionLinkComponent/>
 
         case 1:
+        case 2:
             getSceneAudioComponents()
             return <ActionPlayAudioComponent/>
-
-        case 2:
-            return
     }
 }

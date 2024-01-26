@@ -1,4 +1,4 @@
-import { Entity, TransformType } from "@dcl/sdk/ecs"
+import { Entity, InputAction, TransformType } from "@dcl/sdk/ecs"
 
 
 export enum SERVER_MESSAGE_TYPES {
@@ -327,6 +327,7 @@ export enum Materials {
 export let ENTITY_ACTIONS_LABELS:any[] = [
     "Open Link",
     "Play Audio",
+    "Stop Audio",
     "Play Video",
     "Toggle Video"
 ]
@@ -334,13 +335,32 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
 export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.OPEN_LINK,
     Actions.PLAY_AUDIO,
+    Actions.STOP_AUDIO,
     Actions.PLAY_VIDEO,
-    Actions.TOGGLE_VIDEO
+    Actions.TOGGLE_VIDEO,
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
     "On Click"
 ]
+
+export let ENTITY_POINTER_LABELS:any[] = [
+    "Mouse Click",
+    "E Press",
+    "F Press",
+    "ANY Press",
+    "W Press",
+    "S Press",
+    "D Press",
+    "A Press",
+    "SPACE Press",
+    "SHIFT Press",
+    "#1 Press",
+    "#2 Press",
+    "#3 Press",
+    "#4 Press",
+]
+
 
 export let ENTITY_TRIGGER_SLUGS:any[] = [
     Triggers.ON_CLICK

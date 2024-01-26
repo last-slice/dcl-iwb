@@ -3,18 +3,22 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
-import { COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_TRIGGER_LABELS, ENTITY_TRIGGER_SLUGS, IWBScene, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_POINTER_LABELS, ENTITY_TRIGGER_LABELS, ENTITY_TRIGGER_SLUGS, IWBScene, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
 import { selectedItem } from '../../../components/modes/build'
 import { uiSizes } from '../../uiConfig'
 import { sceneBuilds } from '../../../components/scenes'
 import { log } from '../../../helpers/functions'
+import { localPlayer } from '../../../components/player/player'
 
 let view = "list"
-let selectedIndex:number = 0
+let selectedTriggerIndex:number = 0
+let selectedActionIndex:number = 0
+let selectedPointerIndex:number = 0
 
 let actionNames:string[] = []
 let actionIds:string[] = []
+let actionLabels:any[] = []
 
 export function updateActionView(v:string){
     view = v
@@ -155,7 +159,7 @@ export function TriggerComponent() {
              {/* trigger event row */}
     <UiEntity
             uiTransform={{
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
@@ -170,7 +174,7 @@ export function TriggerComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: '100%',
+                width: '48%',
                 height: '100%',
             }}
         >
@@ -199,8 +203,60 @@ export function TriggerComponent() {
             <Dropdown
         key={"trigger-event-dropdown-dropdown"}
         options={ENTITY_TRIGGER_LABELS}
-        selectedIndex={selectedIndex}
-        onChange={selectAction}
+        selectedIndex={selectedTriggerIndex}
+        onChange={selectTriggerIndex}
+        uiTransform={{
+            width: '100%',
+            height: '120%',
+        }}
+        // uiBackground={{color:Color4.Purple()}}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}
+    />
+
+        </UiEntity>
+
+
+
+        </UiEntity>
+
+         {/* trigger event type dropdown */}
+         <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '48%',
+                height: '100%',
+            }}
+        >
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:'5%'}
+            }}
+        uiText={{value:"Trigger Event Type", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '45%',
+            }}
+        >
+
+            <Dropdown
+        key={"trigger-event-type-dropdown-dropdown"}
+        options={ENTITY_POINTER_LABELS}
+        selectedIndex={selectedPointerIndex}
+        onChange={selectPointer}
         uiTransform={{
             width: '100%',
             height: '120%',
@@ -266,7 +322,7 @@ export function TriggerComponent() {
             <Dropdown
         key={"trigger-action-dropdown-dropdown"}
         options={[...actionNames]}
-        selectedIndex={selectedIndex}
+        selectedIndex={selectedActionIndex}
         onChange={selectAction}
         uiTransform={{
             width: '100%',
@@ -413,7 +469,7 @@ function TriggerRow(trigger:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%',
+                width: '30%',
                 height: '100%',
             }}
             uiText={{value:"Trigger Event", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
@@ -425,10 +481,22 @@ function TriggerRow(trigger:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '30%',
                 height: '100%',
             }}
             uiText={{value:"" + ENTITY_TRIGGER_LABELS[ENTITY_TRIGGER_SLUGS.findIndex((es)=> es === data.type)], fontSize:sizeFont(20,15), color:Color4.White()}}
+            />
+
+            {/* trigger event pointer column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            uiText={{value:"" + ENTITY_POINTER_LABELS[data.pointer], fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
             <UiEntity
@@ -472,7 +540,7 @@ function generateActionRows(actions:any){
 }
 
 function TriggerActionRow(data:any){
-    let actionId = data.data
+    let actionData = data.data
     return(
         <UiEntity
         key={"trigger-action-row-"+ data.rowCount}
@@ -533,7 +601,7 @@ function TriggerActionRow(data:any){
                 width: '50%',
                 height: '100%',
             }}
-            uiText={{value:"" + (selectedItem && selectedItem.enabled && selectedItem.itemData.trigComp ? selectedItem.itemData.actComp.actions[actionId].name : ""), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"" + actionNames[actionIds.findIndex((action:any)=> action === actionData.id)], fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 
@@ -546,7 +614,7 @@ function TriggerActionRow(data:any){
                 width: '50%',
                 height: '100%',
             }}
-            uiText={{value:"" + ENTITY_ACTIONS_LABELS[ENTITY_ACTIONS_SLUGS.findIndex((es)=> es === selectedItem.itemData.actComp.actions[actionId].type)], fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"" + getActionLabel(actionData.id), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             />
             </UiEntity>
 
@@ -557,14 +625,22 @@ function TriggerActionRow(data:any){
     )
 }
 
+function selectTriggerIndex(index:number){
+    selectedTriggerIndex = index
+}
+
 function selectAction(index:number){
-    selectedIndex = index
+    selectedActionIndex = index
+}
+
+function selectPointer(index:number){
+    selectedPointerIndex = index
 }
 
 function buildTrigger(){
     let scene:IWBScene = sceneBuilds.get(selectedItem.sceneId)
     if(scene){
-        updateTrigger("add", "new", actionIds[selectedIndex])
+        updateTrigger("add", "new", {type:ENTITY_TRIGGER_SLUGS[selectedTriggerIndex], action:actionIds[selectedActionIndex], pointer:selectedPointerIndex})
     }
 }
 
@@ -572,13 +648,26 @@ function updateTrigger(action:string, type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.TRIGGER_COMPONENT, action:action, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
 }
 
+function getActionLabel(actionId:string){
+    let actionIdIndex = actionIds.findIndex((id)=> id === actionId)
+    let actionLabel = actionLabels[actionIdIndex]
+    let labelIndex = ENTITY_ACTIONS_SLUGS.findIndex((label)=> label === actionLabel)
+    return ENTITY_ACTIONS_LABELS[labelIndex]
+}
+
 export function updateTriggerActions(){
     actionNames.length = 0
     actionIds.length = 0
-    if(selectedItem && selectedItem.enabled){
-        selectedItem.itemData.actComp.actions.forEach((action:any, key:any)=>{
-            actionNames.push(action.name)
-            actionIds.push(key)
+    actionLabels.length = 0
+    if(localPlayer.activeScene){
+        localPlayer.activeScene.ass.forEach((asset)=>{
+            if(asset.actComp){
+                asset.actComp.actions.forEach((action:any, key:any)=>{
+                    actionNames.push(action.name)
+                    actionIds.push(key)
+                    actionLabels.push(action.type)
+                })
+            }
         })
     }
 }
