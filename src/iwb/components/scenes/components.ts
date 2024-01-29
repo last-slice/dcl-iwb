@@ -1,4 +1,5 @@
 import {
+    Animator,
     AudioSource,
     AudioStream,
     Entity,
@@ -66,6 +67,10 @@ export function createGltfComponent(scene:IWBScene, entity:Entity, item:SceneIte
             visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
         }
         GltfContainer.create(entity, gltf)
+
+        if(item.animComp && item.animComp.enabled){
+            addAnimationComponent(scene, entity, item)
+        }
     }
     GLTFLoadedComponent.create(entity, {init:false, sceneId:scene.id})
 }
@@ -106,6 +111,14 @@ export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:Sce
                 resetEntityForBuildMode(scene, entity)
             }
             break;
+
+        case 'Click Area':
+            addClickArea(scene, entity, item, name)
+            
+            if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+                resetEntityForBuildMode(scene, entity)
+            }
+            break;
     }
 }
 
@@ -123,6 +136,14 @@ export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, na
         }, Color3.create(236/255,209/255,92/255)
     )
     utils.triggers.enableTrigger(entity, item.trigArComp.enabled)
+}
+
+export function addClickArea(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
+    // MeshCollider.setBox(entity)
+    // MeshRenderer.setBox(entity)
+    // Material.setPbrMaterial(entity,{
+    //     albedoColor: Color4.create(54/255,221/255,192/255)
+    // })
 }
 
 export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){
@@ -190,7 +211,6 @@ export function updateVideoLoop(aid:string, looping:boolean){
         }
     }
 }
-
 
 export function updateVideoUrl(aid:string, materialComp:any, url:string){
     // log('updating video url', aid, materialComp, url)
@@ -390,6 +410,23 @@ export function updateMaterialComponent(aid:string, materialComp:any, entity?:En
         }else{
         }
     }
+}
+
+export function addAnimationComponent(scene:IWBScene, entity:Entity, item:SceneItem){
+    let animations:any[] = []
+
+    item.animComp.animations.forEach((animation:string, i:number)=>{
+        let anim:any = {
+            clip:animation,
+            playing: false,
+            loop: false
+        }
+        animations.push(anim)
+    })
+
+    Animator.createOrReplace(entity, {
+        states:animations
+    })
 }
 
 export function playAudioFile(catalogId?:string){

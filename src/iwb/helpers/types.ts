@@ -199,11 +199,12 @@ export interface SceneItem extends CatalogItemType{
     matComp:any
     nftComp:any
     textComp:any
-    clickComp:any
     trigComp:any
     actComp:any
     audComp:any
     trigArComp:any
+    clickArgComp:any
+    animComp:any
     editing:boolean
     ugc:boolean
     pending:boolean
@@ -244,6 +245,8 @@ export enum COMPONENT_TYPES {
     TRIGGER_COMPONENT = "Trigger",
     ACTION_COMPONENT = 'Action',
     TRIGGER_AREA_COMPONENT = "Trigger Area",
+    CLICK_AREA_COMPONENT = "Click Area",
+    ANIMATION_COMPONENT = "Animation",
 }
 
 export enum COLLISION_LAYERS {
@@ -302,7 +305,7 @@ export enum Actions {
     EMOTE = 'emote',
     OPEN_LINK = 'open_link',
     SHOW_TOAST = 'show_toast',
-    HIDE_TOAS = 'hide_toast',
+    HIDE_TOAST = 'hide_toast',
     START_DELAY = 'start_delay',
     STOP_DELAY = 'stop_delay',
     START_LOOP = 'start_loop',
@@ -310,7 +313,9 @@ export enum Actions {
     CLONE = 'clone',
     REMOVE = 'remove',
     SHOW_IMAGE = 'show_image',
-    HIDE_IMAGE = 'hide_image'
+    HIDE_IMAGE = 'hide_image',
+    PLAY_ANIMATION = 'play_animation',
+    STOP_ANIMATION = 'stop_animation'
 }
 
 export enum Triggers {
@@ -329,7 +334,9 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Play Audio",
     "Stop Audio",
     "Play Video",
-    "Toggle Video"
+    "Toggle Video",
+    "Play Animation",
+    "Stop Animation"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -338,6 +345,8 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.STOP_AUDIO,
     Actions.PLAY_VIDEO,
     Actions.TOGGLE_VIDEO,
+    Actions.PLAY_ANIMATION,
+    Actions.STOP_ANIMATION
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [

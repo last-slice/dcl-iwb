@@ -695,6 +695,31 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 // uiBackground={{color:Color4.Green()}}
             >
 
+                {/* <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        width: calculateSquareImageDimensions(4).width,
+                        height: calculateSquareImageDimensions(4).height,
+                        margin: {left: '1%'}
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas1.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.gridButtonTrans)
+                    }}
+                    onMouseDown={() => {
+                        if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
+                            selectCatalogItem(item.id, EDIT_MODES.GRAB, false)
+                        }
+                    }}
+                /> */}
+
+
                 <UiEntity
                     uiTransform={{
                         display: 'flex',

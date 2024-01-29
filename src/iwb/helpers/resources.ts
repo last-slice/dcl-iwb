@@ -36,7 +36,7 @@ export default {
 
     endpoints:{
         wsTest: "ws://localhost:2751",
-        wsProd: "wss://dcl-iwb.co/toolset",
+        wsProd: "wss://dcl-iwb.co/toolset",//
 
         deploymentTest: "http://localhost:3525",
         deploymentProd: "https://dcl-iwb.co/dcl/deployment",

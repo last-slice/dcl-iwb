@@ -6,14 +6,7 @@ import { uiSizes } from '../../uiConfig'
 import { log } from '../../../helpers/functions'
 import { VersionPanel } from './versionPanel'
 import { UploadsPanel, showUploads } from './uploadsPanel'
-
-
-let settings:any[] = [
-    {label:"Scene Notifications", enabled:true},
-    {label:"Display Build", enabled:true},
-    {label:"Save Notifications", enabled:true},
-    {label:"Popup Confirmations", enabled:true},
-]
+import { localUserId, players } from '../../../components/player/player'
 
 export let statusView = "Version"
 
@@ -26,7 +19,7 @@ export function StatusPanel() {
         <UiEntity
             key={"statuspanel"}
             uiTransform={{
-                display: showSetting === "Status" ? 'flex' : 'none',
+                display: showSetting === "Info" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -85,16 +78,15 @@ export function StatusPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getButtonState("Uploads")
+                uvs: getButtonState("Help")
             }}
             onMouseDown={() => {
-                displayStatusView("Uploads")
-                showUploads()
+                displayStatusView("Help")
             }}
-            uiText={{value:"Uploads", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Help", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />
 
-            <UiEntity
+{/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -108,13 +100,39 @@ export function StatusPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getButtonState("Help")
+                uvs: getButtonState("Uploads")
             }}
             onMouseDown={() => {
-                displayStatusView("Help")
+                displayStatusView("Uploads")
+                showUploads()
             }}
-            uiText={{value:"Help", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Uploads", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            /> */}
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                margin:{top:"1%", bottom:'1%', left:'1%'},
+                display:localUserId && players.get(localUserId) && players.get(localUserId)?.homeWorld ? 'flex' : 'none',
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("Uploads")
+            }}
+            onMouseDown={() => {
+                displayStatusView("Uploads")
+                showUploads()
+            }}
+            uiText={{value:"Assets", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />
+
 
             {/* <UiEntity
             uiTransform={{

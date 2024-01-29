@@ -87,7 +87,7 @@ export function ExportPanel() {
             }}
             />
 
-            <UiEntity
+            {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -130,7 +130,7 @@ export function ExportPanel() {
                 showExportWorlds()
             }}
             />
-        
+         */}
 
             </UiEntity>
 

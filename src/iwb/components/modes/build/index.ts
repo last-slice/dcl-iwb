@@ -33,6 +33,7 @@ import {addTriggerArea, updateAudioComponent, updateAudioUrl, updateImageUrl, up
 import { displaySceneInfoPanel } from "../../../ui/Panels/builds/buildsIndex"
 import { playSound } from "../../sounds"
 import { utils } from "../../../helpers/libraries"
+import { checkAnimation, disableAnimations } from "../play"
 
 export let editAssets:Map<string, Entity> = new Map()
 export let grabbedAssets:Map<string, Entity> = new Map()
@@ -970,6 +971,7 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
             checkAudio(entity, sceneItem, scene.parentEntity)
             checkVideo(entity, sceneItem)
             checkSmartItems(entity, sceneItem)
+            disableAnimations(entity, sceneItem)
         }
     }
 }
@@ -977,7 +979,6 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
 export function addSelectionPointer(itemdata:any){
     selectedItem.pointer = engine.addEntity()
     MeshRenderer.setBox(selectedItem.pointer)
-    console.log('item data selected is', itemdata)
     Transform.createOrReplace(selectedItem.pointer, {
         position: Vector3.create(0, itemdata!.bb.z + 1, 0),
         parent: selectedItem.entity
@@ -1011,7 +1012,6 @@ export function removeEditSelectionPointer(aid:string){
 
 
 function check2DCollision(entity:Entity, sceneItem: SceneItem){
-    //add collision for 2D objects in build mode1
     if(sceneItem.type === "2D"){
         MeshCollider.setPlane(entity)
     }
@@ -1052,11 +1052,19 @@ function checkVideo(entity:Entity, sceneItem: SceneItem){
 
 function checkSmartItems(entity:Entity, sceneItem: SceneItem){
     if(sceneItem.trigArComp){
-        MeshCollider.setBox(entity)
+        MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
         MeshRenderer.setBox(entity)
-        Material.setPbrMaterial(entity,{
+        Material.setPbrMaterial(entity,{ 
             albedoColor: Color4.create(1,1,0,.5)
         })
         utils.triggers.enableTrigger(entity, false)
+    }
+
+    if(sceneItem.clickArgComp){
+        MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
+        MeshRenderer.setBox(entity)
+        Material.setPbrMaterial(entity,{
+            albedoColor: Color4.create(54/255,221/255,192/255)
+        })
     }
 }

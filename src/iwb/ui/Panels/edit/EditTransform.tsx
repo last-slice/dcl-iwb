@@ -23,7 +23,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '90%',
+                width: '95%',
                 height: '35%',
                 margin: {top: '1%', bottom: '1%'}
             }}
@@ -33,7 +33,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
             {/* header */}
             <UiEntity
                 uiTransform={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
@@ -46,7 +46,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '100%',
+                        width: 'auto',
                         height: '50%',
                     }}
 
@@ -58,7 +58,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                         flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '100%',
+                        width: '95%',
                         height: '50%',
                     }}
                 >

@@ -1,4 +1,4 @@
-import { AudioSource, AudioStream, ColliderLayer, Entity, InputAction, Material, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
+import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, InputAction, Material, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
 import { Actions, COLLISION_LAYERS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes";
 import { getRandomIntInclusive, log } from "../../../helpers/functions";
@@ -9,23 +9,23 @@ import { localPlayer } from "../../player/player";
 import { utils } from "../../../helpers/libraries";
 import { Color3 } from "@dcl/sdk/math";
 
-export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
-    log('resetting enttiy for play mode')
-    let assetId = itemIdsFromEntities.get(entity)
-    if(assetId){
-        let sceneItem = scene.ass.find((a)=> a.aid === assetId)
-        if(sceneItem){
-            VisibilityComponent.createOrReplace(entity, {
-                visible: sceneItem.visComp.visible
-            })
+// export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
+//     log('resetting enttiy for play mode')
+//     let assetId = itemIdsFromEntities.get(entity)
+//     if(assetId){
+//         let sceneItem = scene.ass.find((a)=> a.aid === assetId)
+//         if(sceneItem){
+//             VisibilityComponent.createOrReplace(entity, {
+//                 visible: sceneItem.visComp.visible
+//             })
 
-            check2DCollision(entity, sceneItem)
-            checkPointers(entity, sceneItem)
-            checkAudio(entity, sceneItem)
-            checkVideo(entity, sceneItem)
-        }
-    }
-}
+//             check2DCollision(entity, sceneItem)
+//             checkPointers(entity, sceneItem)
+//             checkAudio(entity, sceneItem)
+//             checkVideo(entity, sceneItem)
+//         }
+//     }
+// }
 
 export function getSceneItem(scene:IWBScene, entity:Entity){
     let assetId = itemIdsFromEntities.get(entity)
@@ -51,6 +51,7 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
                 disableAudio(entity, sceneItem)
                 disableVideo(entity, sceneItem)
                 disableSmartItems(entity, sceneItem)
+                disableAnimations(entity, sceneItem)
                 PointerEvents.deleteFrom(entity)
             }
         }
@@ -84,15 +85,12 @@ export function findTriggerActionForEntity(entity:Entity, type:Triggers, pointer
 }
 
 export function runTrigger(sceneItem:SceneItem, actions:any){
-    log('actions are', actions)
     actions.forEach((data:any)=>{
-        console.log('action data is ', data)
 
         let entity:any
         let asset = localPlayer.activeScene?.ass.find((asset:any)=> asset.aid === data.aid)
         if(asset && asset.actComp){
             let action = asset.actComp.actions[data.id]
-            console.log('entity action is', action)
 
             entity = entitiesFromItemIds.get(asset.aid)
             if(entity){
@@ -124,7 +122,18 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
         
                     case Actions.TOGGLE_VIDEO:
                         VideoPlayer.getMutable(entity).playing = !VideoPlayer.get(entity).playing
-                        console.log('video player is', VideoPlayer.get(entity))
+                        break;
+
+                    case Actions.PLAY_ANIMATION:
+                        Animator.stopAllAnimations(entity, true)
+                        let clip = Animator.getClip(entity, action.animName)
+                        clip.playing = true
+                        break;
+
+                    case Actions.STOP_ANIMATION:
+                        Animator.stopAllAnimations(entity, true)
+                        let stopclip = Animator.getClip(entity, action.animName)
+                        stopclip.playing = false
                         break;
                 }
             }
@@ -285,5 +294,34 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
 
             utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
             break;
+    }
+}
+
+export function disableAnimations(entity:Entity, sceneItem:SceneItem){
+    if(sceneItem.animComp){
+        console.log('scene item has aniamtion, need to reset all cursors', Animator.has(entity))
+        Animator.has(entity) ? Animator.stopAllAnimations(entity, true) : null
+    }
+}
+
+export function checkAnimation(entity:Entity, sceneItem: SceneItem){
+    console.log('checking animations for play mode', sceneItem)
+    if(sceneItem.animComp && sceneItem.animComp.enabled && sceneItem.animComp.autostart){
+        Animator.deleteFrom(entity)
+
+        let animations:any[] = []
+
+        sceneItem.animComp.animations.forEach((animation:string, i:number)=>{
+            let anim:any = {
+                clip:animation,
+                playing: sceneItem.animComp.autostart && sceneItem.animComp.startIndex === i ? true : false,
+                loop: sceneItem.animComp.autoloop && sceneItem.animComp.autostart && sceneItem.animComp.startIndex === i ? true : false
+            }
+            animations.push(anim)
+        })
+
+        Animator.createOrReplace(entity, {
+            states:animations
+        })//
     }
 }

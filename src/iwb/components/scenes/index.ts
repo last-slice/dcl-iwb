@@ -4,7 +4,7 @@ import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, Player, SCEN
 import { SelectedFloor, addBoundariesForParcel, deleteParcelEntities } from "../modes/create"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { items } from "../catalog"
-import { AudioLoadedComponent, PointersLoadedComponent, RealmEntityComponent, SmartItemLoadedComponent, VideoLoadedComponent } from "../../helpers/Components"
+import { AudioLoadedComponent, GLTFLoadedComponent, PointersLoadedComponent, RealmEntityComponent, SmartItemLoadedComponent, VideoLoadedComponent } from "../../helpers/Components"
 import { getPlayerLand, hasBuildPermissions, iwbConfig, localPlayer, localUserId, players } from "../player/player"
 import { addBuildModePointers } from "../modes/build"
 import { showNotification } from "../../ui/Panels/notificationUI"
@@ -20,7 +20,7 @@ import {
     updateTextComponent
 } from "./components"
 import { hideAllPanels } from "../../ui/ui"
-import { check2DCollision, checkAudio, checkPointers, checkSmartItem, checkVideo, disableEntityForPlayMode, getSceneItem } from "../modes/play"
+import { check2DCollision, checkAnimation, checkAudio, checkPointers, checkSmartItem, checkVideo, disableEntityForPlayMode, getSceneItem } from "../modes/play"
 import { displaySceneAssetInfoPanel } from "../../ui/Panels/sceneInfoPanel"
 
 export let realm:string = ""
@@ -356,6 +356,11 @@ async function disableSceneEntities(sceneId:string){
             for(let i = 0; i < scene.entities.length; i++){
                 let entity = scene.entities[i]
 
+                //check 3d
+                if(GLTFLoadedComponent.has(entity)){
+                    GLTFLoadedComponent.getMutable(entity).init = false
+                }
+
                 //check video
                 if(VideoLoadedComponent.has(entity)){
                     VideoLoadedComponent.getMutable(entity).init = false
@@ -387,6 +392,12 @@ function enableSceneEntities(sceneId:string){
 
             let sceneItem = getSceneItem(scene, entity)
             if(sceneItem){
+                //check 3d
+                if(GLTFLoadedComponent.has(entity) && !GLTFLoadedComponent.get(entity).init){
+                    checkAnimation(entity, sceneItem)
+                    GLTFLoadedComponent.getMutable(entity).init = true
+                }
+
                 //check video
                 if(VideoLoadedComponent.has(entity) && !VideoLoadedComponent.get(entity).init){
                     checkVideo(entity, sceneItem)
@@ -403,12 +414,11 @@ function enableSceneEntities(sceneId:string){
                 // resetEntityForPlayMode(scene, entity)
 
                 //check pointers
-                VisibilityComponent.createOrReplace(entity, {
+                VisibilityComponent.has(entity) && VisibilityComponent.createOrReplace(entity, {
                     visible: sceneItem.visComp.visible
                 })
 
                 // check2DCollision(entity, sceneItem)
-
 
                 //check smart items
                 console.log('about to check smart items for play mod')
@@ -418,7 +428,6 @@ function enableSceneEntities(sceneId:string){
                     SmartItemLoadedComponent.getMutable(entity).init = true
                 }
                 
-
                 if(PointersLoadedComponent.has(entity) && !PointersLoadedComponent.get(entity).init){
                     checkPointers(entity, sceneItem)
                     PointersLoadedComponent.getMutable(entity).init = true

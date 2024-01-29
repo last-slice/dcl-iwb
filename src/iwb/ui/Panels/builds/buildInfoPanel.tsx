@@ -264,6 +264,20 @@ export function BuildInfo() {
         }}
         />
 
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '10%',
+                margin:{left: '2%'}
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Toggle all scene assets for everyone", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            />
+
             </UiEntity>
 
                          {/* scene public */}
@@ -314,6 +328,20 @@ export function BuildInfo() {
             scene!.priv = !scene!.priv        
         }}
         />
+
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '10%',
+                margin:{left: '2%'}
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            />
 
             </UiEntity>
 

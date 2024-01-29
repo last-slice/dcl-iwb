@@ -29,7 +29,7 @@ export function updateTriggerAreaActionView(v:string, type?:boolean){
         actionView = v
         updateCurrentActions()
     }
-
+    console.log('action view is', triggerAreaView, actionView)
 }
 
 export function TriggerAreaComponent() {
@@ -324,7 +324,10 @@ export function TriggerAreaComponent() {
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
             buildTrigger()
-            updateTriggerAreaActionView("main", true)
+            updateTriggerAreaActionView(actionView, true)
+            utils.timers.setTimeout(()=>{
+                updateCurrentActions()
+            }, 1000 * 1)
         }}
     />
 
@@ -346,7 +349,7 @@ export function TriggerAreaComponent() {
             }}
             uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
-                updateTriggerAreaActionView("main",)
+                updateTriggerAreaActionView("main")
             }}
         />
 
@@ -355,7 +358,6 @@ export function TriggerAreaComponent() {
                 </UiEntity>
 
         {/* leave actions */}
-                {/* enter actions panel /// */}
                 <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -526,7 +528,10 @@ export function TriggerAreaComponent() {
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
             buildTrigger()
-            updateTriggerAreaActionView("main", true)
+            updateTriggerAreaActionView(actionView, true)
+            utils.timers.setTimeout(()=>{
+                updateCurrentActions()
+            }, 1000 * 1)
         }}
     />
 
@@ -548,7 +553,7 @@ export function TriggerAreaComponent() {
             }}
             uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
-                updateTriggerAreaActionView("main",)
+                updateTriggerAreaActionView("main", true)
             }}
         />
 
@@ -576,6 +581,7 @@ function selectAction(index:number){
 
 function updateCurrentActions(){
     currentActions.length = 0
+    currentActionIds.length = 0
 
     if(actionView === "eActions"){
         if(localPlayer.activeScene){
@@ -603,33 +609,30 @@ function updateCurrentActions(){
     if(actionView === "lActions"){
         if(localPlayer.activeScene){
             let triggerAreaActions:any[] = selectedItem.itemData.trigArComp.lActions
-            let sceneActions:any[] = []
-
-            localPlayer.activeScene.ass.forEach((asset)=>{
-                if(asset.actComp){
-                    asset.actComp.actions.forEach((action:any, key:any)=>{
-                        sceneActions.push({id:key, action:action})
-                    })
-                }
-            })     
 
             triggerAreaActions.forEach((taction)=>{
                 console.log('t action is', taction)
-                let assetAction = sceneActions.find((act)=> act.id === taction)
-                console.log('asset action is', assetAction)
-                if(assetAction){
-                    currentActions.push(assetAction.action.name)
-                    currentActionIds.push(taction)
-                }
+
+                localPlayer.activeScene!.ass.forEach((asset)=>{
+                    if(asset.actComp){
+                        let assetActions = asset.actComp.actions
+                        if(assetActions[taction.id]){
+                            let action = assetActions[taction.id]
+                            console.log("found asset with action", action)
+
+                            currentActions.push(action.name)
+                            currentActionIds.push(taction)
+                        }
+                    }
+                })    
             })
         }
     }
 }
-//
+
 function generateActionRows(){
     let arr:any[] = []
     currentActions.forEach((action:any, i:number)=>{
-        console.log('curren ction is', action)
         arr.push(
             <UiEntity
             key={"trigger-area-action-row" + i}

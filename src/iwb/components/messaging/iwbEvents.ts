@@ -61,7 +61,7 @@ export function createIWBEventListeners(){
                 removePlayModSystem()
                 addInputSystem()
                 updatePlayModeReset(false)
-                utils.triggers.enableDebugDraw(true)
+                // utils.triggers.enableDebugDraw(true)
             }else if(players.get(localUserId)?.mode === SCENE_MODES.PLAYMODE){
                 removeInputSystem()
                 addPlayModeSystem()

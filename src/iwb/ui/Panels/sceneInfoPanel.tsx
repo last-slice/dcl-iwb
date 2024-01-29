@@ -142,6 +142,7 @@ export function createSceneInfoPanel() {
                 height: calculateSquareImageDimensions(3.5).height,
                 alignItems: 'center',
                 justifyContent: 'center',
+                display: localUserId && players.get(localUserId) && players.get(localUserId)?.homeWorld ? 'flex' : 'none',
             }}
             uiBackground={{
                 textureMode: 'stretch',

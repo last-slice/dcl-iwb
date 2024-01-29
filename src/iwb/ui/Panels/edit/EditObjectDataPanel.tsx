@@ -18,6 +18,7 @@ import {TriggerComponent, updateTriggerActions} from './TriggerComponent'
 import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
 import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerAreaComponentPanel'
+import { AnimationComponent } from './AnimationComponentPanel'
 
 export let visibleComponent: string = ""
 
@@ -165,7 +166,7 @@ export function EditObjectData() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'flex-start',
-                        width: '90%',
+                        width: '95%',
                         height: '90%',
                         margin: {top: "2%"}
                     }}
@@ -182,6 +183,7 @@ export function EditObjectData() {
                     <MaterialComponentPanel/>
                     <TriggerComponent/>
                     <TriggerAreaComponent/>
+                    <AnimationComponent/>
 
                 </UiEntity>
             </UiEntity>

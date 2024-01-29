@@ -10,6 +10,7 @@ import { uiSizes } from '../../uiConfig'
 import { ActionLinkComponent, url } from './Actions/ActionLinkData'
 import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selectedAudioIndex } from './Actions/ActionPlayAudioComponent'
 import { log } from '../../../helpers/functions'
+import { ActionAnimationComponent, selectedAnimationIndex } from './Actions/ActionAnimationComponent'
 
 let view = "list"
 let newName:string = ""
@@ -485,6 +486,12 @@ function getActionData(){
 
         case 4:
             return {aid:selectedItem.aid, type:Actions.TOGGLE_VIDEO}
+
+        case 5:
+            return {aid:selectedItem.aid, animName: selectedItem.itemData.animComp.animations[selectedAnimationIndex], type:Actions.PLAY_ANIMATION}
+
+        case 6:
+            return {aid:selectedItem.aid, type:Actions.STOP_ANIMATION}
     }
 }
 
@@ -498,5 +505,9 @@ function getActionDataPanel(){
         case 2:
             getSceneAudioComponents()
             return <ActionPlayAudioComponent/>
+
+        case 5:
+        case 6:
+            return <ActionAnimationComponent/>
     }
 }
