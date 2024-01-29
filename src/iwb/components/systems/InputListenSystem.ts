@@ -270,22 +270,27 @@ export function InputListenSystem(dt: number) {
 
     //W
     if (inputSystem.isTriggered(InputAction.IA_FORWARD, PointerEventType.PET_UP)) {
+        //log('W button up')
         setButtonState(InputAction.IA_FORWARD, PointerEventType.PET_UP)
     }
     //A
     if (inputSystem.isTriggered(InputAction.IA_LEFT, PointerEventType.PET_UP)) {
+        //console.log('A button up')
         setButtonState(InputAction.IA_LEFT, PointerEventType.PET_UP)
     }
     //S
     if (inputSystem.isTriggered(InputAction.IA_BACKWARD, PointerEventType.PET_UP)) {
+        //console.log('S button up')
         setButtonState(InputAction.IA_BACKWARD, PointerEventType.PET_UP)
     }
     //D
     if (inputSystem.isTriggered(InputAction.IA_RIGHT, PointerEventType.PET_UP)) {
+        //console.log('D button up')
         setButtonState(InputAction.IA_RIGHT, PointerEventType.PET_UP)
     }
     // JUMP
     if (inputSystem.isTriggered(InputAction.IA_JUMP, PointerEventType.PET_UP)) {
+        //console.log('jump button up')
         setButtonState(InputAction.IA_JUMP, PointerEventType.PET_UP)
     }
 }

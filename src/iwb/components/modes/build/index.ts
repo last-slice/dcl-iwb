@@ -119,6 +119,7 @@ export function toggleModifier(mod:EDIT_MODIFIERS) {
             } else if (selectedItem.pFactor === 0.001) {
                 selectedItem.pFactor = 1
             }
+            break;
         case EDIT_MODIFIERS.SCALE:
             if (selectedItem.sFactor === 1) {
                 selectedItem.sFactor = 0.1
@@ -259,7 +260,11 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 if(selectedItem.itemData.pending){
                     MeshRenderer.setBox(selectedItem.entity)
                 }else{
-                    GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb"})
+                    GltfContainer.create(selectedItem.entity, {src: 'assets/' + selectedItem.catalogId + ".glb",
+                        invisibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
+                        visibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
+                    })
+
                 }
             }
         }//
@@ -461,9 +466,9 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
         return
     }
 
-    const {position, rotation: playerRotation} = Transform.get(engine.PlayerEntity)
+    const {position: playerPosition, rotation: playerRotation} = Transform.get(engine.PlayerEntity)
     const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), playerRotation)
-    const finalPosition = Vector3.add(position, forwardVector)
+    const finalPosition = Vector3.add(playerPosition, forwardVector)
 
     console.log('final position is', finalPosition)
 
@@ -494,11 +499,10 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
                 t = selectedItem.transform!
             } else {
                 t.position.x = finalPosition.x
-                t.position.y = t.position.y + .88
+                t.position.y = t.position.y + playerPosition.y
                 t.position.z = finalPosition.z
 
                 if(selectedItem.isCatalogSelect){
-                    //console.log('not a catalog select')
                     t.rotation.y = playerRotation.y
                     t.rotation.w = playerRotation.w
 
@@ -638,6 +642,10 @@ export function grabItem(entity: Entity) {
                     addGrabbedComponent(selectedItem.entity, selectedItem.itemData.id, selectedItem.itemData)
                 }
 
+                if(GltfContainer.has(selectedItem.entity)){
+                    GltfContainer.getMutable(selectedItem.entity).invisibleMeshesCollisionMask = ColliderLayer.CL_POINTER
+                    GltfContainer.getMutable(selectedItem.entity).visibleMeshesCollisionMask = ColliderLayer.CL_POINTER
+                }
 
                 addUseItemPointers(entity)
 
