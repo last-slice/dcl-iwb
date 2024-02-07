@@ -37,7 +37,7 @@ export function createBuildCompeitionUI(){
                 width: calculateImageDimensions(65, 2680/1500).width,
                 height: calculateImageDimensions(40, 2680/1500).width,
                 positionType: 'absolute',
-                position: { left: (dimensions.width - calculateImageDimensions(65,  2680/1500).width) / 2, bottom:'5%'}
+                position: { left: (dimensions.width - calculateImageDimensions(65,  2680/1500).width) / 2, top:'10%'}
             }}
             uiBackground={{
                 textureMode: 'stretch',
