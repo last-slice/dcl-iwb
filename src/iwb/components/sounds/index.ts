@@ -127,9 +127,9 @@ export function createPlaylists(){
         playlists.push(cat)
     }
 
-    AudioSource.onChange(playlistEntity, (info:any)=>{
-        console.log('audio change', info)
-    })
+    // AudioSource.onChange(playlistEntity, (info:any)=>{
+    //     console.log('audio change', info)
+    // })
 
     // playNextSong()
 }

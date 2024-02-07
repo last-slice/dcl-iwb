@@ -5,7 +5,7 @@ import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } f
 import resources from '../helpers/resources'
 import { uiSizes } from './uiConfig'
 
-let showHover = true
+let showHover = false
 export function displayHover(value:boolean){
   showHover = value
 }
@@ -44,8 +44,8 @@ export function createCustomContextMenu(){
     {/* context row 1 */}
         <UiEntity
     uiTransform={{
-      width: '70%',
-      height: '20%',
+      width: '90%',
+      height: '25%',
       justifyContent:'center',
       flexDirection:'row',
       margin:{top:"1%", bottom:"1%"},
@@ -56,13 +56,197 @@ export function createCustomContextMenu(){
         {/* context event 1 */}
   <UiEntity
     uiTransform={{
-      width: '70%',
-      height: '20%',
+      width: '50%',
+      height: '100%',
       justifyContent:'center',
       flexDirection:'row',
       display: contextEvents[0] ? "flex" : "none"
     }}
+      >
+
+    {/* button click image */}
+    <UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.5, getAspect(uiSizes.oneButtonClick)).width,
+      height:calculateImageDimensions(1.5, getAspect(uiSizes.oneButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[0] ? "flex" : "none"
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: contextEvents[0] && getButton(contextEvents[0].eventInfo)
+    }}
       />
+
+    {/* click text */}
+<UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[0] ? "flex" : "none"
+    }}
+        uiText={{value:"" + (contextEvents[0] && getButtonText(contextEvents[0].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+      />
+
+      </UiEntity>
+
+
+
+       {/* context event 2 */}
+  <UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'row',
+      display: contextEvents[1] ? "flex" : "none"
+    }}
+    >
+
+{/* button click image */}
+<UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.5, getAspect(uiSizes.twoButtonClick)).width,
+      height:calculateImageDimensions(1.5, getAspect(uiSizes.twoButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[1] ? "flex" : "none"
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: contextEvents[1] && getButton(contextEvents[1].eventInfo)
+    }}
+      />
+
+    {/* click text */}
+<UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[1] ? "flex" : "none"
+    }}
+        uiText={{value:"" + (contextEvents[1] && getButtonText(contextEvents[1].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+      />
+      
+
+
+    </UiEntity>
+      </UiEntity>
+
+         {/* context row 2 */}
+         <UiEntity
+    uiTransform={{
+      width: '90%',
+      height: '25%',
+      justifyContent:'center',
+      flexDirection:'row',
+      margin:{top:"3%", bottom:"1%"},
+      display: contextEvents[2] ? "flex" : "none"
+    }}
+      >
+
+        {/* context event 1 */}
+  <UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'row',
+      display: contextEvents[2] ? "flex" : "none"
+    }}
+      >
+
+    {/* button click image */}
+    <UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.5, getAspect(uiSizes.threeButtonClick)).width,
+      height:calculateImageDimensions(1.5, getAspect(uiSizes.threeButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[2] ? "flex" : "none"
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: contextEvents[2] && getButton(contextEvents[2].eventInfo)
+    }}
+      />
+
+    {/* click text */}
+<UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[2] ? "flex" : "none"
+    }}
+        uiText={{value:"" + (contextEvents[2] && getButtonText(contextEvents[2].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+      />
+
+      </UiEntity>
+
+
+
+
+
+       {/* context event 2 */}
+  <UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'row',
+      display: contextEvents[1] ? "flex" : "none"
+    }}
+    >
+
+{/* button click image */}
+<UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.5, getAspect(uiSizes.fourButtonClick)).width,
+      height:calculateImageDimensions(1.5, getAspect(uiSizes.fourButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[3] ? "flex" : "none"
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: contextEvents[3] && getButton(contextEvents[3].eventInfo)
+    }}
+      />
+
+    {/* click text */}
+<UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[3] ? "flex" : "none"
+    }}
+        uiText={{value:"" + (contextEvents[3] && getButtonText(contextEvents[3].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+      />
+      
+
+
+    </UiEntity>
       </UiEntity>
 
   </UiEntity>
@@ -119,29 +303,54 @@ export function createCustomContextMenu(){
 //     uiText={{value:"" + getButtonText(event.eventInfo), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
 //   />
 //   )
-// }
+// }//
 
 function getButtonText(eventInfo:any){
   switch(eventInfo.button){
     case InputAction.IA_POINTER:
-      return "Click to " + (eventInfo.hoverText ? eventInfo.hoverText : "")
+      return (eventInfo.hoverText ? eventInfo.hoverText : "")
 
      case InputAction.IA_ACTION_3:
-      return "#1 to " + (eventInfo.hoverText ? eventInfo.hoverText : "")
+      return (eventInfo.hoverText ? eventInfo.hoverText : "")
 
      case InputAction.IA_ACTION_4:
-      return "#2 to " + (eventInfo.hoverText ? eventInfo.hoverText : "")
+      return (eventInfo.hoverText ? eventInfo.hoverText : "")
 
      case InputAction.IA_ACTION_5:
-      return "#3 to " + (eventInfo.hoverText ? eventInfo.hoverText : "")
+      return (eventInfo.hoverText ? eventInfo.hoverText : "")
 
      case InputAction.IA_ACTION_6:
-      return "#4 to "  + (eventInfo.hoverText ? eventInfo.hoverText : "")
+      return (eventInfo.hoverText ? eventInfo.hoverText : "")
 
       case InputAction.IA_PRIMARY:
-      return "#E to "  + (eventInfo.hoverText ? eventInfo.hoverText : "")
+      return (eventInfo.hoverText ? eventInfo.hoverText : "")
 
       case InputAction.IA_SECONDARY:
-      return "#F to "  + (eventInfo.hoverText ? eventInfo.hoverText : "")
+      return (eventInfo.hoverText ? eventInfo.hoverText : "")
+  }
+}
+
+function getButton(eventInfo:any){
+  switch(eventInfo.button){
+    case InputAction.IA_POINTER:
+      return getImageAtlasMapping(uiSizes.wButtonClick)
+
+     case InputAction.IA_ACTION_3:
+      return getImageAtlasMapping(uiSizes.oneButtonClick)
+
+     case InputAction.IA_ACTION_4:
+      return getImageAtlasMapping(uiSizes.twoButtonClick)
+
+     case InputAction.IA_ACTION_5:
+      return getImageAtlasMapping(uiSizes.threeButtonClick)
+
+     case InputAction.IA_ACTION_6:
+      return getImageAtlasMapping(uiSizes.fourButtonClick)
+
+      case InputAction.IA_PRIMARY:
+        return getImageAtlasMapping(uiSizes.eButtonClick)
+
+      case InputAction.IA_SECONDARY:
+        return getImageAtlasMapping(uiSizes.fButtonClick)
   }
 }

@@ -86,7 +86,7 @@ export function createEditObjectPanel() {
                             texture: {
                                 src: 'assets/atlas2.png'
                             },
-                            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                         }}
                         uiText={{value: "Save", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
@@ -109,7 +109,7 @@ export function createEditObjectPanel() {
                             texture: {
                                 src: 'assets/atlas2.png'
                             },
-                            uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                         }}
                         uiText={{value: "Delete", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
@@ -132,7 +132,7 @@ export function createEditObjectPanel() {
                             texture: {
                                 src: 'assets/atlas2.png'
                             },
-                            uvs: getImageAtlasMapping(uiSizes.blackButton)
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                         }}
                         uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {

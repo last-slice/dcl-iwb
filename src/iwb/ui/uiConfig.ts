@@ -1711,9 +1711,64 @@ export let uiSizes:any ={
         sourceLeft: 874,
         sourceWidth: 30,
         sourceHeight: 30
-    }
+    },
+    oneButtonClick:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 877,
+        sourceLeft: 899,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    twoButtonClick:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 877,
+        sourceLeft: 929,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    threeButtonClick:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 877,
+        sourceLeft: 959,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    fourButtonClick:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 877,
+        sourceLeft: 989,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
 
-
+    eButtonClick:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 210,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    fButtonClick:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 210,
+        sourceLeft: 994,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    wButtonClick:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 210,
+        sourceLeft: 843,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
 
 
 
