@@ -24,7 +24,7 @@ export function createBuildCompeitionUI(){
                 width: '100%',
                 height: '100%',
                 positionType: 'absolute',
-                position:{left:'0%', top:'0%'}
+                position:{left:'0%', top:'7%'}
             }}
         >
                 {/* splash info  */}
