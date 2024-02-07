@@ -67,7 +67,7 @@ export function createDownloadPendingPanel() {
                         margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Download Ready", fontSize: sizeFont(45,30), color: Color4.Black()}}
+                uiText={{value:"Download Ready", fontSize: sizeFont(45,30), color: Color4.White()}}
                 />
 
                     {/* popup text */}
@@ -79,7 +79,7 @@ export function createDownloadPendingPanel() {
                             width: '100%',
                             height: '25%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Your download is ready!", true, 30)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("Your download is ready!", true, 30)}}
                     />
 
             <UiEntity
@@ -87,8 +87,8 @@ export function createDownloadPendingPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"5%", bottom:'1%'},
             }}
             uiBackground={{
@@ -96,13 +96,13 @@ export function createDownloadPendingPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
                 displayDownloadPendingPanel(false)
                 openExternalUrl({url:link})
             }}
-            uiText={{value: "Download", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Download", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity
@@ -110,8 +110,8 @@ export function createDownloadPendingPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"5%", bottom:'1%'},
             }}
             uiBackground={{
@@ -119,12 +119,12 @@ export function createDownloadPendingPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.normalButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
                 displayDownloadPendingPanel(false)
             }}
-            uiText={{value: "Close", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Close", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
         </UiEntity>

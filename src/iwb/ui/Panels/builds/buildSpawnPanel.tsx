@@ -90,14 +90,7 @@ export function SpawnPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)
             }}
             
         >
@@ -341,7 +334,7 @@ function generateCreatorRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '15%',
+                width: '10%',
                 height: '100%',
                 display:'flex'
             }}
@@ -352,17 +345,16 @@ function generateCreatorRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(2, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5,getAspect(uiSizes.trashButton)).height,
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
-                    src: 'assets/atlas2.png'
+                    src: 'assets/atlas1.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.trashButton)
             }}
-            uiText={{value: "Del", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 if(localPlayer.activeScene!.sp.length > 1){
                     sendServerMessage(

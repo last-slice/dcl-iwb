@@ -1,6 +1,6 @@
 import ReactEcs, {Dropdown, Input, UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
-import {calculateSquareImageDimensions, getImageAtlasMapping, sizeFont} from '../../helpers'
+import {calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont} from '../../helpers'
 import {visibleComponent} from './EditObjectDataPanel'
 import {COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES} from '../../../helpers/types'
 import {sendServerMessage} from '../../../components/messaging'
@@ -161,7 +161,7 @@ export function AudioComponentPanel() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && selectedItem.itemData.audComp ? (selectedItem.itemData.audComp.attachedPlayer ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && selectedItem.itemData.audComp ? (selectedItem.itemData.audComp.attachedPlayer ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
         }}
         onMouseDown={() => {
             sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {
@@ -355,8 +355,8 @@ export function AudioComponentPanel() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '30%',
-                    height: '100%',
+                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                     margin: {left: "1%", right: "1%"}
                 }}
                 uiBackground={{
@@ -364,7 +364,7 @@ export function AudioComponentPanel() {
                     texture: {
                         src: 'assets/atlas2.png'
                     },
-                    uvs: getImageAtlasMapping(uiSizes.blueButton)
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                 }}
                 uiText={{value: "Play", fontSize: sizeFont(20, 16)}}
                 onMouseDown={() => {
@@ -377,8 +377,8 @@ export function AudioComponentPanel() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '30%',
-                    height: '100%',
+                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                     margin: {left: "1%", right: "1%"}
                 }}
                 uiBackground={{
@@ -386,7 +386,7 @@ export function AudioComponentPanel() {
                     texture: {
                         src: 'assets/atlas2.png'
                     },
-                    uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                 }}
                 uiText={{value: "Stop", fontSize: sizeFont(20, 16)}}
                 onMouseDown={() => {

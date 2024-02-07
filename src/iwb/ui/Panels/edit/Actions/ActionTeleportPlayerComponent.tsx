@@ -1,5 +1,5 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { getImageAtlasMapping, sizeFont } from '../../../helpers'
+import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../../helpers'
 import { Color4, Vector3 } from '@dcl/sdk/math'
 import { uiSizes } from '../../../uiConfig'
 import { Transform, engine } from '@dcl/sdk/ecs'
@@ -173,15 +173,15 @@ export function ActionTeleportPlayerCompoent(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
-                height: '100%',
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{value: "Get Position", fontSize: sizeFont(25, 20)}}
             onMouseDown={() => {

@@ -1,7 +1,8 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { attemptAssetUploader } from '../../helpers/functions'
-import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
+import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { Color4 } from '@dcl/sdk/math'
+import { uiSizes } from '../uiConfig'
 
 export let showAssetUI = false
 
@@ -84,8 +85,8 @@ export function createAssetUploadUI() {
 
         <Label
         value={addLineBreak("To upload assets, please click on the link below to launch the Asset Uploader", undefined, 50)}
-        color={Color4.Black()}
-        fontSize={sizeFont(25,20)}
+        color={Color4.White()}
+        fontSize={sizeFont(30,20)}
         font="serif"
         textAlign="middle-center"
         />
@@ -109,8 +110,8 @@ export function createAssetUploadUI() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent:'center',
-                width: calculateImageDimensions(13, 223/41).width,
-                height: calculateImageDimensions(13, 223/41).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{right:"5%"}
             }}
             uiBackground={{
@@ -118,14 +119,7 @@ export function createAssetUploadUI() {
                 texture: {
                 src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping({
-                    atlasHeight:1024,
-                    atlasWidth:1024,
-                    sourceTop:841,
-                    sourceLeft:579,
-                    sourceWidth:223,
-                    sourceHeight:41
-                })
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={()=>{
                 displayAssetUploadUI(false)
@@ -142,8 +136,8 @@ export function createAssetUploadUI() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent:'center',
-                width: calculateImageDimensions(13, 223/41).width,
-                height: calculateImageDimensions(13, 223/41).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{left:"5%"}
             }}
             uiBackground={{
@@ -151,20 +145,13 @@ export function createAssetUploadUI() {
                 texture: {
                 src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping({
-                    atlasHeight:1024,
-                    atlasWidth:1024,
-                    sourceTop:718,
-                    sourceLeft:802,
-                    sourceWidth:223,
-                    sourceHeight:41
-                })
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={()=>{
                 displayAssetUploadUI(false)
                 attemptAssetUploader()
             }}
-            uiText={{value:"Open Asset Loader", fontSize:sizeFont(30,20), color:Color4.White()}}
+            uiText={{value:"Open", fontSize:sizeFont(30,20), color:Color4.White()}}
         >
     </UiEntity>
 

@@ -312,7 +312,7 @@ export function disableAnimations(entity:Entity, sceneItem:SceneItem){
 }
 
 export function disableVisibility(entity:Entity, sceneItem:SceneItem){
-    if(!sceneItem.visComp.enabled){
+    if(!sceneItem.visComp.visible){
         VisibilityComponent.getMutable(entity).visible = false
     }
 }

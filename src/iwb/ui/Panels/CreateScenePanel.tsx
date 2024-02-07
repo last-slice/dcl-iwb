@@ -269,8 +269,8 @@ export function createNewScenePanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(13, getAspect(uiSizes.positiveButton)).width,
-                        height: calculateImageDimensions(13,getAspect(uiSizes.positiveButton)).height,
+                        width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(7,getAspect(uiSizes.buttonPillBlack)).height,
                         margin: {top: "5%"}
                     }}
                     uiBackground={{
@@ -278,7 +278,7 @@ export function createNewScenePanel() {
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                     }}
                     onMouseDown={() => {
                         sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
@@ -299,8 +299,8 @@ export function createNewScenePanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(13, getAspect(uiSizes.positiveButton)).width,
-                        height: calculateImageDimensions(13, getAspect(uiSizes.positiveButton)).height,
+                        width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).height,
                         margin: {top: "2%"}
                     }}
                     uiBackground={{
@@ -308,7 +308,7 @@ export function createNewScenePanel() {
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping(uiSizes.blackButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                     }}
                     uiText={{value: "Save Scene", fontSize:sizeFont(30,20), color:Color4.White()}}
                     onMouseDown={() => {

@@ -1,7 +1,7 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
 import { COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_POINTER_LABELS, ENTITY_TRIGGER_LABELS, ENTITY_TRIGGER_SLUGS, IWBScene, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
@@ -83,7 +83,7 @@ export function TriggerComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigComp ? (selectedItem.itemData.trigComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigComp ? (selectedItem.itemData.trigComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
         }}
         onMouseDown={() => {
             updateTrigger('toggle', "enabled", !selectedItem.itemData.trigComp.enabled)
@@ -120,7 +120,7 @@ export function TriggerComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add Trigger", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -358,15 +358,15 @@ export function TriggerComponent() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '30%',
-            height: '100%'
+            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
         }}
         uiBackground={{
             textureMode: 'stretch',
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -380,8 +380,8 @@ export function TriggerComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
-                height: '100%',
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{left:"5%"}
             }}
             uiBackground={{
@@ -389,7 +389,7 @@ export function TriggerComponent() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
@@ -443,14 +443,14 @@ function TriggerRow(trigger:any){
                 justifyContent: 'center',
                 width: '100%',
                 height: '30%',
-                margin:{top:"1%", bottom:'1%'}
+                margin:{top:"2%", bottom:'2%', left:"2%", right:'2%'}
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blackButton)}}
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
             >  
 
                         {/* trigger event label row */}
@@ -459,7 +459,7 @@ function TriggerRow(trigger:any){
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                width: '98%',
                 height: '30%',
             }}
             >
@@ -504,17 +504,16 @@ function TriggerRow(trigger:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '10%',
-                height: '100%'
+                width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
-                    src: 'assets/atlas2.png'
+                    src: 'assets/atlas1.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                uvs: getImageAtlasMapping(uiSizes.trashButton)
             }}
-            uiText={{value: "X", fontSize: sizeFont(20, 16), textAlign:'middle-center'}}
             onMouseDown={() => {
                 updateTrigger('delete', 'remove', trigger.rowCount)
             }}
@@ -548,15 +547,10 @@ function TriggerActionRow(data:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                width: '96%',
                 height: '100%',
+                margin:{top:"2%", bottom:'2%', left:"2%", right:'2%'}
             }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.blackButton)}}
             >  
 
             {/* trigger action panel */}

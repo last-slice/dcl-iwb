@@ -171,7 +171,7 @@ function CreateToolIcon(data:any){
     onMouseDown={()=>{
         if(data.toggle){
             log('need to toggle button state')
-            config.enabled = !config.enabled
+            // config.enabled = !config.enabled
         }
 
         if(config.fn){

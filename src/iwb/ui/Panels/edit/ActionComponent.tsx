@@ -1,7 +1,7 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
 import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
@@ -61,7 +61,7 @@ export function ActionComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -249,15 +249,15 @@ export function ActionComponent() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '30%',
-            height: '100%'
+            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
         }}
         uiBackground={{
             textureMode: 'stretch',
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -271,8 +271,8 @@ export function ActionComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
-                height: '100%',
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{left:"5%"}
             }}
             uiBackground={{
@@ -280,7 +280,7 @@ export function ActionComponent() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
@@ -342,7 +342,7 @@ function ActionRow(action:any){
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blackButton)}}
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
             >  
 
             {/* action name column */}
@@ -433,17 +433,16 @@ function ActionRow(action:any){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '40%',
-            height: '50%'
+            width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height
         }}
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: 'assets/atlas2.png'
+                src: 'assets/atlas1.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.dangerButton)
+            uvs: getImageAtlasMapping(uiSizes.trashButton)
         }}
-        uiText={{value: "X", fontSize: sizeFont(20, 16), textAlign:'middle-center'}}
         onMouseDown={() => {
             //DELETE ACTION//
             updateAction('delete', 'remove', {name:data.name})

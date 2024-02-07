@@ -375,17 +375,16 @@ function generateCreatorRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(4, getAspect(uiSizes.buttonPillBlue)).width,
-                height: calculateImageDimensions(4,getAspect(uiSizes.buttonPillBlue)).height,
+                width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5,getAspect(uiSizes.trashButton)).height,
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
-                    src: 'assets/atlas2.png'
+                    src: 'assets/atlas1.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+                uvs: getImageAtlasMapping(uiSizes.trashButton)
             }}
-            uiText={{value: "Del", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, {sceneId:scene!.id, user:user.toLowerCase()})
             }}//

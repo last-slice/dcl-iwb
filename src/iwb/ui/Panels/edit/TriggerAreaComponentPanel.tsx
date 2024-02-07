@@ -103,7 +103,7 @@ export function TriggerAreaComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigArComp ? (selectedItem.itemData.trigArComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffNoBlack) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)) : getImageAtlasMapping(uiSizes.toggleOnNoBlack)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigArComp ? (selectedItem.itemData.trigArComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
         }}
         onMouseDown={() => {
             updateTrigger('toggle', "enabled", !selectedItem.itemData.trigArComp.enabled)
@@ -203,7 +203,7 @@ export function TriggerAreaComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add Enter Action", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -319,7 +319,7 @@ export function TriggerAreaComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -345,7 +345,7 @@ export function TriggerAreaComponent() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
@@ -407,7 +407,7 @@ export function TriggerAreaComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add Leave Action", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -523,7 +523,7 @@ export function TriggerAreaComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
@@ -549,7 +549,7 @@ export function TriggerAreaComponent() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {

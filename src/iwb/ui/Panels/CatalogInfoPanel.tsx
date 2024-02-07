@@ -122,8 +122,8 @@ export function createCatalogInfoPanel() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                    height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
+                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                     margin:{bottom:"2%"}
                 }}
                 uiBackground={{
@@ -131,7 +131,7 @@ export function createCatalogInfoPanel() {
                     texture: {
                         src: 'assets/atlas2.png'
                     },
-                    uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                 }}
                 onMouseDown={() => {
                     if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
@@ -147,16 +147,17 @@ export function createCatalogInfoPanel() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                    height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
-                    margin:{bottom:"2%"}
+                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                    margin:{bottom:"2%"},
+                    display: selectedItem && selectedItem.ty === "Audio" ? "flex" : "none"
                 }}
                 uiBackground={{
                     textureMode: 'stretch',
                     texture: {
                         src: 'assets/atlas2.png'
                     },
-                    uvs: getImageAtlasMapping(uiSizes.blueButton)
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                 }}
                 onMouseDown={() => {
                     playAudioFile(selectedItem!.id)
@@ -169,16 +170,17 @@ export function createCatalogInfoPanel() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                    height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
-                    margin:{bottom:"2%"}
+                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                    margin:{bottom:"2%"},
+                    display: selectedItem && selectedItem.ty === "Audio" ? "flex" : "none" 
                 }}
                 uiBackground={{
                     textureMode: 'stretch',
                     texture: {
                         src: 'assets/atlas2.png'
                     },
-                    uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                 }}
                 onMouseDown={() => {
                     stopAudioFile(selectedItem!.id)
