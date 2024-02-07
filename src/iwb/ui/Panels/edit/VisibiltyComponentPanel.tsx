@@ -74,7 +74,8 @@ export function VisibilityComponentPanel() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT ? (selectedItem.itemData.visComp.visible ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT ? 
+            (selectedItem.itemData.visComp.visible ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)) : getImageAtlasMapping(uiSizes.toggleOffTrans)
         }}
         onMouseDown={() => {
             sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.VISBILITY_COMPONENT, action:"toggle", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId}})

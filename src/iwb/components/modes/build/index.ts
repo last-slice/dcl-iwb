@@ -1059,20 +1059,19 @@ function checkVideo(entity:Entity, sceneItem: SceneItem){
 }
 
 function checkSmartItems(entity:Entity, sceneItem: SceneItem){
-    if(sceneItem.trigArComp){
+    if(sceneItem.type === "SM"){
         MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
         MeshRenderer.setBox(entity)
-        Material.setPbrMaterial(entity,{ 
-            albedoColor: Color4.create(1,1,0,.5)
-        })
-        utils.triggers.enableTrigger(entity, false)
-    }
 
-    if(sceneItem.clickArgComp){
-        MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
-        MeshRenderer.setBox(entity)
-        Material.setPbrMaterial(entity,{
-            albedoColor: Color4.create(54/255,221/255,192/255)
-        })
+        if(sceneItem.trigArComp){
+            Material.setPbrMaterial(entity,{ 
+                albedoColor: Color4.create(1,1,0,.5)
+            })
+            utils.triggers.enableTrigger(entity, false)
+        }else{
+            Material.setPbrMaterial(entity,{
+                albedoColor: Color4.create(54/255,221/255,192/255, .5)
+            })
+        }
     }
 }

@@ -2,6 +2,7 @@ import {
     Animator,
     AudioSource,
     AudioStream,
+    ColliderLayer,
     Entity,
     GltfContainer,
     Material,
@@ -104,22 +105,14 @@ export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:Sce
     switch(name){
         case 'Trigger Area':
             addTriggerArea(scene, entity, item, name)
-            
-            if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
-                resetEntityForBuildMode(scene, entity)
-            }
-            break;
-
-        case 'Click Area':
-            addClickArea(scene, entity, item, name)
-            
-            if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
-                resetEntityForBuildMode(scene, entity)
-            }
             break;
     }
-    SmartItemLoadedComponent.create(entity, {init:false, sceneId:scene.id})
 
+    if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+        resetEntityForBuildMode(scene, entity)
+    }
+
+    SmartItemLoadedComponent.create(entity, {init:false, sceneId:scene.id})
 }
 
 export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
@@ -140,11 +133,7 @@ export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, na
 }
 
 export function addClickArea(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
-    MeshCollider.setBox(entity)
-    MeshRenderer.setBox(entity)
-    Material.setPbrMaterial(entity,{
-        albedoColor: Color4.create(54/255,221/255,192/255)//
-    })
+    MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
 }
 
 export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){

@@ -207,7 +207,7 @@ export interface SceneItem extends CatalogItemType{
     actComp:any
     audComp:any
     trigArComp:any
-    clickArgComp:any
+    clickArComp:any
     animComp:any
     editing:boolean
     ugc:boolean

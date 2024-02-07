@@ -255,15 +255,20 @@ function disableVideo(entity:Entity, sceneItem: SceneItem){
 }
 
 function disableSmartItems(entity:Entity, sceneItem: SceneItem){
-    if(sceneItem.trigArComp){
-        switch(items.get(sceneItem.id)?.n){
-            case 'Trigger Area':
-                MeshRenderer.deleteFrom(entity)
-                MeshCollider.deleteFrom(entity)
-                Material.deleteFrom(entity)
+    MeshRenderer.deleteFrom(entity)
+    MeshCollider.deleteFrom(entity)
+    Material.deleteFrom(entity)
+
+    switch(items.get(sceneItem.id)?.n){
+        case 'Trigger Area':
+            if(sceneItem.trigArComp){
                 utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
-                break;
-        }
+            }
+            break;
+
+        case 'Click Area':
+            PointerEvents.deleteFrom(entity)
+            break;
     }
 }
 
@@ -302,6 +307,10 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
             if(sceneItem.trigComp){
                 utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
             }
+            break;
+
+        case 'Click Area':
+            MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
             break;
     }
 }
