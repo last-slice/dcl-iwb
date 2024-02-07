@@ -277,7 +277,6 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             break;
             
     }
-    console.log('realm actions are', realmActions)
 }
 
 export function checkSceneVisibility(scene:IWBScene){
@@ -383,6 +382,11 @@ async function disableSceneEntities(sceneId:string){
                     PointersLoadedComponent.getMutable(entity).init = false
                 }
 
+                //check smart items
+                if(SmartItemLoadedComponent.has(entity)){
+                    SmartItemLoadedComponent.getMutable(entity).init = false
+                }
+
                 disableEntityForPlayMode(scene.id, entity)
             }
         }
@@ -425,7 +429,7 @@ function enableSceneEntities(sceneId:string){
                     visible: sceneItem.visComp.visible
                 })
 
-                // check2DCollision(entity, sceneItem)
+                // check2DCollision(entity, sceneItem)//
 
                 //check smart items
                 console.log('about to check smart items for play mod')

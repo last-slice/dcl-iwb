@@ -44,7 +44,7 @@ export function TriggerComponent() {
                 flexDirection: 'row',
                 justifyContent: 'center',
                 width: '100%',
-                height: '10%',
+                height: '20%',
                 margin:{top:"1%"}
             }}
         >
@@ -76,14 +76,14 @@ export function TriggerComponent() {
             alignItems: 'center',
             justifyContent: 'center',
             width: calculateSquareImageDimensions(4).width,
-            height: calculateSquareImageDimensions(6).height,
+            height: calculateSquareImageDimensions(4).height,
         }}
         uiBackground={{
             textureMode: 'stretch',
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigComp ? (selectedItem.itemData.trigComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigComp ? (selectedItem.itemData.trigComp.enabled ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
         }}
         onMouseDown={() => {
             updateTrigger('toggle', "enabled", !selectedItem.itemData.trigComp.enabled)
