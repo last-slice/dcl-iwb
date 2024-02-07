@@ -50,6 +50,7 @@ export function initIWB() {
             // colyseusConnect(data, json.data.token)
             joinWorld(realm)
             // colyseusConnect(data, "")
+
         })
     })
 }

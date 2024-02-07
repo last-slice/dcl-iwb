@@ -60,7 +60,7 @@ export function ExportPanel() {
                 margin:{bottom:"10%"}
             }}
             // uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"Export Options", color:Color4.Black(), fontSize:sizeFont(30,25)}}
+            uiText={{value:"Export Options", color:Color4.White(), fontSize:sizeFont(30,25)}}
             />
 
             <UiEntity
@@ -68,17 +68,17 @@ export function ExportPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(10, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
-            uiText={{value: "Download", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Download", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 displaySceneInfoPanel(false, null)
                 displaySceneSetting("Info")
@@ -103,7 +103,7 @@ export function ExportPanel() {
                 },
                 uvs: getImageAtlasMapping(uiSizes.blueButton)
             }}
-            uiText={{value: "Genesis City", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Genesis City", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 showGenesisCityExportPane()
             }}
@@ -125,7 +125,7 @@ export function ExportPanel() {
                 },
                 uvs: getImageAtlasMapping(uiSizes.blueButton)
             }}
-            uiText={{value: "DCL Worlds", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "DCL Worlds", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 showExportWorlds()
             }}

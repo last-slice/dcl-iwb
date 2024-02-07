@@ -60,7 +60,7 @@ export function AccessList() {
                 width: '100%',
                 height: '90%',
             }}
-            // uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.White()}}
             >
 
             {/* access table bg */}
@@ -74,7 +74,7 @@ export function AccessList() {
                 height: '85%',
                 positionType:'absolute'
             }}
-            uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.White()}}
             />
 
             {/* header row */}
@@ -93,14 +93,7 @@ export function AccessList() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)
             }}
             
         >
@@ -114,7 +107,7 @@ export function AccessList() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -127,7 +120,7 @@ export function AccessList() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Access", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Access", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
             <UiEntity
@@ -140,7 +133,7 @@ export function AccessList() {
                 height: '100%',
             }}
 
-            uiText={{value:"Remove", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Remove", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
 
@@ -176,7 +169,7 @@ export function AccessList() {
                 width: '100%',
                 height: '15%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
              <UiEntity
             uiTransform={{
@@ -187,7 +180,7 @@ export function AccessList() {
                 width: '85%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
 
             {/* {InputDisplay(addWallet)} */}
@@ -214,17 +207,17 @@ export function AccessList() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
-            uiText={{value: "Add", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Add", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 log('add wallet is', addWallet)
                 if(addWallet.length > 0){
@@ -310,25 +303,6 @@ export function AccessList() {
     )
 }
 
-function InputDisplay(data:any){
-    return(             
-    <Input
-        onChange={(value)=>{
-            addWallet = value
-        }}
-        fontSize={sizeFont(20,13)}
-        placeholder={'Enter Wallet'}
-        placeholderColor={Color4.White()}
-        uiTransform={{
-            width: '85%',
-            height: '80%',
-            margin:{right:"2%"}
-        }}
-        color={Color4.White()}
-        value={addWallet}
-        ></Input>)
-}
-
 function generateCreatorRows(){
     let arr:any[] = []
     if(localUserId && scene && scene !== null){
@@ -349,11 +323,11 @@ function generateCreatorRows(){
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
+                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillDark)
 
-                : //
+                :
 
-                getImageAtlasMapping(uiSizes.normalLightestButton)
+                getImageAtlasMapping(uiSizes.rowPillLight)
             }}
             >
 
@@ -368,7 +342,7 @@ function generateCreatorRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: user, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+            uiText={{value: user, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
             />
 
             {/* world build counts */}
@@ -381,7 +355,7 @@ function generateCreatorRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
             {/* go button */}
@@ -401,17 +375,17 @@ function generateCreatorRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(2, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(4, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(4,getAspect(uiSizes.buttonPillBlue)).height,
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
-            uiText={{value: "Del", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Del", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, {sceneId:scene!.id, user:user.toLowerCase()})
             }}//

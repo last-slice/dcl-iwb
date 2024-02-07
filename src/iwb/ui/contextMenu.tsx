@@ -1,10 +1,11 @@
 import { Color4, Vector3 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { InputAction, PointerEventType } from '@dcl/sdk/ecs'
-import { getImageAtlasMapping, sizeFont } from './helpers'
+import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from './helpers'
 import resources from '../helpers/resources'
+import { uiSizes } from './uiConfig'
 
-let showHover = false
+let showHover = true
 export function displayHover(value:boolean){
   showHover = value
 }
@@ -21,90 +22,104 @@ export function createCustomContextMenu(){
     <UiEntity
     key={"iwbcustomcontextmenu"}
     uiTransform={{
-      width: '100%',
-      height: '100%',
+      width: calculateImageDimensions(13, getAspect(uiSizes.smallPill)).width,
+      height:calculateImageDimensions(13, getAspect(uiSizes.smallPill)).height,
       display: showHover ? 'flex' : 'none',
       justifyContent:'center',
       flexDirection:'column',
       alignContent:'center',
-      alignItems:'center'
+      alignItems:'center',
+      positionType:'absolute',
+      position:{top:'1%', right:'5%'}
     }}
-    
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs:getImageAtlasMapping(uiSizes.smallPill)
+    }}
   >
 
-          <UiEntity
-      uiTransform={{
-        width: '10%',
-        height: '20%',
-        justifyContent:'center',
-        flexDirection:'column',
-        positionType:'absolute',
-        position:{left:'35%'}
-      }}
-      // uiBackground={{color:Color4.Green()}}
-      uiBackground={{
-        texture:{
-            src: resources.textures.atlas2
-        },
-        textureMode: 'stretch',
-        uvs:getImageAtlasMapping({
-            atlasHeight:1024,
-            atlasWidth:1024,
-            sourceTop:718,
-            sourceLeft:802,
-            sourceWidth:223,
-            sourceHeight:41
-          })
-      }}
-    >
+    {/* context row 1 */}
+        <UiEntity
+    uiTransform={{
+      width: '70%',
+      height: '20%',
+      justifyContent:'center',
+      flexDirection:'row',
+      margin:{top:"1%", bottom:"1%"},
+      display: contextEvents[0] ? "flex" : "none"
+    }}
+      >
 
-      {generateContextRows()}
+        {/* context event 1 */}
+  <UiEntity
+    uiTransform={{
+      width: '70%',
+      height: '20%',
+      justifyContent:'center',
+      flexDirection:'row',
+      display: contextEvents[0] ? "flex" : "none"
+    }}
+      />
+      </UiEntity>
 
-
-    </UiEntity>
   </UiEntity>
 
   )
 }
 
-function generateContextRows(){
-  let arr:any[] = []
-  contextEvents.forEach((event)=>{
-    arr.push(<ContextEventRow data={event}  />)
-  })
-  return arr
-}
+// function generateContextRows(){
+//   let arr:any[] = []
+//   contextEvents.forEach((event)=>{
+//     arr.push(<ContextEventRow data={event}  />)
+//   })
 
-function ContextEventRow(data:any){
-  let event = data.data
-  return(
-    <UiEntity
-    key={"context-row-" + event.eventInfo.button}
-    uiTransform={{
-      width: '70%',
-      height: '20%',
-      justifyContent:'center',
-      flexDirection:'column',
-      margin:{top:"1%", bottom:"1%"}
-    }}
-    // uiBackground={{
-    //   texture:{
-    //       src: resources.textures.atlas2
-    //   },
-    //   textureMode: 'stretch',
-    //   uvs:getImageAtlasMapping({
-    //       atlasHeight:1024,
-    //       atlasWidth:1024,
-    //       sourceTop:718,
-    //       sourceLeft:802,
-    //       sourceWidth:223,
-    //       sourceHeight:41
-    //     })
-    // }}
-    uiText={{value:"" + getButtonText(event.eventInfo), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
-  />
-  )
-}
+//   let count = 0
+//   for(let i = 0; i < 4; i++){
+//     arr.push(<ContextEventRow rowCount={count}  />)
+//     count++
+//   }
+
+
+  // return arr
+// }
+
+// function ContextEventRow(data:any){
+//   // let event = data.data
+//   return(
+//     <UiEntity
+//     key={"context-row-" + data.rowCount}
+//     uiTransform={{
+//       width: '70%',
+//       height: '20%',
+//       justifyContent:'center',
+//       flexDirection:'column',
+//       margin:{top:"1%", bottom:"1%"},
+//       display:
+//     }}
+//     uiText={{value:"" + getButtonText(event.eventInfo), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+//   />
+//   )
+// }
+
+// function ContextEventRow(data:any){
+//   let event = data.data
+//   return(
+//     <UiEntity
+//     key={"context-row-" + event.eventInfo.button}
+//     uiTransform={{
+//       width: '70%',
+//       height: '20%',
+//       justifyContent:'center',
+//       flexDirection:'column',
+//       margin:{top:"1%", bottom:"1%"}
+//     }}
+//     uiText={{value:"" + getButtonText(event.eventInfo), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+//   />
+//   )
+// }
 
 function getButtonText(eventInfo:any){
   switch(eventInfo.button){

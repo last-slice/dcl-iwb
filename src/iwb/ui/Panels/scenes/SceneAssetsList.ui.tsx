@@ -51,7 +51,7 @@ const SceneAssetList = () => {
                 value: "Asset Name",
                 fontSize: sizeFont(25, 20),
                 textAlign: 'middle-left',
-                color: Color4.Black()
+                color: Color4.White()
             }}
 
         />
@@ -70,7 +70,7 @@ const SceneAssetList = () => {
                 value: "Poly Count",
                 fontSize: sizeFont(25, 20),
                 textAlign: 'middle-center',
-                color: Color4.Black()
+                color: Color4.White()
             }}
 
         />
@@ -89,7 +89,7 @@ const SceneAssetList = () => {
                 value: "Size",
                 fontSize: sizeFont(25, 20),
                 textAlign: 'middle-center',
-                color: Color4.Black()
+                color: Color4.White()
             }}
         />
 
@@ -138,7 +138,7 @@ const SceneAssetList = () => {
                 value: "Totals: " + (localScene ? localPlayer.activeScene?.ass.length : ""),
                 fontSize: sizeFont(25, 15),
                 textAlign: 'middle-left',
-                color: Color4.Black()
+                color: Color4.White()
             }}
 
         />
@@ -157,7 +157,7 @@ const SceneAssetList = () => {
                 value: "" + (localScene ? formatDollarAmount(localPlayer.activeScene!.pc)  : ""),
                 fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
-                color: Color4.Black()
+                color: Color4.White()
             }}
 
         />
@@ -176,7 +176,7 @@ const SceneAssetList = () => {
                 value: "" + (localScene ? formatSize(localPlayer.activeScene?.si) + "MB" : ""),
                 fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
-                color: Color4.Black()
+                color: Color4.White()
             }}
         />
 
@@ -225,15 +225,15 @@ function SceneAssetRow(data:any){
         
         selectedRow === i ?
 
-        getImageAtlasMapping(uiSizes.positiveButton)
+        getImageAtlasMapping(uiSizes.rowPillLight)
 
         :
         
-        i % 2 === 1 ? getImageAtlasMapping(uiSizes.normalButton)
+        i % 2 === 1 ? getImageAtlasMapping(uiSizes.rowPillLight)
 
             : 
 
-            getImageAtlasMapping(uiSizes.normalLightestButton)
+            getImageAtlasMapping(uiSizes.rowPillDark)
     }}
     onMouseDown={() => {
         const e = entitiesFromItemIds.get(aid)
@@ -241,10 +241,8 @@ function SceneAssetRow(data:any){
             // editItem(e, EDIT_MODES.EDIT)
           
             if(selectedRow === i){
-                log('need to deselect row')
                 deselectRow()
             }else{
-                log('need to highlight row')
                 selectRow(i)
             }
         }else{
@@ -268,7 +266,7 @@ function SceneAssetRow(data:any){
             value: curItem ? curItem.n : "Name not found",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
-            color: Color4.Black()
+            color: Color4.White()
         }}
 
     />
@@ -287,7 +285,7 @@ function SceneAssetRow(data:any){
             value: curItem?.pc ? formatDollarAmount(curItem?.pc) : "",
             fontSize: sizeFont(20, 15),
             textAlign: "middle-left",
-            color: Color4.Black()
+            color: Color4.White()
         }}
 
     />
@@ -306,7 +304,7 @@ function SceneAssetRow(data:any){
             value: formatSize(curItem?.si) + "MB",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
-            color: Color4.Black()
+            color: Color4.White()
         }}
 
     />

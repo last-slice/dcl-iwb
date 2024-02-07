@@ -3,7 +3,6 @@ import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { BuildsPanel, showYourBuilds } from './buildsPanel'
-import { AccessPanel } from './accessPanel'
 import { ExplorePanel, showAllWorlds } from './explorePanel'
 import { SettingsPanel } from './settingsPanel'
 import { CreateScenePanel } from './createPanel'
@@ -85,10 +84,11 @@ export function createSettingsPanel() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    alignContent:'center',
                     width: '97%',
                     height: '85%',
                     margin:{left:"1%"},
-                    padding:{left:"2%", right:'2%', bottom:'2%'}
+                    padding:{left:"1%", right:'2%', bottom:'2%'}
                 }}
                 // uiBackground={{color:Color4.Green()}}
                 >
@@ -117,8 +117,9 @@ export function createSettingsPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '80%',
+                        width: '75%',
                         height: '100%',
+                        margin:{left:'2%'}
                     }}
                     // uiBackground={{color:Color4.Blue()}}
                     >
@@ -146,7 +147,7 @@ export function createSettingsPanel() {
                 positionType:'absolute',
                 position:{bottom:'10%', left: '25%'}
             }}
-            uiText={{value:"Status: " + (connected ? "Connected" : "Disconnected"), textAlign:'middle-left', fontSize: sizeFont(20,15), color:Color4.Black()}}
+            uiText={{value:"Status: " + (connected ? "Connected" : "Disconnected"), textAlign:'middle-left', fontSize: sizeFont(20,15), color:Color4.White()}}
             />
 
             </UiEntity>
@@ -165,8 +166,8 @@ function generateSettingsButtons(buttons:any[]){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-            height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+            width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(7,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{top:"1%", bottom:'1%'},
             positionType: button.label === "Close" ? "absolute" : undefined,
             position: button.label === "Close" ? {bottom:0} : undefined,
@@ -200,14 +201,14 @@ function generateSettingsButtons(buttons:any[]){
             }
             playSound(SOUND_TYPES.WOOD_3)
         }}
-        uiText={{value: button.label, color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        uiText={{value: button.label, color:Color4.White(), fontSize:sizeFont(30,20)}}
         />)
     })
     return arr
 }
 
 function getButtonDisplay(button:string){
-    if(button === "Create" || button === "Info" || button === "Builds"){
+    if(button === "Create" || button === "Info"){
         return isPreview ? 'flex' :  (localUserId && players.get(localUserId)!.homeWorld) ?  'flex' : 'none'
     }else{
         return 'flex'
@@ -215,28 +216,9 @@ function getButtonDisplay(button:string){
 }
 
 function getButtonState(button:string){
-    if(button === "Close"){
-        return getImageAtlasMapping({
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 841,
-            sourceLeft: 579,
-            sourceWidth: 223,
-            sourceHeight: 41
-        })
-    }
-    else{
-        if(showSetting === button || buttons.find((b:any)=> b.label === button).pressed){
-            return getImageAtlasMapping(uiSizes.blueButton)
-        }else{
-            return getImageAtlasMapping({
-                atlasHeight: 1024,
-                atlasWidth: 1024,
-                sourceTop: 801,
-                sourceLeft: 802,
-                sourceWidth: 223,
-                sourceHeight: 41
-            })
-        }
+    if(showSetting === button || buttons.find((b:any)=> b.label === button).pressed){
+        return getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }else{
+        return getImageAtlasMapping(uiSizes.buttonPillBlack)
     }
 }

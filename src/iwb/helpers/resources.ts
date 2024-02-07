@@ -31,12 +31,12 @@ export let colors:Color4[] = [
 export default {
     DEBUG: true,
     allowNoWeb3:false,
-
+//
     lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
 
     endpoints:{
         wsTest: "ws://localhost:2751",
-        wsProd: "wss://dcl-iwb.co/toolset",//
+        wsProd: "wss://dcl-iwb.co/toolset",
 
         deploymentTest: "http://localhost:3525",
         deploymentProd: "https://dcl-iwb.co/dcl/deployment",

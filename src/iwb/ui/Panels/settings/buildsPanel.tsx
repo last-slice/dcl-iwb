@@ -5,12 +5,12 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { uiSizes } from '../../uiConfig'
 import { displayDeleteBuildPanel } from '../deleteBuildPanel'
 import { localUserId, players } from '../../../components/player/player'
-import { formatDollarAmount, formatSize, log } from '../../../helpers/functions'
+import { formatDollarAmount, formatSize, log, paginateArray } from '../../../helpers/functions'
 import { sceneBuilds } from '../../../components/scenes'
 import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from '../builds/buildsIndex'
 import { teleportToScene } from '../../../components/modes/play'
 
-let visibleIndex = 0
+let visibleIndex = 1
 let visibleItems:any[] = []
 let selectedRow:number = -1
 
@@ -23,14 +23,13 @@ function toggleSelectedRow(index:number){
 }
 
 export function showYourBuilds(){
-    visibleIndex = 0
+    visibleIndex = 1
     visibleItems.length = 0
     refreshVisibleItems()
 }
 
 export function refreshVisibleItems(){
-    log('we are here in rewfresh')
-    visibleItems.length = 0
+    visibleItems.length = 1
 
     let builds = [...sceneBuilds.values()]
 
@@ -46,20 +45,9 @@ export function refreshVisibleItems(){
         }
     })
 
-    // builds.sort((a, b) => a.n.localeCompare(b.n));
-    console.log('refresh builds are ', builds)
-  
-    for(let i = (visibleIndex * 6); i < (visibleIndex * 6) + 6; i++){
-      visibleItems.push(builds[i])
-      }
-  
-      let top = (visibleIndex * 6) + 6
-      if(top > builds.length){
-          for(let i = 0; i < (top - builds.length); i++){
-              visibleItems.pop()
-          }
-      }
+    visibleItems = paginateArray([...builds], visibleIndex, 6)
   }
+
 export function BuildsPanel() {
     return (
         <UiEntity
@@ -84,7 +72,7 @@ export function BuildsPanel() {
                 height: '70%',
                 positionType:'absolute'
             }}
-            uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.Gray()}}
             />
 
             {/* header row */}
@@ -97,20 +85,12 @@ export function BuildsPanel() {
                 width: '100%',
                 height: '10%',
             }}
-            // uiBackground={{color:Color4.Blue()}}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)
             }}
             
         >
@@ -122,9 +102,10 @@ export function BuildsPanel() {
                 justifyContent: 'center',
                 width: '30%',
                 height: '100%',
+                margin:{left:"1%"}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -137,7 +118,7 @@ export function BuildsPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Parcel Count", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value:"Parcel Count", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
             <UiEntity
@@ -150,7 +131,7 @@ export function BuildsPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Size", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Size", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
             <UiEntity
@@ -163,7 +144,7 @@ export function BuildsPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Poly Count", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Poly Count", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
             <UiEntity
@@ -176,7 +157,7 @@ export function BuildsPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Visit", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value:"Visit", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
 
@@ -200,6 +181,94 @@ export function BuildsPanel() {
             {generateBuildRows()}
 
 
+
+        </UiEntity>
+
+              {/* buttons row */}
+      <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+            }}
+            // uiBackground={{color:Color4.White()}}
+        >
+             <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                width: '85%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.White()}}
+        >
+        </UiEntity>
+
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.White()}}
+        >
+
+                 <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(5).width,
+                height: calculateSquareImageDimensions(4).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
+            }}
+            onMouseDown={()=>{
+                if(visibleIndex - 1 >=0){
+                    visibleIndex--
+                    refreshVisibleItems()
+                }
+            }}
+            />
+
+<UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(5).width,
+                height: calculateSquareImageDimensions(4).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
+            }}
+            onMouseDown={()=>{
+                visibleIndex++
+                refreshVisibleItems()
+            }}
+            />
+
+            </UiEntity>
 
         </UiEntity>
         
@@ -226,15 +295,15 @@ function generateBuildRows(){
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedRow === i ? getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: selectedRow === i ? getImageAtlasMapping(uiSizes.rowPillLight)
 
             :
 
-            i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
+            i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillLight)
 
             : //
 
-            getImageAtlasMapping(uiSizes.normalLightestButton)
+            getImageAtlasMapping(uiSizes.rowPillDark)
         }}
         // onMouseDown={()=>{
         //     toggleSelectedRow(i)
@@ -250,9 +319,10 @@ function generateBuildRows(){
             alignContent:'flex-start',
             width: '30%',
             height: '100%',
-            display:'flex'
+            display:'flex',
+            margin:{left:'1%'}
         }}
-        uiText={{value: scene.n, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+        uiText={{value: scene.n, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
         />
 
         {/* scene parcel count */}
@@ -265,7 +335,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + scene.pcnt, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "" + scene.pcnt, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         />
 
         {/* scene parcel size */}
@@ -278,7 +348,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + formatSize(scene.si) + "MB", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "" + formatSize(scene.si) + "MB", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         />
 
         {/* scene poly count */}
@@ -291,7 +361,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + formatDollarAmount(scene.pc), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "" + formatDollarAmount(scene.pc), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         />
 
 {/* settings button */}
@@ -319,7 +389,7 @@ function generateBuildRows(){
         texture: {
             src: 'assets/atlas1.png'
         },
-        uvs: getImageAtlasMapping(uiSizes.infoButtonBlack)
+        uvs: getImageAtlasMapping(uiSizes.infoButtonTrans)
     }}
     onMouseDown={() => {
         displaySettingsPanel(false)
@@ -339,22 +409,28 @@ function generateBuildRows(){
         height: '80%',
         margin:{right:"1%"},
     }}
-    uiBackground={{
-        textureMode: 'stretch',
-        texture: {
-            src: 'assets/atlas2.png'
-        },
-        uvs: getImageAtlasMapping(uiSizes.positiveButton)
-    }}
-    onMouseDown={() => {
-        // pressed.Save = true
-        teleportToScene(scene)
-    }}
-    onMouseUp={()=>{
-        // pressed.Save = false
-    }}
-    uiText={{value: "Go", color:Color4.Black(), fontSize:sizeFont(20,15)}}
-    />
+    >
+         <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(3).width,
+                height: calculateSquareImageDimensions(3).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.goIcon)
+            }}
+            onMouseDown={()=>{
+                teleportToScene(scene)
+             }}
+            />
+
+    </UiEntity>
 
 
 

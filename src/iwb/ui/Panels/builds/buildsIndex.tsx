@@ -91,7 +91,7 @@ export function createScenePanel() {
                     margin:{left:'10%', bottom:'0%'}
                 }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Editing Scene: " + (scene? scene.n : ""), fontSize: sizeFont(30,25), color:Color4.Black(), textAlign:'middle-left'}}
+                uiText={{value:"Editing Scene: " + (scene? scene.n : ""), fontSize: sizeFont(35,25), color:Color4.White(), textAlign:'middle-left'}}
                 >
                 </UiEntity>
 
@@ -169,8 +169,8 @@ function generateBuildbuttons(buttons:any[]){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-            height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+            width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(7,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{top:"1%", bottom:'1%'},
             positionType: button.label === "Close" || button.label === "Back" ? "absolute" : undefined,
             position: button.label === "Close"  ? {bottom:0} : button.label === "Back" ? {bottom:'13%'} : undefined,
@@ -202,35 +202,16 @@ function generateBuildbuttons(buttons:any[]){
                 updateExportPanelView("main")
             }
         }}
-        uiText={{value: button.label, color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        uiText={{value: button.label, color:Color4.White(), fontSize:sizeFont(30,20)}}
         />)
     })
     return arr
 }
 
 function getButtonState(button:string){
-    if(button === "Close"){
-        return getImageAtlasMapping({
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 841,
-            sourceLeft: 579,
-            sourceWidth: 223,
-            sourceHeight: 41
-        })
-    }
-    else{
-        if(buildInfoTab === button || buttons.find((b:any)=> b.label === button).pressed){
-            return getImageAtlasMapping(uiSizes.blueButton)
-        }else{
-            return getImageAtlasMapping({
-                atlasHeight: 1024,
-                atlasWidth: 1024,
-                sourceTop: 801,
-                sourceLeft: 802,
-                sourceWidth: 223,
-                sourceHeight: 41
-            })
-        }
+    if(buildInfoTab === button || buttons.find((b:any)=> b.label === button).pressed){
+        return getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }else{
+        return getImageAtlasMapping(uiSizes.buttonPillBlack)
     }
 }

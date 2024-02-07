@@ -700,7 +700,7 @@ export function cancelEditingItem() {
     log('canceled editing item is', selectedItem)
     openEditComponent("")
     dropSelectedItem(true, true)
-    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_DONE, 
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_CANCEL,//
         {
             user:localUserId, 
             item:{

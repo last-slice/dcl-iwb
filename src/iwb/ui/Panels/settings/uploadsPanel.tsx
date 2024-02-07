@@ -66,7 +66,7 @@ export function UploadsPanel() {
                 height: '85%',
                 positionType:'absolute'
             }}
-            uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.Gray()}}
             />
 
             {/* header row */}
@@ -85,14 +85,7 @@ export function UploadsPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)
             }}
             
         >
@@ -104,9 +97,10 @@ export function UploadsPanel() {
                 justifyContent: 'center',
                 width: '60%',
                 height: '100%',
+                margin:{left:'1%'}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Asset Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            uiText={{value:"Asset Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -119,7 +113,7 @@ export function UploadsPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Type", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value:"Type", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
             <UiEntity
@@ -132,7 +126,7 @@ export function UploadsPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Status", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Status", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
 
@@ -155,8 +149,8 @@ export function UploadsPanel() {
 
         </UiEntity>
 
-      {/* buttons row */}
-      <UiEntity
+       {/* buttons row */}
+       <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -165,46 +159,18 @@ export function UploadsPanel() {
                 width: '100%',
                 height: '15%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
-            <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-            height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
-            margin:{top:"1%", bottom:'1%'},
-            // display: localUserId && players.get(localUserId)!.worlds.find((w)=> w.ens === realm) ?  (players.get(localUserId)!.worlds.find((w)=> w.ens === realm).v < iwbConfig.v ? 'flex' : 'none') : "none"
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
-        }}
-        onMouseDown={() => {
-            displaySettingsPanel(false)
-            displaySetting("Explore")
-            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
-            cRoom.send(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
-        }}
-        uiText={{value:"Update", color:Color4.Black(), fontSize:sizeFont(30,20)}}
-        />
-
              <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
-                alignContent:'flex-start',
                 justifyContent: 'center',
-                width: '62%',
+                width: '85%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Black()}}
-            uiText={{value:"Total Pending Assets: " + (localPlayer ? localPlayer.uploads.length : ""), fontSize:sizeFont(20,15), color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
         </UiEntity>
 
@@ -265,17 +231,12 @@ export function UploadsPanel() {
                 log('clickding right')
                 visibleIndex++
                 refreshVisibleItems()
-                // if((visibleIndex + 1) * 6 < worlds.length){
-                    visibleIndex++
-                    refreshVisibleItems()
-                // }
             }}
             />
 
             </UiEntity>
 
         </UiEntity>
-
             </UiEntity>
 
 
@@ -304,11 +265,11 @@ function generateRows(){
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalLightestButton)
+                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillLight)
 
                 : 
 
-                getImageAtlasMapping(uiSizes.normalButton)
+                getImageAtlasMapping(uiSizes.rowPillLight)
             }}
             >
 
@@ -321,9 +282,10 @@ function generateRows(){
                 alignContent:'flex-start',
                 width: '60%',
                 height: '100%',
-                display:'flex'
+                display:'flex',
+                margin:{left:'1%'}
             }}
-            uiText={{value: asset.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+            uiText={{value: asset.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
             />
 
             {/* asset type */}
@@ -336,7 +298,7 @@ function generateRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "" + asset.type, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "" + asset.type, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
             {/* asset status */}
@@ -349,7 +311,7 @@ function generateRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "" + asset.status, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "" + asset.status, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
                 </UiEntity>

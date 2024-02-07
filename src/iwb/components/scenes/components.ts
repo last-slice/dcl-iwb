@@ -372,7 +372,7 @@ export function updateNFTFrame(aid:string, materialComp:any, nftComp:any, entity
 }
 
 export function updateTextComponent(aid:string, materialComp:any, textComp:any, entity?:Entity){
-    // log('updating text component', aid, materialComp, textComp)
+    log('updating text component', aid, materialComp, textComp)
     let ent = entity ? entity : entitiesFromItemIds.get(aid)
 
     if(ent){
@@ -452,7 +452,7 @@ export function playAudioFile(catalogId?:string){
     }
 }
 
-export function stopAudioFile(catalogId?:string){
+export function stopAudioFile(catalogId?:string){//
     let audio:any
     let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
     let entity = catalogId ? catalogSoundEntity : selectedItem.entity

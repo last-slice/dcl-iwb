@@ -52,6 +52,7 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
                 disableVideo(entity, sceneItem)
                 disableSmartItems(entity, sceneItem)
                 disableAnimations(entity, sceneItem)
+                disableVisibility(entity, sceneItem)
                 PointerEvents.deleteFrom(entity)
             }
         }
@@ -134,6 +135,12 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                         Animator.stopAllAnimations(entity, true)
                         let stopclip = Animator.getClip(entity, action.animName)
                         stopclip.playing = false
+                        break;
+
+                    case Actions.TELEPORT_PLAYER:
+                        let pos = action.teleport.split(",")
+                        let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
+                        movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}})
                         break;
                 }
             }
@@ -301,6 +308,12 @@ export function disableAnimations(entity:Entity, sceneItem:SceneItem){
     if(sceneItem.animComp){
         console.log('scene item has aniamtion, need to reset all cursors', Animator.has(entity))
         Animator.has(entity) ? Animator.stopAllAnimations(entity, true) : null
+    }
+}
+
+export function disableVisibility(entity:Entity, sceneItem:SceneItem){
+    if(!sceneItem.visComp.enabled){
+        VisibilityComponent.getMutable(entity).visible = false
     }
 }
 

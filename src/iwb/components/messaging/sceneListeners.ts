@@ -11,7 +11,7 @@ import {
 } from "../modes/build"
 import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
 import { localPlayer, localUserId, setPlayMode } from "../player/player"
-import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateAsset, updateSceneEdits } from "../scenes"
+import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateAsset, updateSceneCount, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { sceneListeners } from "./Scene"
 import { assetListener } from "./Asset"
@@ -132,6 +132,11 @@ export function createSceneListeners(room: any) {
                 localPlayer.deploymentLink = info.link
                 displayDeployPendingPanel(true)
             }
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SCENE_COUNT, (info: any) => {
+            log(SERVER_MESSAGE_TYPES.SCENE_COUNT + ' received', info)
+            updateSceneCount(info)
         })
 }
 

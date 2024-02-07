@@ -45,7 +45,7 @@ export function CreateScenePanel() {
                 height: '15%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Create New Scene", fontSize:sizeFont(30,20), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Create New Scene", fontSize:sizeFont(30,20), textAlign:'middle-center',color:Color4.White()}}
             />
 
             {/* create scene name input */}
@@ -65,7 +65,8 @@ export function CreateScenePanel() {
                 onChange={(e) =>{ scene.name = e }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"Enter Scene Name"}
-                placeholderColor={Color4.Gray()}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
             />
             </UiEntity>
 
@@ -87,7 +88,8 @@ export function CreateScenePanel() {
                 onChange={(e) =>{ scene.description = e }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"Enter Scene Description"}
-                placeholderColor={Color4.Gray()}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
             />
             </UiEntity>
 
@@ -109,7 +111,8 @@ export function CreateScenePanel() {
                 onChange={(e) =>{ scene.image = e }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"Enter Scene Image"}
-                placeholderColor={Color4.Gray()}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
             />
             </UiEntity>
 
@@ -138,7 +141,7 @@ export function CreateScenePanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Enabled", fontSize:sizeFont(30,20), color:Color4.Black()}}
+            uiText={{value:"Scene Enabled", fontSize:sizeFont(30,20), color:Color4.White()}}
            />
 
             <UiEntity
@@ -192,7 +195,7 @@ export function CreateScenePanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Private", fontSize:sizeFont(30,20), color:Color4.Black()}}
+            uiText={{value:"Scene Private", fontSize:sizeFont(30,20), color:Color4.White()}}
            />
 
             <UiEntity
@@ -230,7 +233,7 @@ export function CreateScenePanel() {
                 width: '100%',
                 height: '20%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
 
             {/* create button */}
@@ -239,8 +242,8 @@ export function CreateScenePanel() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: calculateImageDimensions(6, getAspect(uiSizes.blueButton)).width,
-            height: calculateImageDimensions(12,getAspect(uiSizes.blueButton)).height,
+            width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(8,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
         }}
         uiBackground={{
@@ -248,7 +251,7 @@ export function CreateScenePanel() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
             createTempScene(scene.name, scene.description, scene.image, scene.enabled, scene.priv)
@@ -256,7 +259,7 @@ export function CreateScenePanel() {
             displaySetting("Explore")
             displayCreateScenePanel(true)
         }}
-        uiText={{value: "Create", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        uiText={{value: "Create", color:Color4.White(), fontSize:sizeFont(30,20)}}
         />
 
         </UiEntity>
@@ -269,8 +272,8 @@ export function CreateScenePanel() {
 
 function getButtonState(button:string){
     if(settings.find((b:any)=> b.label === button).enabled){
-        return getImageAtlasMapping(uiSizes.toggleOn)
+        return getImageAtlasMapping(uiSizes.toggleOnTrans)
     }else{
-        return getImageAtlasMapping(uiSizes.toggleOff)
+        return getImageAtlasMapping(uiSizes.toggleOffTrans)
     }//
 }

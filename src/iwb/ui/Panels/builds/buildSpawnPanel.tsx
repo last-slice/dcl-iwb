@@ -71,7 +71,7 @@ export function SpawnPanel() {
                 height: '85%',
                 positionType:'absolute'
             }}
-            uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.Gray()}}
             />
 
             {/* header row */}
@@ -111,7 +111,7 @@ export function SpawnPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Spawn", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            uiText={{value:"Spawn", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -124,7 +124,7 @@ export function SpawnPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Camera", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Camera", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
             <UiEntity
@@ -137,7 +137,7 @@ export function SpawnPanel() {
                 height: '100%',
             }}
 
-            uiText={{value:"Remove", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Remove", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
 
@@ -173,7 +173,7 @@ export function SpawnPanel() {
                 width: '100%',
                 height: '15%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
              <UiEntity
             uiTransform={{
@@ -184,7 +184,7 @@ export function SpawnPanel() {
                 width: '85%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
 
             <UiEntity
@@ -192,17 +192,17 @@ export function SpawnPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
-            uiText={{value: "Add Spawn", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Add Spawn", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 displayAddSpawnPointPanel(true)
                 displaySceneInfoPanel(false, localPlayer.activeScene)
@@ -281,25 +281,6 @@ export function SpawnPanel() {
     )
 }
 
-function InputDisplay(data:any){
-    return(             
-    <Input
-        onChange={(value)=>{
-            addWallet = value
-        }}
-        fontSize={sizeFont(20,13)}
-        placeholder={'Enter Wallet'}
-        placeholderColor={Color4.White()}
-        uiTransform={{
-            width: '85%',
-            height: '80%',
-            margin:{right:"2%"}
-        }}
-        color={Color4.White()}
-        value={addWallet}
-        ></Input>)
-}
-
 function generateCreatorRows(){
     let arr:any[] = []
         visibleSpawns.forEach((spawn:any, i:number)=>{
@@ -319,11 +300,11 @@ function generateCreatorRows(){
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalLightestButton)
+                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillLight)
 
                 : //
 
-                getImageAtlasMapping(uiSizes.normalButton)
+                getImageAtlasMapping(uiSizes.rowPillDark)
             }}
             >
 
@@ -338,7 +319,7 @@ function generateCreatorRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "x:" + spawn.split(",")[0] + ", y:" + spawn.split(",")[1] + ", z:" + spawn.split(",")[2], fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+            uiText={{value: "x:" + spawn.split(",")[0] + ", y:" + spawn.split(",")[1] + ", z:" + spawn.split(",")[2], fontSize:sizeFont(25,15), textAlign:'middle-left', color:Color4.White()}}
             />
 
             {/* world build counts */}
@@ -351,7 +332,7 @@ function generateCreatorRows(){
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "x:" + visibleCameras[i].split(",")[0] + ", y:" + visibleCameras[i].split(",")[1] + ", z:" + visibleCameras[i].split(",")[2], fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+            uiText={{value: "x:" + visibleCameras[i].split(",")[0] + ", y:" + visibleCameras[i].split(",")[1] + ", z:" + visibleCameras[i].split(",")[2], fontSize:sizeFont(25,15), textAlign:'middle-left', color:Color4.White()}}
             />
 
             {/* go button */}
@@ -381,7 +362,7 @@ function generateCreatorRows(){
                 },
                 uvs: getImageAtlasMapping(uiSizes.blueButton)
             }}
-            uiText={{value: "Del", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Del", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 if(localPlayer.activeScene!.sp.length > 1){
                     sendServerMessage(

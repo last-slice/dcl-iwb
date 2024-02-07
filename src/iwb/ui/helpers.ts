@@ -33,8 +33,8 @@ export function calculateSquareImageDimensions(percentage: number): any {
   return { width: squareSize, height: squareSize };
 }
 
-export function addLineBreak(text:string, bubble?:boolean, lineCount?:number, large?:number){
-  return lineBreak(text, large? large : lineCount ? lineCount : 20)
+export function addLineBreak(text:string, bubble:boolean | undefined, lineCount:number, large?:number){
+  return lineBreak(text, lineCount)
 }
 
 function lineBreak(text: string, maxLineLength: number): string {

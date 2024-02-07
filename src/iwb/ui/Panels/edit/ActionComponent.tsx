@@ -11,6 +11,7 @@ import { ActionLinkComponent, url } from './Actions/ActionLinkData'
 import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selectedAudioIndex } from './Actions/ActionPlayAudioComponent'
 import { log } from '../../../helpers/functions'
 import { ActionAnimationComponent, selectedAnimationIndex } from './Actions/ActionAnimationComponent'
+import { ActionTeleportPlayerCompoent, teleportPosition } from './Actions/ActionTeleportPlayerComponent'
 
 let view = "list"
 let newName:string = ""
@@ -221,7 +222,7 @@ export function ActionComponent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '25%',
+                height: '35%',
                 margin:{top:"5%", bottom:'5%'}
             }}
             // uiBackground={{color:Color4.Blue()}}
@@ -492,6 +493,9 @@ function getActionData(){
 
         case 6:
             return {aid:selectedItem.aid, type:Actions.STOP_ANIMATION}
+
+        case 7:
+            return {aid:selectedItem.aid, type:Actions.TELEPORT_PLAYER, location: "" + teleportPosition.x + "," + teleportPosition.y + "," + teleportPosition.z}
     }
 }
 
@@ -509,5 +513,8 @@ function getActionDataPanel(){
         case 5:
         case 6:
             return <ActionAnimationComponent/>
+
+        case 7:
+            return <ActionTeleportPlayerCompoent/>
     }
 }

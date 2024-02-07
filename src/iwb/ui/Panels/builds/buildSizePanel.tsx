@@ -60,7 +60,7 @@ export function SizePanel() {
                 height: '10%',
             }}
             // uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"Scene Size Limits", color:Color4.Black(), fontSize:sizeFont(30,25)}}
+            uiText={{value:"Scene Size Limits", color:Color4.White(), fontSize:sizeFont(30,25)}}
             />
 
             {/* Poly count size label */}
@@ -74,7 +74,7 @@ export function SizePanel() {
                 margin:{top:"5%"}
             }}
             // uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"Scene Poly Count: " + (scene && scene !== null ? formatDollarAmount(scene.pc) + " / " + formatDollarAmount(scene.pcls.length * 10000) : "") , color:Color4.Black(), fontSize:sizeFont(20,16)}}
+            uiText={{value:"Scene Poly Count: " + (scene && scene !== null ? formatDollarAmount(scene.pc) + " / " + formatDollarAmount(scene.pcls.length * 10000) : "") , color:Color4.White(), fontSize:sizeFont(25,16)}}
             />
 
             {/* Poly count size container */}
@@ -115,7 +115,7 @@ export function SizePanel() {
                 margin:{top:"5%"}
             }}
             // uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"Scene File Size: " + (scene && scene !== null ? parseFloat(formatSize(scene.si)) + "MB / " + (scene.pcnt > 20 ? 300 : scene.pcnt * 15) + "MB"  : ""), color:Color4.Black(), fontSize:sizeFont(20,16)}}
+            uiText={{value:"Scene File Size: " + (scene && scene !== null ? parseFloat(formatSize(scene.si)) + "MB / " + (scene.pcnt > 20 ? 300 : scene.pcnt * 15) + "MB"  : ""), color:Color4.White(), fontSize:sizeFont(25,16)}}
             />
 
             {/* File count size container */}

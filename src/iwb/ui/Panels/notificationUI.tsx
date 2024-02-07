@@ -154,15 +154,15 @@ export function createNotificationUI(){
     return (
       <UiEntity key={"notificationui"}
         uiTransform={{
-          width: calculateImageDimensions(40, 824/263).width,
-          height: calculateImageDimensions(40, 824/263).height,
+          width: calculateImageDimensions(35, 824/263).width,
+          height: calculateImageDimensions(35, 824/263).height,
           display: showingNotification ? 'flex' : 'none',
           justifyContent:'center',
           flexDirection:'column',
           alignItems:'center',
           alignContent:'center',
           positionType:'absolute',
-          position:{left:(dimensions.width - calculateImageDimensions(40, 824/263).width) / 2, top:currentNotification.offset}
+          position:{left:(dimensions.width - calculateImageDimensions(35, 824/263).width) / 2, top:currentNotification.offset}
         }}
         uiBackground={{
           texture:{
@@ -189,7 +189,7 @@ export function createNotificationUI(){
           display: currentNotification.type === NOTIFICATION_TYPES.MESSAGE ? 'flex' : 'none',
           alignSelf:'center'
         }}
-        uiText={{color:Color4.Black(), value: addLineBreak(currentNotification.text, undefined, 40), fontSize:sizeFont(25,20)}}
+        uiText={{color:Color4.White(), value: addLineBreak(currentNotification.text, undefined, 50), fontSize:sizeFont(30,20)}}
       >
         
           </UiEntity>
@@ -255,7 +255,7 @@ export function createNotificationUI(){
           alignSelf:'center',
           padding:{left:"5%"}
         }}
-        uiText={{color:Color4.Black(), value: addLineBreak(currentNotification.text, undefined, 35), fontSize:sizeFont(25,20)}}
+        uiText={{color:Color4.White(), value: addLineBreak(currentNotification.text, undefined, 35), fontSize:sizeFont(25,20)}}
       />
 </UiEntity>
 

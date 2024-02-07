@@ -9,6 +9,7 @@ import {createIWBEventListeners} from './iwbEvents'
 import {log} from "../../helpers/functions";
 import {localUserId, players} from '../player/player'
 import {Room} from 'colyseus.js'
+import { createCustomCode } from '../custom'
 
 export let data: any
 export let cRoom: Room
@@ -42,6 +43,8 @@ export async function colyseusConnect(data: any, token: string, world?: any) {
         createSceneListeners(room)
         createPlayerListeners(room)
         // console.log(cRoom.serializer)
+
+        createCustomCode(room)
 
     }).catch((err) => {
         console.error('colyseus connection error', err)

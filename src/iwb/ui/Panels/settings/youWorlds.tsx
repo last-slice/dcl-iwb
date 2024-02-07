@@ -76,7 +76,7 @@ export function YourWorlds() {
                 height: '85%',
                 positionType:'absolute'
             }}
-            uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.Gray()}}
             />
 
             {/* header row */}
@@ -87,24 +87,15 @@ export function YourWorlds() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '10%',
+                height: '15%',
             }}
-            // uiBackground={{color:Color4.Blue()}}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)
             }}
-            
         >
             <UiEntity
             uiTransform={{
@@ -114,9 +105,10 @@ export function YourWorlds() {
                 justifyContent: 'center',
                 width: '30%',
                 height: '100%',
+                margin:{left:"1%"}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -129,7 +121,7 @@ export function YourWorlds() {
                 height: '100%',
             }}
 
-            uiText={{value:"Init", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Init", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
             <UiEntity
@@ -142,7 +134,7 @@ export function YourWorlds() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Last Update", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value:"Last Update", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
            
@@ -157,7 +149,7 @@ export function YourWorlds() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Builds", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Builds", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
             <UiEntity
@@ -170,7 +162,7 @@ export function YourWorlds() {
                 height: '100%',
             }}
 
-            uiText={{value:"Go", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Go", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
         </UiEntity>
@@ -205,7 +197,7 @@ export function YourWorlds() {
                 width: '100%',
                 height: '15%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
              <UiEntity
             uiTransform={{
@@ -216,7 +208,7 @@ export function YourWorlds() {
                 width: '85%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
         </UiEntity>
 
@@ -313,11 +305,11 @@ function generateBuildRows(){
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
+            uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillLight)
 
             : 
 
-            getImageAtlasMapping(uiSizes.normalLightestButton)
+            getImageAtlasMapping(uiSizes.rowPillDark)
         }}
         >
 
@@ -330,9 +322,10 @@ function generateBuildRows(){
             alignContent:'flex-start',
             width: '30%',
             height: '100%',
-            display:'flex'
+            display:'flex',
+            margin:{left:'1%'}
         }}
-        uiText={{value: "" + scene.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+        uiText={{value: "" + scene.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
         />
 
         {/* world init */}
@@ -345,7 +338,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + (scene.init ? "Y" : "N"), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "" + (scene.init ? "Y" : "N"), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         />
 
 
@@ -359,7 +352,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + (scene.updated > 0 ? Math.floor((Math.floor(Date.now()/1000) - scene.updated) / 86400) + " days ago" : "Never" ), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "" + (scene.updated > 0 ? Math.floor((Math.floor(Date.now()/1000) - scene.updated) / 86400) + " days ago" : "Never" ), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         />
 
             {/* world build counts */}
@@ -372,7 +365,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + scene.builds, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "" + scene.builds, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         />
 
 
@@ -387,8 +380,35 @@ function generateBuildRows(){
             display:'flex'
         }}
         >
+
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(3).width,
+                height: calculateSquareImageDimensions(3).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.goIcon)
+            }}
+            onMouseDown={()=>{
+                if(scene.init){
+                    displaySettingsPanel(false)
+                    displaySetting("Explore")
+                    displayRealmTravelPanel(true, scene)
+                }else{
+                    displaySettingsPanel(false)
+                    displayInitalizeWorldPanel(true, scene)
+                }
+            }}
+            />
                     
-        <UiEntity
+        {/* <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -403,7 +423,7 @@ function generateBuildRows(){
             },
             uvs: getImageAtlasMapping(uiSizes.blueButton)
         }}
-        uiText={{value: "GO", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "GO", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         onMouseDown={()=>{
             if(scene.init){
                 displaySettingsPanel(false)
@@ -414,7 +434,8 @@ function generateBuildRows(){
                 displayInitalizeWorldPanel(true, scene)
             }
         }}//
-        />
+        /> */}
+
         </UiEntity>
 
 

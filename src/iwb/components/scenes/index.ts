@@ -38,6 +38,10 @@ export let lastScene:any
 export let playModeReset:boolean = true
 export let disabledEntities:boolean = false
 
+export let scenesLoaded:boolean = false
+export let sceneCount:number = 0
+export let scenesLoadedCount:number = 0
+
 export function updatePlayModeReset(value:boolean){
     log('updating playmode reset', value)
     playModeReset = value
@@ -127,6 +131,9 @@ export function loadScene(info:any){
     }
 
     loadSceneBoundaries(info.id)
+    scenesLoadedCount++
+
+    checkAllScenesLoaded()
 }
 
 export function unloadScene(sceneId:any){
@@ -436,5 +443,15 @@ function enableSceneEntities(sceneId:string){
                 }
         }
         disabledEntities = false
+    }
+}
+
+export function updateSceneCount(count:number){
+    sceneCount = count
+}
+
+export function checkAllScenesLoaded(){
+    if(scenesLoadedCount >= sceneCount){
+        scenesLoaded = true
     }
 }

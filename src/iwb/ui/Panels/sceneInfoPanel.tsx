@@ -116,7 +116,7 @@ export function createSceneInfoPanel() {
                     value: localPlayer?.activeScene?.n || "",
                     fontSize: sizeFont(35, 25),
                     textAlign: 'middle-left',
-                    color: Color4.Black()
+                    color: Color4.White()
                 }}
                 />
             </UiEntity>
@@ -149,7 +149,7 @@ export function createSceneInfoPanel() {
                 texture: {
                     src: 'assets/atlas1.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.infoButtonBlack)
+                uvs: getImageAtlasMapping(uiSizes.infoButtonTrans)
             }}
             onMouseDown={()=>{
                 displaySceneAssetInfoPanel(false)
@@ -210,7 +210,7 @@ export function createSceneInfoPanel() {
                     width: '80%',
                     height: '10%',
                 }}
-                // uiBackground={{color:Color4.Black()}}
+                // uiBackground={{color:Color4.White()}}
             >
 
                 {/* edit button */}
@@ -220,8 +220,8 @@ export function createSceneInfoPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                        height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
+                        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
                         margin: {right: "1%"},
                     }}
                     uiBackground={{
@@ -229,7 +229,7 @@ export function createSceneInfoPanel() {
                         texture: {
                             src: 'assets/atlas2.png'
                         },
-                        uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                     }}
                     onMouseDown={() => {
                         // pressed.Save = true
@@ -238,7 +238,7 @@ export function createSceneInfoPanel() {
                         // pressed.Save = false
                         editItem(selectedEntity as Entity, EDIT_MODES.EDIT)
                     }}
-                    uiText={{value: "Edit", color: Color4.Black(), fontSize: sizeFont(30, 20)}}
+                    uiText={{value: "Edit", color: Color4.White(), fontSize: sizeFont(30, 20)}}
                 />
 
                 {/* delete button */}
@@ -248,8 +248,8 @@ export function createSceneInfoPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                        height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
+                        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
                         margin: {right: "1%"},
                     }}
                     uiBackground={{
@@ -257,19 +257,16 @@ export function createSceneInfoPanel() {
                         texture: {
                             src: 'assets/atlas2.png'
                         },
-                        uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                     }}
                     onMouseDown={() => {
-                        // pressed.Load = true
-
                     }}
                     onMouseUp={() => {
-                        // pressed.Load = false
                         sendServerDelete(selectedEntity as Entity)
                         VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
                         deselectRow()
                     }}
-                    uiText={{value: "Delete", color: Color4.Black(), fontSize: sizeFont(30, 20)}}
+                    uiText={{value: "Delete", color: Color4.White(), fontSize: sizeFont(30, 20)}}
                 />
                 {/* scroll up button */}
                 <UiEntity
@@ -281,7 +278,7 @@ export function createSceneInfoPanel() {
                         height: calculateImageDimensions(2, getAspect(uiSizes.leftArrowBlack)).height,
                         margin: {left: "5%"},
                     }}
-                    // uiBackground={{color:Color4.Black()}}
+                    // uiBackground={{color:Color4.White()}}
                     uiBackground={{
                         textureMode: 'stretch',
                         texture: {
@@ -290,12 +287,9 @@ export function createSceneInfoPanel() {
                         uvs: getImageAtlasMapping(uiSizes.leftArrowBlack)
                     }}
                     onMouseDown={() => {
-                        log('here')
-                        // pressed.Load = true
                         if(visibleIndex -1 >= 1){
                             deselectRow()
                             visibleIndex--
-                            log('visible index is now ', visibleIndex)
                             visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
                         }
                     }}

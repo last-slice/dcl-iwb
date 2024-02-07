@@ -56,7 +56,7 @@ export function BuildInfo() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Parcel Count: " + (scene && scene !== null ? scene.pcls.length : ""), fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Parcel Count: " + (scene && scene !== null ? scene.pcls.length : ""), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
                 <UiEntity
@@ -69,7 +69,7 @@ export function BuildInfo() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Size: " + (scene && scene !== null ? formatSize(scene.si) + "MB" : ""), fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Size: " + (scene && scene !== null ? formatSize(scene.si) + "MB" : ""), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 
@@ -83,7 +83,7 @@ export function BuildInfo() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Poly Count: "  + (scene && scene !== null ? formatDollarAmount(scene.pc) : ""), fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Poly Count: "  + (scene && scene !== null ? formatDollarAmount(scene.pc) : ""), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 
@@ -114,7 +114,7 @@ export function BuildInfo() {
                 height: '10%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Name:", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Scene Name:", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 
@@ -122,7 +122,7 @@ export function BuildInfo() {
                 onChange={(e) =>{ scene!.n = e }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"" + (scene && scene !== null ? scene.n : "")}
-                placeholderColor={Color4.Gray()}
+                placeholderColor={Color4.White()}
                 uiTransform={{
                     width: '80%',
                     height:'100%',
@@ -156,7 +156,7 @@ export function BuildInfo() {
                 height: '20%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Desc:", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Scene Desc:", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 
@@ -164,7 +164,7 @@ export function BuildInfo() {
                 onChange={(e) =>{ scene!.d = e }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"" + (scene && scene !== null ? scene.d : "")}
-                placeholderColor={Color4.Gray()}
+                placeholderColor={Color4.White()}
                 uiTransform={{
                     width: '80%',
                     height:'100%',
@@ -198,7 +198,7 @@ export function BuildInfo() {
                 height: '10%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Image: ", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Scene Image: ", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 
@@ -206,7 +206,7 @@ export function BuildInfo() {
                 onChange={(e) =>{ scene!.im = e }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"" + (scene && scene !== null && scene.im ? scene.im : "")}
-                placeholderColor={Color4.Gray()}
+                placeholderColor={Color4.White()}
                 uiTransform={{
                     width: '80%',
                     height:'100%',
@@ -240,7 +240,7 @@ export function BuildInfo() {
                 height: '10%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Enabled", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Scene Enabled", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
             <UiEntity
@@ -275,7 +275,7 @@ export function BuildInfo() {
                 margin:{left: '2%'}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Toggle all scene assets for everyone", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Toggle all scene assets for everyone", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
             </UiEntity>
@@ -305,7 +305,7 @@ export function BuildInfo() {
                 height: '10%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Public", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Scene Public", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
 <UiEntity
@@ -340,7 +340,7 @@ export function BuildInfo() {
                 margin:{left: '2%'}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(20,15), color:Color4.Black(), textAlign:'middle-left'}}
+            uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
             </UiEntity>
@@ -357,7 +357,7 @@ export function BuildInfo() {
                 width: '100%',
                 height: '20%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
 
 <UiEntity
@@ -365,8 +365,8 @@ export function BuildInfo() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: calculateImageDimensions(10, getAspect(uiSizes.blueButton)).width,
-            height: calculateImageDimensions(12,getAspect(uiSizes.blueButton)).height,
+            width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
         }}
         uiBackground={{
@@ -374,7 +374,7 @@ export function BuildInfo() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.blueButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
             console.log('on clicked')
@@ -385,7 +385,7 @@ export function BuildInfo() {
             displaySetting("Explore")
             displayCreateScenePanel(true, true)
         }}
-        uiText={{value: "Edit Parcels", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        uiText={{value: "Edit Parcels", color:Color4.White(), fontSize:sizeFont(30,20)}}
         />            
 
 <UiEntity
@@ -393,8 +393,8 @@ export function BuildInfo() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: calculateImageDimensions(10, getAspect(uiSizes.blueButton)).width,
-            height: calculateImageDimensions(12,getAspect(uiSizes.blueButton)).height,
+            width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
         }}
         uiBackground={{
@@ -402,7 +402,7 @@ export function BuildInfo() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.positiveButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
             sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS,
@@ -419,7 +419,7 @@ export function BuildInfo() {
             displaySceneSetting("Info")
             displaySceneSavedPanel(true)
         }}
-        uiText={{value: "Save Edits", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        uiText={{value: "Save Edits", color:Color4.White(), fontSize:sizeFont(30,20)}}
         />
 
             {/* create button */}
@@ -428,8 +428,8 @@ export function BuildInfo() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: calculateImageDimensions(10, getAspect(uiSizes.blueButton)).width,
-            height: calculateImageDimensions(12,getAspect(uiSizes.blueButton)).height,
+            width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
         }}
         uiBackground={{
@@ -437,14 +437,14 @@ export function BuildInfo() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.dangerButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
             displaySceneInfoPanel(false, scene)
             displaySceneSetting('Info') 
             displayDeleteBuildPanel(true)
         }}
-        uiText={{value: "Delete Scene", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+        uiText={{value: "Delete Scene", color:Color4.White(), fontSize:sizeFont(30,20)}}
         />
 
         </UiEntity>
@@ -464,7 +464,7 @@ export function BuildInfo() {
                 positionType:'absolute',
                 position:{right: '5%', bottom:'40%'}
             }}
-            uiText={{value:"View Image", fontSize:sizeFont(15,10), color:Color4.Gray(), textAlign:'middle-left'}}
+            uiText={{value:"View Image", fontSize:sizeFont(15,10), color:Color4.White(), textAlign:'middle-left'}}
             onMouseDown={()=>{
                 openExternalUrl({url:"" + scene!.im})
             }}
@@ -479,16 +479,16 @@ function getButtonState(button:string){
     if(scene){
         switch(button){
             case 'Enabled':
-                return scene!.e ? getImageAtlasMapping(uiSizes.toggleOn) : getImageAtlasMapping(uiSizes.toggleOff)
+                return scene!.e ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
         
             case 'Public':
-                return scene!.priv ? getImageAtlasMapping(uiSizes.toggleOff) : getImageAtlasMapping(uiSizes.toggleOn)
+                return scene!.priv ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)
     
             default:
-                return getImageAtlasMapping(uiSizes.toggleOn)
+                return getImageAtlasMapping(uiSizes.toggleOnTrans)
         }
     }else{
-        return getImageAtlasMapping(uiSizes.toggleOff)
+        return getImageAtlasMapping(uiSizes.toggleOffTrans)
     }
 
 }

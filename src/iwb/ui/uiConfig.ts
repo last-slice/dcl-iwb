@@ -594,6 +594,62 @@ export let settingsIconData: any =
 }
 
 export let uiSizes:any ={
+    heartIconRed:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 844 + 30,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    heartIconWhite:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 844 + 30 + 30,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    goIcon:{
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 844,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+     rowPillDark:{
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 924,
+            sourceLeft: 142,
+            sourceWidth: 540,
+            sourceHeight: 50
+        },
+        rowPillLight:{
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 974,
+            sourceLeft: 142,
+            sourceWidth: 540,
+            sourceHeight: 50
+        },
+        buttonPillBlack:{
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 974,
+            sourceLeft: 0,
+            sourceWidth: 117.65,
+            sourceHeight: 50
+        },
+        buttonPillBlue:{
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 924,
+            sourceLeft: 0,
+            sourceWidth: 117.65,
+            sourceHeight: 50
+        },
         magnifyPressed:{
         atlasHeight: 1024,
         atlasWidth: 1024,

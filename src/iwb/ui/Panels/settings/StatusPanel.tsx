@@ -47,8 +47,8 @@ export function StatusPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{
@@ -69,8 +69,8 @@ export function StatusPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
                 margin:{top:"1%", bottom:'1%', left:'1%'},
             }}
             uiBackground={{
@@ -114,8 +114,8 @@ export function StatusPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
                 margin:{top:"1%", bottom:'1%', left:'1%'},
                 display:localUserId && players.get(localUserId) && players.get(localUserId)?.homeWorld ? 'flex' : 'none',
             }}
@@ -178,73 +178,10 @@ export function StatusPanel() {
     )
 }
 
-function generateSettingsToggles(settings:any[]){
-    let arr:any[] = []
-    settings.forEach((setting)=>{
-        arr.push(
-        <UiEntity
-        key={setting.label + "-settings"}
-        uiTransform={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '50%',
-            height: '10%',
-            margin:{top:"1%", bottom:'1%'},
-        }}
-        >
-
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateSquareImageDimensions(4).width,
-            height: calculateSquareImageDimensions(4).height,
-            margin:{top:"1%", bottom:'1%'},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getButtonState(setting.label)
-        }}
-        onMouseDown={() => {
-            settings.find((set:any)=>set.label === setting.label).enabled = !settings.find((set:any)=>set.label === setting.label).enabled 
-        }}
-        />
-
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '80%',
-            height: '100%',
-            margin:{left:"1%",},
-        }}
-        uiText={{value: setting.label, color:Color4.Black(), fontSize:sizeFont(30,20)}}
-        />
-
-        </UiEntity>
-        )
-    })
-    return arr
-}
-
-
 function getButtonState(button:string){
     if(statusView === button){
-        return getImageAtlasMapping(uiSizes.blueButton)
+        return getImageAtlasMapping(uiSizes.buttonPillBlue)
     }else{
-        return getImageAtlasMapping({
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 801,
-            sourceLeft: 802,
-            sourceWidth: 223,
-            sourceHeight: 41
-        })
+        return getImageAtlasMapping(uiSizes.buttonPillBlack)
     }
 }

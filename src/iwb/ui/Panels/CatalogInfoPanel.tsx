@@ -181,7 +181,7 @@ export function createCatalogInfoPanel() {
                     uvs: getImageAtlasMapping(uiSizes.dangerButton)
                 }}
                 onMouseDown={() => {
-                    stopAudioFile(selectedItem?.id)
+                    stopAudioFile(selectedItem!.id)
                 }}
                 uiText={{ value: "Stop", color: Color4.White(), fontSize: sizeFont(25, 20) }}
             />

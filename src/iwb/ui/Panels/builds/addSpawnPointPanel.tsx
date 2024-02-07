@@ -33,8 +33,8 @@ export function createAddSpawnPointPanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent: 'center',
-                width: calculateImageDimensions(15, getAspect(uiSizes.vertRectangleOpaque)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.vertRectangleOpaque)).height,
+                width: calculateImageDimensions(13, getAspect(uiSizes.vertRectangleOpaque)).width,
+                height: calculateImageDimensions(13,getAspect(uiSizes.vertRectangleOpaque)).height,
                 positionType: 'absolute',
                 position: {right: '.5%', bottom: '1%'}
             }}
@@ -91,6 +91,13 @@ export function createAddSpawnPointPanel() {
                     height: '10%',
                     margin:{top:"10%"}
                 }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.rowPillDark)
+                }}
             >
 
 
@@ -104,8 +111,8 @@ export function createAddSpawnPointPanel() {
                 width: '35%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Purple()}}
-            uiText={{value:"Spawn: ", fontSize:sizeFont(20,15), color:Color4.White()}}
+
+            uiText={{value:"Spawn: ", fontSize:sizeFont(25,15), color:Color4.White()}}
             />
 
             {/* spawn point */}
@@ -119,7 +126,7 @@ export function createAddSpawnPointPanel() {
                     height: '100%',
                 }}
                 // uiBackground={{color:Color4.Purple()}}
-                uiText={{value:"x:" + spawn.x.toFixed(0) + ", y:" + spawn.y.toFixed(0) + ", z:"  + spawn.z.toFixed(0) , fontSize:sizeFont(20,15), color:Color4.White()}}
+                uiText={{value:"x:" + spawn.x.toFixed(0) + ", y:" + spawn.y.toFixed(0) + ", z:"  + spawn.z.toFixed(0) , fontSize:sizeFont(25,15), color:Color4.White()}}
             />
             </UiEntity>
 
@@ -133,6 +140,13 @@ export function createAddSpawnPointPanel() {
                     width: '90%',
                     height: '10%',
                     margin:{top:"5%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.rowPillDark)
                 }}
             >
 
@@ -148,7 +162,7 @@ export function createAddSpawnPointPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Purple()}}
-            uiText={{value:"Camera:", fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{value:"Camera:", fontSize:sizeFont(25,15), color:Color4.White()}}
             />
 
             {/* camera point */}
@@ -162,10 +176,24 @@ export function createAddSpawnPointPanel() {
                     height: '100%',
                 }}
                 // uiBackground={{color:Color4.Purple()}}
-                uiText={{value:"x:" + camera.x.toFixed(0) + ", y:" + camera.y.toFixed(0) + ", z:"  + camera.z.toFixed(0) , fontSize:sizeFont(20,15), color:Color4.White()}}
+                uiText={{value:"x:" + camera.x.toFixed(0) + ", y:" + camera.y.toFixed(0) + ", z:"  + camera.z.toFixed(0) , fontSize:sizeFont(25,15), color:Color4.White()}}
             />
             </UiEntity>
 
+
+                {/* set buttons row */}
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    alignContent:'center',
+                    justifyContent: 'center',
+                    width: '90%',
+                    height: '10%',
+                    margin:{top:"10%"}
+                }}
+            >
 
                 <UiEntity
                     uiTransform={{
@@ -173,16 +201,16 @@ export function createAddSpawnPointPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(11, getAspect(uiSizes.positiveButton)).width,
-                        height: calculateImageDimensions(11,getAspect(uiSizes.positiveButton)).height,
-                        margin: {top: "5%"}
+                        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                        height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+                        margin: {right: "1%"}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping(uiSizes.blueButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
                     }}
                     onMouseDown={() => {
                         let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
@@ -194,22 +222,22 @@ export function createAddSpawnPointPanel() {
                     uiText={{value: "Set Spawn", fontSize:sizeFont(20,15), color:Color4.White()}}
                 />
 
-<UiEntity
+            <UiEntity
                     uiTransform={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(11, getAspect(uiSizes.positiveButton)).width,
-                        height: calculateImageDimensions(11,getAspect(uiSizes.positiveButton)).height,
-                        margin: {top: "2%"}
+                        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                        height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+                        margin: {left: "1%"}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping(uiSizes.blueButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
                     }}
                     onMouseDown={() => {
                         let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
@@ -220,7 +248,23 @@ export function createAddSpawnPointPanel() {
                     }}
                     uiText={{value: "Set Camera", fontSize:sizeFont(20,15), color:Color4.White()}}
                 />
+                </UiEntity>
 
+
+                
+                    {/* confirm/cancel row */}
+                    <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    alignContent:'center',
+                    justifyContent: 'center',
+                    width: '90%',
+                    height: '10%',
+                    margin:{top:"10%"}
+                }}
+            >
 
                 <UiEntity
                     uiTransform={{
@@ -228,16 +272,16 @@ export function createAddSpawnPointPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(11, getAspect(uiSizes.positiveButton)).width,
-                        height: calculateImageDimensions(11, getAspect(uiSizes.positiveButton)).height,
-                        margin: {top: "2%"}
+                        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).height,
+                        margin: {right: "1%"}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
                     }}
                     uiText={{value: "Save Spawn", fontSize:sizeFont(20,15), color:Color4.White()}}
                     onMouseDown={() => {
@@ -263,16 +307,16 @@ export function createAddSpawnPointPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(11, getAspect(uiSizes.positiveButton)).width,
-                        height: calculateImageDimensions(11, getAspect(uiSizes.positiveButton)).height,
-                        margin: {top: "2%"}
+                        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).height,
+                        margin: {left: "1%"}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
                         texture: {
                             src: resources.textures.atlas2
                         },
-                        uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
                     }}
                     uiText={{value: "Cancel", fontSize:sizeFont(20,15), color:Color4.White()}}
                     onMouseDown={() => {
@@ -280,6 +324,7 @@ export function createAddSpawnPointPanel() {
                         displaySceneInfoPanel(true, localPlayer.activeScene)
                     }}
                     />
+                    </UiEntity>
 
             </UiEntity>
         </UiEntity>

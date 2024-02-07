@@ -37,6 +37,7 @@ import { createSceneInfoPanel, displaySceneAssetInfoPanel } from './Panels/scene
 import { createDownloadPendingPanel } from './Panels/downloadPendingPanel'
 import { createDeployPendingPanel } from './Panels/deployConfirmationPanel'
 import { createAddSpawnPointPanel } from './Panels/builds/addSpawnPointPanel'
+import { createCustomUI } from '../components/custom/ui'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -78,7 +79,11 @@ const uiComponent = () => [
   createSceneInfoPanel(),
   createDownloadPendingPanel(),
   createDeployPendingPanel(),
-  createAddSpawnPointPanel()
+  createAddSpawnPointPanel(),
+
+
+
+  createCustomUI()
 ]
 
 

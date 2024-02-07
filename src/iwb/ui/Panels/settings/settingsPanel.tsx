@@ -4,15 +4,16 @@ import { displaySetting, showSetting } from './settingsIndex'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { log } from '../../../helpers/functions'
+import { VisualSettings } from './visualSettings'
+import { AudioSettings } from './audioSettings'
 
 
-let settings:any[] = [
-    {label:"Scene Notifications", enabled:true},
-    {label:"Display Build", enabled:true},
-    {label:"Save Notifications", enabled:true},
-    {label:"Popup Confirmations", enabled:true},
+export let settingsView = "Visual"
 
-]
+export function displayStatusView(view:string){
+    settingsView = view
+}
+
 
 export function SettingsPanel() {
     return (
@@ -22,79 +23,98 @@ export function SettingsPanel() {
                 display: showSetting === "Settings" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
+            }}
+        // uiBackground={{ color: Color4.Teal() }}//
+        >
+
+                        {/* buttons row */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
             }}
         // uiBackground={{ color: Color4.Teal() }}
         >
 
-        {generateSettingsToggles(settings)}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("Visual")
+            }}
+            onMouseDown={() => {
+                displayStatusView("Visual")
+            }}
+            uiText={{value:"Visual", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            />
+
+            {/* <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%", bottom:'1%', left:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("Audio")
+            }}
+            onMouseDown={() => {
+                displayStatusView("Audio")
+            }}
+            uiText={{value:"Audio", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            /> */}
+
+        </UiEntity>
+
+                    {/* settings data panel */}
+                    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '90%',
+            }}
+        // uiBackground={{ color: Color4.Red() }}
+        >
+
+            <VisualSettings/>
+            <AudioSettings/>
+
+        </UiEntity>
 
         </UiEntity>
     )
 }
 
-function generateSettingsToggles(settings:any[]){
-    let arr:any[] = []
-    settings.forEach((setting)=>{
-        arr.push(
-        <UiEntity
-        key={setting.label + "-settings"}
-        uiTransform={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '50%',
-            height: '10%',
-            margin:{top:"1%", bottom:'1%'},
-        }}
-        >
-
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateSquareImageDimensions(4).width,
-            height: calculateSquareImageDimensions(4).height,
-            margin:{top:"1%", bottom:'1%'},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getButtonState(setting.label)
-        }}
-        onMouseDown={() => {
-            settings.find((set:any)=>set.label === setting.label).enabled = !settings.find((set:any)=>set.label === setting.label).enabled 
-        }}
-        />
-
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '80%',
-            height: '100%',
-            margin:{left:"1%",},
-        }}
-        uiText={{value: setting.label, color:Color4.Black(), fontSize:sizeFont(30,20)}}
-        />
-
-        </UiEntity>
-        )
-    })
-    return arr
-}
-
 
 function getButtonState(button:string){
-    if(settings.find((b:any)=> b.label === button).enabled){
-        return getImageAtlasMapping(uiSizes.toggleOn)
+    if(settingsView === button){
+        return getImageAtlasMapping(uiSizes.buttonPillBlue)
     }else{
-        return getImageAtlasMapping(uiSizes.toggleOff)
+        return getImageAtlasMapping(uiSizes.buttonPillBlack)
     }
 }
+
