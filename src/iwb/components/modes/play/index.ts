@@ -299,7 +299,9 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
             MeshCollider.deleteFrom(entity)
             Material.deleteFrom(entity)
 
-            utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
+            if(sceneItem.trigComp){
+                utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
+            }
             break;
     }
 }

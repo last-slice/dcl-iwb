@@ -277,7 +277,6 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
             break;
             
     }
-    console.log('realm actions are', realmActions)
 }
 
 export function checkSceneVisibility(scene:IWBScene){

@@ -99,8 +99,6 @@ export function createVideoComponent(sceneId:string, entity:Entity, item:SceneIt
 }
 
 export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
-    SmartItemLoadedComponent.create(entity, {init:false, sceneId:scene.id})
-
     log('creating smart item component', name)
 
     switch(name){
@@ -120,9 +118,12 @@ export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:Sce
             }
             break;
     }
+    SmartItemLoadedComponent.create(entity, {init:false, sceneId:scene.id})
+
 }
 
 export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
+    console.log('adding trigger area component', item, name)
     utils.triggers.addTrigger(
         entity, utils.NO_LAYERS, utils.LAYER_1,
         [{type: 'box', position: {x: 0, y: 0, z: 0}, scale:{x:item.s.x, y:item.s.y,z:item.s.z }}],
@@ -139,11 +140,11 @@ export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, na
 }
 
 export function addClickArea(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
-    // MeshCollider.setBox(entity)
-    // MeshRenderer.setBox(entity)
-    // Material.setPbrMaterial(entity,{
-    //     albedoColor: Color4.create(54/255,221/255,192/255)
-    // })
+    MeshCollider.setBox(entity)
+    MeshRenderer.setBox(entity)
+    Material.setPbrMaterial(entity,{
+        albedoColor: Color4.create(54/255,221/255,192/255)//
+    })
 }
 
 export function updateImageUrl(aid:string, materialComp:any, url:string, entity?:Entity){
