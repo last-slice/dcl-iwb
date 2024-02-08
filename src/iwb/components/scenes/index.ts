@@ -166,7 +166,7 @@ function loadSceneBoundaries(id:any){
     let y = parseInt(y1)
 
     const sceneParent = engine.addEntity()
-    Transform.create(sceneParent, {
+    Transform.createOrReplace(sceneParent, {
         position: Vector3.create(x*16, 0, y*16)
     })
 
@@ -204,7 +204,7 @@ export function loadSceneAsset(sceneId:string, item:SceneItem){
             itemIdsFromEntities.set(entity, item.aid)
             entitiesFromItemIds.set(item.aid, entity)
     
-            Transform.create(entity, {parent:parent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
+            Transform.createOrReplace(entity, {parent:parent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
             
             addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)
         }

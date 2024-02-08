@@ -142,7 +142,7 @@ export let topTools: any[] = [
             sourceHeight: 128
         },
         enabled: true,
-        visible: true,
+        visible: false,
         fn: () => {
             if (players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) {
                 displayAssetUploadUI(true)

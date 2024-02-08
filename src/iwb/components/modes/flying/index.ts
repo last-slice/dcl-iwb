@@ -30,7 +30,7 @@ function createFlyBox() {
     const floor = engine.addEntity()
     MeshCollider.setPlane(floor)
     Material.setPbrMaterial(floor, {albedoColor: Color4.create(0, 0, 0, .1)})
-    Transform.create(floor, {
+    Transform.createOrReplace(floor, {
         position: Vector3.create(0, 0, 0),
         scale: Vector3.create(300, 300, 1),
         rotation: Quaternion.fromEulerDegrees(90, 0, 0),

@@ -108,7 +108,7 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
             entities.push(back)
 
             //left
-            Transform.create(left, {
+            Transform.createOrReplace(left, {
                 position: Vector3.create(x * 16, 0, y * 16),
                 rotation: Quaternion.fromEulerDegrees(0, 0, 0),
                 scale: Vector3.create(1, 20, 1),
@@ -117,7 +117,7 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
             GltfContainer.create(left, {src: local ? greenBeam : redBeam})
     
             //right
-            Transform.create(right, {
+            Transform.createOrReplace(right, {
                 position: Vector3.create(x * 16 + 16, 0, y * 16),
                 rotation: Quaternion.fromEulerDegrees(0, 0, 0),
                 scale: Vector3.create(1, 20, 1),
@@ -126,7 +126,7 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
             GltfContainer.create(right, {src: local ? greenBeam : redBeam})
     
             // front
-            Transform.create(front, {
+            Transform.createOrReplace(front, {
                 position: Vector3.create(x * 16, 0, y * 16 + 16),
                 rotation: Quaternion.fromEulerDegrees(0, 0, 0),
                 scale: Vector3.create(1, 20, 1),
@@ -135,24 +135,24 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
             GltfContainer.create(front, {src: local ? greenBeam : redBeam})
     
             // back
-            Transform.create(back, {
+            Transform.createOrReplace(back, {
                 position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
                 rotation: Quaternion.fromEulerDegrees(0, 0, 0),
                 scale: Vector3.create(1, 20, 1),
                 parent:parent
             })
-            GltfContainer.create(back, {src: local ? greenBeam : redBeam})
+            GltfContainer.createOrReplace(back, {src: local ? greenBeam : redBeam})
 
-            VisibilityComponent.create(left, {visible:playMode ? false : true})
-            VisibilityComponent.create(front, {visible:playMode ? false : true})
-            VisibilityComponent.create(right, {visible:playMode ? false : true})
-            VisibilityComponent.create(back, {visible:playMode ? false : true})
+            VisibilityComponent.createOrReplace(left, {visible:playMode ? false : true})
+            VisibilityComponent.createOrReplace(front, {visible:playMode ? false : true})
+            VisibilityComponent.createOrReplace(right, {visible:playMode ? false : true})
+            VisibilityComponent.createOrReplace(back, {visible:playMode ? false : true})
 
                 
-            BuildModeVisibilty.create(left)
-            BuildModeVisibilty.create(front)
-            BuildModeVisibilty.create(right)
-            BuildModeVisibilty.create(back)
+            BuildModeVisibilty.createOrReplace(left)
+            BuildModeVisibilty.createOrReplace(front)
+            BuildModeVisibilty.createOrReplace(right)
+            BuildModeVisibilty.createOrReplace(back)
 
         }
         
@@ -160,9 +160,9 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
         let floor = engine.addEntity()
         entities.push(floor)
     
-        Transform.create(parent)
+        Transform.createOrReplace(parent)
     
-        Transform.create(floor, {
+        Transform.createOrReplace(floor, {
             position: Vector3.create(centerx, 0, centery),
             rotation: Quaternion.fromEulerDegrees(90, 0, 0),
             scale: Vector3.create(16, 16, 1),

@@ -94,7 +94,7 @@ function createParent(){
      let x = parseInt(x1)
      let y = parseInt(y1)
  
-     Transform.create(sceneParent, {
+     Transform.createOrReplace(sceneParent, {
          position: Vector3.create(x*16, 0, y*16)
      })
 }
@@ -102,7 +102,7 @@ function createParent(){
 function createSceneItems(){
     scene.ass.forEach((item:any)=>{
         let entity = engine.addEntity()
-        Transform.create(entity, {parent:sceneParent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
+        Transform.createOrReplace(entity, {parent:sceneParent, position:item.p, rotation:Quaternion.fromEulerDegrees(item.r.x, item.r.y, item.r.z), scale:item.s})
         addAssetComponents(entity, item, item.type, item.n)
     })
 }
