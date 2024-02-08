@@ -6,19 +6,20 @@ import { displaySettingsPanel } from './settings/settingsIndex'
 import { sendServerMessage } from '../../components/messaging'
 import { SERVER_MESSAGE_TYPES } from '../../helpers/types'
 import { scene } from './builds/buildsIndex'
+import { localPlayer } from '../../components/player/player'
 
-export let showDeleteBuildPanel = false
+export let show = false
 
-export function displayDeleteBuildPanel(value: boolean) {
-    showDeleteBuildPanel = value
+export function displayClearScenePanel(value: boolean) {
+    show = value
 }
 
-export function createDeleteBuildPanel() {
+export function createClearScenePanel() {
     return (
         <UiEntity
-            key={"DeleteBuildpanel"}
+            key={"ClearBuildpanel"}
             uiTransform={{
-                display: showDeleteBuildPanel ? 'flex' : 'none',
+                display: show ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -59,7 +60,7 @@ export function createDeleteBuildPanel() {
                         margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Delete Build", fontSize: sizeFont(45,30), color: Color4.White()}}
+                uiText={{value:"Clear Build", fontSize: sizeFont(45,30), color: Color4.White()}}
                 />
 
                     {/* popup text */}
@@ -71,7 +72,7 @@ export function createDeleteBuildPanel() {
                             width: '100%',
                             height: '30%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("Are you sure you want to delete this build? Any builders who have not saved will lose ALL progress!", true, 30)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("Are you sure you want to clear this build? All assets will be removed from this scene.", true, 30)}}
                     />
 
         <UiEntity
@@ -91,10 +92,10 @@ export function createDeleteBuildPanel() {
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
-                displayDeleteBuildPanel(false)
-                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE, {sceneId: scene!.id})
+                displayClearScenePanel(false)
+                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_CLEAR_ASSETS, {sceneId: localPlayer.activeScene!.id})
             }}
-            uiText={{value: "Delete", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Clear", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity
@@ -114,8 +115,7 @@ export function createDeleteBuildPanel() {
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
-                displayDeleteBuildPanel(false)
-                displaySettingsPanel(true)
+                displayClearScenePanel(false)
             }}
             uiText={{value: "Cancel", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
