@@ -205,21 +205,21 @@ function attemptCreateSign(build:any){
         let y = parseInt(build.bpcl.split(',')[1])
 
         let sign = engine.addEntity()
-        GltfContainer.create(sign, {src:'assets/6978d233-3efc-452d-82c4-d105860d85c1.glb'})
-        Transform.create(sign, {position: Vector3.create(16 * x,0, 16 * y), rotation:Quaternion.fromEulerDegrees(0,180,0)})
+        GltfContainer.createOrReplace(sign, {src:'assets/6978d233-3efc-452d-82c4-d105860d85c1.glb'})
+        Transform.createOrReplace(sign, {position: Vector3.create(16 * x,0, 16 * y), rotation:Quaternion.fromEulerDegrees(0,180,0)})
 
         let label = engine.addEntity()
-        TextShape.create(label, {text: "Builder\nCompetition", textColor:Color4.White(), fontSize:3, textAlign:TextAlignMode.TAM_MIDDLE_CENTER})
-        Transform.create(label, {parent:sign, position: Vector3.create(-1.15,1.7,0), rotation:Quaternion.fromEulerDegrees(0,180,0)})
+        TextShape.createOrReplace(label, {text: "Builder\nCompetition", textColor:Color4.White(), fontSize:3, textAlign:TextAlignMode.TAM_MIDDLE_CENTER})
+        Transform.createOrReplace(label, {parent:sign, position: Vector3.create(-1.15,1.7,0), rotation:Quaternion.fromEulerDegrees(0,180,0)})
 
         let name = engine.addEntity()
-        TextShape.create(name, {text: "" + competitionScene.name, textColor:Color4.Green(), fontSize:1.5, textAlign:TextAlignMode.TAM_MIDDLE_CENTER})
-        Transform.create(name, {parent:sign, position: Vector3.create(-1.15,1.2,0), rotation:Quaternion.fromEulerDegrees(0,180,0)})
+        TextShape.createOrReplace(name, {text: "" + competitionScene.name, textColor:Color4.Green(), fontSize:1.5, textAlign:TextAlignMode.TAM_MIDDLE_CENTER})
+        Transform.createOrReplace(name, {parent:sign, position: Vector3.create(-1.15,1.2,0), rotation:Quaternion.fromEulerDegrees(0,180,0)})
 
         let vote = engine.addEntity()
-        GltfContainer.create(vote, {src:'assets/629000ee-8e08-47bd-acc2-222df02eb1df.glb'})
-        Transform.create(vote, {parent:sign, position:Vector3.create(-1.15, .9, 0), rotation:Quaternion.fromEulerDegrees(90,0,0)})
-        Animator.create(vote)
+        GltfContainer.createOrReplace(vote, {src:'assets/629000ee-8e08-47bd-acc2-222df02eb1df.glb'})
+        Transform.createOrReplace(vote, {parent:sign, position:Vector3.create(-1.15, .9, 0), rotation:Quaternion.fromEulerDegrees(90,0,0)})
+        Animator.createOrReplace(vote)
         pointerEventsSystem.onPointerDown({
             entity: vote,
             opts:{hoverText:"Vote for scene!", button:InputAction.IA_POINTER, maxDistance:5}},
@@ -239,4 +239,4 @@ function attemptCreateSign(build:any){
             }
         )
     }
-}//
+}
