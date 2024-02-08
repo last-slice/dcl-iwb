@@ -8,7 +8,6 @@ import { uiModes, topTools, bottomTools, settingsIconData } from "../uiConfig"
 import { connected } from "../../components/messaging"
 import { playSound } from "../../components/sounds"
 
-//
 export let showToolsPanel = false
 
 export function displayToolsPanel(value: boolean) {

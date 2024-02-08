@@ -19,7 +19,7 @@ export let playlistPlaying:boolean = false
 
 export async function createSounds(){
     catalogSoundEntity = engine.addEntity()
-    Transform.create(catalogSoundEntity, {parent:engine.PlayerEntity})
+    Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
     AudioSource.create(catalogSoundEntity)
     AudioStream.create(catalogSoundEntity)
 
@@ -108,7 +108,7 @@ function playLoop(id:string, volume?:number){
 
 export function createPlaylists(){
     playlistEntity = engine.addEntity()
-    Transform.create(playlistEntity, {parent:engine.PlayerEntity})
+    Transform.createOrReplace(playlistEntity, {parent:engine.PlayerEntity})
     AudioSource.create(playlistEntity)
 
     audioItems = [...items.values()].filter((item:any)=> item.ty === "Audio")

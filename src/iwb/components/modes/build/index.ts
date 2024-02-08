@@ -271,7 +271,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
         log(itemPosition)
 
-        Transform.create(selectedItem.entity, {position: itemPosition, scale, parent: engine.PlayerEntity})
+        Transform.createOrReplace(selectedItem.entity, {position: itemPosition, scale, parent: engine.PlayerEntity})
 
         sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {
             user: localUserId,
@@ -652,7 +652,7 @@ export function grabItem(entity: Entity) {
                 const {rotation:playerRot} = Transform.get(engine.PlayerEntity)
                 const euler = Quaternion.toEulerAngles(playerRot)
 
-                Transform.create(
+                Transform.createOrReplace(
                     selectedItem.entity,
                     {
                         position: {x: 0, y: -.88, z: 4},

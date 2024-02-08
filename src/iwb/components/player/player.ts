@@ -55,7 +55,7 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
     } else {
 
         let cameraParent = engine.addEntity()
-        Transform.create(cameraParent, {position: Vector3.create(0, 0, 6), parent: engine.CameraEntity})
+        Transform.createOrReplace(cameraParent, {position: Vector3.create(0, 0, 6), parent: engine.CameraEntity})
         //MeshRenderer.setBox(cameraParent)
 
         pData.cameraParent = cameraParent
