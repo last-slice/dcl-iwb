@@ -14,6 +14,7 @@ import { displaySceneInfoPanel, displaySceneSetting } from './builds/buildsIndex
 import { sendServerMessage } from '../../components/messaging'
 import { EDIT_MODES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
 import { showNotification } from './notificationUI'
+import { displayClearScenePanel } from './clearScenePanel'
 
 export let showSceneInfoPanel = false
 
@@ -179,6 +180,29 @@ export function createSceneInfoPanel() {
                 displaySceneAssetInfoPanel(false)
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your download is pending. Please wait for a popup with the download link.", animate:{enabled:true, return:true, time:10}})
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, {sceneId: localPlayer.activeScene!.id})
+            }}
+            />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                width: calculateSquareImageDimensions(3.5).width,
+                height: calculateSquareImageDimensions(3.5).height,
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin:{left:'2%'},
+                display: localUserId && players.get(localUserId) && players.get(localUserId)?.homeWorld ? 'flex' : 'none',
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas1.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
+            }}
+            onMouseDown={()=>{
+                displaySceneAssetInfoPanel(false)
+                displayClearScenePanel(true)
             }}
             />
 

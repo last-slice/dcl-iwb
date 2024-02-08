@@ -51,6 +51,7 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_DEPLOY_READY = 'scene_deploy_ready',
     SCENE_ADDED_SPAWN = "scene_added_spawn",
     SCENE_DELETE_SPAWN = "scene_delete_spawn",
+    SCENE_CLEAR_ASSETS = 'scene_clear_assets',
     
     //World
     INIT_WORLD = "init_world",
