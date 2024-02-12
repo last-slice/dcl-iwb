@@ -1,14 +1,15 @@
 import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
-import {getImageAtlasMapping, sizeFont} from '../../helpers'
+import {calculateSquareImageDimensions, getImageAtlasMapping, sizeFont} from '../../helpers'
 import {uiSizes} from '../../uiConfig'
 import {localPlayer} from '../../../components/player/player'
 import {formatDollarAmount, formatSize, log} from '../../../helpers/functions'
 import {items} from "../../../components/catalog";
-import {editItem} from "../../../components/modes/build";
-import {EDIT_MODES} from "../../../helpers/types";
-import {entitiesFromItemIds} from "../../../components/scenes";
+import {editItem, selectedItem} from "../../../components/modes/build";
+import {COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
+import {entitiesFromItemIds, sceneBuilds} from "../../../components/scenes";
 import {deselectRow, localScene, selectRow, selectedRow, showSceneInfoPanel, visibleIndex, visibleItems} from "../sceneInfoPanel";
+import { sendServerMessage } from '../../../components/messaging'
 
 const SceneAssetList = () => {
 
@@ -42,7 +43,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '50%',
+                width: '40%',
                 height: '100%',
                 margin: {left: "2%"}
             }}
@@ -62,12 +63,12 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '30%',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
-                value: "Poly Count",
+                value: "Polys",
                 fontSize: sizeFont(25, 20),
                 textAlign: 'middle-center',
                 color: Color4.White()
@@ -81,12 +82,67 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '20%',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
                 value: "Size",
+                fontSize: sizeFont(25, 20),
+                textAlign: 'middle-center',
+                color: Color4.White()
+            }}
+        />
+
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '10%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{
+                value: "View",
+                fontSize: sizeFont(25, 20),
+                textAlign: 'middle-center',
+                color: Color4.White()
+            }}
+        />
+
+<UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '10%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{
+                value: "Lock",
+                fontSize: sizeFont(25, 20),
+                textAlign: 'middle-center',
+                color: Color4.White()
+            }}
+        />
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '10%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{
+                value: "Del",
                 fontSize: sizeFont(25, 20),
                 textAlign: 'middle-center',
                 color: Color4.White()
@@ -149,7 +205,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '30%',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -168,7 +224,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '20%',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -177,6 +233,17 @@ const SceneAssetList = () => {
                 fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
                 color: Color4.White()
+            }}
+        />
+
+            <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '30%',
+                height: '100%',
             }}
         />
 
@@ -236,18 +303,18 @@ function SceneAssetRow(data:any){
             getImageAtlasMapping(uiSizes.rowPillDark)
     }}
     onMouseDown={() => {
-        const e = entitiesFromItemIds.get(aid)
-        if (e){
-            // editItem(e, EDIT_MODES.EDIT)
+        // const e = entitiesFromItemIds.get(aid)
+        // if (e){
+        //     // editItem(e, EDIT_MODES.EDIT)
           
-            if(selectedRow === i){
-                deselectRow()
-            }else{
-                selectRow(i)
-            }
-        }else{
-            log('no item to edit', aid)
-        }
+        //     if(selectedRow === i){
+        //         deselectRow()
+        //     }else{
+        //         selectRow(i)
+        //     }
+        // }else{
+        //     log('no item to edit', aid)
+        // }
 
     }}
 >
@@ -257,7 +324,7 @@ function SceneAssetRow(data:any){
             flexDirection: 'row',
             alignItems: 'flex-start',
             justifyContent: 'flex-start',
-            width: '60%',
+            width: '50%',
             height: '100%',
             margin: {left: "2%"}
         }}
@@ -271,13 +338,13 @@ function SceneAssetRow(data:any){
 
     />
 
-    <UiEntity
+<UiEntity
         uiTransform={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'flex-start',
             justifyContent: 'flex-start',
-            width: '20%',
+            width: '15%',
             height: '100%',
         }}
         // uiBackground={{color:Color4.Green()}}
@@ -287,7 +354,24 @@ function SceneAssetRow(data:any){
             textAlign: "middle-left",
             color: Color4.White()
         }}
+    />
 
+<UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            width: '15%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{
+            value: curItem?.pc ? formatSize(curItem?.si) + "MB" : "",
+            fontSize: sizeFont(20, 15),
+            textAlign: "middle-left",
+            color: Color4.White()
+        }}
     />
 
     <UiEntity
@@ -296,19 +380,115 @@ function SceneAssetRow(data:any){
             flexDirection: 'row',
             alignItems: 'flex-start',
             justifyContent: 'flex-start',
-            width: '20%',
+            width: '10%',
             height: '100%',
         }}
-        // uiBackground={{color:Color4.Green()}}
-        uiText={{
-            value: formatSize(curItem?.si) + "MB",
-            fontSize: sizeFont(20, 15),
-            textAlign: 'middle-left',
-            color: Color4.White()
+    >
+                <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            width: calculateSquareImageDimensions(3.5).width,
+            height: calculateSquareImageDimensions(3.5).height,
         }}
-
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'
+            },
+            uvs: getVis(aid)
+        }}
+        onMouseDown={()=>{
+            sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:SERVER_MESSAGE_TYPES.UPDATE_ASSET_BUILD_VIS, action:"toggle", data:{aid:aid, sceneId:localPlayer.activeScene!.id}})
+        }}
     />
+
+    </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            width: '10%',
+            height: '100%',
+        }}
+    >
+                <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            width: calculateSquareImageDimensions(3.5).width,
+            height: calculateSquareImageDimensions(3.5).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'
+            },
+            uvs: getLocked(aid)
+        }}
+        onMouseDown={()=>{
+            sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:SERVER_MESSAGE_TYPES.UPDATE_ASSET_LOCKED, action:"toggle", data:{aid:aid, sceneId:localPlayer.activeScene!.id}})
+        }}
+    />
+    </UiEntity>
+
+<UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            width: '10%',
+            height: '100%',
+        }}
+    >
+        <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            width: calculateSquareImageDimensions(3.5).width,
+            height: calculateSquareImageDimensions(3.5).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
+        }}
+    />
+
+    </UiEntity>
 
 </UiEntity>
     )
+}
+
+function getVis(aid:string){
+    let scene = sceneBuilds.get(localPlayer.activeScene!.id)
+    let asset = scene.ass.find((ass:any)=> ass.aid === aid)
+    if(asset){
+        return asset.buildVis ?  getImageAtlasMapping(uiSizes.eyeTrans) :  getImageAtlasMapping(uiSizes.eyeClosed)
+    }else{
+        return  getImageAtlasMapping(uiSizes.eyeTrans)
+    }  
+}
+
+function getLocked(aid:string){
+    let scene = sceneBuilds.get(localPlayer.activeScene!.id)
+    let asset = scene.ass.find((ass:any)=> ass.aid === aid)
+    if(asset){
+        return asset.locked ?  getImageAtlasMapping(uiSizes.eyeClosed) :  getImageAtlasMapping(uiSizes.eyeTrans)
+    }else{
+        return  getImageAtlasMapping(uiSizes.eyeTrans)
+    }  
 }

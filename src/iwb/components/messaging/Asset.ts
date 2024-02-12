@@ -1,8 +1,8 @@
 import { log } from "../../helpers/functions";
 import { items } from "../catalog";
 import { addEditSelectionPointer, confirmGrabItem, editAssets, removeEditSelectionPointer, removeItem, removeSelectionPointer } from "../modes/build";
-import { localUserId } from "../player/player";
-import { loadSceneAsset, updateAsset } from "../scenes";
+import { localPlayer, localUserId } from "../player/player";
+import { entitiesFromItemIds, loadSceneAsset, updateAsset } from "../scenes";
 import { actionComponentListener } from "./listeners/ActionComponent";
 import { collisionComponentListener } from "./listeners/CollisionComponent";
 import { imageComponentListener } from "./listeners/ImageComponent";
@@ -14,6 +14,8 @@ import { videoComponentListener } from "./listeners/VideoComponent";
 import {audioComponentListener} from "./listeners/AudioComponent";
 import { materialComponentListener } from "./listeners/MaterialComponent";
 import { utils } from "../../helpers/libraries";
+import { SCENE_MODES } from "../../helpers/types";
+import { VisibilityComponent } from "@dcl/sdk/ecs";
 
 export function assetListener(scene:any){
     scene.ass.onAdd((asset:any, key:any)=>{
@@ -39,6 +41,19 @@ export function assetListener(scene:any){
             if(previousValue !== undefined && previousValue && !currentValue){
                 log('done editing asset', asset)
                 updateAsset(asset)
+            }
+        });
+
+        asset.listen("buildVis", (currentValue:any, previousValue:any) => {
+            if(previousValue !== undefined){
+                if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+                    let entity = entitiesFromItemIds.get(asset.aid)
+                    if(entity){
+                        VisibilityComponent.createOrReplace(entity, {
+                            visible:  currentValue
+                        })
+                    }
+                }   
             }
         });
 

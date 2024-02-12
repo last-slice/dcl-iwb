@@ -21,7 +21,7 @@ export function createIWBEventListeners(){
         created = true
         iwbEvents.on(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info)=>{
             for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
-                if(players.get(localUserId)?.mode === 1){
+                if(players.get(localUserId)?.mode === SCENE_MODES.CREATE_SCENE_MODE){
                     if(ParcelFloor.has(entity)){
                         Material.setPbrMaterial(entity, {
                             albedoColor: Color4.Red()
