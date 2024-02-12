@@ -31,6 +31,9 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_EDIT_ASSET = 'player_edit_asset',
     UPDATE_ITEM_COMPONENT = "update_component",
     UPDATE_GRAB_Y_AXIS = 'update_grab_y_axix',
+    PLAYER_ASSET_PENDING = 'player_asset_pending',
+    UPDATE_ASSET_LOCKED = 'update_asset_locked',
+    UPDATE_ASSET_BUILD_VIS = 'update_asset_build_visibility',
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
@@ -214,6 +217,8 @@ export interface SceneItem extends CatalogItemType{
     ugc:boolean
     pending:boolean
     editor:string
+    locked:boolean
+    buildVis:boolean
 }
 
 export interface SelectedItem {

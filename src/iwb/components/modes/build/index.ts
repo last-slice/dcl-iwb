@@ -356,9 +356,6 @@ export function updateGrabbedYAxis(info:any){
 export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
     hideAllPanels()
 
-    hideAllOtherPointers()
-    PointerEvents.deleteFrom(entity)
-
     let assetId = itemIdsFromEntities.get(entity)
     console.log('found asset id', assetId)
     if (assetId) {
@@ -367,6 +364,14 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
             console.log('scene item is', sceneItem)
             if (sceneItem) {
 
+                if(sceneItem.locked){
+                    playSound(SOUND_TYPES.ERROR_2)
+                    return 
+                }
+
+                hideAllOtherPointers()
+
+                PointerEvents.deleteFrom(entity)
                 log('clicked entity is', entity)
                 log('scene for asset is', scene)
 
@@ -660,15 +665,20 @@ export function confirmGrabItem(asset:SceneItem){
 export function grabItem(entity: Entity) {
     hideAllPanels()
 
-    hideAllOtherPointers()
-    if(PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
-
     let assetId = itemIdsFromEntities.get(entity)
     if (assetId) {
         sceneBuilds.forEach((scene: IWBScene) => {
             let sceneItem:SceneItem | undefined = scene.ass.find((asset) => asset.aid === assetId)
             console.log('scene item is', sceneItem)
-            if (sceneItem && !sceneItem.editing) {
+            if(sceneItem && !sceneItem.editing) {
+                if(sceneItem.locked){
+                    playSound(SOUND_TYPES.ERROR_2)
+                    return
+                }
+
+                hideAllOtherPointers()
+
+                if(PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
                 sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
                     user: localUserId,
                     catalogId: sceneItem.id,
@@ -676,6 +686,7 @@ export function grabItem(entity: Entity) {
                     sceneId: scene.id,
                 })
                 playSound(SOUND_TYPES.SELECT_3)
+                return
             }
         })
     }
@@ -984,7 +995,7 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
         let sceneItem = scene.ass.find((a)=> a.aid === assetId)
         if(sceneItem){
             VisibilityComponent.createOrReplace(entity, {
-                visible: true
+                visible: sceneItem.buildVis
             })
 
             check2DCollision(entity, sceneItem)

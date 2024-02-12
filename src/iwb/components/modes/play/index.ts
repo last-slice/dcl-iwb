@@ -54,6 +54,7 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
                 disableAnimations(entity, sceneItem)
                 disableVisibility(entity, sceneItem)
                 PointerEvents.deleteFrom(entity)
+                sceneItem.visComp ? VisibilityComponent.createOrReplace(entity, {visible: sceneItem.visComp.visible}) : null
             }
         }
     }
