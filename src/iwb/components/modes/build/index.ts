@@ -474,9 +474,11 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
 
     let parcel = "" + Math.floor(finalPosition.x / 16) + "," + Math.floor(finalPosition.z / 16)
 
+    let canDrop = false
     sceneBuilds.forEach((scene, key) => {
         if (scene.pcls.find((sc: string) => sc === parcel) && localPlayer.canBuild) {
             log('we can drop item here')
+            canDrop = true
             playSound(SOUND_TYPES.DROP_1_STEREO)
 
             if(PointerEvents.has(selectedItem.entity)) PointerEvents.deleteFrom(selectedItem.entity)
@@ -552,10 +554,13 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
             )
             selectedItem.enabled = false
             return
-        }else{
-            playSound(SOUND_TYPES.ERROR_2)
         }
     })
+
+    if(!canDrop){
+        console.log('player cant build here')
+        playSound(SOUND_TYPES.ERROR_2)
+    }
 }
 
 export function duplicateItem(entity: Entity) {
@@ -669,8 +674,8 @@ export function grabItem(entity: Entity) {
                     catalogId: sceneItem.id,
                     assetId: assetId,
                     sceneId: scene.id,
-
                 })
+                playSound(SOUND_TYPES.SELECT_3)
             }
         })
     }
