@@ -1,6 +1,6 @@
 import { GltfContainer, engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
-import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SceneItem} from "../../helpers/types"
+import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem} from "../../helpers/types"
 import {
     otherUserPlaceditem,
     otherUserRemovedSeletedItem,
@@ -19,6 +19,7 @@ import { updateExportPanelView } from "../../ui/Panels/builds/ExportPanel"
 import { displaySceneInfoPanel, displaySceneSetting } from "../../ui/Panels/builds/buildsIndex"
 import { openExternalUrl } from "~system/RestrictedActions"
 import { displayDeployPendingPanel } from "../../ui/Panels/deployConfirmationPanel"
+import { playSound } from "../sounds"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -138,13 +139,20 @@ export function createSceneListeners(room: any) {
             log(SERVER_MESSAGE_TYPES.SCENE_COUNT + ' received', info)
             updateSceneCount(info)
         })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, (info: any) => {
+            log(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET + ' received', info)
+            if(!info.valid && info.player === localUserId){
+                playSound(SOUND_TYPES.ERROR_2)
+            }
+        })
 }
 
 export function addSceneStateListeners(room:any){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         log('Room Scene Added', key, scene)
         await loadScene(scene)
-
+//
         sceneListeners(scene,key)
         assetListener(scene)
     })

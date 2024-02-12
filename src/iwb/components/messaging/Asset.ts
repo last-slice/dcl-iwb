@@ -1,6 +1,6 @@
 import { log } from "../../helpers/functions";
 import { items } from "../catalog";
-import { addEditSelectionPointer, editAssets, removeEditSelectionPointer, removeItem, removeSelectionPointer } from "../modes/build";
+import { addEditSelectionPointer, confirmGrabItem, editAssets, removeEditSelectionPointer, removeItem, removeSelectionPointer } from "../modes/build";
 import { localUserId } from "../player/player";
 import { loadSceneAsset, updateAsset } from "../scenes";
 import { actionComponentListener } from "./listeners/ActionComponent";
@@ -54,8 +54,11 @@ export function assetListener(scene:any){
         materialComponentListener(scene, asset)
     })
 
-    scene.ass.onRemove((asset:any, key:any)=>{
+    scene.ass.onRemove(async (asset:any, key:any)=>{
         log("scene asset remove", key, asset)
+        if(asset.editing && asset.editor === localUserId){
+            await confirmGrabItem(asset)
+        }
         removeItem(scene.id, asset)
     })
 }

@@ -574,8 +574,86 @@ export function duplicateItem(entity: Entity) {
 }
 
 
+export function confirmGrabItem(asset:SceneItem){
+    console.log('confirming grabbed item', asset.aid)
+    let entity = entitiesFromItemIds.get(asset.aid)
+    if(entity){
+        console.log("confirmed grabbed item entity exists")
+        let transform = Transform.get(entity!)
+        let transPos = Vector3.clone(transform.position)
+        let transScal = Vector3.clone(transform.scale)
+        let transRot = Quaternion.toEulerAngles(transform.rotation)
+    
+        selectedItem = {
+            duplicate:false,
+            mode: EDIT_MODES.GRAB,
+            modifier: EDIT_MODIFIERS.POSITION,
+            pFactor:1,
+            sFactor:1,
+            rFactor:90,
+            entity: engine.addEntity(),
+            aid: asset.aid,
+            catalogId: asset.id,
+            sceneId: asset.id,
+            itemData: asset,
+            enabled: true,
+            already: true,
+            transform: {
+                position: transPos,
+                rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z),
+                scale: transScal
+            },
+            initialHeight: transPos.y - .88,
+            ugc: asset.ugc
+        }
+        addUseItemPointers(selectedItem.entity)
+    
+        let scale: any
+        scale = transScal
+        log('grabbed scale is', scale)
+    
+        let config = players.get(localUserId)!.worlds.find((w)=> w.ens === realm)
+    
+        if (selectedItem.itemData.v && selectedItem.itemData.v > config.v) {
+            // log('this asset is not ready for viewing, need to add temporary asset')
+            MeshRenderer.setBox(selectedItem.entity)
+    
+            if (selectedItem.itemData.bb) {
+                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.y, selectedItem.itemData.bb.z)
+            }
+    
+        } else {
+            // log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
+            addGrabbedComponent(selectedItem.entity, selectedItem.itemData.id, selectedItem.itemData)
+        }
+    
+        if(GltfContainer.has(selectedItem.entity)){
+            GltfContainer.getMutable(selectedItem.entity).invisibleMeshesCollisionMask = ColliderLayer.CL_POINTER
+            GltfContainer.getMutable(selectedItem.entity).visibleMeshesCollisionMask = ColliderLayer.CL_POINTER
+        }
+    
+        addUseItemPointers(entity!)
+    
+        const {rotation:playerRot} = Transform.get(engine.PlayerEntity)
+        const euler = Quaternion.toEulerAngles(playerRot)
+    
+        Transform.createOrReplace(
+            selectedItem.entity,
+            {
+                position: {x: 0, y: -.88, z: 4},
+                scale: scale,
+                rotation:Quaternion.fromEulerDegrees(euler.x - transRot.x, transRot.y - euler.y , euler.z - transRot.z) ,
+                parent: engine.PlayerEntity
+            })
+    
+        grabbedAssets.set(selectedItem.itemData.aid, entity!)
+    }else{
+        console.log('confirm grab item that doesnt exist', asset)
+    }
+}
+
 export function grabItem(entity: Entity) {
-    hideAllPanels()//
+    hideAllPanels()
 
     hideAllOtherPointers()
     if(PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
@@ -593,75 +671,6 @@ export function grabItem(entity: Entity) {
                     sceneId: scene.id,
 
                 })
-
-                let transform = Transform.get(entity)
-                let transPos = Vector3.clone(transform.position)
-                let transScal = Vector3.clone(transform.scale)
-                let transRot = Quaternion.toEulerAngles(transform.rotation)
-
-                selectedItem = {
-                    duplicate:false,
-                    mode: EDIT_MODES.GRAB,
-                    modifier: EDIT_MODIFIERS.POSITION,
-                    pFactor:1,
-                    sFactor:1,
-                    rFactor:90,
-                    entity: engine.addEntity(),
-                    aid: sceneItem.aid,
-                    catalogId: sceneItem.id,
-                    sceneId: scene.id,
-                    itemData: sceneItem,
-                    enabled: true,
-                    already: true,
-                    transform: {
-                        position: transPos,
-                        rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z),
-                        scale: transScal
-                    },
-                    initialHeight: transPos.y - .88,
-                    ugc: sceneItem.ugc
-                }
-                addUseItemPointers(selectedItem.entity)
-
-                let scale: any
-                scale = transScal
-                log('grabbed scale is', scale)
-
-                let config = players.get(localUserId)!.worlds.find((w)=> w.ens === realm)
-
-                if (selectedItem.itemData.v && selectedItem.itemData.v > config.v) {
-                    // log('this asset is not ready for viewing, need to add temporary asset')
-                    MeshRenderer.setBox(selectedItem.entity)
-
-                    if (selectedItem.itemData.bb) {
-                        scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.y, selectedItem.itemData.bb.z)
-                    }
-
-                } else {
-                    // log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
-                    addGrabbedComponent(selectedItem.entity, selectedItem.itemData.id, selectedItem.itemData)
-                }
-
-                if(GltfContainer.has(selectedItem.entity)){
-                    GltfContainer.getMutable(selectedItem.entity).invisibleMeshesCollisionMask = ColliderLayer.CL_POINTER
-                    GltfContainer.getMutable(selectedItem.entity).visibleMeshesCollisionMask = ColliderLayer.CL_POINTER
-                }
-
-                addUseItemPointers(entity)
-
-                const {rotation:playerRot} = Transform.get(engine.PlayerEntity)
-                const euler = Quaternion.toEulerAngles(playerRot)
-
-                Transform.createOrReplace(
-                    selectedItem.entity,
-                    {
-                        position: {x: 0, y: -.88, z: 4},
-                        scale: scale,
-                        rotation:Quaternion.fromEulerDegrees(euler.x - transRot.x, transRot.y - euler.y , euler.z - transRot.z) ,
-                        parent: engine.PlayerEntity
-                    })
-
-                grabbedAssets.set(selectedItem.itemData.aid, entity)
             }
         })
     }
@@ -945,8 +954,6 @@ export function removeItem(sceneId: string, info: any) {
         }
     }
 }
-
-//
 
 export function hideAllOtherPointers() {
     sceneBuilds.forEach((scene, key) => {
