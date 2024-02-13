@@ -14,7 +14,7 @@ import {CollisionComponentPanel} from './CollisionComponentPanel'
 import {NFTComponentPanel} from './NFTComponentPanel'
 import {TextComponentPanel} from './TextComponentPanel'
 import {ActionComponent} from './ActionComponent'
-import {TriggerComponent, updateTriggerActions} from './TriggerComponent'
+import {TriggerComponent, updateActionView, updateTriggerActions} from './TriggerComponent'
 import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
 import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerAreaComponentPanel'
@@ -152,6 +152,7 @@ export function EditObjectData() {
                     }}
                     onMouseDown={() => {
                         openEditComponent("")
+                        updateActionView("list")
                     }}
                 />
 

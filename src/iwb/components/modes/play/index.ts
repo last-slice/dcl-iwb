@@ -98,12 +98,12 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
             if(entity){
                 switch(action.type){
                     case Actions.OPEN_LINK:
-                        // log('opening external url')
+                        log('opening external url')
                         openExternalUrl({url:"" + action.url})
                         break;
         
                     case Actions.PLAY_AUDIO:
-                        // log('playing audio')
+                        log('playing audio')
         
                         if(asset.sty !== "Stream"){
                             AudioSource.getMutable(entity).playing = true
@@ -113,7 +113,7 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                         break;
         
                     case Actions.STOP_AUDIO:
-                        // log('stopping audio')
+                        log('stopping audio')
         
                         if(asset.sty !== "Stream"){
                             AudioSource.getMutable(entity).playing = false
@@ -127,18 +127,23 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                         break;
 
                     case Actions.PLAY_ANIMATION:
+                        log('playing animation', action)
                         Animator.stopAllAnimations(entity, true)
                         let clip = Animator.getClip(entity, action.animName)
+                        clip.shouldReset = true
                         clip.playing = true
+                        clip.loop = action.animLoop
                         break;
 
                     case Actions.STOP_ANIMATION:
+                        log('stopping animation', action)
                         Animator.stopAllAnimations(entity, true)
                         let stopclip = Animator.getClip(entity, action.animName)
                         stopclip.playing = false
                         break;
 
                     case Actions.TELEPORT_PLAYER:
+                        log('teleporting player')
                         let pos = action.teleport.split(",")
                         let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
                         movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}})
@@ -318,7 +323,6 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
 
 export function disableAnimations(entity:Entity, sceneItem:SceneItem){
     if(sceneItem.animComp){
-        console.log('scene item has aniamtion, need to reset all cursors', Animator.has(entity))
         Animator.has(entity) ? Animator.stopAllAnimations(entity, true) : null
     }
 }

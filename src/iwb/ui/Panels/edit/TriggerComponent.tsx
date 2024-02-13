@@ -20,6 +20,8 @@ let actionNames:string[] = []
 let actionIds:string[] = []
 let actionLabels:any[] = []
 
+let selectedTrigger:any
+
 export function updateActionView(v:string){
     view = v
 }
@@ -45,7 +47,8 @@ export function TriggerComponent() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '20%',
-                margin:{top:"1%"}
+                margin:{top:"1%"},
+                display: view === "list" ? "flex" : "none"
             }}
         >
 
@@ -274,73 +277,6 @@ export function TriggerComponent() {
 
             </UiEntity>
 
-    
-                 {/* trigger action row */}
-                 <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '30%',
-                margin:{top:"5%"}
-            }}
-        >
-
-        {/* trigger event dropdown */}
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '100%',
-            }}
-        >
-             <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-                margin:{bottom:'5%'}
-            }}
-        uiText={{value:"Trigger Action", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
-        />
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '45%',
-            }}
-        >
-
-            <Dropdown
-        key={"trigger-action-dropdown-dropdown"}
-        options={[...actionNames]}
-        selectedIndex={selectedActionIndex}
-        onChange={selectAction}
-        uiTransform={{
-            width: '100%',
-            height: '120%',
-        }}
-        // uiBackground={{color:Color4.Purple()}}
-        color={Color4.White()}
-        fontSize={sizeFont(20, 15)}
-            />
-
-        </UiEntity>
-
-
-
-        </UiEntity>
-
-            </UiEntity>
-
         
      {/* add trigger confirm buttons */}
             <UiEntity
@@ -403,6 +339,232 @@ export function TriggerComponent() {
             </UiEntity>
 
 
+            {/* view trigger actions panel */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '95%',
+                height: '100%',
+                display: view === "actions" ? "flex" : "none"
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            uiText={{textAlign:"middle-left", value:"Trigger: " + (selectedTrigger && ENTITY_TRIGGER_LABELS[ENTITY_TRIGGER_SLUGS.findIndex((es)=> es === selectedTrigger.type)] + ", " + ENTITY_POINTER_LABELS[selectedTrigger.pointer]), fontSize:sizeFont(25,15), color:Color4.White()}}
+            />
+
+
+            {/* hover, new actions row */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"2%"}
+            }}
+            >
+
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40%',
+                height: '100%',
+            }}
+            > 
+            
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '30%',
+            }}
+            uiText={{textAlign:"middle-left", value:"Hover Text", fontSize:sizeFont(25,15), color:Color4.White()}}
+            />
+
+        <Input
+        onChange={(value)=>{
+            selectedTrigger.hoverText = value
+            updateTrigger("action", "text", {type:selectedTrigger.type, text:value})
+        }}
+        fontSize={sizeFont(20,12)}
+        value={"" + (selectedTrigger && selectedTrigger.hoverText)}
+        placeholder={'hover text'}
+        placeholderColor={Color4.White()}
+        color={Color4.White()}
+        uiTransform={{
+            width: '100%',
+            height: '70%',
+        }}
+        />
+                 </UiEntity>
+
+                 <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+                margin:{left:'2%'}
+            }}
+            >
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '30%',
+            }}
+            uiText={{textAlign:"middle-left", value:"Actions", fontSize:sizeFont(25,15), color:Color4.White()}}
+            />
+                        
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '70%',
+            }}
+            >
+            <Dropdown
+        key={"trigger-action-dropdown-dropdown"}
+        options={[...actionNames]}
+        selectedIndex={selectedActionIndex}
+        onChange={selectAction}
+        uiTransform={{
+            width: '100%',
+            height: '120%',
+        }}
+        // uiBackground={{color:Color4.Purple()}}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}
+            />
+
+            </UiEntity>
+
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                alignContent:'center',
+                justifyContent: 'center',
+                width: '25%',
+                height: '100%',
+            }}
+            >
+                     <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
+            onMouseDown={() => {
+                updateTrigger("action", "add", {type:selectedTrigger.type, action:actionIds[selectedActionIndex], pointer: selectedTrigger.pointer})
+            }}
+        />
+                </UiEntity>
+
+            </UiEntity>
+
+
+
+            {/* actions list label */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                alignContent:'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{top:"5%"}
+            }}
+            uiText={{textAlign:"middle-left", value:"Current Actions List", fontSize:sizeFont(25,15), color:Color4.White()}}
+            />
+
+            {/* actions list panel */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '40%',
+            }}
+            // uiBackground={{color:Color4.Purple()}}
+            >
+                {generateActionRows(selectedTrigger ? selectedTrigger.actions : [])}
+            </UiEntity>
+
+                 {/* add trigger confirm buttons */}
+                 <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+            }}
+            >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                margin:{left:"5%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            uiText={{value: "Go Back", fontSize: sizeFont(20, 16)}}
+            onMouseDown={() => {
+                updateActionView("list")
+            }}
+        />
+
+                </UiEntity>
+
+                </UiEntity>
+
+
             {/* trigger rows */}
             <UiEntity
             uiTransform={{
@@ -438,11 +600,11 @@ function TriggerRow(trigger:any){
         <UiEntity
         key={"trigger-row-"+ trigger.rowCount}
             uiTransform={{
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '30%',
+                height: '20%',
                 margin:{top:"2%", bottom:'2%', left:"2%", right:'2%'}
             }}
             uiBackground={{
@@ -451,61 +613,124 @@ function TriggerRow(trigger:any){
                     src: 'assets/atlas2.png'
                 },
                 uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
-            >  
-
-                        {/* trigger event label row */}
-                        <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '98%',
-                height: '30%',
-            }}
-            >
+                >
 
                 <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
+                width: '40%',
                 height: '100%',
             }}
-            uiText={{value:"Trigger Event", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
-            />
+            >
 
             {/* trigger event type column */}
-                        <UiEntity
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
-                height: '100%',
+                width: '100%',
+                height: '25%',
             }}
             uiText={{value:"" + ENTITY_TRIGGER_LABELS[ENTITY_TRIGGER_SLUGS.findIndex((es)=> es === data.type)], fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
-            {/* trigger event pointer column */}
+             {/* trigger event pointer column */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '25%',
+            }}
+            uiText={{value:"" + ENTITY_POINTER_LABELS[data.pointer], fontSize:sizeFont(20,15), color:Color4.White()}}
+            />
+
+
+            </UiEntity>
+
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
+                width: '40%',
                 height: '100%',
             }}
-            uiText={{value:"" + ENTITY_POINTER_LABELS[data.pointer], fontSize:sizeFont(20,15), color:Color4.White()}}
+            >
+
+            {/* trigger event type column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '25%',
+            }}
+            uiText={{value:"Actions", fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
+             {/* trigger event pointer column */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '25%',
+            }}
+            uiText={{value:"" + data.actions.length, fontSize:sizeFont(20,15), color:Color4.White()}}
+            />
+
+
+            </UiEntity>
+
             <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).width,
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).height,
+                margin:{right:"1%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas1.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.pencilEditIcon)
+            }}
+            onMouseDown={() => {
+                // updateTrigger('delete', 'remove', trigger.rowCount)
+                selectedTrigger = data
+                console.log('selected trigger is', selectedTrigger)
+                updateActionView("actions")
+            }}
+        />
+
+<UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
-                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                margin:{left:"1%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -518,11 +743,7 @@ function TriggerRow(trigger:any){
                 updateTrigger('delete', 'remove', trigger.rowCount)
             }}
         />
-
-            </UiEntity>
-
-
-            {generateActionRows(data.actions)}
+                </UiEntity>
 
             </UiEntity>
     )
@@ -544,60 +765,44 @@ function TriggerActionRow(data:any){
         <UiEntity
         key={"trigger-action-row-"+ data.rowCount}
             uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '96%',
-                height: '100%',
-                margin:{top:"2%", bottom:'2%', left:"2%", right:'2%'}
-            }}
-            >  
-
-            {/* trigger action panel */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '75%',
-            }}
-            >
-
-            {/* assigned actions label */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            uiText={{value:"Assigned Actions", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
-            />
-
-                <UiEntity
-            uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '50%',
+                height: '25%',
+                margin:{top:"1%", bottom:'1%', left:"2%", right:'2%'}
             }}
-            >
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
+            >  
 
-            {/* acttion name column */}
+                 {/* acttion name column */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%',
+                width: '40%',
                 height: '100%',
             }}
             uiText={{value:"" + actionNames[actionIds.findIndex((action:any)=> action === actionData.id)], fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
+             {/* action action column */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40%',
+                height: '100%',
+            }}
+            uiText={{value:"" + getActionLabel(actionData.id), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            />
 
             {/* action action column */}
             <UiEntity
@@ -605,13 +810,30 @@ function TriggerActionRow(data:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%',
+                width: '10%',
                 height: '100%',
             }}
-            uiText={{value:"" + getActionLabel(actionData.id), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
-            />
-            </UiEntity>
-
+            >
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                margin:{left:"1%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas1.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.trashButton)
+            }}
+            onMouseDown={() => {
+                updateTrigger("action", "delete", {type:selectedTrigger.type, action:data.rowCount})
+            }}
+        />
 
             </UiEntity>
 

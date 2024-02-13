@@ -4,12 +4,13 @@ import {joinWorld} from "./components/messaging";
 import {getAssetUploadToken, getPreview, log} from "./helpers/functions";
 import {createInputListeners} from "./components/listeners/inputListeners";
 import {addPlayer, getPlayerNames} from "./components/player/player";
-import {engine} from "@dcl/sdk/ecs";
+import {Animator, GltfContainer, Transform, engine} from "@dcl/sdk/ecs";
 import {PlayerTrackingSystem} from "./components/systems/playerTracking";
 import { BuildModeVisibiltyComponents } from "./components/systems/BuildModeVisibilty";
 import { getRealm } from "~system/Runtime";
 import { realm, updateRealm } from "./components/scenes";
 import { utils } from "./helpers/libraries";
+import { Vector3 } from "@dcl/sdk/math";
 
 export function initIWB() {
     setupUi()
@@ -50,7 +51,6 @@ export function initIWB() {
             // colyseusConnect(data, json.data.token)
             joinWorld(realm)
             // colyseusConnect(data, "")
-
         })
     })
 }
