@@ -101,7 +101,7 @@ export function createVideoComponent(sceneId:string, entity:Entity, item:SceneIt
 }
 
 export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
-    log('creating smart item component', name)
+    log('creating smart item component', name)//
 
     switch(name){
         case 'Trigger Area':
@@ -127,7 +127,7 @@ export function addTriggerArea(scene:IWBScene, entity:Entity, item:SceneItem, na
         },
         ()=>{
             log('left trigger area')
-            runTrigger(item, item.trigArComp.eActions)
+            runTrigger(item, item.trigArComp.lActions)
         }, Color3.create(236/255,209/255,92/255)
     )
     utils.triggers.enableTrigger(entity, item.trigArComp.enabled)

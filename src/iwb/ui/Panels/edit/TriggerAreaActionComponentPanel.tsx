@@ -1,7 +1,7 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
 import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
@@ -333,7 +333,7 @@ function generateActionRows(){
         arr.push(<ActionRow data={action} rowCount={count} />)
         count++
     })
-    return arr//
+    return arr
 }
 
 function ActionRow(action:any){
@@ -346,77 +346,29 @@ function ActionRow(action:any){
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '20%',
-                margin:{top:"1%", bottom:'1%'}
+                height: '25%',
+                margin:{top:"1%", bottom:'1%', left:"2%", right:'2%'}
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blackButton)}}
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
             >  
 
-            {/* action name column */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '40%',
-                height: '85%',
-            }}
-            >
-
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            uiText={{value:"Name", fontSize:sizeFont(20,15), color:Color4.White()}}
-        />
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
+                height: '100%',
             }}
             uiText={{value:"" + data.name, fontSize:sizeFont(20,15), color:Color4.White()}}
         />
 
-
-            </UiEntity>
-
-
             {/* action action column */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40%',
-                height: '85%',
-            }}
-            >
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            uiText={{value:"Value", fontSize:sizeFont(20,15), color:Color4.White()}}
-        />
-
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
@@ -428,14 +380,12 @@ function ActionRow(action:any){
             uiText={{value:"" + ENTITY_ACTIONS_LABELS[ENTITY_ACTIONS_SLUGS.findIndex((ea)=> ea === data.type)], fontSize:sizeFont(20,15), color:Color4.White()}}
         />
 
-            </UiEntity>
-
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '20%',
+                width: '10%',
                 height: '100%',
             }}
         >
@@ -445,17 +395,17 @@ function ActionRow(action:any){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '40%',
-            height: '50%'
+            width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+            height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+            margin:{left:"1%"}
         }}
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: 'assets/atlas2.png'
+                src: 'assets/atlas1.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.dangerButton)
+            uvs: getImageAtlasMapping(uiSizes.trashButton)
         }}
-        uiText={{value: "X", fontSize: sizeFont(20, 16), textAlign:'middle-center'}}
         onMouseDown={() => {
             //DELETE ACTION//
             updateAction('delete', 'remove', {name:data.name})

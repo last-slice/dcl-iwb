@@ -303,12 +303,13 @@ export function teleportToScene(scene:IWBScene){
 
 export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
     console.log("checking smart item for play mode", sceneItem)
+    MeshRenderer.deleteFrom(entity)
+    MeshCollider.deleteFrom(entity)
+    Material.deleteFrom(entity)
+
     switch(items.get(sceneItem.id)?.n){
         case 'Trigger Area':
             console.log('need to enable all trigger areas')
-            MeshRenderer.deleteFrom(entity)
-            MeshCollider.deleteFrom(entity)
-            Material.deleteFrom(entity)
 
             if(sceneItem.trigComp){
                 utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
@@ -316,6 +317,7 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
             break;
 
         case 'Click Area':
+            console.log('found lcick area for enable')
             MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
             break;
     }

@@ -1,16 +1,16 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
 import { COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_TRIGGER_LABELS, ENTITY_TRIGGER_SLUGS, IWBScene, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
 import { selectedItem } from '../../../components/modes/build'
 import { uiSizes } from '../../uiConfig'
 import { sceneBuilds } from '../../../components/scenes'
-import { TriggerAreaActionComponent } from './TriggerAreaActionComponentPanel'
 import { localPlayer } from '../../../components/player/player'
 import { utils } from '../../../helpers/libraries'
+import { getActionLabel } from './TriggerComponent'
 
 export let triggerAreaView = "main"
 export let actionView:string = ""
@@ -27,6 +27,7 @@ export function updateTriggerAreaActionView(v:string, type?:boolean){
     triggerAreaView = v
     if(type){
         actionView = v
+        updateTriggerActions()
         updateCurrentActions()
     }
     console.log('action view is', triggerAreaView, actionView)
@@ -103,7 +104,7 @@ export function TriggerAreaComponent() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigArComp ? (selectedItem.itemData.trigArComp.enabled ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.itemData.trigArComp ? (selectedItem.itemData.trigArComp.enabled ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
         }}
         onMouseDown={() => {
             updateTrigger('toggle', "enabled", !selectedItem.itemData.trigArComp.enabled)
@@ -588,16 +589,13 @@ function updateCurrentActions(){
             let triggerAreaActions:any[] = selectedItem.itemData.trigArComp.eActions
 
             triggerAreaActions.forEach((taction)=>{
-                console.log('t action is', taction)
-
                 localPlayer.activeScene!.ass.forEach((asset)=>{
                     if(asset.actComp){
                         let assetActions = asset.actComp.actions
                         if(assetActions[taction.id]){
                             let action = assetActions[taction.id]
-                            console.log("found asset with action", action)
 
-                            currentActions.push(action.name)
+                            currentActions.push(action)
                             currentActionIds.push(taction)
                         }
                     }
@@ -611,16 +609,14 @@ function updateCurrentActions(){
             let triggerAreaActions:any[] = selectedItem.itemData.trigArComp.lActions
 
             triggerAreaActions.forEach((taction)=>{
-                console.log('t action is', taction)
 
                 localPlayer.activeScene!.ass.forEach((asset)=>{
                     if(asset.actComp){
                         let assetActions = asset.actComp.actions
                         if(assetActions[taction.id]){
                             let action = assetActions[taction.id]
-                            console.log("found asset with action", action)
 
-                            currentActions.push(action.name)
+                            currentActions.push(action)
                             currentActionIds.push(taction)
                         }
                     }
@@ -641,9 +637,15 @@ function generateActionRows(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '15%',
-                margin:{top:"1", bottom:'1%'}
+                height: '25%',
+                margin:{top:"1%", bottom:'1%', left:"2%", right:'2%'}
             }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
             >
 
             <UiEntity
@@ -651,11 +653,10 @@ function generateActionRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: '80%',
+                width: '40%',
                 height: '100%',
             }}
-             uiBackground={{color:Color4.Black()}}
-            uiText={{value:"" + action, fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{value:"" + action.name, fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
             <UiEntity
@@ -663,36 +664,51 @@ function generateActionRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: '20%',
+                width: '40%',
+                height: '100%',
+            }}
+            uiText={{value:"" + getActionLabel(action.aid), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '10%',
                 height: '100%',
             }}
             >
                 <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '95%',
-                    height: '100%',
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.dangerButton)
-                }}
-                uiText={{value: "Delete", fontSize: sizeFont(20, 16)}}
-                onMouseDown={() => {
-                    updateTrigger("delete", "", {type:actionView, action:currentActionIds[i]})
-                    utils.timers.setTimeout(()=>{
-                        updateCurrentActions()
-                    }, 1000 * 1)
-                }}
-            />
-
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                margin:{left:"1%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas1.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.trashButton)
+            }}
+            onMouseDown={() => {
+                updateTrigger("delete", "", {type:actionView, action:currentActionIds[i]})
+                utils.timers.setTimeout(()=>{
+                    updateCurrentActions()
+                }, 1000 * 1)
+            }}
+        />
 
             </UiEntity>
+
+
+
+
 
 
 
