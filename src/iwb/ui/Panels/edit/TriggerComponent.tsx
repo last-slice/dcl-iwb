@@ -864,7 +864,7 @@ function updateTrigger(action:string, type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.TRIGGER_COMPONENT, action:action, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
 }
 
-function getActionLabel(actionId:string){
+export function getActionLabel(actionId:string){
     let actionIdIndex = actionIds.findIndex((id)=> id === actionId)
     let actionLabel = actionLabels[actionIdIndex]
     let labelIndex = ENTITY_ACTIONS_SLUGS.findIndex((label)=> label === actionLabel)
