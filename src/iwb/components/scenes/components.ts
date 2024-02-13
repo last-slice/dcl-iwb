@@ -70,6 +70,7 @@ export function createGltfComponent(scene:IWBScene, entity:Entity, item:SceneIte
         GltfContainer.create(entity, gltf)
 
         if(item.animComp && item.animComp.enabled){
+            console.log("item has anim comp", item.animComp)
             addAnimationComponent(scene, entity, item)
         }
     }
@@ -415,8 +416,10 @@ export function addAnimationComponent(scene:IWBScene, entity:Entity, item:SceneI
     })
 
     Animator.createOrReplace(entity, {
-        states:animations
+        states:animations//
     })
+
+    console.log('animator is now', Animator.get(entity))
 }
 
 export function playAudioFile(catalogId?:string){

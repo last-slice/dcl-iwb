@@ -10,7 +10,7 @@ import { uiSizes } from '../../uiConfig'
 import { ActionLinkComponent, url } from './Actions/ActionLinkData'
 import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selectedAudioIndex } from './Actions/ActionPlayAudioComponent'
 import { log } from '../../../helpers/functions'
-import { ActionAnimationComponent, selectedAnimationIndex } from './Actions/ActionAnimationComponent'
+import { ActionAnimationComponent, selectedAnimationIndex, selectedAnimationLoop } from './Actions/ActionAnimationComponent'
 import { ActionTeleportPlayerCompoent, teleportPosition } from './Actions/ActionTeleportPlayerComponent'
 
 let view = "list"
@@ -488,7 +488,7 @@ function getActionData(){
             return {aid:selectedItem.aid, type:Actions.TOGGLE_VIDEO}
 
         case 5:
-            return {aid:selectedItem.aid, animName: selectedItem.itemData.animComp.animations[selectedAnimationIndex], type:Actions.PLAY_ANIMATION}
+            return {aid:selectedItem.aid, animLoop:selectedAnimationLoop === 0 ? false : true, animName: selectedItem.itemData.animComp.animations[selectedAnimationIndex], type:Actions.PLAY_ANIMATION}
 
         case 6:
             return {aid:selectedItem.aid, type:Actions.STOP_ANIMATION}

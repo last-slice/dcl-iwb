@@ -1392,6 +1392,14 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
+    pencilEditIcon: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 516,
+        sourceLeft: 384,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
     menuBox1: {
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -1769,6 +1777,25 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
+
+    lockedIcon: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 847,
+        sourceLeft: 899,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+
+    unlockedIcon: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 847,
+        sourceLeft: 929,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+
 
 
 

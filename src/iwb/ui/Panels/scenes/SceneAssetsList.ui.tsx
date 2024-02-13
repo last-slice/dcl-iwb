@@ -282,6 +282,7 @@ function SceneAssetRow(data:any){
         width: '100%',
         height: '10%',
         display: 'flex',
+        margin:{top:"1%", bottom:"1%"}
     }}
     uiBackground={{
         textureMode: 'stretch',
@@ -429,7 +430,7 @@ function SceneAssetRow(data:any){
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: 'assets/atlas1.png'
+                src: 'assets/atlas2.png'
             },
             uvs: getLocked(aid)
         }}
@@ -487,7 +488,7 @@ function getLocked(aid:string){
     let scene = sceneBuilds.get(localPlayer.activeScene!.id)
     let asset = scene.ass.find((ass:any)=> ass.aid === aid)
     if(asset){
-        return asset.locked ?  getImageAtlasMapping(uiSizes.eyeClosed) :  getImageAtlasMapping(uiSizes.eyeTrans)
+        return asset.locked ?  getImageAtlasMapping(uiSizes.lockedIcon) :  getImageAtlasMapping(uiSizes.unlockedIcon)
     }else{
         return  getImageAtlasMapping(uiSizes.eyeTrans)
     }  
