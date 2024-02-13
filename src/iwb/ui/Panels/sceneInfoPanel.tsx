@@ -47,25 +47,32 @@ export let selectedRow = -1
 export let selectedEntity:number = -1
 export let localScene = false
 
-export function selectRow(row:number){
+export function selectRow(row:number, pointer?:boolean){
     selectedRow = row
-    log('item selected is', visibleItems[selectedRow])
+    // log('item selected is', visibleItems[selectedRow])
 
     let item = items.get(visibleItems[selectedRow].id)
     if(item){
-        log('scene is', localPlayer.activeScene)
+        // log('scene is', localPlayer.activeScene)
         selectedEntity = entitiesFromItemIds.get(visibleItems[selectedRow].aid)!
 
-        Transform.createOrReplace(sceneInfoEntitySelector, {
-            position: Vector3.create(visibleItems[selectedRow].p.x, item.bb.z + 1.5, visibleItems[selectedRow].p.z),
-            parent: localPlayer.activeScene?.parentEntity
-        })
-        VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = true
+        if(pointer){
+            MeshRenderer.setBox(sceneInfoEntitySelector)
+            Transform.createOrReplace(sceneInfoEntitySelector, {
+                position: Vector3.create(visibleItems[selectedRow].p.x, item.bb.z + 1.5, visibleItems[selectedRow].p.z),
+                parent: localPlayer.activeScene?.parentEntity
+            })
+        }else{
+            VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
+        }
     }
 }
 
 export function deselectRow(){
     selectedRow = -1
+    MeshRenderer.deleteFrom(sceneInfoEntitySelector)
+    VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
+
 }
 
 export function createSceneInfoPanel() {

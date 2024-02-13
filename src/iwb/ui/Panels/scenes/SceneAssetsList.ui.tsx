@@ -5,11 +5,12 @@ import {uiSizes} from '../../uiConfig'
 import {localPlayer} from '../../../components/player/player'
 import {formatDollarAmount, formatSize, log} from '../../../helpers/functions'
 import {items} from "../../../components/catalog";
-import {editItem, selectedItem} from "../../../components/modes/build";
+import {editItem, selectedItem, sendServerDelete} from "../../../components/modes/build";
 import {COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
 import {entitiesFromItemIds, sceneBuilds} from "../../../components/scenes";
-import {deselectRow, localScene, selectRow, selectedRow, showSceneInfoPanel, visibleIndex, visibleItems} from "../sceneInfoPanel";
+import {deselectRow, localScene, sceneInfoEntitySelector, selectRow, selectedEntity, selectedRow, showSceneInfoPanel, visibleIndex, visibleItems} from "../sceneInfoPanel";
 import { sendServerMessage } from '../../../components/messaging'
+import { Entity, VisibilityComponent } from '@dcl/sdk/ecs'
 
 const SceneAssetList = () => {
 
@@ -101,7 +102,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '10%',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -119,7 +120,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '10%',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -130,7 +131,7 @@ const SceneAssetList = () => {
                 color: Color4.White()
             }}
         />
-
+{/* 
         <UiEntity
             uiTransform={{
                 display: 'flex',
@@ -147,7 +148,7 @@ const SceneAssetList = () => {
                 textAlign: 'middle-center',
                 color: Color4.White()
             }}
-        />
+        /> */}
 
     </UiEntity>
 
@@ -304,19 +305,19 @@ function SceneAssetRow(data:any){
             getImageAtlasMapping(uiSizes.rowPillDark)
     }}
     onMouseDown={() => {
-        // const e = entitiesFromItemIds.get(aid)
-        // if (e){
-        //     // editItem(e, EDIT_MODES.EDIT)
+        const e = entitiesFromItemIds.get(aid)
+        if (e){
+            // editItem(e, EDIT_MODES.EDIT)
           
-        //     if(selectedRow === i){
-        //         deselectRow()
-        //     }else{
-        //         selectRow(i)
-        //     }
-        // }else{
-        //     log('no item to edit', aid)
-        // }
-
+            if(selectedRow === i){
+                deselectRow()
+            }else{
+                selectRow(i, true)
+                VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = true
+            }
+        }else{
+            log('no item to edit', aid)
+        }
     }}
 >
     <UiEntity
@@ -381,7 +382,7 @@ function SceneAssetRow(data:any){
             flexDirection: 'row',
             alignItems: 'flex-start',
             justifyContent: 'flex-start',
-            width: '10%',
+            width: '15%',
             height: '100%',
         }}
     >
@@ -414,7 +415,7 @@ function SceneAssetRow(data:any){
             flexDirection: 'row',
             alignItems: 'flex-start',
             justifyContent: 'flex-start',
-            width: '10%',
+            width: '15%',
             height: '100%',
         }}
     >
@@ -440,7 +441,7 @@ function SceneAssetRow(data:any){
     />
     </UiEntity>
 
-<UiEntity
+{/* <UiEntity
         uiTransform={{
             display: 'flex',
             flexDirection: 'row',
@@ -466,9 +467,20 @@ function SceneAssetRow(data:any){
             },
             uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
         }}
+        onMouseDown={()=>{
+            const e = entitiesFromItemIds.get(aid)
+            if (e){
+                selectRow(i)
+                sendServerDelete(selectedEntity as Entity)
+                VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
+                deselectRow()
+            }else{
+                log('no item to edit', aid)
+            }
+        }}
     />
 
-    </UiEntity>
+    </UiEntity> */}
 
 </UiEntity>
     )
