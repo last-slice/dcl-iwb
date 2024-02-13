@@ -8,9 +8,12 @@ import {selectedItem} from '../../../components/modes/build'
 import {sceneBuilds} from '../../../components/scenes'
 import { uiSizes } from '../../uiConfig'
 import { playAudioFile, stopAudioFile } from '../../../components/scenes/components'
+import { playAnimation } from '../../../helpers/functions'
+import { Animator } from '@dcl/sdk/ecs'
 
 let value = ""
 let animations:any[] = [] 
+let currentAnimationIndex:number = 0
 
 export function AnimationComponent() {
     return (
@@ -262,7 +265,9 @@ export function AnimationComponent() {
                     key={"animations-type-dropdown"}
                     options={getAnimations()}
                     selectedIndex={0}
-                    onChange={()=>{}}
+                    onChange={(e)=>{
+                        currentAnimationIndex = e
+                    }}
                     uiTransform={{
                         width: '100%',
                         height: '120%',
@@ -307,7 +312,7 @@ export function AnimationComponent() {
                 }}
                 uiText={{value: "Play", fontSize: sizeFont(20, 16)}}
                 onMouseDown={() => {
-                    playAudioFile()
+                    playAnimation(selectedItem.entity, getAnimation(), true)
                 }}
             />
 
@@ -329,7 +334,7 @@ export function AnimationComponent() {
                 }}
                 uiText={{value: "Stop", fontSize: sizeFont(20, 16)}}
                 onMouseDown={() => {
-                    stopAudioFile()
+                    Animator.stopAllAnimations(selectedItem.entity, true)
                 }}
             />
 
@@ -343,7 +348,11 @@ function getAnimations(){
     return selectedItem && selectedItem.enabled && selectedItem.itemData.animComp ? selectedItem.itemData.animComp.animations.map((value:any, index:number)=> value +  " - " + selectedItem.itemData.animComp.durations[index] + " seconds") : []
 }
 
-function getAutostart(){//
+function getAnimation(){
+    return selectedItem && selectedItem.enabled && selectedItem.itemData.animComp ? selectedItem.itemData.animComp.animations[currentAnimationIndex] : ""
+}
+
+function getAutostart(){
     return selectedItem && selectedItem.enabled && selectedItem.itemData.animComp ? selectedItem.itemData.animComp.autostart ? 0 : 1 : 1
 }
 
