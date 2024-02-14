@@ -1,19 +1,21 @@
 import {Player, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../../helpers/types";
 import {iwbEvents, sendServerMessage} from "../messaging";
 import {deleteCreationEntities} from "../modes/create";
-import {AvatarAnchorPointType, AvatarAttach, engine, Transform} from "@dcl/sdk/ecs";
+import {AvatarAnchorPointType, AvatarAttach, engine, Entity, Material, MeshRenderer, Transform, VideoPlayer} from "@dcl/sdk/ecs";
 import {displayRealmTravelPanel} from "../../ui/Panels/realmTravelPanel";
 import {displaySettingsPanel} from "../../ui/Panels/settings/settingsIndex";
 import {changeRealm} from "~system/RestrictedActions";
 import {log} from "../../helpers/functions";
 import resources from "../../helpers/resources";
-import {Vector3} from "@dcl/sdk/math";
+import {Color4, Vector3} from "@dcl/sdk/math";
 import { refreshVisibleItems } from "../../ui/Panels/settings/uploadsPanel";//
+import { displayTutorialVideoControls } from "../../ui/tutorialVideoControlPanel";
 
 export let localUserId: string
 export let localPlayer: Player
 export let players: Map<string, Player> = new Map<string, Player>()
 export let iwbConfig: any = {}
+export let tutorialVideo:Entity
 
 export async function addPlayer(userId: string, local: boolean, data?: any[]) {
     if (local) {
@@ -41,7 +43,7 @@ export async function addPlayer(userId: string, local: boolean, data?: any[]) {
             {name:"Test Land4", size:2, type:"deploy"},
             {name:"Test Land5", size:2, type:"own"},
             {name:"Test Land6", size:2, type:"own"},
-        ]
+        ],
     }
 
     if (!local) {
@@ -191,4 +193,46 @@ export function hasBuildPermissions() {
 export function addPendingAsset(info:any){
     localPlayer.uploads.push({type:info.ty, name: info.n, status:"READY"})
     refreshVisibleItems()
+}
+
+export function createTutorialVideo(video:any){
+    engine.removeEntity(tutorialVideo)
+    tutorialVideo = engine.addEntity()
+
+    Transform.createOrReplace(tutorialVideo, {parent:engine.PlayerEntity, position:Vector3.create(0, .9, 2), scale: Vector3.create(3,2.06,1)})
+    MeshRenderer.setPlane(tutorialVideo)
+
+    try{
+        VideoPlayer.createOrReplace(tutorialVideo, {
+            src: video.link,
+            playing: true,
+            volume:.3
+        })
+    
+        const videoTexture = Material.Texture.Video({ videoPlayerEntity: tutorialVideo })
+        Material.setPbrMaterial(tutorialVideo, {
+            texture: videoTexture,
+            roughness: 1.0,
+            specularIntensity: 0,
+            metallic: 0,
+            emissiveColor:Color4.White(),
+            emissiveIntensity:1,
+            emissiveTexture:videoTexture
+          })
+    }
+    catch(e){
+        console.log('error playing video', e)
+        engine.removeEntity(tutorialVideo)
+        displayTutorialVideoControls(false)
+    }
+}
+
+export function stopTutorialVideo(){
+    try{
+        VideoPlayer.getMutable(tutorialVideo).playing = false
+        engine.removeEntity(tutorialVideo)
+    }
+    catch(e){
+        console.log('error stopping video')
+    }
 }

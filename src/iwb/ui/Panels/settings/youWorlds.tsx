@@ -8,6 +8,8 @@ import { displayInitalizeWorldPanel } from '../initaliteWorldPanel'
 import { worlds } from '../../../components/scenes'
 import { log } from '../../../helpers/functions'
 import { displayRealmTravelPanel } from '../realmTravelPanel'
+import { playSound } from '../../../components/sounds'
+import { SOUND_TYPES } from '../../../helpers/types'
 
 let visibleIndex = 0
 let visibleItems:any[] = []
@@ -242,6 +244,7 @@ export function YourWorlds() {
                 uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
             }}
             onMouseDown={()=>{
+                playSound(SOUND_TYPES.SELECT_3)
                 if(visibleIndex - 1 >=0){
                     visibleIndex--
                     refreshVisibleItems()
@@ -266,7 +269,7 @@ export function YourWorlds() {
                 uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
             }}
             onMouseDown={()=>{
-                log('clickding right')
+                playSound(SOUND_TYPES.SELECT_3)
                 visibleIndex++
                 refreshVisibleItems()
                 if((visibleIndex + 1) * 6 < worlds.length){
@@ -397,6 +400,7 @@ function generateBuildRows(){
                 uvs: getImageAtlasMapping(uiSizes.goIcon)
             }}
             onMouseDown={()=>{
+                playSound(SOUND_TYPES.SELECT_3)
                 if(scene.init){
                     displaySettingsPanel(false)
                     displaySetting("Explore")

@@ -161,7 +161,7 @@ export function AudioComponentPanel() {
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && selectedItem.itemData.audComp ? (selectedItem.itemData.audComp.attachedPlayer ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
+            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && selectedItem.itemData.audComp ? (selectedItem.itemData.audComp.attachedPlayer ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)) : getImageAtlasMapping(uiSizes.toggleOnTrans)
         }}
         onMouseDown={() => {
             sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {

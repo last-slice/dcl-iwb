@@ -4,7 +4,7 @@ import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions,
 import { uiSizes } from '../../uiConfig'
 import { BuildsPanel, showYourBuilds } from './buildsPanel'
 import { ExplorePanel, showAllWorlds } from './explorePanel'
-import { SettingsPanel } from './settingsPanel'
+import { SettingsPanel, displayStatusView } from './settingsPanel'
 import { CreateScenePanel } from './createPanel'
 import { YourWorlds, showWorlds } from './youWorlds'
 import { realm } from '../../../components/scenes'
@@ -15,6 +15,8 @@ import { connected } from '../../../components/messaging'
 import { StatusPanel } from './StatusPanel'
 import { playSound } from '../../../components/sounds'
 import { SOUND_TYPES } from '../../../helpers/types'
+import { showTutorials, updateTutorialsView } from './help/tutorialsPanel'
+import { updateHelpView } from './help/helpPanelMain'
 
 export let showSettingsPanel = false
 export let showSetting = "Explore"
@@ -194,6 +196,12 @@ function generateSettingsButtons(buttons:any[]){
             }
             else if(button.label === "Builds"){
                 showYourBuilds()
+                displaySetting(button.label)
+            }
+            else if(button.label === "Info"){
+                updateTutorialsView("list")
+                updateHelpView("main")
+                displayStatusView("Version")
                 displaySetting(button.label)
             }
             else{

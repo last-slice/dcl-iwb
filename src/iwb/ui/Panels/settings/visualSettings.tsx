@@ -3,6 +3,8 @@ import { Color4 } from '@dcl/sdk/math'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { settingsView } from './settingsPanel'
+import { playSound } from '../../../components/sounds'
+import { SOUND_TYPES } from '../../../helpers/types'
 
 let settings:any[] = [
     {label:"Scene Notifications", enabled:true},
@@ -67,6 +69,7 @@ function generateSettingsToggles(){
             uvs: getButtonState(setting.label)
         }}
         onMouseDown={() => {
+            playSound(SOUND_TYPES.SELECT_3)
             settings.find((set:any)=>set.label === setting.label).enabled = !settings.find((set:any)=>set.label === setting.label).enabled 
         }}
         />

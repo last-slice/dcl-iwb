@@ -39,6 +39,7 @@ import { createDeployPendingPanel } from './Panels/deployConfirmationPanel'
 import { createAddSpawnPointPanel } from './Panels/builds/addSpawnPointPanel'
 import { createCustomUI } from '../components/custom/ui'
 import { createClearScenePanel } from './Panels/clearScenePanel'
+import { createTutorialVideoControPanel } from './tutorialVideoControlPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -82,9 +83,9 @@ const uiComponent = () => [
   createDeployPendingPanel(),
   createAddSpawnPointPanel(),
   createClearScenePanel(),
+  createTutorialVideoControPanel(),
 
-
-  createCustomUI()
+  createCustomUI(),
 ]
 
 
