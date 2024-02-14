@@ -385,7 +385,7 @@ export function BuildInfo() {
             displaySetting("Explore")
             displayCreateScenePanel(true, true)
         }}
-        uiText={{value: "Edit Parcels", color:Color4.White(), fontSize:sizeFont(30,20)}}
+        uiText={{value: "Edit Parcels", color:Color4.White(), fontSize:sizeFont(30,15)}}
         />            
 
 <UiEntity
@@ -419,7 +419,7 @@ export function BuildInfo() {
             displaySceneSetting("Info")
             displaySceneSavedPanel(true)
         }}
-        uiText={{value: "Save Edits", color:Color4.White(), fontSize:sizeFont(30,20)}}
+        uiText={{value: "Save Edits", color:Color4.White(), fontSize:sizeFont(30,15)}}
         />
 
             {/* create button */}
@@ -444,7 +444,7 @@ export function BuildInfo() {
             displaySceneSetting('Info') 
             displayDeleteBuildPanel(true)
         }}
-        uiText={{value: "Delete Scene", color:Color4.White(), fontSize:sizeFont(30,20)}}
+        uiText={{value: "Delete Scene", color:Color4.White(), fontSize:sizeFont(30,15)}}
         />
 
         </UiEntity>
@@ -491,4 +491,4 @@ function getButtonState(button:string){
         return getImageAtlasMapping(uiSizes.toggleOffTrans)
     }
 
-}
+}//

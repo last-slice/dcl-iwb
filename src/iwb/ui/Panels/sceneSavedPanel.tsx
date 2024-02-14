@@ -56,7 +56,7 @@ export function createSceneSavedPanel() {
                         margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Scene Saved!", fontSize: sizeFont(45,30), color: Color4.Black()}}
+                uiText={{value:"Scene Saved!", fontSize: sizeFont(45,30), color: Color4.White()}}
                 />
 
                     {/* popup text */}
@@ -68,7 +68,7 @@ export function createSceneSavedPanel() {
                             width: '100%',
                             height: '30%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Your scene was created successfully!", true, 30)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("Your scene was created successfully!", true, 30)}}
                     />
 
         <UiEntity
@@ -76,8 +76,8 @@ export function createSceneSavedPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{
@@ -85,12 +85,12 @@ export function createSceneSavedPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
                 displaySceneSavedPanel(false)
             }}
-            uiText={{value: "Ok", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Ok", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
         </UiEntity>
 

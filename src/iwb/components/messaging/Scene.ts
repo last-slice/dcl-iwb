@@ -1,10 +1,11 @@
+import { engine } from "@dcl/sdk/ecs"
 import { log } from "../../helpers/functions"
 import { EDIT_MODES, SCENE_MODES } from "../../helpers/types"
 import { editCurrentSceneParcels } from "../../ui/Panels/CreateScenePanel"
 import { cancelSelectedItem, dropSelectedItem, selectedItem } from "../modes/build"
 import { addBoundariesForParcel, deleteParcelEntities } from "../modes/create"
 import { localPlayer, localUserId, setPlayMode } from "../player/player"
-import { sceneBuilds } from "../scenes"
+import { entitiesFromItemIds, itemIdsFromEntities, loadSceneAsset, sceneBuilds } from "../scenes"
 
 
 export function sceneListeners(scene:any, key:any){
@@ -47,4 +48,47 @@ export function sceneListeners(scene:any, key:any){
         sceneBuilds.get(key).pc = current
     })
 
+    scene.listen("priv",(current:any, previous:any)=>{
+        if(previous !== undefined){
+            if(current){
+                if(scene.o !== localUserId){
+                    scene.ass.forEach((asset:any, i:number)=>{
+                        let entity = entitiesFromItemIds.get(asset.aid)
+                        if(entity){
+                            itemIdsFromEntities.delete(entity)
+                            entitiesFromItemIds.delete(asset.aid)
+                            engine.removeEntity(entity)
+                        }
+                    })
+                }
+            }
+            else{
+                if(scene.o !== localUserId && scene.e){
+                    scene.ass.forEach((asset:any)=>{
+                        loadSceneAsset(scene.id, asset)
+                    })
+                }
+            }
+        }
+    })
+
+    scene.listen("e",(current:any, previous:any)=>{
+        if(previous !== undefined){
+            if(!current){
+                scene.ass.forEach((asset:any, i:number)=>{
+                    let entity = entitiesFromItemIds.get(asset.aid)
+                    if(entity){
+                        itemIdsFromEntities.delete(entity)
+                        entitiesFromItemIds.delete(asset.aid)
+                        engine.removeEntity(entity)
+                    }
+                })
+            }
+            else{
+                scene.ass.forEach((asset:any)=>{
+                    loadSceneAsset(scene.id, asset)
+                })
+            }
+        }
+    })
 }
