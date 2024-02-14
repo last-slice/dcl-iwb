@@ -172,7 +172,6 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         return
     }
 
-
     displayCatalogPanel(false)
     playSound(SOUND_TYPES.SELECT_3)
 
@@ -256,7 +255,15 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(1,1,1)
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            }  else {
+            }  
+            else if (selectedItem.itemData.ty === "Audio"){
+                MeshRenderer.setBox(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(.5, .5, .5)
+                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)    
+            }
+            else {
                 if(selectedItem.itemData.pending){
                     MeshRenderer.setBox(selectedItem.entity)
                 }else{
@@ -1044,18 +1051,26 @@ export function removeEditSelectionPointer(aid:string){
 
 function check2DCollision(entity:Entity, sceneItem: SceneItem){
     if(sceneItem.type === "2D"){
-        MeshCollider.setPlane(entity)
+        MeshRenderer.setPlane(entity)
+       
+        if(sceneItem.colComp.iMask === 2 || sceneItem.colComp.vMask === 2){
+            MeshCollider.setPlane(entity)
+        }else{
+            MeshCollider.setPlane(entity, ColliderLayer.CL_POINTER)
+        }
     }
 
-    if(sceneItem.type === "2D" && sceneItem.textComp){
-        MeshRenderer.setPlane(entity)
-    }
+    ColliderLayer.CL_POINTER
+
+    // if(sceneItem.type === "2D" && sceneItem.textComp){
+    //     MeshRenderer.setPlane(entity)
+    // }
 }
 
 function checkAudio(entity:Entity, sceneItem: SceneItem, parent:Entity){
     if(sceneItem.audComp){
         MeshRenderer.setBox(entity)
-        MeshCollider.setBox(entity)
+        MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
 
         let audio = AudioSource.getMutable(entity)
         Transform.createOrReplace(entity, {parent:parent, position:sceneItem.p, rotation:Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z), scale:sceneItem.s})
