@@ -208,7 +208,7 @@ export function loadSceneAsset(sceneId:string, item:SceneItem){
             
             addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)
         }
-        localScene.ass.push(item)
+        // localScene.ass.push(item)
     }
 }
 
@@ -219,6 +219,7 @@ export function deleteAllRealmObjects(){
 }
 
 function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:string, name:string){
+    console.log('adding asset components')
 
     createVisibilityComponent(scene, entity, item)
     PointersLoadedComponent.create(entity, {init:false, sceneId:scene.id})
@@ -279,21 +280,38 @@ function addAssetComponents(scene:IWBScene, entity:Entity, item:SceneItem, type:
     }
 }
 
-export function checkSceneVisibility(scene:IWBScene){
+export function checkSceneVisibility(scene:IWBScene, info:any){
+    log('checking visiblity for scene', scene)//
+    // if(info.privateChanged){
+    //     if(scene.priv){
+    //         if(scene.o !== localUserId){
+    //             log('scene changed to private for non world owner, need to remove items')
+    //             scene.ass.forEach((asset)=>{
+    //                 let entity = entitiesFromItemIds.get(asset.aid)
+    //                 if(entity){
+    //                     engine.removeEntity(entity)
+    //                     entitiesFromItemIds.delete(asset.id)
+    //                     itemIdsFromEntities.delete(entity)
+    //                 }
     
+    //             })
+    //         }else{
+    //             log('scene changed to private mode and is world owner, do nothing')
+    //         }
+    //     }
+    // }
+
+    if(info.enabledChanged){
+
+    }
+
 }
 
 export function updateSceneEdits(info:any){
     console.log('updating scene edits', info)
     let scene:IWBScene = sceneBuilds.get(info.sceneId ? info.sceneId : "")
     if(scene){
-        scene.d = info.desc ? info.desc : ""
-        scene.n = info.name ? info.name : ""
-        scene.im = info.image ? info.image : ""
-        scene.e = info.enabled
-        scene.priv = info.priv
-
-        checkSceneVisibility(scene)
+        checkSceneVisibility(scene, info)
     }
 }
 

@@ -152,7 +152,6 @@ export function addSceneStateListeners(room:any){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         log('Room Scene Added', key, scene)
         await loadScene(scene)
-//
         sceneListeners(scene,key)
         assetListener(scene)
     })
