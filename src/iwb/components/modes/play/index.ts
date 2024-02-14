@@ -157,13 +157,15 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
 export function check2DCollision(entity:Entity, sceneItem: SceneItem){
     //check 2d collision 
     if(sceneItem.type === "2D"){
-        if(sceneItem.colComp.vMask !== 1){
-            MeshCollider.deleteFrom(entity)
+        if(sceneItem.colComp.iMask === 2 || sceneItem.colComp.vMask === 2){
+            MeshCollider.setPlane(entity)
+        }else{
+            MeshCollider.setPlane(entity, sceneItem.colComp.vMask)
         }
 
-        if(sceneItem.textComp){
-            MeshRenderer.deleteFrom(entity)
-        }
+        // if(sceneItem.textComp){
+        //     MeshRenderer.deleteFrom(entity)
+        // }
     }
 }
 
@@ -261,18 +263,20 @@ function disableVideo(entity:Entity, sceneItem: SceneItem){
 }
 
 function disableSmartItems(entity:Entity, sceneItem: SceneItem){
-    MeshRenderer.deleteFrom(entity)
-    MeshCollider.deleteFrom(entity)
-    Material.deleteFrom(entity)
-
     switch(items.get(sceneItem.id)?.n){
         case 'Trigger Area':
             if(sceneItem.trigArComp){
+                MeshRenderer.deleteFrom(entity)
+                MeshCollider.deleteFrom(entity)
+                Material.deleteFrom(entity)
                 utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
             }
             break;
 
         case 'Click Area':
+            MeshRenderer.deleteFrom(entity)
+            MeshCollider.deleteFrom(entity)
+            Material.deleteFrom(entity)
             PointerEvents.deleteFrom(entity)
             break;
     }

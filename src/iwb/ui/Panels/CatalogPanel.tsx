@@ -66,14 +66,17 @@ let alphabet = [
     "A", "B", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 ]
 
-function updateSelectedSetting(){
-    if(selectedSetting === 0){
-        selectedSetting = 1
-    }else{
-        selectedSetting = 0
+function selectSetting(index:number){
+    if(selectedSetting !== index){
+        selectedSetting = index
     }
+    // if(selectedSetting === 0){
+    //     selectedSetting = 1
+    // }else{
+    //     selectedSetting = 0
+    // }
     refreshSortedItems()
-    filterCatalog()//
+    filterCatalog()
 }
 
 function findPageForLetter(letter: string): number | null {
@@ -182,13 +185,98 @@ export function createCatalogPanel() {
                     flexDirection: 'column',
                     width: '90%',
                     height: '8%',
+                    margin:{top:"2%"}
                 }}
                 uiText={{value: "Asset Catalog", fontSize: sizeFont(30, 20)}}
                 // uiBackground={{color:Color4.Blue()}}
             />
 
-            {/* placeholder for search bar */}
+
+                <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '85%',
+                    height: '5%',
+                    margin: {bottom: '1%', top:'1%'}
+                }}
+                >
+
             <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
+                <Input
+                        onChange={(value) => {
+                            searchFilter = value.trim()
+                            log('search filter is', searchFilter)
+                            filterCatalog()
+                        }}
+                        fontSize={sizeFont(20, 15)}
+                        placeholder={'Search Assets'}
+                        placeholderColor={Color4.White()}
+                        uiTransform={{
+                            width: '100%',
+                            height: '100%',
+                        }}
+                        color={Color4.White()}
+                    ></Input>
+                </UiEntity>
+
+                <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
+
+                {/* dropdown container */}
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '100%',
+                    height: '100%',
+                }}
+                // uiBackground={{color:Color4.Green()}}
+            >
+
+                <Dropdown
+                    key={"type-dropdown"}
+                    options={['Public', 'Private']}
+                    selectedIndex={selectedSetting}
+                    onChange={selectSetting}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    // uiBackground={{color:Color4.Purple()}}
+                    color={Color4.White()}
+                    fontSize={sizeFont(20, 15)}
+                />
+            </UiEntity>
+
+                </UiEntity>
+
+
+                </UiEntity>
+
+            {/* placeholder for search bar */}
+            {/* <UiEntity
                 uiTransform={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -199,10 +287,10 @@ export function createCatalogPanel() {
                     margin: {bottom: '1%'}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
-            >
+            > */}
 
                 {/* search bar */}
-                <UiEntity
+                {/* <UiEntity
                     uiTransform={{
                         display: 'flex',
                         justifyContent: 'center',
@@ -228,10 +316,10 @@ export function createCatalogPanel() {
                         color={Color4.White()}
                     ></Input>
 
-                </UiEntity>
+                </UiEntity> */}
 
                 {/* search icon */}
-                <UiEntity
+                {/* <UiEntity
                     uiTransform={{
                         display: 'flex',
                         justifyContent: 'center',
@@ -250,10 +338,10 @@ export function createCatalogPanel() {
                     }}
                     onMouseUp={() => {
                     }}
-                />
+                /> */}
 
                 {/* public / private toggle container */}
-                <UiEntity
+                {/* <UiEntity
                     uiTransform={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -298,10 +386,10 @@ export function createCatalogPanel() {
                     />
 
 
-                </UiEntity>
+                </UiEntity> */}
 
 
-            </UiEntity>
+            {/* </UiEntity> */}
 
             {/* dropdown containers */}
             <UiEntity
@@ -310,9 +398,8 @@ export function createCatalogPanel() {
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignContent: 'center',
-                    width: '90%',
+                    width: '85%',
                     height: '10%',
-                    margin: {bottom: '1%', top:'2%'}
                 }}
                 // uiBackground={{color:Color4.Green()}}
             >
@@ -371,6 +458,7 @@ export function createCatalogPanel() {
                     fontSize={sizeFont(20, 15)}
                 />
             </UiEntity>
+            
             </UiEntity>
 
                         {/* style dropdown container */}
@@ -445,7 +533,7 @@ export function createCatalogPanel() {
                     justifyContent: 'flex-end',
                     alignContent: 'center',
                     alignItems: 'center',
-                    width: '90%',
+                    width: '85%',
                     height: '8%',
                 }}
                 // uiBackground={{color:Color4.Blue()}}
@@ -527,7 +615,7 @@ export function createCatalogPanel() {
                     width: '5%',
                     height: '70%',
                     positionType: 'absolute',
-                    position: {left: '2.5%', top: '25%'}
+                    position: {left: '5%', top: '26%'}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >
@@ -608,9 +696,10 @@ export const CatalogRow = ({row, items}: { row: number, items: CatalogItemType[]
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '90%',
-                height: '21%',
+                alignContent:'center',
+                justifyContent: 'center',
+                width: '85%',
+                height: '20%',
                 margin: {top: '1%'}
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -631,18 +720,17 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '33%',
+                width: '32%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Teal()}}//
+            // uiBackground={{color:Color4.Teal()}}
         >
 
             {/* item image */}
             <UiEntity
                 uiTransform={{
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
                     width: calculateSquareImageDimensions(7).width,
                     height: calculateSquareImageDimensions(7).height,
                 }}
