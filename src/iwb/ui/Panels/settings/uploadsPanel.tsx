@@ -8,9 +8,10 @@ import { realm, worlds } from '../../../components/scenes'
 import { log, paginateArray } from '../../../helpers/functions'
 import { cRoom } from '../../../components/messaging'
 import { showNotification } from '../notificationUI'
-import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../../helpers/types'
 import { newItems } from '../../../components/catalog/items'
 import { statusView } from './StatusPanel'
+import { playSound } from '../../../components/sounds'
 
 let visibleIndex = 0
 let visibleItems:any[] = []
@@ -204,6 +205,7 @@ export function UploadsPanel() {
                 uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
             }}
             onMouseDown={()=>{
+                playSound(SOUND_TYPES.SELECT_3)
                 if(visibleIndex - 1 >=0){
                     visibleIndex--
                     refreshVisibleItems()
@@ -228,7 +230,7 @@ export function UploadsPanel() {
                 uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
             }}
             onMouseDown={()=>{
-                log('clickding right')
+                playSound(SOUND_TYPES.SELECT_3)
                 visibleIndex++
                 refreshVisibleItems()
             }}

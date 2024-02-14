@@ -7,6 +7,10 @@ import { log } from '../../../helpers/functions'
 import { VersionPanel } from './versionPanel'
 import { UploadsPanel, showUploads } from './uploadsPanel'
 import { localUserId, players } from '../../../components/player/player'
+import { HelpPanel } from './helpPanel'
+import { updateHelpView } from './help/helpPanelMain'
+import { playSound } from '../../../components/sounds'
+import { SOUND_TYPES } from '../../../helpers/types'
 
 export let statusView = "Version"
 
@@ -59,9 +63,10 @@ export function StatusPanel() {
                 uvs: getButtonState("Version")
             }}
             onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
                 displayStatusView("Version")
             }}
-            uiText={{value:"Version", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Version", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity
@@ -81,12 +86,14 @@ export function StatusPanel() {
                 uvs: getButtonState("Help")
             }}
             onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
                 displayStatusView("Help")
+                updateHelpView('main')
             }}
-            uiText={{value:"Help", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Help", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
-{/* <UiEntity
+{/* <UiEntity//
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -106,7 +113,7 @@ export function StatusPanel() {
                 displayStatusView("Uploads")
                 showUploads()
             }}
-            uiText={{value:"Uploads", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Uploads", color:Color4.White(), fontSize:sizeFont(30,20)}}
             /> */}
 
         <UiEntity
@@ -127,10 +134,11 @@ export function StatusPanel() {
                 uvs: getButtonState("Uploads")
             }}
             onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
                 displayStatusView("Uploads")
                 showUploads()
             }}
-            uiText={{value:"Assets", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Assets", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
 
@@ -153,7 +161,7 @@ export function StatusPanel() {
             onMouseDown={() => {
                 displayStatusView("Deployments")
             }}
-            uiText={{value:"Deployments", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Deployments", color:Color4.White(), fontSize:sizeFont(30,20)}}
             /> */}
 
         </UiEntity>
@@ -171,6 +179,7 @@ export function StatusPanel() {
         >
             <VersionPanel/>
             <UploadsPanel/>
+            <HelpPanel/>
 
         </UiEntity>
 

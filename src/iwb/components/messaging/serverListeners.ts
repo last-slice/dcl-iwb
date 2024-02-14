@@ -53,6 +53,10 @@ export function initiateMessageListeners(room: Room) {
         //     addBoundariesForParcel(p, false)
         // }
 
+        //set tutorials
+        iwbConfig.tutorials = info.tutorials
+        console.log("iwb config is", iwbConfig)
+
         addSceneStateListeners(room)
         await createSounds()
     })
@@ -85,7 +89,16 @@ export function initiateMessageListeners(room: Room) {
                 animate: {enabled: true, return: true, time: 5}
             })
         }
-
         setWorlds([info])
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL + ' received', info)
+        iwbConfig.tutorials.push(info)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL + ' received', info)
+        iwbConfig.tutorials.splice(info, 1)
     })
 }

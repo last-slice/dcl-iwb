@@ -19,6 +19,7 @@ export enum SERVER_MESSAGE_TYPES {
     SELECT_CATALOG_ASSET = 'select_catalog_asset',
     PLAYER_CANCELED_CATALOG_ASSET = 'player_canceled_catalog',
     ASSET_OVER_SCENE_LIMIT = 'asset_over_scene_limit',
+    SUBMIT_FEEDBACK = 'submit_feedback',
 
     // Catalog and Assets
     CATALOG_UPDATED = 'catalog_updated',
@@ -61,6 +62,8 @@ export enum SERVER_MESSAGE_TYPES {
     NEW_WORLD_CREATED = 'new_world_created',
     FORCE_DEPLOYMENT = 'force_deployment',
     SCENE_COUNT  = 'scene_count',
+    ADDED_TUTORIAL = 'added_tutorial',
+    REMOVED_TUTORIAL = 'removed_tutorial',
     
     CUSTOM = "custom"
 }

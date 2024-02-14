@@ -6,6 +6,8 @@ import { uiSizes } from '../../uiConfig'
 import { log } from '../../../helpers/functions'
 import { VisualSettings } from './visualSettings'
 import { AudioSettings } from './audioSettings'
+import { playSound } from '../../../components/sounds'
+import { SOUND_TYPES } from '../../../helpers/types'
 
 
 export let settingsView = "Visual"
@@ -59,6 +61,7 @@ export function SettingsPanel() {
                 uvs: getButtonState("Visual")
             }}
             onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
                 displayStatusView("Visual")
             }}
             uiText={{value:"Visual", color:Color4.White(), fontSize:sizeFont(30,20)}}

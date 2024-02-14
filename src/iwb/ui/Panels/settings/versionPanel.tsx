@@ -8,9 +8,10 @@ import { realm, worlds } from '../../../components/scenes'
 import { log } from '../../../helpers/functions'
 import { cRoom } from '../../../components/messaging'
 import { showNotification } from '../notificationUI'
-import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../../helpers/types'
 import { newItems } from '../../../components/catalog/items'
 import { statusView } from './StatusPanel'
+import { playSound } from '../../../components/sounds'
 
 export function VersionPanel() {
     return (
@@ -83,6 +84,7 @@ export function VersionPanel() {
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
+            playSound(SOUND_TYPES.SELECT_3)
             displaySettingsPanel(false)
             displaySetting("Explore")
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
