@@ -250,7 +250,7 @@ export function BuildInfo() {
             justifyContent: 'center',
             width: calculateSquareImageDimensions(4).width,
             height: calculateSquareImageDimensions(4).height,
-            margin:{top:"1%", bottom:'1%'},
+            margin:{top:"1%", bottom:'1%', left:"3%"},
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -275,7 +275,7 @@ export function BuildInfo() {
                 margin:{left: '2%'}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Toggle all scene assets for everyone", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"Toggle all scene assets for everyone", fontSize:sizeFont(22,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
             </UiEntity>
@@ -315,7 +315,7 @@ export function BuildInfo() {
             justifyContent: 'center',
             width: calculateSquareImageDimensions(4).width,
             height: calculateSquareImageDimensions(4).height,
-            margin:{top:"1%", bottom:'1%'},
+            margin:{top:"1%", bottom:'1%', left:"3%"},
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -340,7 +340,7 @@ export function BuildInfo() {
                 margin:{left: '2%'}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(22,15), color:Color4.White(), textAlign:'middle-left'}}
             />
 
             </UiEntity>
@@ -385,7 +385,7 @@ export function BuildInfo() {
             displaySetting("Explore")
             displayCreateScenePanel(true, true)
         }}
-        uiText={{value: "Edit Parcels", color:Color4.White(), fontSize:sizeFont(30,15)}}
+        uiText={{value: "Edit Parcels", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />            
 
 <UiEntity
@@ -419,7 +419,7 @@ export function BuildInfo() {
             displaySceneSetting("Info")
             displaySceneSavedPanel(true)
         }}
-        uiText={{value: "Save Edits", color:Color4.White(), fontSize:sizeFont(30,15)}}
+        uiText={{value: "Save Edits", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />
 
             {/* create button */}
@@ -444,7 +444,7 @@ export function BuildInfo() {
             displaySceneSetting('Info') 
             displayDeleteBuildPanel(true)
         }}
-        uiText={{value: "Delete Scene", color:Color4.White(), fontSize:sizeFont(30,15)}}
+        uiText={{value: "Delete Scene", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />
 
         </UiEntity>
@@ -491,4 +491,4 @@ function getButtonState(button:string){
         return getImageAtlasMapping(uiSizes.toggleOffTrans)
     }
 
-}//
+}

@@ -42,13 +42,13 @@ export function InputListenSystem(dt: number) {
         let hoverEvents = PointerEvents.get(hoverResult.hit.entityId as Entity)
         if (hoverEvents) {
             updateContextEvents([...hoverEvents.pointerEvents])
-            displayHover(true)//
+            displayHover(true)
         }
     }
 
     const hover = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
     if (hover) {
-        displayHover(false)
+        selectedItem && !selectedItem.enabled ? displayHover(false) : null
     }
 
 
@@ -56,7 +56,7 @@ export function InputListenSystem(dt: number) {
     //POINTER
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)) {
         setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-        displayHover(false)
+        selectedItem && !selectedItem.enabled ? displayHover(false) : null
     }
 
 
@@ -137,19 +137,25 @@ export function InputListenSystem(dt: number) {
                 if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
                     log('player pressed #E on an object in Build mode')
                     if (selectedItem && selectedItem.enabled) {
-                        log('player wants to cancel selected item')
-                        cancelSelectedItem()
+                        if (selectedItem.mode === EDIT_MODES.GRAB) {
+                            dropSelectedItem()
+                        } else {
+                            console.log('pressed e while editing asset, do nothing')
+                        }
                     } else {
-                        log('player pressed #E on an object taht isnt selected need to delete')
-                        sendServerDelete(result.hit.entityId as Entity)
+                        log('player does not have item selected, just edit it')
+                        editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
                     }
-                }//
+                }
             } else {
                 if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
                     log('player pressed #E in Build mode')
                     if (selectedItem && selectedItem.enabled) {
-                        log('player wants to cancel selected item')
-                        cancelSelectedItem()
+                        if (selectedItem.mode === EDIT_MODES.GRAB) {
+                            dropSelectedItem()
+                        } else {
+                            // saveItem()
+                        }
                     } else {
                         log('player pressed #E on in build mode without selecting item or hitting asset')
                     }
@@ -173,24 +179,24 @@ export function InputListenSystem(dt: number) {
                     if (selectedItem && selectedItem.enabled) {
                         log('player has selected item, need to delete')
                         if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            dropSelectedItem()
+                            deleteSelectedItem()
                         } else {
-                            saveItem()
+                            console.log('pressed F while editing asset, do nothing')
                         }
                     } else {
-                        log('player does not have item selected, just edit it')
-                        editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
+                        log('player pressed #E on an object taht isnt selected need to delete')
+                        sendServerDelete(result.hit.entityId as Entity)
                     }
                 }
             } else {
                 if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
-                    log('player pressed #F on an object in Build mode, need to edit')
+                    log('player pressed #F on an object with no result in Build mode, need to edit')
                     if (selectedItem && selectedItem.enabled) {
                         log('player has selected item, need to delete')
                         if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            dropSelectedItem()
+                            deleteSelectedItem()
                         } else {
-                            saveItem()
+                            // saveItem()
                         }
                     } else {
                         log('player does not have item selected')

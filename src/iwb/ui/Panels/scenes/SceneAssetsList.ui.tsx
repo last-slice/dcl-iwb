@@ -172,8 +172,9 @@ const SceneAssetList = () => {
     <UiEntity
         uiTransform={{
             flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: 'flex-start',
+            alignContent:'flex-start',
+            justifyContent: 'flex-start',
             width: '100%',
             height: '7%',
             display: 'flex',
@@ -197,7 +198,6 @@ const SceneAssetList = () => {
                 textAlign: 'middle-left',
                 color: Color4.White()
             }}
-
         />
 
         <UiEntity
@@ -216,7 +216,6 @@ const SceneAssetList = () => {
                 textAlign: 'middle-center',
                 color: Color4.White()
             }}
-
         />
 
         <UiEntity
@@ -237,7 +236,7 @@ const SceneAssetList = () => {
             }}
         />
 
-            <UiEntity
+            {/* <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -246,7 +245,7 @@ const SceneAssetList = () => {
                 width: '30%',
                 height: '100%',
             }}
-        />
+        /> */}
 
     </UiEntity>
 
