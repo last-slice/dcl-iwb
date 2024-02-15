@@ -34,6 +34,7 @@ import { displaySceneInfoPanel } from "../../../ui/Panels/builds/buildsIndex"
 import { playSound } from "../../sounds"
 import { utils } from "../../../helpers/libraries"
 import { checkAnimation, disableAnimations } from "../play"
+import { displayHover, updateContextEvents } from "../../../ui/contextMenu"
 
 export let editAssets:Map<string, Entity> = new Map()
 export let grabbedAssets:Map<string, Entity> = new Map()
@@ -201,6 +202,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         } else {
             addUseCatalogItemPointers(selectedItem.entity)
         }
+
+        displayHover(true)
 
         let scale: any
         scale = Vector3.One()
@@ -817,8 +820,9 @@ function addUseCatalogItemPointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_SECONDARY,
-                    hoverText: "Drop",
+                    button: InputAction.IA_PRIMARY,
+                    hoverText: "Place",
+                    showFeedback:false
                 }
             },
             {
@@ -826,10 +830,12 @@ function addUseCatalogItemPointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_ACTION_3,
                     hoverText: "Cancel",
+                    showFeedback:false
                 }
             }
         ]
     })
+    updateContextEvents([...PointerEvents.get(ent).pointerEvents])
 }
 
 function addUseItemPointers(ent: Entity) {
@@ -850,15 +856,7 @@ function addUseItemPointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_SECONDARY,
-                    hoverText: "Drop",
-                    showFeedback:false
-                }
-            },
-            {
-                eventType: PointerEventType.PET_DOWN,
-                eventInfo: {
-                    button: InputAction.IA_PRIMARY,
+                    button: InputAction.IA_ACTION_3,
                     hoverText: "Cancel",
                     showFeedback:false
                 }
@@ -866,11 +864,19 @@ function addUseItemPointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_ACTION_3,
+                    button: InputAction.IA_PRIMARY,
+                    hoverText: "Place",
+                    showFeedback:false
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_SECONDARY,
                     hoverText: "Delete",
                     showFeedback:false
                 }
-            }
+            },
         ]
     })
 }
@@ -878,7 +884,7 @@ function addUseItemPointers(ent: Entity) {
 
 export function addBuildModePointers(ent: Entity) {
     PointerEvents.createOrReplace(ent, {
-        pointerEvents: [//
+        pointerEvents: [
             {
                 eventType: PointerEventType.PET_HOVER_ENTER,
                 eventInfo: {
@@ -903,7 +909,7 @@ export function addBuildModePointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_SECONDARY,
+                    button: InputAction.IA_PRIMARY,
                     hoverText: "Edit",
                     showFeedback:false
                 }
@@ -919,7 +925,7 @@ export function addBuildModePointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_PRIMARY,
+                    button: InputAction.IA_SECONDARY,
                     hoverText: "Delete",
                     showFeedback:false
                 }
