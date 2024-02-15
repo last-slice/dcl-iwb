@@ -198,7 +198,7 @@ export function createSceneInfoPanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin:{left:'2%'},
-                display: localUserId && players.get(localUserId) && players.get(localUserId)?.homeWorld ? 'flex' : 'none',
+                display: localUserId && players.get(localUserId) && players.get(localUserId)?.canBuild ? 'flex' : 'none',
             }}
             uiBackground={{
                 textureMode: 'stretch',
