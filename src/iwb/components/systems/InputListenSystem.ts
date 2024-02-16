@@ -40,7 +40,7 @@ export function InputListenSystem(dt: number) {
     const hoverResult = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)
     if (hoverResult && hoverResult.hit && hoverResult.hit.entityId) {
         let hoverEvents = PointerEvents.get(hoverResult.hit.entityId as Entity)
-        if (hoverEvents) {
+        if (hoverEvents && !selectedItem || !selectedItem.enabled) {
             updateContextEvents([...hoverEvents.pointerEvents])
             displayHover(true)
         }
