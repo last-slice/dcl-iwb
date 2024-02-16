@@ -73,8 +73,8 @@ export function InputListenSystem(dt: number) {
                         log('player wants to delete selected item')
                         cancelCatalogItem()
                     } else {
-                        log('player pressed #1 on an object in Build mode, need to grab')
-                        grabItem(result.hit.entityId as Entity)
+                        log('player does not have item selected, just edit it')
+                        editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
                     }
                 }
             } else {
@@ -143,8 +143,8 @@ export function InputListenSystem(dt: number) {
                             console.log('pressed e while editing asset, do nothing')
                         }
                     } else {
-                        log('player does not have item selected, just edit it')
-                        editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
+                        log('player pressed #1 on an object in Build mode, need to grab')
+                        grabItem(result.hit.entityId as Entity)
                     }
                 }
             } else {

@@ -204,7 +204,7 @@ export function createTutorialVideo(video:any){
 
     try{
         VideoPlayer.createOrReplace(tutorialVideo, {
-            src: video.link,
+            src: iwbConfig.CID + video.link,
             playing: true,
             volume:.3
         })
