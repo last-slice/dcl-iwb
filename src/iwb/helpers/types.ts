@@ -64,6 +64,7 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_COUNT  = 'scene_count',
     ADDED_TUTORIAL = 'added_tutorial',
     REMOVED_TUTORIAL = 'removed_tutorial',
+    UPDATED_TUTORIAL_CID = 'updated_tutorial_cid',
     
     CUSTOM = "custom"
 }

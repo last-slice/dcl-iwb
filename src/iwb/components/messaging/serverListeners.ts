@@ -54,7 +54,8 @@ export function initiateMessageListeners(room: Room) {
         // }
 
         //set tutorials
-        iwbConfig.tutorials = info.tutorials
+        iwbConfig.tutorials = info.tutorials.videos
+        iwbConfig.CID = info.tutorials.cid
         console.log("iwb config is", iwbConfig)
 
         addSceneStateListeners(room)
@@ -100,5 +101,10 @@ export function initiateMessageListeners(room: Room) {
     room.onMessage(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL, (info: any) => {
         log(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL + ' received', info)
         iwbConfig.tutorials.splice(info, 1)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID + ' received', info)
+        iwbConfig.CID = info
     })
 }

@@ -820,16 +820,16 @@ function addUseCatalogItemPointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_PRIMARY,
-                    hoverText: "Place",
+                    button: InputAction.IA_ACTION_3,
+                    hoverText: "Cancel",
                     showFeedback:false
                 }
             },
             {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
-                    button: InputAction.IA_ACTION_3,
-                    hoverText: "Cancel",
+                    button: InputAction.IA_PRIMARY,
+                    hoverText: "Place",
                     showFeedback:false
                 }
             }
@@ -902,7 +902,7 @@ export function addBuildModePointers(ent: Entity) {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
                     button: InputAction.IA_ACTION_3,
-                    hoverText: "Grab",
+                    hoverText: "Edit",
                     showFeedback:false
                 }
             },
@@ -910,7 +910,7 @@ export function addBuildModePointers(ent: Entity) {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
                     button: InputAction.IA_PRIMARY,
-                    hoverText: "Edit",
+                    hoverText: "Grab",
                     showFeedback:false
                 }
             },
