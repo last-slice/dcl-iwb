@@ -113,17 +113,17 @@ function generateUpdateRows(){
                 height: '15%',
                 margin:{top:"1%", bottom:'1%'},
             }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillLight)
+            // uiBackground={{
+            //     textureMode: 'stretch',
+            //     texture: {
+            //         src: 'assets/atlas2.png'
+            //     },
+            //     uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillLight)
 
-                :
+            //     :
 
-                getImageAtlasMapping(uiSizes.rowPillDark)
-            }}
+            //     getImageAtlasMapping(uiSizes.rowPillDark)
+            // }}
             uiText={{value:"- " + update, fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             >
     
@@ -143,13 +143,13 @@ function generateUpdateRows(){
                     height: '15%',
                     margin:{top:"1%", bottom:'1%'},
                 }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.rowPillDark)
-                }}
+                // uiBackground={{
+                //     textureMode: 'stretch',
+                //     texture: {
+                //         src: 'assets/atlas2.png'
+                //     },
+                //     uvs: getImageAtlasMapping(uiSizes.rowPillDark)
+                // }}
                 uiText={{value:"- New Catalog items - " + newItems.size, fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
                 >
         
