@@ -197,16 +197,38 @@ export function checkPointers(entity:Entity, sceneItem: SceneItem){
 export function checkAudio(entity:Entity, sceneItem: SceneItem){
     if(sceneItem.audComp){
         log('checking audio component for play mode')
+        
+        // let data:any = {}
+        // if(sceneItem.id !==""){
+        //     data.loop = sceneItem.audComp.loop
+        //     data.playing = sceneItem.audComp.autostart
+        //     data.audioClipUrl = AudioSource.get(entity).audioClipUrl
+
+        //     AudioSource.createOrReplace(entity,{
+        //         audioClipUrl:"",
+        //         playing:
+        //     })
+
+        // }else{
+        //     AudioStream.createOrReplace(entity, {
+        //         url: 
+        //     })
+        // }
+
+         if(sceneItem.audComp.attachedPlayer){
+            Transform.createOrReplace(entity, {parent:engine.PlayerEntity})
+        }
 
         let audio:any
-        if(sceneItem.sty !== "Stream"){
+        if(sceneItem.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
             audio = AudioSource.getMutableOrNull(entity)
         }
         else{
+            console.log('playing streaming audio')
             audio = AudioStream.getMutableOrNull(entity)
         }
         
-        //check position
+        //check position//
         if(sceneItem.audComp.attachedPlayer){
             Transform.createOrReplace(entity, {parent:engine.PlayerEntity})
         }
@@ -221,6 +243,9 @@ export function checkAudio(entity:Entity, sceneItem: SceneItem){
             if(sceneItem.audComp.loop){
                 audio.loop = sceneItem.audComp.loop
             }
+
+
+            console.log('playing audio', audio)
         }
     }
 }
@@ -247,10 +272,10 @@ function disableAudio(entity:Entity, sceneItem: SceneItem){
         let itemData = items.get(sceneItem.id)
         if(itemData){
             log('audio item data is', itemData)
-            if(itemData.sty === "Local"){
+            if(itemData.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
                 AudioSource.getMutable(entity).playing = false
             }else{
-                //AudioStream.getMutable(entity).playing = false//
+                AudioStream.getMutable(entity).playing = false
             }
         }    
     }

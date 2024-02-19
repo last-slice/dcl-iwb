@@ -367,18 +367,6 @@ function generateRowItems(count:number){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '100%',
-            height: '10%',
-            margin:{top:"1%", bottom:'1%'},
-        }}
-        uiText={{value:"" + (visibleItems[count + rowcount] && visibleItems[count + rowcount].name), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-center'}}
-        />
-
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
             width: '88%',
             height: '90%',
             margin:{top:"1%", bottom:'1%'},
@@ -389,6 +377,18 @@ function generateRowItems(count:number){
             tutorial = visibleItems[count + j]
             updateTutorialsView("individual")
         }}
+        />
+
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiText={{value:"" + (visibleItems[count + rowcount] &&  visibleItems[count + rowcount].name.substring(0,20) + "..."), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-center'}}
         />
 
         </UiEntity>

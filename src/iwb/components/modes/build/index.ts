@@ -4,6 +4,7 @@ import {items} from "../../catalog"
 import {iwbConfig, localPlayer, localUserId, players} from "../../player/player"
 import {
     AudioSource,
+    AudioStream,
     AvatarAnchorPointType,
     AvatarAttach,
     ColliderLayer,
@@ -29,7 +30,7 @@ import {entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../.
 import {hideAllPanels} from "../../../ui/ui"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../../../ui/Panels/sceneInfoPanel"
 import { openEditComponent } from "../../../ui/Panels/edit/EditObjectDataPanel"
-import {addTriggerArea, updateAudioComponent, updateAudioUrl, updateImageUrl, updateNFTFrame, updateTextComponent} from "../../scenes/components"
+import {addTriggerArea, updateAudioComponent, updateImageUrl, updateNFTFrame, updateTextComponent} from "../../scenes/components"
 import { displaySceneInfoPanel } from "../../../ui/Panels/builds/buildsIndex"
 import { playSound } from "../../sounds"
 import { utils } from "../../../helpers/libraries"
@@ -179,6 +180,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
     let itemData = items.get(id)
     if (itemData) {
         selectedItem = {
+            n: itemData.n,
             mode: mode,
             modifier: EDIT_MODIFIERS.POSITION,
             pFactor: 1,
@@ -277,11 +279,16 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
                 }
             }
-        }//
+        }
 
         log(itemPosition)
 
-        Transform.createOrReplace(selectedItem.entity, {position: itemPosition, scale, parent: engine.PlayerEntity})
+        if(duplicate){
+            Transform.createOrReplace(selectedItem.entity, {position: itemPosition, scale:duplicate.s, parent: engine.PlayerEntity})
+        }
+        else{
+            Transform.createOrReplace(selectedItem.entity, {position: itemPosition, scale, parent: engine.PlayerEntity})
+        }
 
         sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {
             user: localUserId,
@@ -298,7 +305,7 @@ export function otherUserPlaceditem(info: any) {
         engine.removeEntity(parent)
     }
     playerParentEntities.delete(info.user)
-    // let transform = Transform.getMutable(ent)
+    // let transform = Transform.getMutable(ent)//
     // transform.position = info.position
     // transform.scale = info.scale
     // transform.rotation = Quaternion.fromEulerDegrees(info.rotation.x, info.rotation.y, info.rotation.z)
@@ -393,6 +400,7 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
                 selectedItem = {
                     duplicate:false,
                     mode: mode,
+                    n: sceneItem.n,
                     modifier: EDIT_MODIFIERS.POSITION,
                     pFactor:1,
                     sFactor:1,
@@ -586,7 +594,7 @@ export function duplicateItem(entity: Entity) {
             let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
             console.log('scene item is', sceneItem)
             if (sceneItem) {
-                selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB, false, assetId)
+                selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB, false, sceneItem)
                 return
             }
         })
@@ -605,6 +613,7 @@ export function confirmGrabItem(asset:SceneItem){
         let transRot = Quaternion.toEulerAngles(transform.rotation)
     
         selectedItem = {
+            n:asset.n,//
             duplicate:false,
             mode: EDIT_MODES.GRAB,
             modifier: EDIT_MODIFIERS.POSITION,
@@ -794,7 +803,7 @@ function addGrabbedComponent(entity:Entity, catalogId:string, itemData:any) {
 
             case 'Audio':
                 if(itemData && itemData.audComp) {
-                    updateAudioComponent(itemData.aid, itemData.audComp)
+                    updateAudioComponent(itemData.aid, itemData.id, itemData.audComp)
                 }
                 MeshRenderer.setBox(selectedItem.entity)
                 MeshCollider.setBox(selectedItem.entity)
@@ -1078,7 +1087,14 @@ function checkAudio(entity:Entity, sceneItem: SceneItem, parent:Entity){
         MeshRenderer.setBox(entity)
         MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
 
-        let audio = AudioSource.getMutable(entity)
+        let audio:any
+
+        if(sceneItem.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+            audio = AudioSource.getMutable(entity)
+        }else{
+            audio = AudioStream.getMutable(entity)
+        }
+
         Transform.createOrReplace(entity, {parent:parent, position:sceneItem.p, rotation:Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z), scale:sceneItem.s})
 
         Material.setPbrMaterial(entity,{

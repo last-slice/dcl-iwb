@@ -15,7 +15,7 @@ import {
     VisibilityComponent,
     engine
 } from "@dcl/sdk/ecs";
-import {COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, MATERIAL_TYPES, Materials, SCENE_MODES, SceneItem} from "../../helpers/types";
+import {COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, MATERIAL_TYPES, Materials, SCENE_MODES, SceneItem, SelectedItem} from "../../helpers/types";
 import {Color3, Color4} from "@dcl/sdk/math";
 import {localPlayer, localUserId, players} from "../player/player";
 import {entitiesFromItemIds, realmActions, sceneBuilds} from ".";
@@ -219,15 +219,26 @@ export function updateVideoUrl(aid:string, materialComp:any, url:string){
             video.playing = restart
         }
     }
-}//
+}
 
 export function createAudioComponent(scene:any, entity:Entity, item:SceneItem){
-    AudioSource.create(entity, {
-        audioClipUrl: item.ugc ? "assets/" + item.id + ".mp3" : item.audComp.url,
-        playing: false,
-        volume: item.audComp.volume,
-        loop: item.audComp.loop
-    })
+    console.log('creating audio component', item)
+    if(item.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+        AudioSource.create(entity, {
+            audioClipUrl: item.ugc ? "assets/" + item.id + ".mp3" : item.audComp.url,
+            playing: false,
+            volume: item.audComp.volume,
+            loop: item.audComp.loop
+        })
+    }else{
+        console.log('creating audio stream')
+        AudioStream.create(entity, {
+            url: item.audComp.url,
+            playing: false,
+            volume: item.audComp.volume,
+        })
+    }
+    
     updateAudioAttach(item.aid, item.audComp)
     AudioLoadedComponent.create(entity, {init:false, sceneId:scene.id})
 
@@ -236,17 +247,24 @@ export function createAudioComponent(scene:any, entity:Entity, item:SceneItem){
     }
 }
 
-export function updateAudioComponent(aid:string, audComp:any,){
-    updateAudioUrl(aid, audComp, audComp)
+export function updateAudioComponent(aid:string, id:string, audComp:any,){
+    updateAudioUrl(aid,id, audComp, audComp)
     updateAudioAttach(aid, audComp)
 }
 
-export function updateAudioUrl(aid:string, audComp:any, url:string){
-    log('updating audio url', aid, audComp, url)
+export function updateAudioUrl(aid:string, id:string, audComp:any, url:string){
+    log('updating audio url', aid, id, audComp, url)
     let ent = entitiesFromItemIds.get(aid)
 
     if(ent){
-        let audio = AudioSource.getMutable(ent)
+        let audio:any
+        if(id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+            audio = AudioSource.getMutable(ent)
+        }
+        else{
+            audio = AudioStream.getMutable(ent)
+        }
+
         if(audio){
             let restart = false
             if(audio.playing){
@@ -280,24 +298,37 @@ export function updateAudioAttach(aid:string, audComp:any, ){
     }
 }
 
-export function updateAudioLoop(aid:string, audComp:any){
+export function updateAudioLoop(aid:string, id:string, audComp:any){
     log('updating audio loop', aid, audComp)
     let ent = entitiesFromItemIds.get(aid)
 
     if(ent){
-        let audio = AudioSource.getMutable(ent)
+        let audio:any
+        if(id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+            audio = AudioSource.getMutable(ent)
+        }else{
+            audio = AudioStream.getMutable(ent)
+        }
+
         if(audio){
             audio.loop = audComp.loop
         }
     }
 }
 
-export function updateAudio(key:string, aid:string, audComp:any){
+export function updateAudio(key:string, aid:string, id:string, audComp:any){
     log('updating audio loop', aid, audComp)
     let ent = entitiesFromItemIds.get(aid)
 
     if(ent){
-        let audio:any = AudioSource.getMutable(ent)
+        let audio:any
+        if(id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+            audio = AudioSource.getMutable(ent)
+        }
+        else{
+            audio = AudioStream.getMutable(ent)
+        }
+
         if(audio){
             audio[key] = audComp[key]
         }
@@ -423,35 +454,32 @@ export function addAnimationComponent(scene:IWBScene, entity:Entity, item:SceneI
 }
 
 export function playAudioFile(catalogId?:string){
-    let audio:any
     let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
-    let entity = catalogId ? catalogSoundEntity : selectedItem.entity
 
     if(itemData){
-        if(itemData.sty !== "Stream"){
-            audio = AudioSource.getMutable(entity)
-
-            if(catalogId){
-                audio.audioClipUrl = "assets/" + catalogId + ".mp3"
-            } 
+        if(itemData.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+            AudioSource.createOrReplace(catalogSoundEntity, {
+                audioClipUrl:  "assets/" + itemData.id + ".mp3",
+                loop:false,
+                playing:true
+            })
         }else{
-            audio = AudioStream.getMutable(entity)
+            console.log('trying to preview audio stream')
+            AudioStream.createOrReplace(catalogSoundEntity, {
+                url: selectedItem.itemData.audComp.url,
+                playing:true,
+            })
         }
-
-        console.log('audio is now ', audio)
-
-        audio.playing = true
-        audio.loop = false
     }
 }
 
-export function stopAudioFile(catalogId?:string){//
+export function stopAudioFile(catalogId?:string){
     let audio:any
     let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
     let entity = catalogId ? catalogSoundEntity : selectedItem.entity
 
     if(itemData){
-        if(itemData.sty === "Local"){
+        if(itemData.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
             audio = AudioSource.getMutable(entity)
         }else{
             audio = AudioStream.getMutable(entity)

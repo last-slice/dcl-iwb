@@ -84,7 +84,7 @@ export function createNoWeb3Panel() {
 
         <Label
         value={addLineBreak("Asset Uploader only enabled for Web3 wallets.", undefined, 50)}
-        color={Color4.Black()}
+        color={Color4.White()}
         fontSize={sizeFont(30,20)}
         font="serif"
         textAlign="middle-center"
