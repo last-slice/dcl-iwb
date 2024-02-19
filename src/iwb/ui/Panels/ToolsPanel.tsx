@@ -186,8 +186,7 @@ function CreateToolIcon(data:any){
 function getDisplay(config:any){
     switch(config.name){
         case 'Upload':
-            players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && players.get(localUserId)!.dclData.hasConnectedWeb3 && players.get(localUserId)!.homeWorld ? 'flex' : 'none'
-            break;
+            return players.has(localUserId) && players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE && players.get(localUserId)!.dclData.hasConnectedWeb3 && players.get(localUserId)!.homeWorld ? 'flex' : 'none'
 
         case 'Settings':
             return 'flex'
