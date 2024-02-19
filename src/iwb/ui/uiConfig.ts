@@ -1,4 +1,4 @@
-import { localUserId, players } from "../components/player/player"
+import { localPlayer, localUserId, players } from "../components/player/player"
 import resources from "../helpers/resources"
 import { NOTIFICATION_TYPES, VIEW_MODES } from "../helpers/types"
 import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
@@ -142,9 +142,9 @@ export let topTools: any[] = [
             sourceHeight: 128
         },
         enabled: true,
-        visible: false,
+        visible: true,
         fn: () => {
-            if (players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) {
+            if (players.has(localUserId) && (players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) && players.get(localUserId)!.homeWorld) {
                 displayAssetUploadUI(true)
             } else {
                 displayNoWeb3(true)

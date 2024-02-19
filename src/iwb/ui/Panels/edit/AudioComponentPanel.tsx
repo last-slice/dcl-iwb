@@ -9,7 +9,7 @@ import {sceneBuilds} from '../../../components/scenes'
 import { uiSizes } from '../../uiConfig'
 import { playAudioFile, stopAudioFile } from '../../../components/scenes/components'
 
-let value = ""
+let url = ""
 
 export function AudioComponentPanel() {
     return (
@@ -24,95 +24,6 @@ export function AudioComponentPanel() {
                 display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? 'flex' : 'none',
             }}
         >
-
-
-                {/* `url row` */}
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '20%',
-                    margin: {top: "2%"},
-                    display: selectedItem && selectedItem.itemData.sty !== "Stream" ? 'none' : 'flex'
-                }}
-            >
-
-            {/* url label */}
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '20%',
-                }}
-                uiText={{value: "URL", fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
-            />
-
-
-
-            {/* url input info */}
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '60%',
-                    margin: {top: "5%"},
-                }}
-            >
-
-                <Input
-                    onSubmit={(value) => {
-                        // console.log('submitted value: ' + value)
-                    }}
-                    onChange={(input) => {
-                        value = input
-                    }}
-                    disabled={selectedItem && selectedItem.itemData.sty !== "Stream" ? true  : false}
-                    color={Color4.White()}
-                    fontSize={sizeFont(25, 15)}
-                    placeholder={'new audio link'}
-                    placeholderColor={Color4.White()}
-                    uiTransform={{
-                        width: '100%',
-                        height: '120%',
-                    }}
-                    value={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getAudioUrl() : "")}
-                    onMouseDown={() => {
-                        // console.log('clicked')
-                    }}
-                ></Input>
-
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '20%',
-                        height: '100%',
-                    }}
-                    uiBackground={{color: Color4.Green()}}
-                    uiText={{
-                        value: "Save",
-                        fontSize: sizeFont(25, 15),
-                        color: Color4.White(),
-                        textAlign: 'middle-center'
-                    }}
-                    onMouseDown={() => {
-                        sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {
-                            component: COMPONENT_TYPES.AUDIO_COMPONENT,
-                            action: "update",
-                            data: {type:"url", aid: selectedItem.aid, sceneId: selectedItem.sceneId, value: value}
-                        })
-                    }}
-                />
-            </UiEntity>
-
-            </UiEntity>
 
      {/* attach player row */}
         <UiEntity
@@ -334,6 +245,98 @@ export function AudioComponentPanel() {
                     />
 
                 </UiEntity>
+
+            </UiEntity>
+
+
+
+                {/* `url row` */}
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '20%',
+                    margin: {top: "2%"},
+                    display: selectedItem && selectedItem.itemData.id === "e6991f31-4b1e-4c17-82c2-2e484f53a124" ? 'flex' : 'none'
+                }}
+            >
+
+            {/* url label */}
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '20%',
+                }}
+                uiText={{value: "URL", fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
+            />
+
+
+
+            {/* url input info */}
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '60%',
+                    margin: {top: "5%"},
+                }}
+            >
+
+                <Input
+                    onChange={(input) => {
+                        url = input
+                    }}
+                    color={Color4.White()}
+                    fontSize={sizeFont(25, 15)}
+                    placeholder={'new audio link'}
+                    placeholderColor={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '120%',
+                    }}
+                    value={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getAudioUrl() : "")}
+                    onMouseDown={() => {
+                        // console.log('clicked')
+                    }}
+                ></Input>
+
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                    }}
+                    uiText={{
+                        value: "Save",
+                        fontSize: sizeFont(25, 15),
+                        color: Color4.White(),
+                        textAlign: 'middle-center'
+                    }}
+                    onMouseDown={() => {
+                        sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {
+                            component: COMPONENT_TYPES.AUDIO_COMPONENT,
+                            action: "update",
+                            data: {type:"url", aid: selectedItem.aid, sceneId: selectedItem.sceneId, value: url}
+                        })
+                    }}
+                />
+            </UiEntity>
 
             </UiEntity>
 

@@ -20,8 +20,6 @@ export let playlistPlaying:boolean = false
 export async function createSounds(){
     catalogSoundEntity = engine.addEntity()
     Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
-    AudioSource.create(catalogSoundEntity)
-    AudioStream.create(catalogSoundEntity)
 
     let catalog = [...items.values()].filter((it:any)=> !it.ugc)
 
