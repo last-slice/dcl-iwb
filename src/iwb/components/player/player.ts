@@ -16,6 +16,7 @@ export let localPlayer: Player
 export let players: Map<string, Player> = new Map<string, Player>()
 export let iwbConfig: any = {}
 export let tutorialVideo:Entity
+export let settings:any
 
 export async function addPlayer(userId: string, local: boolean, data?: any[]) {
     if (local) {
@@ -235,4 +236,8 @@ export function stopTutorialVideo(){
     catch(e){
         console.log('error stopping video')
     }
+}
+
+export function setSettings(sets:any){
+    settings = sets
 }

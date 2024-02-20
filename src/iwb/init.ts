@@ -4,13 +4,14 @@ import {joinWorld} from "./components/messaging";
 import {getAssetUploadToken, getPreview, log} from "./helpers/functions";
 import {createInputListeners} from "./components/listeners/inputListeners";
 import {addPlayer, getPlayerNames} from "./components/player/player";
-import {Animator, GltfContainer, Transform, engine} from "@dcl/sdk/ecs";
+import {Animator, GltfContainer, InputAction, MeshCollider, MeshRenderer, Transform, engine, pointerEventsSystem} from "@dcl/sdk/ecs";
 import {PlayerTrackingSystem} from "./components/systems/playerTracking";
 import { BuildModeVisibiltyComponents } from "./components/systems/BuildModeVisibilty";
 import { getRealm } from "~system/Runtime";
 import { realm, updateRealm } from "./components/scenes";
 import { utils } from "./helpers/libraries";
 import { Vector3 } from "@dcl/sdk/math";
+import { triggerEmote } from "~system/RestrictedActions";
 
 export function initIWB() {
     setupUi()
@@ -53,4 +54,27 @@ export function initIWB() {
             // colyseusConnect(data, "")
         })
     })
+
+
+
+
+    // createTests()
 }
+
+
+function createTests(){
+    let box = engine.addEntity()
+    Transform.create(box, {position: Vector3.create(-40, 1, 26)})
+    MeshCollider.setBox(box)
+    MeshRenderer.setBox(box)
+    pointerEventsSystem.onPointerDown({
+        entity:box,
+        opts:{hoverText:"Emote", button:InputAction.IA_POINTER}
+    },()=>{
+        console.log('player emote')
+        triggerEmote({ predefinedEmote: '0x1ecca9858dc8f36f2b65b44c987241556d24692f:0' })
+
+    })
+}
+
+//0x1ecca9858dc8f36f2b65b44c987241556d24692f:0

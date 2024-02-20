@@ -46,7 +46,6 @@ export function TutorialsPanel() {
             }}
             >
 
-                 {/* image column */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -67,7 +66,6 @@ export function TutorialsPanel() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '100%',
-                margin:{top:"1%", bottom:'1%'},
                 display: tutorialsView === "list" ? "flex" : "none"
             }}
             >
@@ -386,9 +384,11 @@ function generateRowItems(count:number){
             justifyContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{top:"1%", bottom:'1%'},
+            margin:{top:"3%", bottom:'1%'},
         }}
-        uiText={{value:"" + (visibleItems[count + rowcount] &&  visibleItems[count + rowcount].name.substring(0,20) + "..."), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-center'}}
+        // uiText={{value:"" + (visibleItems[count + rowcount] &&  visibleItems[count + rowcount].name.substring(0,20) + "..."), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
+        uiText={{value:"" + (visibleItems[count + rowcount] && addLineBreak(visibleItems[count + rowcount].name, undefined, 25)), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
+
         />
 
         </UiEntity>

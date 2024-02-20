@@ -40,6 +40,9 @@ import { createAddSpawnPointPanel } from './Panels/builds/addSpawnPointPanel'
 import { createCustomUI } from '../components/custom/ui'
 import { createClearScenePanel } from './Panels/clearScenePanel'
 import { createTutorialVideoControPanel } from './tutorialVideoControlPanel'
+import { createLoadingScreen } from './Panels/LoadingScreen'
+import { createWelcomeScreen } from './Panels/welcomeScreen'
+import { createConfirmDeleteItemPanel } from './Panels/confirmDeleteItemPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -47,6 +50,8 @@ export function setupUi() {
 }
 
 const uiComponent = () => [
+  createWelcomeScreen(),
+  // createLoadingScreen(),
   createNoWeb3Panel(),
   createCatalogInfoPanel(),
   createSettingsPanel(),
@@ -84,6 +89,8 @@ const uiComponent = () => [
   createAddSpawnPointPanel(),
   createClearScenePanel(),
   createTutorialVideoControPanel(),
+  createConfirmDeleteItemPanel(),
+  
 
   createCustomUI(),
 ]

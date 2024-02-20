@@ -10,6 +10,7 @@ import {log} from "../../helpers/functions";
 import {localUserId, players} from '../player/player'
 import {Room} from 'colyseus.js'
 import { createCustomCode } from '../custom'
+import { addLoadingScreen } from '../systems/LoadingSystem'
 
 export let data: any
 export let cRoom: Room
@@ -52,6 +53,7 @@ export async function colyseusConnect(data: any, token: string, world?: any) {
 }
 
 export async function joinWorld(world?: any) {
+    addLoadingScreen()
     if (connected) {
         cRoom.removeAllListeners()
         cRoom.leave(true)

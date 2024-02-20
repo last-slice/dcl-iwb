@@ -1,7 +1,7 @@
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import {getRandomString, log, roundVector} from "../../../helpers/functions"
 import {items} from "../../catalog"
-import {iwbConfig, localPlayer, localUserId, players} from "../../player/player"
+import {iwbConfig, localPlayer, localUserId, players, settings} from "../../player/player"
 import {
     AudioSource,
     AudioStream,
@@ -36,6 +36,7 @@ import { playSound } from "../../sounds"
 import { utils } from "../../../helpers/libraries"
 import { checkAnimation, disableAnimations } from "../play"
 import { displayHover, updateContextEvents } from "../../../ui/contextMenu"
+import { displayConfirmDeletePanel } from "../../../ui/Panels/confirmDeleteItemPanel"
 
 export let editAssets:Map<string, Entity> = new Map()
 export let grabbedAssets:Map<string, Entity> = new Map()
@@ -280,8 +281,6 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 }
             }
         }
-
-        log(itemPosition)
 
         if(duplicate){
             Transform.createOrReplace(selectedItem.entity, {position: itemPosition, scale:duplicate.s, parent: engine.PlayerEntity})
@@ -980,12 +979,12 @@ export function removeItem(sceneId: string, info: any) {
             engine.removeEntity(entity)
             itemIdsFromEntities.delete(entity)
             entitiesFromItemIds.delete(info.aid)
-
+        
             let assetIndex = scene.entities.findIndex((ent: Entity) => ent === entity)
             if (assetIndex >= 0) {
                 scene.entities.splice(assetIndex, 1)
             }
-
+        
             if(showSceneInfoPanel){
                 displaySceneAssetInfoPanel(true)
             }

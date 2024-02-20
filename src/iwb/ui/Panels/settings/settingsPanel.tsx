@@ -8,12 +8,15 @@ import { VisualSettings } from './visualSettings'
 import { AudioSettings } from './audioSettings'
 import { playSound } from '../../../components/sounds'
 import { SOUND_TYPES } from '../../../helpers/types'
+import { settings } from '../../../components/player/player'
 
 
 export let settingsView = "Visual"
 
 export function displayStatusView(view:string){
     settingsView = view
+
+    console.log("player settings", settings)
 }
 
 

@@ -20,6 +20,8 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_CANCELED_CATALOG_ASSET = 'player_canceled_catalog',
     ASSET_OVER_SCENE_LIMIT = 'asset_over_scene_limit',
     SUBMIT_FEEDBACK = 'submit_feedback',
+    PLAYER_SETTINGS = 'player_settings',
+    FIRST_TIME = 'first_time',
 
     // Catalog and Assets
     CATALOG_UPDATED = 'catalog_updated',
@@ -352,7 +354,8 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Toggle Video",
     "Play Animation",
     "Stop Animation",
-    "Teleport Player"
+    "Teleport Player",
+    "Play Emote"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -363,7 +366,8 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.TOGGLE_VIDEO,
     Actions.PLAY_ANIMATION,
     Actions.STOP_ANIMATION,
-    Actions.TELEPORT_PLAYER
+    Actions.TELEPORT_PLAYER,
+    Actions.EMOTE
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
@@ -407,3 +411,41 @@ export enum SOUND_TYPES {
     SELECT_3 = "select_3",
     ERROR_2 = "error_2",
 }
+
+export let ENTITY_EMOTES:any[] = [
+    "Wave",
+    "Fist bump",
+    "Robot",
+    "Raise hand",
+    "Clap",
+    "Money",
+    "Kiss",
+    "Tik",
+    "Hammer",
+    "Tektonik",
+    "Dont see",
+    "Hands air",
+    "Shrug",
+    "Disco",
+    "Dab",
+    "Head explode",
+]
+
+export let ENTITY_EMOTES_SLUGS:any[] = [
+    "wave",
+    "fistpump",
+    "robot",
+    "raiseHand",
+    "clap",
+    "money",
+    "kiss",
+    "tik",
+    "hammer",
+    "tektonik",
+    "dontsee",
+    "handsair",
+    "shrug",
+    "disco",
+    "dab",
+    "headexplode",
+]

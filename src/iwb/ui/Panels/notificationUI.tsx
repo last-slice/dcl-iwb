@@ -7,6 +7,7 @@ import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import { calculateImageDimensions, dimensions, getImageAtlasMapping, addLineBreak, sizeFont, calculateSquareImageDimensions } from '../helpers'
 import { playSound } from '../../components/sounds'
+import { settings } from '../../components/player/player'
 
 export let queue:any[] = []
 export let showingNotification = false
@@ -32,18 +33,15 @@ export function canShowNotifications(){
 }
 
 export function wantsToShowNotifications(){
-    //player settings to show notifications
-    //need to fill it out
-    return true
+    return settings.nots
 }
 
 export function checkNotificationQueue(){
     log('checking animtation queue', queue)
-    if(canShowNotifications() && wantsToShowNotifications()){//} || queue[0].forceShow){
+    if(canShowNotifications()){//} || queue[0].forceShow){
         if(queue.length > 0){
             showingNotification = true
-            let not = queue.shift()
-            showNextNotification(not)
+            showNextNotification(queue.shift())
         }
     }
 }
@@ -59,6 +57,10 @@ export function showNextNotification(data:NOTIFICATION_DETAIL){
 
         //check if play founds
         playSound(SOUND_TYPES.DOORBELL)
+    }
+    else{
+        showingNotification = false
+        console.log("dont show notification", queue)
     }
 }
 
