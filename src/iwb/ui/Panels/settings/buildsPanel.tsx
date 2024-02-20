@@ -4,7 +4,7 @@ import { displaySettingsPanel, showSetting } from './settingsIndex'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { displayDeleteBuildPanel } from '../deleteBuildPanel'
-import { localUserId, players } from '../../../components/player/player'
+import { localPlayer, localUserId, players } from '../../../components/player/player'
 import { formatDollarAmount, formatSize, log, paginateArray } from '../../../helpers/functions'
 import { sceneBuilds } from '../../../components/scenes'
 import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from '../builds/buildsIndex'
@@ -382,7 +382,7 @@ function generateBuildRows(){
         justifyContent: 'center',
         width: calculateSquareImageDimensions(3.5).width,
         height: calculateSquareImageDimensions(4).height,
-        display: visibleItems[i].n === "Realm Lobby" ? 'none' :'flex'
+        display: visibleItems[i].n === "Realm Lobby" || (localPlayer && !localPlayer.homeWorld) ? 'none' :'flex'
     }}
     uiBackground={{
         textureMode: 'stretch',

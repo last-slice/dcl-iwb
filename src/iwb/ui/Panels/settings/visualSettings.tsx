@@ -4,14 +4,13 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { uiSizes } from '../../uiConfig'
 import { settingsView } from './settingsPanel'
 import { playSound } from '../../../components/sounds'
-import { SOUND_TYPES } from '../../../helpers/types'
+import { SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../../helpers/types'
+import { settings } from '../../../components/player/player'
+import { sendServerMessage } from '../../../components/messaging'
 
-let settings:any[] = [
-    {label:"Scene Notifications", enabled:true},
-    {label:"Display Build", enabled:true},
-    {label:"Save Notifications", enabled:true},
-    {label:"Popup Confirmations", enabled:true},
-
+let labels:any[] = [
+    {label:"Scene Notifications", key:"nots"},
+    {label:"Popup Confirmations", key:"confirms"},
 ]
 
 
@@ -38,7 +37,7 @@ export function VisualSettings() {
 
 function generateSettingsToggles(){
     let arr:any[] = []
-    settings.forEach((setting)=>{
+    labels.forEach((setting)=>{
         arr.push(
         <UiEntity
         key={setting.label + "-settings"}
@@ -66,11 +65,12 @@ function generateSettingsToggles(){
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getButtonState(setting.label)
+            uvs: getButtonState(setting.key)
         }}
         onMouseDown={() => {
             playSound(SOUND_TYPES.SELECT_3)
-            settings.find((set:any)=>set.label === setting.label).enabled = !settings.find((set:any)=>set.label === setting.label).enabled 
+            settings[setting.key] = !settings[setting.key]
+            sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, {action:"update", key:setting.key, value: settings[setting.key]})
         }}
         />
 
@@ -93,7 +93,7 @@ function generateSettingsToggles(){
 }
 
 function getButtonState(button:string){
-    if(settings.find((b:any)=> b.label === button).enabled){
+    if(settings && settings[button]){
         return getImageAtlasMapping(uiSizes.toggleOnTrans)
     }else{
         return getImageAtlasMapping(uiSizes.toggleOffTrans)

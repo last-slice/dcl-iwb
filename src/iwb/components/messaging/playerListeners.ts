@@ -1,11 +1,12 @@
 import {log} from "../../helpers/functions"
 import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {showNotification} from "../../ui/Panels/notificationUI"
-import {addPendingAsset, addPlayerScenes, localPlayer} from "../player/player"
+import {addPendingAsset, addPlayerScenes, localPlayer, setSettings} from "../player/player"
 import {Room} from "colyseus.js"
 import {iwbEvents} from "."
 import {refreshSortedItems, updateItem} from "../catalog/items";
 import { displayDownloadPendingPanel } from "../../ui/Panels/downloadPendingPanel"
+import { displayWelcomeScreen } from "../../ui/Panels/welcomeScreen"
 
 
 export function createPlayerListeners(room: Room) {
@@ -64,5 +65,25 @@ export function createPlayerListeners(room: Room) {
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
         displayDownloadPendingPanel(true, info.link)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS + ' received', info)
+        switch(info.action){
+            case 'load':
+                console.log('load player settings')
+                setSettings(info.value)
+
+                if(!info.value.firstTime){
+                    displayWelcomeScreen(true)
+                }
+
+                //play music to start
+
+                //show notifications
+
+                //other settings
+                break;
+        }
     })
 }

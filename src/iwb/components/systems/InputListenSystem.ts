@@ -14,9 +14,10 @@ import {
 } from "../modes/build"
 import {checkShortCuts} from "../listeners/shortcuts"
 import {log} from "../../helpers/functions"
-import {localUserId, players} from "../player/player"
+import {localUserId, players, settings} from "../player/player"
 import {EDIT_MODES, SCENE_MODES} from "../../helpers/types"
 import {displayHover, updateContextEvents} from "../../ui/contextMenu"
+import { displayConfirmDeletePanel } from "../../ui/Panels/confirmDeleteItemPanel"
 
 
 export let added = false
@@ -185,7 +186,11 @@ export function InputListenSystem(dt: number) {
                         }
                     } else {
                         log('player pressed #E on an object taht isnt selected need to delete')
-                        sendServerDelete(result.hit.entityId as Entity)
+                        if(settings.confirms){
+                            displayConfirmDeletePanel(true, result.hit.entityId as Entity)
+                        }else{
+                            sendServerDelete(result.hit.entityId as Entity)
+                        }
                     }
                 }
             } else {

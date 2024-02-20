@@ -3,7 +3,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
-import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_EMOTES_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
 import { selectedItem } from '../../../components/modes/build'
 import { uiSizes } from '../../uiConfig'
@@ -12,6 +12,7 @@ import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selec
 import { log } from '../../../helpers/functions'
 import { ActionAnimationComponent, selectedAnimationIndex, selectedAnimationLoop } from './Actions/ActionAnimationComponent'
 import { ActionTeleportPlayerCompoent, teleportPosition } from './Actions/ActionTeleportPlayerComponent'
+import { ActionPlayEmoteComponent, selectedEmoteIndex } from './Actions/ActionEmoteComponent'
 
 let view = "list"
 let newName:string = ""
@@ -495,13 +496,15 @@ function getActionData(){
 
         case 7:
             return {aid:selectedItem.aid, type:Actions.TELEPORT_PLAYER, location: "" + teleportPosition.x + "," + teleportPosition.y + "," + teleportPosition.z}
+
+        case 8:
+            return {aid:selectedItem.aid, type:Actions.EMOTE, emote:ENTITY_EMOTES_SLUGS[selectedEmoteIndex]}
     }
 }
 
 function getActionDataPanel(){
     switch(selectedIndex){
         case 0:
-            //open link
         return <ActionLinkComponent/>
 
         case 1:
@@ -515,5 +518,8 @@ function getActionDataPanel(){
 
         case 7:
             return <ActionTeleportPlayerCompoent/>
+
+        case 8:
+            return <ActionPlayEmoteComponent/>
     }
 }

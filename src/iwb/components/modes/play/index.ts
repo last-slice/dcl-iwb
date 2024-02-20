@@ -1,8 +1,8 @@
 import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, InputAction, Material, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
-import { Actions, COLLISION_LAYERS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
+import { Actions, COLLISION_LAYERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes";
 import { getRandomIntInclusive, log } from "../../../helpers/functions";
-import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
+import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
 import { items } from "../../catalog";
 import { displaySettingsPanel } from "../../../ui/Panels/settings/settingsIndex";
 import { localPlayer } from "../../player/player";
@@ -147,6 +147,11 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                         let pos = action.teleport.split(",")
                         let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
                         movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}})
+                        break;
+
+                    case Actions.EMOTE:
+                        log('emote player', action)
+                        triggerEmote({predefinedEmote: "" + action.emote})
                         break;
                 }
             }
