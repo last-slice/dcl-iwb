@@ -1,14 +1,19 @@
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown } from '@dcl/sdk/react-ecs'
-import { CatalogItemType, EDIT_MODES, SCENE_MODES } from '../../helpers/types';
-import { calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers';
-import resources from '../../helpers/resources';
-import { Color4 } from '@dcl/sdk/math';
-import { uiSizes } from '../uiConfig';
-import { displayCatalogPanel } from './CatalogPanel';
-import { formatDollarAmount } from '../../helpers/functions';
-import { localUserId, players } from '../../components/player/player';
-import { selectCatalogItem } from '../../components/modes/build';
-import { playAudioFile, stopAudioFile } from '../../components/scenes/components';
+import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
+import {CatalogItemType, EDIT_MODES, SCENE_MODES} from '../../helpers/types';
+import {
+    calculateImageDimensions,
+    calculateSquareImageDimensions,
+    getAspect,
+    getImageAtlasMapping,
+    sizeFont
+} from '../helpers';
+import {Color4} from '@dcl/sdk/math';
+import {uiSizes} from '../uiConfig';
+import {displayCatalogPanel} from './CatalogPanel';
+import {formatDollarAmount} from '../../helpers/functions';
+import {localUserId, players} from '../../components/player/player';
+import {placeCenterCurrentScene, selectCatalogItem} from '../../components/modes/build';
+import {playAudioFile, stopAudioFile} from '../../components/scenes/components';
 
 export let showCatalogInfoPanel = false
 
@@ -40,7 +45,7 @@ export function createCatalogInfoPanel() {
                 width: calculateImageDimensions(25, 345 / 511).width,
                 height: calculateImageDimensions(25, 345 / 511).height,
                 positionType: 'absolute',
-                position: { right: '3%', bottom: '3%' }
+                position: {right: '3%', bottom: '3%'}
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -56,197 +61,222 @@ export function createCatalogInfoPanel() {
                 uiTransform={{
                     display: 'flex',
                     alignItems: 'center',
-                    flexDirection:'row',
+                    flexDirection: 'row',
                     justifyContent: 'center',
                     width: '90%',
                     height: '30%',
-                    margin:{top:"3%"}
+                    margin: {top: "3%"}
                 }}
                 // uiBackground={{color:Color4.Green()}}
             >
 
                 {/* image column */}
                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection:'row',
-                    justifyContent: 'center',
-                    width: '40%',
-                    height: '100%',
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
+                    uiTransform={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        width: '40%',
+                        height: '100%',
+                    }}
+                    // uiBackground={{color:Color4.Blue()}}
+                >
 
-                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateSquareImageDimensions(15).width,
-                    height: calculateSquareImageDimensions(15).height,
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: selectedItem?.im
-                    },
-                    uvs: getImageAtlasMapping({
-                        atlasHeight: 256,
-                        atlasWidth: 256,
-                        sourceTop: 0,
-                        sourceLeft: 0,
-                        sourceWidth: 256,
-                        sourceHeight: 256
-                    })
-                }}
-                />
+                    <UiEntity
+                        uiTransform={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateSquareImageDimensions(15).width,
+                            height: calculateSquareImageDimensions(15).height,
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: selectedItem?.im
+                            },
+                            uvs: getImageAtlasMapping({
+                                atlasHeight: 256,
+                                atlasWidth: 256,
+                                sourceTop: 0,
+                                sourceLeft: 0,
+                                sourceWidth: 256,
+                                sourceHeight: 256
+                            })
+                        }}
+                    />
 
                 </UiEntity>
 
                    
                 {/* buttons column */}
                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection:'column',
-                    justifyContent: 'center',
-                    width: '40%',
-                    height: '100%',
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
-                  <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
-                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    margin:{bottom:"2%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                onMouseDown={() => {
-                    if(players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE){
-                        selectCatalogItem(selectedItem?.id, EDIT_MODES.GRAB, false)
-                        displayCatalogInfoPanel(false)
-                    }  
-                }}
-                uiText={{ value: "Place", color: Color4.White(), fontSize: sizeFont(25, 20) }}
-            />
+                    uiTransform={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        width: '40%',
+                        height: '100%',
+                    }}
+                    // uiBackground={{color:Color4.Blue()}}
+                >
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                            height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                            margin: {bottom: "2%"}
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                        }}
+                        onMouseDown={() => {
+                            if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
+                                selectCatalogItem(selectedItem?.id, EDIT_MODES.GRAB, false)
+                                displayCatalogInfoPanel(false)
+                            }
+                        }}
+                        uiText={{value: "Place", color: Color4.White(), fontSize: sizeFont(25, 20)}}
+                    />
 
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
-                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    margin:{bottom:"2%"},
-                    display: selectedItem && selectedItem.ty === "Audio" ? "flex" : "none"
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                onMouseDown={() => {
-                    playAudioFile(selectedItem!.id)
-                }}
-                uiText={{ value: "Play", color: Color4.White(), fontSize: sizeFont(25, 20) }}
-            />
 
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
-                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    margin:{bottom:"2%"},
-                    display: selectedItem && selectedItem.ty === "Audio" ? "flex" : "none" 
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                onMouseDown={() => {
-                    stopAudioFile(selectedItem!.id)
-                }}
-                uiText={{ value: "Stop", color: Color4.White(), fontSize: sizeFont(25, 20) }}
-            />
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                            height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                            margin: {bottom: "2%"}
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                        }}
+                        onMouseDown={() => {
+                            if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
+                                placeCenterCurrentScene(selectedItem?.id)
+                            }
+                        }}
+                        uiText={{value: "Place Centered", color: Color4.White(), fontSize: sizeFont(25, 20)}}
+                    />
 
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
-                    height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
-                    margin:{top:"2%"},
-                    display:'none'
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.normalButton)
-                }}
-                onMouseDown={() => {
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                            height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                            margin: {bottom: "2%"},
+                            display: selectedItem && selectedItem.ty === "Audio" ? "flex" : "none"
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                        }}
+                        onMouseDown={() => {
+                            playAudioFile(selectedItem!.id)
+                        }}
+                        uiText={{value: "Play", color: Color4.White(), fontSize: sizeFont(25, 20)}}
+                    />
 
-                }}
-                uiText={{ value: "Download", color: Color4.White(), fontSize: sizeFont(25, 20) }}
-            />
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                            height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                            margin: {bottom: "2%"},
+                            display: selectedItem && selectedItem.ty === "Audio" ? "flex" : "none"
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                        }}
+                        onMouseDown={() => {
+                            stopAudioFile(selectedItem!.id)
+                        }}
+                        uiText={{value: "Stop", color: Color4.White(), fontSize: sizeFont(25, 20)}}
+                    />
+
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateImageDimensions(6, getAspect(uiSizes.rectangleButton)).width,
+                            height: calculateImageDimensions(12, getAspect(uiSizes.rectangleButton)).height,
+                            margin: {top: "2%"},
+                            display: 'none'
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.normalButton)
+                        }}
+                        onMouseDown={() => {
+
+                        }}
+                        uiText={{value: "Download", color: Color4.White(), fontSize: sizeFont(25, 20)}}
+                    />
 
 
                 </UiEntity>
 
-                 {/* back button column */}
-                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection:'column',
-                    justifyContent: 'flex-start',
-                    width: '20%',
-                    height: '100%',
-                    margin:{top:"5%"}
-                }}
-                // uiBackground={{color:Color4.Teal()}}
-            >
-                 <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(2, getAspect(uiSizes.backButton)).width,
-                    height: calculateImageDimensions(2, getAspect(uiSizes.backButton)).height,
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.backButton)
-                }}
-                onMouseDown={() => {
-                    displayCatalogInfoPanel(false)
-                    displayCatalogPanel(true)
-                }}
-            />
+                {/* back button column */}
+                <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        justifyContent: 'flex-start',
+                        width: '20%',
+                        height: '100%',
+                        margin: {top: "5%"}
+                    }}
+                    // uiBackground={{color:Color4.Teal()}}
+                >
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateImageDimensions(2, getAspect(uiSizes.backButton)).width,
+                            height: calculateImageDimensions(2, getAspect(uiSizes.backButton)).height,
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.backButton)
+                        }}
+                        onMouseDown={() => {
+                            displayCatalogInfoPanel(false)
+                            displayCatalogPanel(true)
+                        }}
+                    />
                 </UiEntity>
 
             </UiEntity>
@@ -256,85 +286,101 @@ export function createCatalogInfoPanel() {
                 uiTransform={{
                     display: 'flex',
                     alignItems: 'center',
-                    flexDirection:'column',
+                    flexDirection: 'column',
                     justifyContent: 'center',
                     width: '90%',
                     height: '15%',
-                    margin:{top:"1%"}
+                    margin: {top: "1%"}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >
 
-                    {/* item name */}
-                    <UiEntity
+                {/* item name */}
+                <UiEntity
                     uiTransform={{
                         display: 'flex',
                         flexDirection: 'column',
                         width: '100%',
                         height: '30%',
-                        margin:{bottom:"5%"}
+                        margin: {bottom: "5%"}
                     }}
-                    uiText={{ value:  `${selectedItem?.n}`, fontSize: sizeFont(40, 30), textAlign:'middle-left'}}
-                     />
+                    uiText={{value: `${selectedItem?.n}`, fontSize: sizeFont(40, 30), textAlign: 'middle-left'}}
+                />
 
 
-                    {/* item catalog */}
-                    <UiEntity
-                        uiTransform={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '100%',
-                            height: '20%',
-                            margin:{bottom:"5%"}
-                        }}
-                        uiText={{ value: `Catalog: ${selectedItem?.cat}`, fontSize: sizeFont(25, 15), textAlign:'middle-left'}}
-                    />
+                {/* item catalog */}
+                <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                        height: '20%',
+                        margin: {bottom: "5%"}
+                    }}
+                    uiText={{
+                        value: `Catalog: ${selectedItem?.cat}`,
+                        fontSize: sizeFont(25, 15),
+                        textAlign: 'middle-left'
+                    }}
+                />
 
-                    <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '100%',
-                    height: '20%',
-                }}
-                uiText={{ value: `Artist:   ${selectedItem?.on}`, fontSize: sizeFont(25, 15), textAlign:'middle-left'}}
-                /> 
+                <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                        height: '20%',
+                    }}
+                    uiText={{
+                        value: `Artist:   ${selectedItem?.on}`,
+                        fontSize: sizeFont(25, 15),
+                        textAlign: 'middle-left'
+                    }}
+                />
 
-                </UiEntity>
+            </UiEntity>
 
             {/* size and tri count row */}
             <UiEntity
                 uiTransform={{
                     display: 'flex',
                     alignItems: 'center',
-                    flexDirection:'row',
+                    flexDirection: 'row',
                     justifyContent: 'center',
                     width: '90%',
                     height: '10%',
-                    margin:{top:"1%"}
+                    margin: {top: "1%"}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >
 
                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '50%',
-                    height: '100%',
-                }}
-                uiText={{ value: `Size: ${(selectedItem?.si / 1024 / 1024).toFixed(2)}MB`, textAlign:'middle-left',  fontSize: sizeFont(25, 15)}}
-            /> 
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '50%',
+                        height: '100%',
+                    }}
+                    uiText={{
+                        value: `Size: ${(selectedItem?.si / 1024 / 1024).toFixed(2)}MB`,
+                        textAlign: 'middle-left',
+                        fontSize: sizeFont(25, 15)
+                    }}
+                />
 
                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '50%',
-                    height: '100%',
-                }}
-                uiText={{ value: 'Poly Count: ' + formatDollarAmount(selectedItem?.pc), textAlign:'middle-left',  fontSize: sizeFont(25, 15)}}
-            />
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '50%',
+                        height: '100%',
+                    }}
+                    uiText={{
+                        value: 'Poly Count: ' + formatDollarAmount(selectedItem?.pc),
+                        textAlign: 'middle-left',
+                        fontSize: sizeFont(25, 15)
+                    }}
+                />
 
             </UiEntity>
 
@@ -344,26 +390,26 @@ export function createCatalogInfoPanel() {
                 uiTransform={{
                     display: 'flex',
                     alignItems: 'flex-start',
-                    alignSelf:'center',
-                    flexDirection:'column',
+                    alignSelf: 'center',
+                    flexDirection: 'column',
                     justifyContent: 'flex-start',
                     width: '90%',
                     height: '5%',
-                    margin:{top:"1%"}
+                    margin: {top: "1%"}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >
 
-                   <UiEntity
+                <UiEntity
                     uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: 'auto',
-                    alignContent: 'center',
-                    height: 'auto',
-                }}
-                uiText={{ value: `Type: ${selectedItem?.ty}`,  fontSize: sizeFont(25, 15), textAlign:'middle-left' }}
-            />
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: 'auto',
+                        alignContent: 'center',
+                        height: 'auto',
+                    }}
+                    uiText={{value: `Type: ${selectedItem?.ty}`, fontSize: sizeFont(25, 15), textAlign: 'middle-left'}}
+                />
 
             </UiEntity>
 
@@ -372,26 +418,30 @@ export function createCatalogInfoPanel() {
                 uiTransform={{
                     display: 'flex',
                     alignItems: 'flex-start',
-                    alignSelf:'center',
-                    flexDirection:'column',
+                    alignSelf: 'center',
+                    flexDirection: 'column',
                     justifyContent: 'flex-start',
                     width: '90%',
                     height: '15%',
-                    margin:{top:"1%"}
+                    margin: {top: "1%"}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >
 
-                    <UiEntity
+                <UiEntity
                     uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: 'auto',
-                    alignContent: 'center',
-                    height: 'auto',
-                }}
-                uiText={{ value: `Description:   ${selectedItem?.d}`,  fontSize: sizeFont(25, 15), textAlign:'middle-left' }}
-            />
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: 'auto',
+                        alignContent: 'center',
+                        height: 'auto',
+                    }}
+                    uiText={{
+                        value: `Description:   ${selectedItem?.d}`,
+                        fontSize: sizeFont(25, 15),
+                        textAlign: 'middle-left'
+                    }}
+                />
 
             </UiEntity>
 
@@ -401,25 +451,29 @@ export function createCatalogInfoPanel() {
                 uiTransform={{
                     display: 'flex',
                     alignItems: 'flex-start',
-                    alignSelf:'center',
-                    flexDirection:'column',
+                    alignSelf: 'center',
+                    flexDirection: 'column',
                     justifyContent: 'flex-start',
                     width: '90%',
                     height: '10%',
-                    margin:{top:"1%"}
+                    margin: {top: "1%"}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >
 
                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: 'auto',
-                    height: 'auto',
-                }}
-                uiText={{ value: `Tags:   ${selectedItem?.tag}`,  fontSize: sizeFont(25, 15), textAlign:'middle-left' }}
-            />
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: 'auto',
+                        height: 'auto',
+                    }}
+                    uiText={{
+                        value: `Tags:   ${selectedItem?.tag}`,
+                        fontSize: sizeFont(25, 15),
+                        textAlign: 'middle-left'
+                    }}
+                />
 
 
             </UiEntity>
