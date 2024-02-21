@@ -228,7 +228,6 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         } else {
             log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
 
-            //to do//
             //add different asset types here
             if (selectedItem.itemData.n === "Image" || selectedItem.itemData.n === "NFT Frame") {
                 MeshRenderer.setPlane(selectedItem.entity)
@@ -570,7 +569,7 @@ export function dropSelectedItem(canceled?: boolean, editing?:boolean) {
                         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
                         scale: roundVector(t.scale, 2),
                         duplicate: selectedItem.duplicate,
-                        ugc: selectedItem.ugc//
+                        ugc: selectedItem.ugc
                     }
                 }
             )
@@ -1073,9 +1072,6 @@ function check2DCollision(entity:Entity, sceneItem: SceneItem){
             MeshCollider.setPlane(entity, ColliderLayer.CL_POINTER)
         }
     }
-
-    ColliderLayer.CL_POINTER
-
     // if(sceneItem.type === "2D" && sceneItem.textComp){
     //     MeshRenderer.setPlane(entity)
     // }
@@ -1118,19 +1114,27 @@ function checkVideo(entity:Entity, sceneItem: SceneItem){
 }
 
 function checkSmartItems(entity:Entity, sceneItem: SceneItem){
-    if(sceneItem.type === "SM"){
+    if(sceneItem.type === "SM"){//
         MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
-        MeshRenderer.setBox(entity)
 
-        if(sceneItem.trigArComp){
-            Material.setPbrMaterial(entity,{ 
-                albedoColor: Color4.create(1,1,0,.5)
-            })
-            utils.triggers.enableTrigger(entity, false)
-        }else{
-            Material.setPbrMaterial(entity,{
-                albedoColor: Color4.create(54/255,221/255,192/255, .5)
-            })
+        if(sceneItem.id === "78f04fcf-5c50-4001-840c-6ba717ce6037"){
+            // Transform.getMutable(entity).scale = Vector3.create(1,3,1)
+            // MeshRenderer.setBox(entity)
+
+        }
+        else{
+            MeshRenderer.setBox(entity)
+
+            if(sceneItem.trigArComp){
+                Material.setPbrMaterial(entity,{ 
+                    albedoColor: Color4.create(1,1,0,.5)
+                })
+                utils.triggers.enableTrigger(entity, false)
+            }else{
+                Material.setPbrMaterial(entity,{
+                    albedoColor: Color4.create(54/255,221/255,192/255, .5)
+                })
+            }
         }
     }
 }
