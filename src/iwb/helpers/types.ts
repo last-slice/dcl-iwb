@@ -218,6 +218,7 @@ export interface SceneItem extends CatalogItemType{
     audComp:any
     trigArComp:any
     clickArComp:any
+    npcComp:any
     animComp:any
     editing:boolean
     ugc:boolean
@@ -264,6 +265,7 @@ export enum COMPONENT_TYPES {
     TRIGGER_AREA_COMPONENT = "Trigger Area",
     CLICK_AREA_COMPONENT = "Click Area",
     ANIMATION_COMPONENT = "Animation",
+    NPC_COMPONENT = "NPC"
 }
 
 export enum COLLISION_LAYERS {
