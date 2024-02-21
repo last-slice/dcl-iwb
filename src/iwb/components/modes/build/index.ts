@@ -34,7 +34,14 @@ import {
     SOUND_TYPES
 } from "../../../helpers/types";
 import {displayCatalogPanel} from "../../../ui/Panels/CatalogPanel"
-import {afterLoadActions, entitiesFromItemIds, itemIdsFromEntities, realm, sceneBuilds} from "../../scenes"
+import {
+    afterLoadActions,
+    checkBuildPermissionsForScene,
+    entitiesFromItemIds,
+    itemIdsFromEntities,
+    realm,
+    sceneBuilds
+} from "../../scenes"
 import {hideAllPanels} from "../../../ui/ui"
 import {displaySceneAssetInfoPanel, showSceneInfoPanel} from "../../../ui/Panels/sceneInfoPanel"
 import {openEditComponent} from "../../../ui/Panels/edit/EditObjectDataPanel"
@@ -511,8 +518,9 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     let canDrop = false
 
     const curScene = findSceneByParcel(parcel)
+    const bpsCurScene = checkBuildPermissionsForScene(curScene)
 
-    if (curScene) {
+    if (curScene && bpsCurScene) {
         log('we can drop item here')
         canDrop = true
         playSound(SOUND_TYPES.DROP_1_STEREO)
@@ -594,7 +602,6 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
         selectedItem.enabled = false
         return
     }
-
 
     if (!canDrop) {
         console.log('player cant build here')

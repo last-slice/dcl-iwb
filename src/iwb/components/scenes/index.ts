@@ -389,6 +389,11 @@ export function updateAsset(asset: any) {
 //     return inScene
 // }
 
+export function checkBuildPermissionsForScene(scene: IWBScene) {
+    return scene &&  (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId))
+}
+
+
 export async function checkScenePermissions(player: Player) {
     let canbuild = false
     let activeScene: any
