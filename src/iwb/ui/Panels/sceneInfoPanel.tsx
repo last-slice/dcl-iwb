@@ -6,9 +6,9 @@ import {localPlayer, localUserId, players} from '../../components/player/player'
 import SceneAssetList from "./scenes/SceneAssetsList.ui";
 import { showCatalogInfoPanel } from './CatalogInfoPanel'
 import { log, paginateArray } from '../../helpers/functions'
-import { Entity, MeshRenderer, Transform, VisibilityComponent, engine } from '@dcl/sdk/ecs'
+import { Billboard, BillboardMode, Entity, GltfContainer, MeshRenderer, Transform, VisibilityComponent, engine } from '@dcl/sdk/ecs'
 import { items } from '../../components/catalog'
-import { editItem, sendServerDelete } from '../../components/modes/build'
+import { duplicateItem, editItem, sendServerDelete } from '../../components/modes/build'
 import { entitiesFromItemIds, sceneBuilds } from '../../components/scenes'
 import { displaySceneInfoPanel, displaySceneSetting } from './builds/buildsIndex'
 import { sendServerMessage } from '../../components/messaging'
@@ -32,7 +32,6 @@ export function displaySceneAssetInfoPanel(value: boolean) {
         visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
 
         sceneInfoEntitySelector = engine.addEntity()
-        MeshRenderer.setBox(sceneInfoEntitySelector)
         VisibilityComponent.create(sceneInfoEntitySelector, {visible:false})
     }else{
         localScene = false
@@ -41,11 +40,19 @@ export function displaySceneAssetInfoPanel(value: boolean) {
 }
 
 export let visibleIndex = 1
-export let visibleRows = 10
+export let visibleRows = 6
 export let visibleItems:any[] = []
 export let selectedRow = -1
 export let selectedEntity:number = -1
 export let localScene = false
+
+export function updateVisibleIndex(amt:number){
+    visibleIndex += amt
+}
+
+export function updateRows(){
+    visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
+}
 
 export function selectRow(row:number, pointer?:boolean){
     selectedRow = row
@@ -57,7 +64,12 @@ export function selectRow(row:number, pointer?:boolean){
         selectedEntity = entitiesFromItemIds.get(visibleItems[selectedRow].aid)!
 
         if(pointer){
-            MeshRenderer.setBox(sceneInfoEntitySelector)
+            GltfContainer.createOrReplace(sceneInfoEntitySelector, {
+                src:"assets/40e64954-b84f-40e1-ac58-438a39441c3e.glb"
+            })
+
+            Billboard.create(sceneInfoEntitySelector, {billboardMode:BillboardMode.BM_Y})
+
             Transform.createOrReplace(sceneInfoEntitySelector, {
                 position: Vector3.create(visibleItems[selectedRow].p.x, item.bb.z + 1.5, visibleItems[selectedRow].p.z),
                 parent: localPlayer.activeScene?.parentEntity
@@ -70,8 +82,10 @@ export function selectRow(row:number, pointer?:boolean){
 
 export function deselectRow(){
     selectedRow = -1
-    MeshRenderer.deleteFrom(sceneInfoEntitySelector)
-    VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
+    let vis = VisibilityComponent.getMutableOrNull(sceneInfoEntitySelector)
+    if(vis){
+        vis.visible = false
+    }
 
 }
 
@@ -237,12 +251,42 @@ export function createSceneInfoPanel() {
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'flex-end',
+                    justifyContent: 'center',
                     width: '80%',
                     height: '10%',
                 }}
                 // uiBackground={{color:Color4.White()}}
             >
+
+                {/* duplicate button */}
+                <UiEntity
+                    uiTransform={{
+                        display: selectedRow !== -1 ? 'flex' : 'none',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
+                        margin: {right: "1%"},
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                    }}
+                    onMouseDown={() => {
+                    }}
+                    onMouseUp={() => {
+                        // VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
+                        displaySceneAssetInfoPanel(false)
+                        deselectRow()
+                        duplicateItem(selectedEntity as Entity)
+                    }}
+                    uiText={{value: "Duplicate", color: Color4.White(), fontSize: sizeFont(30, 20)}}
+                />
+
 
                 {/* edit button */}
                 <UiEntity
@@ -268,6 +312,7 @@ export function createSceneInfoPanel() {
                     onMouseUp={() => {
                         // pressed.Save = false
                         editItem(selectedEntity as Entity, EDIT_MODES.EDIT)
+                        deselectRow()
                     }}
                     uiText={{value: "Edit", color: Color4.White(), fontSize: sizeFont(30, 20)}}
                 />
@@ -298,59 +343,6 @@ export function createSceneInfoPanel() {
                         deselectRow()
                     }}
                     uiText={{value: "Delete", color: Color4.White(), fontSize: sizeFont(30, 20)}}
-                />
-                {/* scroll up button */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(2, getAspect(uiSizes.leftArrowBlack)).width,
-                        height: calculateImageDimensions(2, getAspect(uiSizes.leftArrowBlack)).height,
-                        margin: {left: "5%"},
-                    }}
-                    // uiBackground={{color:Color4.White()}}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.leftArrowBlack)
-                    }}
-                    onMouseDown={() => {
-                        if(visibleIndex -1 >= 1){
-                            deselectRow()
-                            visibleIndex--
-                            visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
-                        }
-                    }}
-                />
-
-
-                {/* scroll down button */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(2, getAspect(uiSizes.rightArrowBlack)).width,
-                        height: calculateImageDimensions(2, getAspect(uiSizes.rightArrowBlack)).height,
-                        margin: {right: "1%"},
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.rightArrowBlack)
-                    }}
-                    onMouseDown={() => {
-                        // pressed.Load = true
-                        deselectRow()
-                        visibleIndex++
-                        visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
-                    }}
-
                 />
 
             </UiEntity>

@@ -7,6 +7,8 @@ import {
     AudioStream,
     AvatarAnchorPointType,
     AvatarAttach,
+    Billboard,
+    BillboardMode,
     ColliderLayer,
     engine,
     Entity,
@@ -1029,7 +1031,12 @@ export function resetEntityForBuildMode(scene:IWBScene, entity:Entity){
 
 export function addSelectionPointer(itemdata:any){
     selectedItem.pointer = engine.addEntity()
-    MeshRenderer.setBox(selectedItem.pointer)
+    GltfContainer.createOrReplace(selectedItem.pointer, {
+        src:"assets/40e64954-b84f-40e1-ac58-438a39441c3e.glb"
+    })
+
+    Billboard.create(selectedItem.pointer, {billboardMode:BillboardMode.BM_Y})
+
     Transform.createOrReplace(selectedItem.pointer, {
         position: Vector3.create(0, itemdata!.bb.z + 1, 0),
         parent: selectedItem.entity
@@ -1040,7 +1047,11 @@ export function addEditSelectionPointer(aid:string, itemData:any){
     let ent = entitiesFromItemIds.get(aid)
     if(ent){
         let edit = engine.addEntity()
-        MeshRenderer.setBox(edit)
+        GltfContainer.createOrReplace(edit, {
+            src:"assets/40e64954-b84f-40e1-ac58-438a39441c3e.glb"
+        })
+        Billboard.create(edit, {billboardMode:BillboardMode.BM_Y})
+
         Transform.createOrReplace(edit, {
             position: Vector3.create(0, itemData.bb.z + 1, 0),
             parent: ent
