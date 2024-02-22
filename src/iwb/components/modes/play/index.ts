@@ -390,5 +390,3 @@ export function checkAnimation(entity:Entity, sceneItem: SceneItem){
         })//
     }
 }
-
-//

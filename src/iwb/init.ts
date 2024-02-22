@@ -54,27 +54,4 @@ export function initIWB() {
             // colyseusConnect(data, "")
         })
     })
-
-
-
-
-    // createTests()
 }
-
-
-function createTests(){
-    let box = engine.addEntity()
-    Transform.create(box, {position: Vector3.create(-40, 1, 26)})
-    MeshCollider.setBox(box)
-    MeshRenderer.setBox(box)
-    pointerEventsSystem.onPointerDown({
-        entity:box,
-        opts:{hoverText:"Emote", button:InputAction.IA_POINTER}
-    },()=>{
-        console.log('player emote')
-        triggerEmote({ predefinedEmote: '0x1ecca9858dc8f36f2b65b44c987241556d24692f:0' })
-
-    })
-}
-
-//0x1ecca9858dc8f36f2b65b44c987241556d24692f:0

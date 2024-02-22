@@ -2,10 +2,10 @@ import {engine, GltfContainerLoadingState, VisibilityComponent} from "@dcl/sdk/e
 import { GLTFLoadedComponent } from "../../helpers/Components"
 import { displayLoadingScreen } from "../../ui/Panels/LoadingScreen"
 
-let time = 10
+export let loadingTime = 0
 
 export function addLoadingScreen(){
-    time = 10
+    loadingTime = 0
     engine.addSystem(LoadingSystem)
     displayLoadingScreen(true)
 }
@@ -16,8 +16,8 @@ export function removeLoadingScreen(){
 }
 
 export function LoadingSystem(dt: number) {
-    if(time >= 0){
-        time -= dt
+    if(loadingTime <= 10){
+        loadingTime += dt
     }else{
         removeLoadingScreen()
     }
