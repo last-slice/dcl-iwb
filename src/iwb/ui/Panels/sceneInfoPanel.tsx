@@ -68,7 +68,7 @@ export function selectRow(row:number, pointer?:boolean){
                 src:"assets/40e64954-b84f-40e1-ac58-438a39441c3e.glb"
             })
 
-            Billboard.create(sceneInfoEntitySelector, {billboardMode:BillboardMode.BM_Y})
+            Billboard.createOrReplace(sceneInfoEntitySelector, {billboardMode:BillboardMode.BM_Y})
 
             Transform.createOrReplace(sceneInfoEntitySelector, {
                 position: Vector3.create(visibleItems[selectedRow].p.x, item.bb.z + 1.5, visibleItems[selectedRow].p.z),
