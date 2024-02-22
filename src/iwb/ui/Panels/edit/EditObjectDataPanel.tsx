@@ -19,21 +19,21 @@ import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
 import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerAreaComponentPanel'
 import { AnimationComponent } from './AnimationComponentPanel'
-import { NPCComponent, updateNPCView } from './NPCComponent'
+import { NPCComponent, npcComponentView, updateNPCView } from './NPCComponent'
 
 export let visibleComponent: string = ""
 
-export function openEditComponent(value: string) {
+export function openEditComponent(value: string, subMenu?:string) {
+    if(value === COMPONENT_TYPES.NPC_COMPONENT){
+        updateNPCView('main')
+    }
+
     if(value === "Trigger"){
         updateTriggerActions()
     }
 
     if(value === "Trigger Area"){
         updateTriggerAreaActionView("main")
-    }
-
-    if(value === COMPONENT_TYPES.NPC_COMPONENT){
-        updateNPCView("main")//
     }
 
     visibleComponent = value
@@ -156,7 +156,23 @@ export function EditObjectData() {
                         uvs: getImageAtlasMapping(uiSizes.backButton)
                     }}
                     onMouseDown={() => {
-                        openEditComponent("")
+                        switch(visibleComponent){
+                            case COMPONENT_TYPES.NPC_COMPONENT:
+                                if(npcComponentView === "wAdd"){
+                                    updateNPCView('wMain')
+                                }
+                        
+                                else if(npcComponentView === "wMain"){
+                                    updateNPCView('main')
+                                }
+                                else{
+                                    openEditComponent("")
+                                }
+                                break;
+
+                            default:
+                                openEditComponent("")
+                        }
                         updateActionView("list")
                     }}
                 />

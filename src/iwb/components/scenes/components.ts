@@ -512,17 +512,22 @@ export function stopVideoFile(){
         video.playing = false
     }
 }
-
+//
 export function addNPCAvatar(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
     console.log('creating npc', item.npcComp)
+    let wearables:string[] = []
+    item.npcComp.wearables.forEach((wearable:string)=>{
+        wearables.push("urn:decentraland:matic:collections-v2:" + wearable)
+    })
+
     AvatarShape.createOrReplace(entity, {
         id: item.npcComp ? item.npcComp.name : getRandomString(5),
         name: item.npcComp ? item.npcComp.name : "",
         bodyShape:  item.npcComp && item.npcComp.bodyShape == 0 ? "urn:decentraland:off-chain:base-avatars:BaseMale" :  "urn:decentraland:off-chain:base-avatars:BaseFemale", 
-        wearables:[],
+        wearables: wearables,
         emotes:[],
         hairColor:  item.npcComp ?  Color4.create(item.npcComp.hairColor.r / 255, item.npcComp.hairColor.g / 255, item.npcComp.hairColor.b / 255) : undefined,
         skinColor: item.npcComp ?  Color4.create(item.npcComp.skinColor.r  / 255, item.npcComp.skinColor.g / 255, item.npcComp.skinColor.b / 255) : undefined,
         eyeColor: item.npcComp ?   Color4.create(item.npcComp.eyeColor.r  / 255, item.npcComp.eyeColor.g / 255, item.npcComp.eyeColor.b / 255) : undefined
     })
-}//
+}

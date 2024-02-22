@@ -1,14 +1,14 @@
 import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
-import {calculateSquareImageDimensions, getImageAtlasMapping, sizeFont} from '../../helpers'
+import {calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont} from '../../helpers'
 import {uiSizes} from '../../uiConfig'
 import {localPlayer} from '../../../components/player/player'
-import {formatDollarAmount, formatSize, log} from '../../../helpers/functions'
+import {formatDollarAmount, formatSize, log, paginateArray} from '../../../helpers/functions'
 import {items} from "../../../components/catalog";
 import {editItem, selectedItem, sendServerDelete} from "../../../components/modes/build";
 import {COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
 import {entitiesFromItemIds, sceneBuilds} from "../../../components/scenes";
-import {deselectRow, localScene, sceneInfoEntitySelector, selectRow, selectedEntity, selectedRow, showSceneInfoPanel, visibleIndex, visibleItems} from "../sceneInfoPanel";
+import {deselectRow, localScene, sceneInfoEntitySelector, selectRow, selectedEntity, selectedRow, showSceneInfoPanel, updateRows, updateVisibleIndex, visibleIndex, visibleItems} from "../sceneInfoPanel";
 import { sendServerMessage } from '../../../components/messaging'
 import { Entity, VisibilityComponent } from '@dcl/sdk/ecs'
 
@@ -187,7 +187,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '50%',
+                width: '40%',
                 height: '100%',
                 margin: {left: "2%"}
             }}
@@ -236,16 +236,73 @@ const SceneAssetList = () => {
             }}
         />
 
-            {/* <UiEntity
+
+            {/* paginate buttons column */}
+            <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                justifyContent: 'center',
                 width: '30%',
                 height: '100%',
             }}
-        /> */}
+            >
+
+                                {/* scroll up button */}
+                                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(2, getAspect(uiSizes.leftArrowBlack)).width,
+                        height: calculateImageDimensions(2, getAspect(uiSizes.leftArrowBlack)).height,
+                        margin: {left: "5%"},
+                    }}
+                    // uiBackground={{color:Color4.White()}}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.leftArrowBlack)
+                    }}
+                    onMouseDown={() => {
+                        if(visibleIndex -1 >= 1){
+                            deselectRow()
+                            updateVisibleIndex(-1)
+                            updateRows()
+                        }
+                    }}
+                />
+
+                {/* scroll down button */}
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(2, getAspect(uiSizes.rightArrowBlack)).width,
+                        height: calculateImageDimensions(2, getAspect(uiSizes.rightArrowBlack)).height,
+                        margin: {right: "1%"},
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.rightArrowBlack)
+                    }}
+                    onMouseDown={() => {
+                        // pressed.Load = true
+                        deselectRow()
+                        updateVisibleIndex(1)
+                        updateRows()
+                    }}
+                />
+
+
+            </UiEntity>
 
     </UiEntity>
 
@@ -293,7 +350,7 @@ function SceneAssetRow(data:any){
         
         selectedRow === i ?
 
-        getImageAtlasMapping(uiSizes.rowPillLight)
+        getImageAtlasMapping(uiSizes.rowPillLightest)
 
         :
         
@@ -310,8 +367,10 @@ function SceneAssetRow(data:any){
           
             if(selectedRow === i){
                 deselectRow()
+                //change the background color
             }else{
                 selectRow(i, true)
+                //change the background color
                 VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = true
             }
         }else{
@@ -331,7 +390,7 @@ function SceneAssetRow(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{
-            value: curItem ? curItem.n : "Name not found",
+            value: curItem ? curItem.n.length > 25 ?  curItem.n.substring(0,25) + "..." : curItem.n : "Name not found",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
             color: Color4.White()
@@ -350,7 +409,7 @@ function SceneAssetRow(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{
-            value: curItem?.pc ? formatDollarAmount(curItem?.pc) : "",
+            value: curItem?.pc ? formatDollarAmount(curItem?.pc) : "0",
             fontSize: sizeFont(20, 15),
             textAlign: "middle-left",
             color: Color4.White()
@@ -368,7 +427,7 @@ function SceneAssetRow(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{
-            value: curItem?.pc ? formatSize(curItem?.si) + "MB" : "",
+            value: curItem?.si ? formatSize(curItem?.si) + "MB" : "",
             fontSize: sizeFont(20, 15),
             textAlign: "middle-left",
             color: Color4.White()

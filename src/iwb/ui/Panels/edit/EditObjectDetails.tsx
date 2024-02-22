@@ -4,9 +4,6 @@ import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { selectedItem } from '../../../components/modes/build'
 import { items } from '../../../components/catalog'
-import { uiSizes } from '../../uiConfig'
-import { players } from '../../../components/player/player'
-import { log } from '../../../helpers/functions'
 
 export function EditObjectDetails() {
     return (
