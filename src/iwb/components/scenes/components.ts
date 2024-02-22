@@ -65,8 +65,11 @@ export function createGltfComponent(scene:IWBScene, entity:Entity, item:SceneIte
     }else{
         let gltf:any = {
             src:"assets/" + item.id + ".glb",
-            invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
-            visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
+            // invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
+            // visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
+
+            invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
+            visibleMeshesCollisionMask: ColliderLayer.CL_POINTER
         }
         GltfContainer.create(entity, gltf)
 
