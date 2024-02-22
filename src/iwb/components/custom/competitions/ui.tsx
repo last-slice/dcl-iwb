@@ -93,7 +93,7 @@ export function createBuildCompeitionUI(){
                 height: '10%',
                 margin:{top:'10%'}
             }}
-            uiText={{value:"Ends February 21st!", fontSize:sizeFont(30,20), textAlign:'middle-center', color:Color4.White()}}
+            uiText={{value:"Voting Ends\nFebruary 25th!", fontSize:sizeFont(30,20), textAlign:'middle-center', color:Color4.White()}}
         />
 
     <UiEntity
