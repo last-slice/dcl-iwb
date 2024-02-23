@@ -89,7 +89,7 @@ export function SizePanel() {
             uiBackground={{color:Color4.Gray()}}
             >
 
-            {/* Poly count size container */}
+            {/* Poly count size  */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',

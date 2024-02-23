@@ -3,7 +3,7 @@ import {Color4} from '@dcl/sdk/math'
 import {calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont} from '../../helpers'
 import {selectedItem} from '../../../components/modes/build'
 import {sceneBuilds} from '../../../components/scenes'
-import {EDIT_MODES, IWBScene} from '../../../helpers/types'
+import {COMPONENT_TYPES, EDIT_MODES, IWBScene} from '../../../helpers/types'
 import {ImageComponentPanel} from './ImageComponentPanel'
 import {EditTransform} from './EditTransform'
 import {VisibilityComponentPanel} from './VisibiltyComponentPanel'
@@ -19,10 +19,15 @@ import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
 import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerAreaComponentPanel'
 import { AnimationComponent } from './AnimationComponentPanel'
+import { NPCComponent, npcComponentView, updateNPCView } from './NPCComponent'
 
 export let visibleComponent: string = ""
 
-export function openEditComponent(value: string) {
+export function openEditComponent(value: string, subMenu?:string) {
+    if(value === COMPONENT_TYPES.NPC_COMPONENT){
+        updateNPCView('main')
+    }
+
     if(value === "Trigger"){
         updateTriggerActions()
     }
@@ -151,7 +156,23 @@ export function EditObjectData() {
                         uvs: getImageAtlasMapping(uiSizes.backButton)
                     }}
                     onMouseDown={() => {
-                        openEditComponent("")
+                        switch(visibleComponent){
+                            case COMPONENT_TYPES.NPC_COMPONENT:
+                                if(npcComponentView === "wAdd"){
+                                    updateNPCView('wMain')
+                                }
+                        
+                                else if(npcComponentView === "wMain"){
+                                    updateNPCView('main')
+                                }
+                                else{
+                                    openEditComponent("")
+                                }
+                                break;
+
+                            default:
+                                openEditComponent("")
+                        }
                         updateActionView("list")
                     }}
                 />
@@ -185,6 +206,7 @@ export function EditObjectData() {
                     <TriggerComponent/>
                     <TriggerAreaComponent/>
                     <AnimationComponent/>
+                    <NPCComponent/>
 
                 </UiEntity>
             </UiEntity>

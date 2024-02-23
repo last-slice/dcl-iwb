@@ -51,7 +51,7 @@ export function setupUi() {
 
 const uiComponent = () => [
   createWelcomeScreen(),
-  // createLoadingScreen(),
+  createLoadingScreen(),
   createNoWeb3Panel(),
   createCatalogInfoPanel(),
   createSettingsPanel(),

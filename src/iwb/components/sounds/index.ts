@@ -2,19 +2,20 @@ import { AudioSource, AudioStream, Entity, PBAudioSource, Transform, engine } fr
 import resources from "../../helpers/resources";
 import { items } from "../catalog";
 import { SOUND_TYPES } from "../../helpers/types";
-import { log } from "../../helpers/functions";
+import { getRandomIntInclusive, log } from "../../helpers/functions";
 
 export let sounds:Map<string,any> = new Map()
 export let audioClips = new Map<string, any>()
 export let catalogSoundEntity:Entity
 
-export let audioItems:any[] = []
-export let playlists:any[] = []
-export let playlistData: { [category: string]: any[] } = {};
-export let playlistName:string = "Gallery/Venue"
+// export let playlists:any[] = []
+// export let playlistName:string = "Gallery/Venue"
+export let playlist:any[] = []
 export let playlistIndex:number = 0
 export let playlistEntity:Entity
-export let playlistPlaying:boolean = false
+// export let playlistPlaying:boolean = false
+
+let loopTimes = 0
 
 
 export async function createSounds(){
@@ -56,6 +57,7 @@ export async function createSounds(){
         }
         sounds.set(sound.key, data)
     })
+    // createPlaylists()
 }
 
 export function playSound(key:SOUND_TYPES | string, volume?:number, loop?:boolean){
@@ -109,31 +111,28 @@ export function createPlaylists(){
     Transform.createOrReplace(playlistEntity, {parent:engine.PlayerEntity})
     AudioSource.create(playlistEntity)
 
-    audioItems = [...items.values()].filter((item:any)=> item.ty === "Audio")
+    playlist = [...items.values()].filter((item:any)=> item.ty === "Audio" && item.cat === "Loops")
 
-    for (const item of audioItems) {
-      const { sty, n } = item;
-  
-      if (!playlistData[sty]) {
-        playlistData[sty] = [];
-      }
-  
-      playlistData[sty].push({ n });
-    }
+    // for (const item of audioItems) {
+    //   const { sty, n, cat, len } = item;
 
-    for(const cat in playlistData){
-        playlists.push(cat)
-    }
 
-    // AudioSource.onChange(playlistEntity, (info:any)=>{
-    //     console.log('audio change', info)
-    // })
 
-    // playNextSong()
+    AudioSource.onChange(playlistEntity, (info:any)=>{
+        console.log('audio change', info)
+    })
+
+    playPlaylist()
 }
 
 export function playPlaylist(){
+    playlistIndex = getRandomIntInclusive(0, playlist.length - 1)
+    stopPlaylist()
     playNextSong()
+}
+
+export function stopPlaylist(){
+    AudioSource.getMutable(playlistEntity).playing = false
 }
 
 export function playNextSong(seek?:boolean){
@@ -144,14 +143,16 @@ export function playNextSong(seek?:boolean){
     let player = AudioSource.getMutable(playlistEntity)
     player.playing = false 
 
-    let playlist = playlistData[playlistName]
+    // let playlist = playlistData[playlistName]
+    // let item = audioItems.find((audio:any)=> audio.n === playlist[playlistIndex])
 
-    let item = audioItems.find((audio:any)=> audio.n === playlist[playlistIndex])
+    let song = playlist[playlistIndex]
+    loopTimes = song.len
 
-    console.log('audio playlist item is', item)
+    console.log('audio playlist item is', song)
 
-    player.audioClipUrl = "assets/" + item.id + ".mp3"
+    player.audioClipUrl = "assets/" + song.id + ".mp3"
     player.playing = true
 
-    playlistPlaying = true
+    // playlistPlaying = true
 }

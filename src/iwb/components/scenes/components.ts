@@ -2,6 +2,7 @@ import {
     Animator,
     AudioSource,
     AudioStream,
+    AvatarShape,
     ColliderLayer,
     Entity,
     GltfContainer,
@@ -19,7 +20,7 @@ import {COLLISION_LAYERS, COMPONENT_TYPES, IWBScene, MATERIAL_TYPES, Materials, 
 import {Color3, Color4} from "@dcl/sdk/math";
 import {localPlayer, localUserId, players} from "../player/player";
 import {entitiesFromItemIds, realmActions, sceneBuilds} from ".";
-import {log} from "../../helpers/functions";
+import {getRandomString, log} from "../../helpers/functions";
 import { AudioLoadedComponent, GLTFLoadedComponent, SmartItemLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../../helpers/Components";
 import { resetEntityForBuildMode, selectedItem } from "../modes/build";
 import { items } from "../catalog";
@@ -64,8 +65,11 @@ export function createGltfComponent(scene:IWBScene, entity:Entity, item:SceneIte
     }else{
         let gltf:any = {
             src:"assets/" + item.id + ".glb",
-            invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
-            visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
+            // invisibleMeshesCollisionMask: item.colComp && item.colComp.iMask ? item.colComp && item.colComp.iMask : undefined,
+            // visibleMeshesCollisionMask: item.colComp && item.colComp.vMask ? item.colComp && item.colComp.vMask : undefined
+
+            invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
+            visibleMeshesCollisionMask: ColliderLayer.CL_POINTER
         }
         GltfContainer.create(entity, gltf)
 
@@ -101,11 +105,15 @@ export function createVideoComponent(sceneId:string, entity:Entity, item:SceneIt
 }
 
 export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
-    log('creating smart item component', name)//
+    log('creating smart item component', name)
 
     switch(name){
         case 'Trigger Area':
             addTriggerArea(scene, entity, item, name)
+            break;
+
+        case 'NPC':
+            addNPCAvatar(scene, entity, item, name)
             break;
     }
 
@@ -506,4 +514,23 @@ export function stopVideoFile(){
         video = VideoPlayer.getMutable(selectedItem.entity)
         video.playing = false
     }
+}
+//
+export function addNPCAvatar(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
+    console.log('creating npc', item.npcComp)
+    let wearables:string[] = []
+    item.npcComp.wearables.forEach((wearable:string)=>{
+        wearables.push("urn:decentraland:matic:collections-v2:" + wearable)
+    })
+
+    AvatarShape.createOrReplace(entity, {
+        id: item.npcComp ? item.npcComp.name : getRandomString(5),
+        name: item.npcComp ? item.npcComp.name : "",
+        bodyShape:  item.npcComp && item.npcComp.bodyShape == 0 ? "urn:decentraland:off-chain:base-avatars:BaseMale" :  "urn:decentraland:off-chain:base-avatars:BaseFemale", 
+        wearables: wearables,
+        emotes:[],
+        hairColor:  item.npcComp ?  Color4.create(item.npcComp.hairColor.r / 255, item.npcComp.hairColor.g / 255, item.npcComp.hairColor.b / 255) : undefined,
+        skinColor: item.npcComp ?  Color4.create(item.npcComp.skinColor.r  / 255, item.npcComp.skinColor.g / 255, item.npcComp.skinColor.b / 255) : undefined,
+        eyeColor: item.npcComp ?   Color4.create(item.npcComp.eyeColor.r  / 255, item.npcComp.eyeColor.g / 255, item.npcComp.eyeColor.b / 255) : undefined
+    })
 }

@@ -42,46 +42,26 @@ export function initIWB() {
                 getAssetUploadToken()
 
                 engine.addSystem(PlayerTrackingSystem)
+            }
+              
+            //add input listeners
+            createInputListeners()
 
-                //add input listeners
-                createInputListeners()
+            // // Login with dcl auth and retrieve jwt
+            // const {body, status} = await signedFetch({
+            //     url: resources.endpoints.validateTest + "/login",
+            //     init: {
+            //         method: "POST",
+            //         headers: {}
+            //     }
+            // })
+            // let json = JSON.parse(body)
+            // //console.log('login response', status, json)
 
-                // // Login with dcl auth and retrieve jwt
-                // const {body, status} = await signedFetch({
-                //     url: resources.endpoints.validateTest + "/login",
-                //     init: {
-                //         method: "POST",
-                //         headers: {}
-                //     }
-                // })
-                // let json = JSON.parse(body)
-                // //console.log('login response', status, json)
-
-                // connect with userData and token
-                // colyseusConnect(data, json.data.token)
-                joinWorld(realm)
-                // colyseusConnect(data, "")
-            })
-        }
-    })
-
-    // createTests()
-}
-
-
-function createTests(){
-    let box = engine.addEntity()
-    Transform.create(box, {position: Vector3.create(-40, 1, 26)})
-    MeshCollider.setBox(box)
-    MeshRenderer.setBox(box)
-    pointerEventsSystem.onPointerDown({
-        entity:box,
-        opts:{hoverText:"Emote", button:InputAction.IA_POINTER}
-    },()=>{
-        console.log('player emote')
-        triggerEmote({ predefinedEmote: '0x1ecca9858dc8f36f2b65b44c987241556d24692f:0' })
-
+            // connect with userData and token
+            // colyseusConnect(data, json.data.token)
+            joinWorld(realm)
+            // colyseusConnect(data, "")
+        })
     })
 }
-
-//0x1ecca9858dc8f36f2b65b44c987241556d24692f:0

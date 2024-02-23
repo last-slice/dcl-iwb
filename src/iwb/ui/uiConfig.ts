@@ -660,6 +660,14 @@ export let uiSizes:any ={
             sourceWidth: 540,
             sourceHeight: 50
         },
+        rowPillLightest:{
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 897,
+            sourceLeft: 142,
+            sourceWidth: 292,
+            sourceHeight: 27
+        },
         buttonPillBlack:{
             atlasHeight: 1024,
             atlasWidth: 1024,

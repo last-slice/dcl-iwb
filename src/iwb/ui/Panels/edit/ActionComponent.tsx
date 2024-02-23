@@ -322,7 +322,7 @@ function generateActionRows(){
         arr.push(<ActionRow data={action} rowCount={count} />)
         count++
     })
-    return arr//
+    return arr
 }
 
 function ActionRow(action:any){

@@ -16,6 +16,7 @@ import { materialComponentListener } from "./listeners/MaterialComponent";
 import { utils } from "../../helpers/libraries";
 import { SCENE_MODES } from "../../helpers/types";
 import { VisibilityComponent } from "@dcl/sdk/ecs";
+import { npcComponentListener } from "./listeners/NPCComponent";
 
 export function assetListener(scene:any){
     scene.ass.onAdd((asset:any, key:any)=>{
@@ -67,6 +68,7 @@ export function assetListener(scene:any){
         triggerComponentListener(asset)
         actionComponentListener(scene, asset)
         materialComponentListener(scene, asset)
+        npcComponentListener(scene, asset)
     })
 
     scene.ass.onRemove(async (asset:any, key:any)=>{
