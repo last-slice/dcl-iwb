@@ -33,7 +33,7 @@ export function canShowNotifications(){
 }
 
 export function wantsToShowNotifications(){
-    return settings.nots
+    return settings?.nots ?? false
 }
 
 export function checkNotificationQueue(){
