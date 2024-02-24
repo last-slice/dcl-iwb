@@ -570,34 +570,36 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
         t.parent = curSceneParent
 
         log('new transform is', t)
-            log('new rot is', Quaternion.toEulerAngles(t.rotation))
+        log('new rot is', Quaternion.toEulerAngles(t.rotation))
 
-            // if(selectedItem.already){
-            //     log('dropping already selected item')
-            //     // Transform.createOrReplace(selectedItem.entity, t)
-            // }else{//
-            engine.removeEntity(selectedItem.entity)
-            // }
+        // if(selectedItem.already){
+        //     log('dropping already selected item')
+        //     // Transform.createOrReplace(selectedItem.entity, t)
+        // }else{//
+        engine.removeEntity(selectedItem.entity)
+        // }
 
-            grabbedAssets.delete(selectedItem.aid)
+        grabbedAssets.delete(selectedItem.aid)
 
-            sendServerMessage(
-                SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
-                {
-                    baseParcel: curScene.bpcl,
-                    item: {
-                        entity: selectedItem.entity,
-                        sceneId: curScene.id,
-                        aid: selectedItem.aid,
-                        id: selectedItem.catalogId,
-                        position: roundVector(t.position, 2),
-                        rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-                        scale: roundVector(t.scale, 2),
-                        duplicate: selectedItem.duplicate,
-                        ugc: selectedItem.ugc
-                    }
+        selectedItem.sceneId = curScene.id
+
+        sendServerMessage(
+            SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
+            {
+                baseParcel: curScene.bpcl,
+                item: {
+                    entity: selectedItem.entity,
+                    sceneId: curScene.id,
+                    aid: selectedItem.aid,
+                    id: selectedItem.catalogId,
+                    position: roundVector(t.position, 2),
+                    rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+                    scale: roundVector(t.scale, 2),
+                    duplicate: selectedItem.duplicate,
+                    ugc: selectedItem.ugc
                 }
-            )
+            }
+        )
         selectedItem.enabled = false
         return
     }
