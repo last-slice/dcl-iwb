@@ -35,15 +35,15 @@ export function initIWB() {
                 await getPlayerNames()
 
                 let realmData = await getRealm({})
-                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "mattimus.dcl.eth" : realmData.realmInfo.realmName : "")
+                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld.dcl.eth" : realmData.realmInfo.realmName : "")
 
                 engine.addSystem(BuildModeVisibiltyComponents)
 
                 getAssetUploadToken()
 
                 engine.addSystem(PlayerTrackingSystem)
-            }
-              
+            })
+
             //add input listeners
             createInputListeners()
 
@@ -62,6 +62,7 @@ export function initIWB() {
             // colyseusConnect(data, json.data.token)
             joinWorld(realm)
             // colyseusConnect(data, "")
-        })
+
+        }
     })
 }
