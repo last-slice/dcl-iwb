@@ -584,10 +584,10 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
             sendServerMessage(
                 SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
                 {
-                    baseParcel: scene.bpcl,
+                    baseParcel: curScene.bpcl,
                     item: {
                         entity: selectedItem.entity,
-                        sceneId: scene.id,
+                        sceneId: curScene.id,
                         aid: selectedItem.aid,
                         id: selectedItem.catalogId,
                         position: roundVector(t.position, 2),
