@@ -142,8 +142,9 @@ export let topTools: any[] = [
             sourceWidth: 128,
             sourceHeight: 128
         },
-        enabled: isSnapEnabled,
+        enabled: false,
         visible: true,
+        toggle:true,
         fn: () => {
             toggleSnapMode()
         }

@@ -16,6 +16,7 @@ import { openExternalUrl } from '~system/RestrictedActions'
 let settings:any[] = [
     {label:"Scene Enabled", enabled:true},
     {label:"Scene Public", enabled:true},
+    {label:"Scene Limits", enabled:true},
 ]
 
 export function BuildInfo() {
@@ -280,70 +281,135 @@ export function BuildInfo() {
 
             </UiEntity>
 
-                         {/* scene public */}
-                         <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                alignContent:'flex-start',
-                width: '100%',
-                height: '10%',
-                margin:{bottom:'2%'},
-                display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            >
-
-                <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '10%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Scene Public", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
-            />
+            {/* scene public */}
+            <UiEntity
+uiTransform={{
+flexDirection: 'row',
+alignItems: 'center',
+justifyContent: 'flex-start',
+alignContent:'flex-start',
+width: '100%',
+height: '10%',
+margin:{bottom:'2%'},
+display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
+}}
+// uiBackground={{color:Color4.Green()}}
+>
 
 <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateSquareImageDimensions(4).width,
-            height: calculateSquareImageDimensions(4).height,
-            margin:{top:"1%", bottom:'1%', left:"3%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getButtonState("Public")
-        }}
-        onMouseDown={() => {
-            scene!.priv = !scene!.priv        
-        }}
-        />
+uiTransform={{
+display: 'flex',
+flexDirection: 'row',
+alignItems: 'center',
+justifyContent: 'center',
+width: '20%',
+height: '10%',
+}}
+// uiBackground={{color:Color4.Green()}}
+uiText={{value:"Scene Public", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+/>
 
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '50%',
-                height: '10%',
-                margin:{left: '2%'}
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(22,15), color:Color4.White(), textAlign:'middle-left'}}
-            />
+<UiEntity
+uiTransform={{
+flexDirection: 'column',
+alignItems: 'center',
+justifyContent: 'center',
+width: calculateSquareImageDimensions(4).width,
+height: calculateSquareImageDimensions(4).height,
+margin:{top:"1%", bottom:'1%', left:"3%"},
+}}
+uiBackground={{
+textureMode: 'stretch',
+texture: {
+src: 'assets/atlas2.png'
+},
+uvs: getButtonState("Public")
+}}
+onMouseDown={() => {
+scene!.priv = !scene!.priv        
+}}
+/>
 
-            </UiEntity>
+<UiEntity
+uiTransform={{
+display: 'flex',
+flexDirection: 'row',
+alignItems: 'center',
+justifyContent: 'center',
+width: '50%',
+height: '10%',
+margin:{left: '2%'}
+}}
+// uiBackground={{color:Color4.Green()}}
+uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(22,15), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+        </UiEntity>
+
+        {/* scene limitations */}
+        {/* <UiEntity
+uiTransform={{
+flexDirection: 'row',
+alignItems: 'center',
+justifyContent: 'flex-start',
+alignContent:'flex-start',
+width: '100%',
+height: '10%',
+margin:{bottom:'2%'},
+display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
+}}
+// uiBackground={{color:Color4.Green()}}
+>
+
+<UiEntity
+uiTransform={{
+display: 'flex',
+flexDirection: 'row',
+alignItems: 'center',
+justifyContent: 'center',
+width: '20%',
+height: '10%',
+}}
+// uiBackground={{color:Color4.Green()}}
+uiText={{value:"Scene Limits", fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+<UiEntity
+uiTransform={{
+flexDirection: 'column',
+alignItems: 'center',
+justifyContent: 'center',
+width: calculateSquareImageDimensions(4).width,
+height: calculateSquareImageDimensions(4).height,
+margin:{top:"1%", bottom:'1%', left:"3%"},
+}}
+uiBackground={{
+textureMode: 'stretch',
+texture: {
+src: 'assets/atlas2.png'
+},
+uvs: getButtonState("Limits")
+}}
+onMouseDown={() => {
+scene!.priv = !scene!.priv        
+}}
+/>
+
+<UiEntity
+uiTransform={{
+display: 'flex',
+flexDirection: 'row',
+alignItems: 'center',
+justifyContent: 'center',
+width: '50%',
+height: '10%',
+margin:{left: '2%'}
+}}
+// uiBackground={{color:Color4.Green()}}
+uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,15), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+        </UiEntity> */}
 
 
             {/* buttons row */}
@@ -483,6 +549,9 @@ function getButtonState(button:string){
         
             case 'Public':
                 return scene!.priv ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)
+
+            // case 'Limits':
+            //     return scene!.lim ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)
     
             default:
                 return getImageAtlasMapping(uiSizes.toggleOnTrans)
@@ -490,5 +559,4 @@ function getButtonState(button:string){
     }else{
         return getImageAtlasMapping(uiSizes.toggleOffTrans)
     }
-
 }
