@@ -295,7 +295,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 } else {
                     GltfContainer.create(selectedItem.entity, {
                         src: 'assets/' + selectedItem.catalogId + ".glb",
-                        invisibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
+                        invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
                         visibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
                     })
 
@@ -711,7 +711,7 @@ export function confirmGrabItem(asset: SceneItem) {
         }
 
         if (GltfContainer.has(selectedItem.entity)) {
-            GltfContainer.getMutable(selectedItem.entity).invisibleMeshesCollisionMask = ColliderLayer.CL_POINTER
+            GltfContainer.getMutable(selectedItem.entity).invisibleMeshesCollisionMask = ColliderLayer.CL_NONE
             GltfContainer.getMutable(selectedItem.entity).visibleMeshesCollisionMask = ColliderLayer.CL_POINTER
         }
 

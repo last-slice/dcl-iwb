@@ -3,6 +3,7 @@ import resources from "../../helpers/resources";
 import { items } from "../catalog";
 import { SOUND_TYPES } from "../../helpers/types";
 import { getRandomIntInclusive, log } from "../../helpers/functions";
+import { utils } from "../../helpers/libraries";
 
 export let sounds:Map<string,any> = new Map()
 export let audioClips = new Map<string, any>()
@@ -15,8 +16,8 @@ export let playlistIndex:number = 0
 export let playlistEntity:Entity
 // export let playlistPlaying:boolean = false
 
-let loopTimes = 0
-
+let loopTimes = -1
+let playedTimes = 0
 
 export async function createSounds(){
     catalogSoundEntity = engine.addEntity()
@@ -53,7 +54,7 @@ export async function createSounds(){
             //         position: sound.pos,    
             //     })
             //     MeshRenderer.setBox(sEntity)
-            // }
+            // }//
         }
         sounds.set(sound.key, data)
     })
@@ -135,10 +136,16 @@ export function stopPlaylist(){
     AudioSource.getMutable(playlistEntity).playing = false
 }
 
-export function playNextSong(seek?:boolean){
+let timeout:any
+
+export function playNextSong(seek?:boolean, loop?:boolean){
     if(seek){
         playlistIndex++
     }
+
+
+    playedTimes = 0
+    loopTimes = 0
 
     let player = AudioSource.getMutable(playlistEntity)
     player.playing = false 
@@ -147,12 +154,44 @@ export function playNextSong(seek?:boolean){
     // let item = audioItems.find((audio:any)=> audio.n === playlist[playlistIndex])
 
     let song = playlist[playlistIndex]
-    loopTimes = song.len
+    loopTimes = song.len < 5 ? 10 : 5
 
     console.log('audio playlist item is', song)
 
     player.audioClipUrl = "assets/" + song.id + ".mp3"
     player.playing = true
+    player.volume = .2
+
+    timeout = utils.timers.setTimeout(()=>{
+        loopTrack()
+    }, 1000 * song.len)
 
     // playlistPlaying = true
+}
+
+
+
+function loopTrack(){
+    playedTimes++
+    if(playedTimes >= loopTimes){
+        playNextSong(true)
+    }else{
+
+        let song = playlist[playlistIndex]
+        AudioSource.createOrReplace(playlistEntity,{
+            playing: true,
+            audioClipUrl:"assets/" + song.id + ".mp3",
+            volume:.2
+        })
+        // let player = AudioSource.getMutable(playlistEntity)
+        // player.playing = false 
+        
+
+        // player.audioClipUrl = "assets/" + song.id + ".mp3"
+        // player.playing = true
+    
+        timeout = utils.timers.setTimeout(()=>{
+            loopTrack()
+        }, 1000 * song.len)
+    }
 }

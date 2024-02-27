@@ -11,7 +11,7 @@ import { sceneBuilds } from '../../../components/scenes'
 import { log } from '../../../helpers/functions'
 import { localPlayer } from '../../../components/player/player'
 
-let view = "list"
+export let triggerView = "list"
 let selectedTriggerIndex:number = 0
 let selectedActionIndex:number = 0
 let selectedPointerIndex:number = 0
@@ -23,7 +23,7 @@ let actionLabels:any[] = []
 let selectedTrigger:any
 
 export function updateActionView(v:string){
-    view = v
+    triggerView = v
 }
 
 export function TriggerComponent() {
@@ -48,7 +48,7 @@ export function TriggerComponent() {
                 width: '100%',
                 height: '20%',
                 margin:{top:"1%"},
-                display: view === "list" ? "flex" : "none"
+                display: triggerView === "list" ? "flex" : "none"
             }}
         >
 
@@ -106,7 +106,7 @@ export function TriggerComponent() {
                 width: '100%',
                 height: '10%',
                 margin:{bottom:"2%"},
-                display: view === "list" ? "flex" : "none"
+                display: triggerView === "list" ? "flex" : "none"
             }}
             >
         
@@ -141,7 +141,7 @@ export function TriggerComponent() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '80%',
-                display: view === "add" ? "flex" : "none"
+                display: triggerView === "add" ? "flex" : "none"
             }}
             // uiBackground={{color:Color4.Green()}}
             >
@@ -347,7 +347,7 @@ export function TriggerComponent() {
                 justifyContent: 'flex-start',
                 width: '95%',
                 height: '100%',
-                display: view === "actions" ? "flex" : "none"
+                display: triggerView === "actions" ? "flex" : "none"
             }}
             // uiBackground={{color:Color4.Green()}}
             >
@@ -381,7 +381,7 @@ export function TriggerComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '100%',
                 height: '100%',
             }}
             > 
@@ -414,14 +414,28 @@ export function TriggerComponent() {
         />
                  </UiEntity>
 
-                 <UiEntity
+
+            </UiEntity>
+
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"2%"}
+            }}
+            >
+
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
+                width: '70%',
                 height: '100%',
-                margin:{left:'2%'}
             }}
             >
                 <UiEntity
@@ -462,16 +476,26 @@ export function TriggerComponent() {
 
             </UiEntity>
 
-            <UiEntity
+                        {/* add action button */}
+                        <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 alignContent:'center',
                 justifyContent: 'center',
-                width: '25%',
+                width: '30%',
                 height: '100%',
             }}
             >
+                                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '30%',
+            }}
+            />
                      <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -488,7 +512,7 @@ export function TriggerComponent() {
                 },
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
-            uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
+            uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
                 updateTrigger("action", "add", {type:selectedTrigger.type, action:actionIds[selectedActionIndex], pointer: selectedTrigger.pointer})
             }}
@@ -510,7 +534,7 @@ export function TriggerComponent() {
                 height: '10%',
                 margin:{top:"5%"}
             }}
-            uiText={{textAlign:"middle-left", value:"Current Actions List", fontSize:sizeFont(25,15), color:Color4.White()}}
+            uiText={{textAlign:"middle-left", value:"Current Trigger Actions", fontSize:sizeFont(25,15), color:Color4.White()}}
             />
 
             {/* actions list panel */}
@@ -573,7 +597,7 @@ export function TriggerComponent() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '80%',
-                display: view === "list" ? "flex" : "none"
+                display: triggerView === "list" ? "flex" : "none"
             }}
             >   
             {generateRows()}

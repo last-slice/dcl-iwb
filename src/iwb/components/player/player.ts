@@ -200,12 +200,12 @@ export function createTutorialVideo(video:any){
     engine.removeEntity(tutorialVideo)
     tutorialVideo = engine.addEntity()
 
-    Transform.createOrReplace(tutorialVideo, {parent:engine.PlayerEntity, position:Vector3.create(0, .9, 2), scale: Vector3.create(3,2.06,1)})
+    Transform.createOrReplace(tutorialVideo, {parent:engine.PlayerEntity, position:Vector3.create(0, .9, 2), scale: Vector3.create(3.5,2,1)})
     MeshRenderer.setPlane(tutorialVideo)
 
     try{
         VideoPlayer.createOrReplace(tutorialVideo, {
-            src: iwbConfig.CID + video.link,
+            src: video.link,
             playing: true,
             volume:.3
         })
