@@ -1,4 +1,4 @@
-import {engine, Entity, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
+import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
 import {IWBScene, NOTIFICATION_TYPES, Player, SCENE_MODES, SceneItem} from "../../helpers/types"
 import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../modes/create"
@@ -27,13 +27,16 @@ import {
     updateTextComponent
 } from "./components"
 import {
+    check3DCollision,
     checkAnimation,
     checkAudio,
     checkPointers,
     checkSmartItem,
     checkVideo,
     disableEntityForPlayMode,
-    getSceneItem
+    findSceneEntryTrigger,
+    getSceneItem,
+    runTrigger
 } from "../modes/play"
 import {displaySceneAssetInfoPanel} from "../../ui/Panels/sceneInfoPanel"
 
@@ -487,6 +490,8 @@ function enableSceneEntities(sceneId: string) {
     log('enable scene entities for play mode')
     let scene = sceneBuilds.get(sceneId)
     if (scene) {
+        findSceneEntryTrigger(scene)
+        
         for (let i = 0; i < scene.entities.length; i++) {
             let entity = scene.entities[i]
 
@@ -495,6 +500,8 @@ function enableSceneEntities(sceneId: string) {
                 //check 3d
                 if (GLTFLoadedComponent.has(entity) && !GLTFLoadedComponent.get(entity).init) {
                     checkAnimation(entity, sceneItem)
+                    check3DCollision(entity, sceneItem)
+
                     GLTFLoadedComponent.getMutable(entity).init = true
                 }
 

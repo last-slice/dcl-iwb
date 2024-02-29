@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, InputAction, Material, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
+import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, InputAction, Material, MeshCollider, MeshRenderer, PointerEventType, PointerEvents, TextShape, Transform, VideoPlayer, VideoTexture, VisibilityComponent, engine } from "@dcl/sdk/ecs";
 import { Actions, COLLISION_LAYERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes";
 import { getRandomIntInclusive, log } from "../../../helpers/functions";
@@ -60,6 +60,16 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
     }
 }
 
+export function findSceneEntryTrigger(scene:IWBScene){
+    let triggerAssets = scene.ass.filter((asset:SceneItem)=> asset.trigComp)
+    triggerAssets.forEach((tasset:SceneItem)=>{
+        let triggers = tasset.trigComp.triggers.filter((trig:any)=> trig.type === Triggers.ON_ENTER)
+        triggers.forEach((trigger:any)=>{
+            runTrigger(tasset, trigger.actions)
+        })
+    })
+}
+
 export function findTriggerActionForEntity(entity:Entity, type:Triggers, pointer:InputAction){
     log('finding trigger action for entity', entity, type, pointer)
     sceneBuilds.forEach((scene,key)=>{
@@ -98,13 +108,10 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
             if(entity){
                 switch(action.type){
                     case Actions.OPEN_LINK:
-                        log('opening external url')
                         openExternalUrl({url:"" + action.url})
                         break;
         
                     case Actions.PLAY_AUDIO:
-                        log('playing audio')
-        
                         if(asset.sty !== "Stream"){
                             AudioSource.getMutable(entity).playing = true
                         }else{
@@ -113,8 +120,6 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                         break;
         
                     case Actions.STOP_AUDIO:
-                        log('stopping audio')
-        
                         if(asset.sty !== "Stream"){
                             AudioSource.getMutable(entity).playing = false
                         }else{
@@ -127,7 +132,6 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                         break;
 
                     case Actions.PLAY_ANIMATION:
-                        log('playing animation', action)
                         Animator.stopAllAnimations(entity, true)
                         let clip = Animator.getClip(entity, action.animName)
                         clip.shouldReset = true
@@ -136,22 +140,36 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
                         break;
 
                     case Actions.STOP_ANIMATION:
-                        log('stopping animation', action)
                         Animator.stopAllAnimations(entity, true)
                         let stopclip = Animator.getClip(entity, action.animName)
                         stopclip.playing = false
                         break;
 
                     case Actions.TELEPORT_PLAYER:
-                        log('teleporting player')
                         let pos = action.teleport.split(",")
                         let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
                         movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}})
                         break;
 
                     case Actions.EMOTE:
-                        log('emote player', action)
                         triggerEmote({predefinedEmote: "" + action.emote})
+                        break;
+
+                    case Actions.SET_VISIBILITY:
+                        console.log('setting visibility for action', action, asset)
+
+                        switch(asset.type){
+                            case "3D":
+                                VisibilityComponent.createOrReplace(entity, {visible: action.vis})
+                                GltfContainer.getMutable(entity).invisibleMeshesCollisionMask = action.iMask
+                                GltfContainer.getMutable(entity).visibleMeshesCollisionMask = action.vMask
+                                break;
+
+                            case '2D':
+                                //to do, update different mesh type collisions
+                                // MeshRenderer.getMutable(entity)//
+                                break;
+                        }
                         break;
                 }
             }
@@ -264,6 +282,14 @@ export function checkVideo(entity:Entity, sceneItem: SceneItem){
             video.position = 0
             log('setting new video', sceneItem, video)
         }
+    }
+}
+
+export function check3DCollision(entity: Entity, sceneItem: SceneItem) {
+    if (sceneItem.type === "3D") {
+        let gltf = GltfContainer.getMutable(entity)
+        gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
+        gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
     }
 }
 

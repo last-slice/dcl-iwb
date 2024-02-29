@@ -43,7 +43,6 @@ export async function colyseusConnect(data: any, token: string, world?: any) {
         initiateMessageListeners(room)
         createSceneListeners(room)
         createPlayerListeners(room)
-        // console.log(cRoom.serializer)//
 
         createCustomCode(room)
 

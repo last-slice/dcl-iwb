@@ -25,7 +25,7 @@ import {
     VideoPlayer,
     VisibilityComponent
 } from "@dcl/sdk/ecs"
-import {sendServerMessage} from "../../messaging";
+import {cRoom, sendServerMessage} from "../../messaging";
 import {
     EDIT_MODES,
     EDIT_MODIFIERS,
@@ -241,7 +241,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
 
-        if ((selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.worlds.find((w: any) => w.ens === realm).cv) || (selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
+        if ((selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > cRoom.state.cv) || (selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
 
@@ -319,6 +319,9 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             assetId: selectedItem.aid,
             ugc: selectedItem.ugc
         })
+    }
+    else{
+        console.log('item does not exist')
     }
 }
 
@@ -1073,6 +1076,7 @@ export function resetEntityForBuildMode(scene: IWBScene, entity: Entity) {
                 visible: sceneItem.buildVis
             })
 
+            check3DCollision(entity, sceneItem)
             check2DCollision(entity, sceneItem)
             checkAudio(entity, sceneItem, scene.parentEntity)
             checkVideo(entity, sceneItem)
@@ -1141,6 +1145,14 @@ function check2DCollision(entity: Entity, sceneItem: SceneItem) {
     // }
 }
 
+function check3DCollision(entity: Entity, sceneItem: SceneItem) {
+    if (sceneItem.type === "3D") {
+        let gltf = GltfContainer.getMutable(entity)
+        gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
+        gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
+    }
+}
+
 function checkAudio(entity: Entity, sceneItem: SceneItem, parent: Entity) {
     if (sceneItem.audComp) {
         MeshRenderer.setBox(entity)
@@ -1206,4 +1218,4 @@ function checkSmartItems(entity:Entity, sceneItem: SceneItem){
             }
         }
     }
-}
+}//

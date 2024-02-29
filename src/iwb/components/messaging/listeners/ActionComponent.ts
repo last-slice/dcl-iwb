@@ -9,6 +9,7 @@ export function actionComponentListener(scene:any, asset:any){
         });
 
         asset.actComp.actions.onRemove((action:any, key:any) => {
+            console.log('on action remove', action)
             let sceneData = sceneBuilds.get(scene.id)
             let index = sceneData.actions.findIndex((act:any)=> act.name === action.name)
             if(index >=0){

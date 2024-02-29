@@ -339,7 +339,8 @@ export enum Actions {
 
 export enum Triggers {
     ON_CLICK = "on_click",
-    ON_SPAWN = "on_spawn"
+    ON_ENTER = "on_enter",
+    ON_LEAVE = "on_leave"
 }
 
 export enum Materials {
@@ -357,7 +358,8 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Play Animation",
     "Stop Animation",
     "Teleport Player",
-    "Play Emote"
+    "Play Emote",
+    "Set Visibility"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -369,11 +371,14 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.PLAY_ANIMATION,
     Actions.STOP_ANIMATION,
     Actions.TELEPORT_PLAYER,
-    Actions.EMOTE
+    Actions.EMOTE,
+    Actions.SET_VISIBILITY
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
-    "On Click"
+    "On Click",
+    "On Enter",
+    "On Leave"
 ]
 
 export let ENTITY_POINTER_LABELS:any[] = [
@@ -395,7 +400,9 @@ export let ENTITY_POINTER_LABELS:any[] = [
 
 
 export let ENTITY_TRIGGER_SLUGS:any[] = [
-    Triggers.ON_CLICK
+    Triggers.ON_CLICK,
+    Triggers.ON_ENTER,
+    Triggers.ON_LEAVE
 ]
 
 export let MATERIAL_TYPES:Materials[] =[

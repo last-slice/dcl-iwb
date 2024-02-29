@@ -13,6 +13,7 @@ import { log } from '../../../helpers/functions'
 import { ActionAnimationComponent, selectedAnimationIndex, selectedAnimationLoop } from './Actions/ActionAnimationComponent'
 import { ActionTeleportPlayerCompoent, teleportPosition } from './Actions/ActionTeleportPlayerComponent'
 import { ActionPlayEmoteComponent, selectedEmoteIndex } from './Actions/ActionEmoteComponent'
+import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibilityCollideriMask, actionVisibilityIndex } from './Actions/ActionVisibilityComponent'
 
 let view = "list"
 let newName:string = ""
@@ -499,6 +500,9 @@ function getActionData(){
 
         case 8:
             return {aid:selectedItem.aid, type:Actions.EMOTE, emote:ENTITY_EMOTES_SLUGS[selectedEmoteIndex]}
+
+        case 9:
+                return {aid:selectedItem.aid, type:Actions.SET_VISIBILITY, vis: actionVisibilityIndex, vMask:actionVisibilityColliderVMask, iMask:actionVisibilityCollideriMask}
     }
 }
 
@@ -521,5 +525,8 @@ function getActionDataPanel(){
 
         case 8:
             return <ActionPlayEmoteComponent/>
+
+        case 9:
+            return <ActionVisibilityComponent/>
     }
 }
