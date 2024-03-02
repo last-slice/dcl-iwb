@@ -817,7 +817,7 @@ function addGrabbedComponent(entity: Entity, catalogId: string, itemData: any) {
     if (catalogItem) {
         switch (catalogItem.ty) {
             case '3D':
-                GltfContainer.create(entity, {src: "assets/" + catalogId + ".glb"})
+                GltfContainer.create(entity, {src: "assets/" + catalogId + ".glb", invisibleMeshesCollisionMask:ColliderLayer.CL_NONE, visibleMeshesCollisionMask:ColliderLayer.CL_NONE})
                 break;
 
             case '2D':

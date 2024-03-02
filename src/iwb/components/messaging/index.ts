@@ -6,7 +6,7 @@ import {initiateMessageListeners} from './serverListeners'
 import {createSceneListeners} from './sceneListeners'
 import {createPlayerListeners} from './playerListeners'
 import {createIWBEventListeners} from './iwbEvents'
-import {log} from "../../helpers/functions";
+import {isPreview, log} from "../../helpers/functions";
 import {localUserId, players} from '../player/player'
 import {Room} from 'colyseus.js'
 import { createCustomCode } from '../custom'
@@ -52,7 +52,7 @@ export async function colyseusConnect(data: any, token: string, world?: any) {
 }
 
 export async function joinWorld(world?: any) {
-    addLoadingScreen()
+    !isPreview ? addLoadingScreen() :null
     if (connected) {
         cRoom.removeAllListeners()
         cRoom.leave(true)

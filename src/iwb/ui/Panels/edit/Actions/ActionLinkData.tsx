@@ -34,7 +34,7 @@ export function ActionLinkComponent(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '70%',
+            height: '40%',
         }}
     >
     <Input
@@ -48,9 +48,10 @@ export function ActionLinkComponent(){
         color={Color4.White()}
         uiTransform={{
             width: '100%',
-            height: '120',
+            height: '100%',
         }}
         ></Input>
+
 
     </UiEntity>
 </UiEntity>

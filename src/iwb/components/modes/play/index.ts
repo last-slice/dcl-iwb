@@ -8,6 +8,7 @@ import { displaySettingsPanel } from "../../../ui/Panels/settings/settingsIndex"
 import { localPlayer } from "../../player/player";
 import { utils } from "../../../helpers/libraries";
 import { Color3 } from "@dcl/sdk/math";
+import { handleTriggerAction } from "./actions";
 
 // export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
 //     log('resetting enttiy for play mode')
@@ -98,7 +99,6 @@ export function findTriggerActionForEntity(entity:Entity, type:Triggers, pointer
 
 export function runTrigger(sceneItem:SceneItem, actions:any){
     actions.forEach((data:any)=>{
-
         let entity:any
         let asset = localPlayer.activeScene?.ass.find((asset:any)=> asset.aid === data.aid)
         if(asset && asset.actComp){
@@ -106,72 +106,7 @@ export function runTrigger(sceneItem:SceneItem, actions:any){
 
             entity = entitiesFromItemIds.get(asset.aid)
             if(entity){
-                switch(action.type){
-                    case Actions.OPEN_LINK:
-                        openExternalUrl({url:"" + action.url})
-                        break;
-        
-                    case Actions.PLAY_AUDIO:
-                        if(asset.sty !== "Stream"){
-                            AudioSource.getMutable(entity).playing = true
-                        }else{
-                            AudioStream.getMutable(entity).playing = true
-                        }
-                        break;
-        
-                    case Actions.STOP_AUDIO:
-                        if(asset.sty !== "Stream"){
-                            AudioSource.getMutable(entity).playing = false
-                        }else{
-                            AudioStream.getMutable(entity).playing = false
-                        }
-                        break;
-        
-                    case Actions.TOGGLE_VIDEO:
-                        VideoPlayer.getMutable(entity).playing = !VideoPlayer.get(entity).playing
-                        break;
-
-                    case Actions.PLAY_ANIMATION:
-                        Animator.stopAllAnimations(entity, true)
-                        let clip = Animator.getClip(entity, action.animName)
-                        clip.shouldReset = true
-                        clip.playing = true
-                        clip.loop = action.animLoop
-                        break;
-
-                    case Actions.STOP_ANIMATION:
-                        Animator.stopAllAnimations(entity, true)
-                        let stopclip = Animator.getClip(entity, action.animName)
-                        stopclip.playing = false
-                        break;
-
-                    case Actions.TELEPORT_PLAYER:
-                        let pos = action.teleport.split(",")
-                        let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
-                        movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}})
-                        break;
-
-                    case Actions.EMOTE:
-                        triggerEmote({predefinedEmote: "" + action.emote})
-                        break;
-
-                    case Actions.SET_VISIBILITY:
-                        console.log('setting visibility for action', action, asset)
-
-                        switch(asset.type){
-                            case "3D":
-                                VisibilityComponent.createOrReplace(entity, {visible: action.vis})
-                                GltfContainer.getMutable(entity).invisibleMeshesCollisionMask = action.iMask
-                                GltfContainer.getMutable(entity).visibleMeshesCollisionMask = action.vMask
-                                break;
-
-                            case '2D':
-                                //to do, update different mesh type collisions
-                                // MeshRenderer.getMutable(entity)//
-                                break;
-                        }
-                        break;
-                }
+                handleTriggerAction(entity, asset, action, data.id)
             }
         }
     })

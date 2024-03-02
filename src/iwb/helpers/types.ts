@@ -323,6 +323,8 @@ export enum Actions {
     TELEPORT_PLAYER = 'telport',
     EMOTE = 'emote',
     OPEN_LINK = 'open_link',
+    SHOW_TEXT = 'show_text',
+    HIDE_TEXT = 'hide_text',
     SHOW_TOAST = 'show_toast',
     HIDE_TOAST = 'hide_toast',
     START_DELAY = 'start_delay',
@@ -359,7 +361,9 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Stop Animation",
     "Teleport Player",
     "Play Emote",
-    "Set Visibility"
+    "Set Visibility",
+    "Show Text",
+    "Hide Text"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -372,7 +376,9 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.STOP_ANIMATION,
     Actions.TELEPORT_PLAYER,
     Actions.EMOTE,
-    Actions.SET_VISIBILITY
+    Actions.SET_VISIBILITY,
+    Actions.SHOW_TEXT,
+    Actions.HIDE_TEXT
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
@@ -457,4 +463,28 @@ export let ENTITY_EMOTES_SLUGS:any[] = [
     "disco",
     "dab",
     "headexplode",
+]
+
+export let TEXT_ALIGN:string[] = [
+    "Middle Center",
+    "Middle Left",
+    "Middle Right",
+    "Top Center",
+    "Top Left",
+    "Top Right",
+    "Bottom Center",
+    "Bottom Left",
+    "Bottom Right",
+]
+
+export let TEXT_ALIGN_SLUGS:string[] = [
+    "middle-center",
+    "middle-left",
+    "middle-right",
+    "top-center",
+    "top-left",
+    "top-right",
+    "bottom-center",
+    "bottom-left",
+    "bottom-right"
 ]
