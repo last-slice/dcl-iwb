@@ -3,6 +3,9 @@ import { Actions, SceneItem } from "../../../helpers/types";
 import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
 import { localPlayer } from "../../player/player";
 import { addShowText } from "../../../ui/showTextComponent";
+import { entitiesFromItemIds } from "../../scenes";
+import { utils } from "../../../helpers/libraries";
+import { addDelayedActionTimer } from ".";
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
     switch(action.type){
@@ -76,6 +79,29 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
             let showText = {...action}
             showText.id = actionId
             addShowText(showText)
+            break;
+
+        case Actions.HIDE_TEXT:
+            break;
+
+        case Actions.START_DELAY:
+            console.log('running delay action', action)
+            let delayedAction:any
+
+            let timer = utils.timers.setTimeout(()=>{
+                console.log('delay action timer over, need to contineu on')
+                let actionAsset = localPlayer.activeScene?.ass.find((asset:any)=> asset.actComp && asset.actComp.actions[action.startDId])
+                if(actionAsset){
+                    console.log('found action asset for delay action', actionAsset)
+                    delayedAction = actionAsset.actComp.actions[action.startDId]
+                    console.log('delay action is', action)
+                    let entity = entitiesFromItemIds.get(actionAsset.aid)
+                    if(entity){
+                        handleTriggerAction(entity, asset, delayedAction, delayedAction.id)
+                    }
+                }
+            }, 1000 * action.startDTimer)
+            addDelayedActionTimer(timer)
             break;
     }
 }

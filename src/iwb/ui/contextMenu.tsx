@@ -22,8 +22,8 @@ export function createCustomContextMenu(){
     <UiEntity
     key={"iwbcustomcontextmenu"}
     uiTransform={{
-      width: calculateImageDimensions(13, getAspect(uiSizes.smallPill)).width,
-      height:calculateImageDimensions(13, getAspect(uiSizes.smallPill)).height,
+      width: calculateImageDimensions(15, getAspect(uiSizes.smallPill)).width,
+      height:calculateImageDimensions(15, getAspect(uiSizes.smallPill)).height,
       display: showHover ? 'flex' : 'none',
       justifyContent:'center',
       flexDirection:'column',
@@ -45,7 +45,7 @@ export function createCustomContextMenu(){
         <UiEntity
     uiTransform={{
       width: '90%',
-      height: '25%',
+      height: '20%',
       justifyContent:'center',
       flexDirection:'row',
       margin:{top:"1%", bottom:"1%"},
@@ -67,8 +67,8 @@ export function createCustomContextMenu(){
     {/* button click image */}
     <UiEntity
     uiTransform={{
-      width: calculateImageDimensions(1.5, getAspect(uiSizes.oneButtonClick)).width,
-      height:calculateImageDimensions(1.5, getAspect(uiSizes.oneButtonClick)).height,
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.oneButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.oneButtonClick)).height,
       justifyContent:'center',
       flexDirection:'column',
       display: contextEvents[0] ? "flex" : "none"
@@ -112,8 +112,8 @@ export function createCustomContextMenu(){
 {/* button click image */}
 <UiEntity
     uiTransform={{
-      width: calculateImageDimensions(1.5, getAspect(uiSizes.twoButtonClick)).width,
-      height:calculateImageDimensions(1.5, getAspect(uiSizes.twoButtonClick)).height,
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.twoButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.twoButtonClick)).height,
       justifyContent:'center',
       flexDirection:'column',
       display: contextEvents[1] ? "flex" : "none"
@@ -148,15 +148,15 @@ export function createCustomContextMenu(){
          <UiEntity
     uiTransform={{
       width: '90%',
-      height: '25%',
+      height: '20%',
       justifyContent:'center',
       flexDirection:'row',
-      margin:{top:"3%", bottom:"1%"},
+      margin:{top:"1%", bottom:"1%"},
       display: contextEvents[2] ? "flex" : "none"
     }}
       >
 
-        {/* context event 1 */}
+        {/* context event 3 */}
   <UiEntity
     uiTransform={{
       width: '50%',
@@ -170,8 +170,8 @@ export function createCustomContextMenu(){
     {/* button click image */}
     <UiEntity
     uiTransform={{
-      width: calculateImageDimensions(1.5, getAspect(uiSizes.threeButtonClick)).width,
-      height:calculateImageDimensions(1.5, getAspect(uiSizes.threeButtonClick)).height,
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.threeButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.threeButtonClick)).height,
       justifyContent:'center',
       flexDirection:'column',
       display: contextEvents[2] ? "flex" : "none"
@@ -203,22 +203,22 @@ export function createCustomContextMenu(){
 
 
 
-       {/* context event 2 */}
+       {/* context event 4 */}
   <UiEntity
     uiTransform={{
       width: '50%',
       height: '100%',
       justifyContent:'center',
       flexDirection:'row',
-      display: contextEvents[1] ? "flex" : "none"
+      display: contextEvents[3] ? "flex" : "none"
     }}
     >
 
 {/* button click image */}
 <UiEntity
     uiTransform={{
-      width: calculateImageDimensions(1.5, getAspect(uiSizes.fourButtonClick)).width,
-      height:calculateImageDimensions(1.5, getAspect(uiSizes.fourButtonClick)).height,
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.fourButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.fourButtonClick)).height,
       justifyContent:'center',
       flexDirection:'column',
       display: contextEvents[3] ? "flex" : "none"
@@ -249,6 +249,111 @@ export function createCustomContextMenu(){
     </UiEntity>
       </UiEntity>
 
+               {/* context row 3 */}
+               <UiEntity
+    uiTransform={{
+      width: '90%',
+      height: '20%',
+      alignContent:'flex-start',
+      justifyContent:'flex-start',
+      flexDirection:'row',
+      margin:{top:"1%", bottom:"1%"},
+      display: contextEvents[4] ? "flex" : "none"
+    }}
+      >
+
+        {/* context event 1 */}
+  <UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'row',
+      display: contextEvents[4] ? "flex" : "none"
+    }}
+      >
+
+    {/* button click image */}
+    <UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.threeButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.threeButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[4] ? "flex" : "none"
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: contextEvents[4] && getButton(contextEvents[4].eventInfo)
+    }}
+      />
+
+    {/* click text */}
+<UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[4] ? "flex" : "none"
+    }}
+        uiText={{value:"" + (contextEvents[4] && getButtonText(contextEvents[4].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+      />
+
+      </UiEntity>
+
+
+
+
+
+       {/* context event 2 */}
+  <UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'row',
+      display: contextEvents[5] ? "flex" : "none"
+    }}
+    >
+
+{/* button click image */}
+<UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.fourButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.fourButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[5] ? "flex" : "none"
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: contextEvents[5] && getButton(contextEvents[5].eventInfo)
+    }}
+      />
+
+    {/* click text */}
+<UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+      display: contextEvents[5] ? "flex" : "none"
+    }}
+        uiText={{value:"" + (contextEvents[5] && getButtonText(contextEvents[5].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+      />
+      
+
+
+    </UiEntity>
+          </UiEntity>
   </UiEntity>
 
   )

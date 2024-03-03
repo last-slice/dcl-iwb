@@ -27,6 +27,7 @@ import {
 } from "@dcl/sdk/ecs"
 import {cRoom, sendServerMessage} from "../../messaging";
 import {
+    COMPONENT_TYPES,
     EDIT_MODES,
     EDIT_MODIFIERS,
     IWBScene,
@@ -525,7 +526,6 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     const bpsCurScene = checkBuildPermissionsForScene(curScene)
 
     if (curScene && bpsCurScene) {
-        log('we can drop item here')
         canDrop = true
         playSound(SOUND_TYPES.DROP_1_STEREO)
 
@@ -578,7 +578,7 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
         // if(selectedItem.already){
         //     log('dropping already selected item')
         //     // Transform.createOrReplace(selectedItem.entity, t)
-        // }else{//
+        // }else{
         engine.removeEntity(selectedItem.entity)
         // }
 
@@ -603,7 +603,10 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
                 }
             }
         )
+
         selectedItem.enabled = false
+
+        console.log('selected item', selectedItem)
         return
     }
 
@@ -658,6 +661,44 @@ export function duplicateItem(entity: Entity) {
     }
 }
 
+export function duplicateItemInPlace(entity: Entity) {
+    let assetId = itemIdsFromEntities.get(entity)
+    if (assetId) {
+        sceneBuilds.forEach((scene: IWBScene) => {
+            let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
+            console.log('scene item is', sceneItem)
+            if (sceneItem) {
+                afterLoadActions.push((sceneId: string, entity:Entity) => {
+                    editItem(entity, EDIT_MODES.EDIT)
+                    openEditComponent(COMPONENT_TYPES.TRANSFORM_COMPONENT)
+                })
+
+                playSound(SOUND_TYPES.DROP_1_STEREO)
+
+                let transform = Transform.get(entity)
+                sendServerMessage(
+                    SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
+                    {
+                        baseParcel: scene.bpcl,
+                        item: {
+                            entity: entity,
+                            sceneId: scene.id,
+                            aid: getRandomString(6),
+                            id: sceneItem.id,
+                            position: roundVector(transform.position, 2),
+                            rotation: roundVector(Quaternion.toEulerAngles(transform.rotation), 2),
+                            scale: roundVector(transform.scale, 2),
+                            duplicate: sceneItem.aid,
+                            ugc: sceneItem.ugc
+                        }
+                    }//
+                )
+                return
+            }
+        })
+    }
+}
+
 
 export function confirmGrabItem(asset: SceneItem) {
     console.log('confirming grabbed item', asset.aid)
@@ -693,6 +734,7 @@ export function confirmGrabItem(asset: SceneItem) {
             ugc: asset.ugc
         }
         addUseItemPointers(selectedItem.entity)
+        displayHover(true)
 
         let scale: any
         scale = transScal
@@ -717,8 +759,6 @@ export function confirmGrabItem(asset: SceneItem) {
             GltfContainer.getMutable(selectedItem.entity).invisibleMeshesCollisionMask = ColliderLayer.CL_NONE
             GltfContainer.getMutable(selectedItem.entity).visibleMeshesCollisionMask = ColliderLayer.CL_POINTER
         }
-
-        addUseItemPointers(entity!)
 
         const {rotation: playerRot} = Transform.get(engine.PlayerEntity)
         const euler = Quaternion.toEulerAngles(playerRot)
@@ -753,6 +793,7 @@ export function grabItem(entity: Entity) {
                 }
 
                 hideAllOtherPointers()
+                displayHover(true)
 
                 if (PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
                 sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
@@ -944,6 +985,7 @@ function addUseItemPointers(ent: Entity) {
             },
         ]
     })
+    updateContextEvents([...PointerEvents.get(ent).pointerEvents])
 }
 
 
@@ -983,7 +1025,7 @@ export function addBuildModePointers(ent: Entity) {
                 eventType: PointerEventType.PET_DOWN,
                 eventInfo: {
                     button: InputAction.IA_ACTION_4,
-                    hoverText: "Duplicate",
+                    hoverText: "Copy",
                     showFeedback: false
                 }
             },
@@ -992,6 +1034,14 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_SECONDARY,
                     hoverText: "Delete",
+                    showFeedback: false
+                }
+            },
+            {
+                eventType: PointerEventType.PET_DOWN,
+                eventInfo: {
+                    button: InputAction.IA_ACTION_5,
+                    hoverText: "Copy in Place",
                     showFeedback: false
                 }
             },

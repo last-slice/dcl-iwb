@@ -364,12 +364,12 @@ export function TriggerComponent() {
             />
 
 
-            {/* hover, new actions row */}
+            {/* hover text & distance row */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'space-between',
                 width: '100%',
                 height: '20%',
                 margin:{top:"2%"}
@@ -381,7 +381,7 @@ export function TriggerComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                width: '45%',
                 height: '100%',
             }}
             > 
@@ -405,6 +405,43 @@ export function TriggerComponent() {
         fontSize={sizeFont(20,12)}
         value={"" + (selectedTrigger && selectedTrigger.hoverText)}
         placeholder={'hover text'}
+        placeholderColor={Color4.White()}
+        color={Color4.White()}
+        uiTransform={{
+            width: '100%',
+            height: '70%',
+        }}
+        />
+                 </UiEntity>
+
+                 <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '45%',
+                height: '100%',
+            }}
+            > 
+                 <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '30%',
+            }}
+            uiText={{textAlign:"middle-left", value:"Trigger Distance", fontSize:sizeFont(25,15), color:Color4.White()}}
+            />
+
+        <Input
+        onChange={(value)=>{
+            selectedTrigger.distance = parseInt(value)
+            updateTrigger("action", "distance", {type:selectedTrigger.type, distance:parseInt(value)})
+        }}
+        fontSize={sizeFont(20,12)}
+        value={"" + (selectedTrigger && selectedTrigger.distance)}
+        placeholder={'enter click distance'}
         placeholderColor={Color4.White()}
         color={Color4.White()}
         uiTransform={{
@@ -561,28 +598,6 @@ export function TriggerComponent() {
                 height: '15%',
             }}
             >
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
-                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                margin:{left:"5%"}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-            }}
-            uiText={{value: "Go Back", fontSize: sizeFont(20, 16)}}
-            onMouseDown={() => {
-                updateActionView("list")
-            }}
-        />
 
                 </UiEntity>
 

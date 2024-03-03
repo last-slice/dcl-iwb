@@ -363,7 +363,8 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Play Emote",
     "Set Visibility",
     "Show Text",
-    "Hide Text"
+    "Hide Text",
+    "Start Delay"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -378,7 +379,8 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.EMOTE,
     Actions.SET_VISIBILITY,
     Actions.SHOW_TEXT,
-    Actions.HIDE_TEXT
+    Actions.HIDE_TEXT,
+    Actions.START_DELAY
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [

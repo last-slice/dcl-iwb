@@ -15,6 +15,7 @@ import { ActionTeleportPlayerCompoent, teleportPosition } from './Actions/Action
 import { ActionPlayEmoteComponent, selectedEmoteIndex } from './Actions/ActionEmoteComponent'
 import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibilityCollideriMask, actionVisibilityIndex } from './Actions/ActionVisibilityComponent'
 import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
+import { ActionStartDelayComponent, startDelayAction, updateDelayActions } from './Actions/ActionStartDelayComponent'
 
 let view = "list"
 let newName:string = ""
@@ -508,6 +509,13 @@ function getActionData(){
 
         case 10:
             return {aid:selectedItem.aid, type:Actions.SHOW_TEXT, text: showText}
+
+        case 11:
+            return {aid:selectedItem.aid, type:Actions.HIDE_TEXT, text: showText}
+
+        case 12:
+            return {aid:selectedItem.aid, type:Actions.START_DELAY, delay: startDelayAction}
+
     }
 }
 
@@ -536,5 +544,12 @@ function getActionDataPanel(){
 
         case 10:
             return <ActionShowTextComponent/>
+
+        case 11:
+            return
+        
+        case 12:
+            updateDelayActions()
+            return <ActionStartDelayComponent/>
     }
 }

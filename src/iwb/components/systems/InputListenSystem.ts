@@ -6,6 +6,7 @@ import {
     deleteSelectedItem,
     dropSelectedItem,
     duplicateItem,
+    duplicateItemInPlace,
     editItem,
     grabItem,
     saveItem,
@@ -51,10 +52,10 @@ export function InputListenSystem(dt: number) {
 
     const hover = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
     if (hover && hover.hit && hover.hit.entityId) {
-        // if(selectedItem && !selectedItem.enabled){
+        if(selectedItem && !selectedItem.enabled){
             displayHover(false)
             hoveredEntity = -500 as Entity
-        // }
+        }
     }
 
 
@@ -76,8 +77,8 @@ export function InputListenSystem(dt: number) {
                 log('player pressed #1 on an object')
                 if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
                     if (selectedItem && selectedItem.enabled) {
-                        log('player wants to delete selected item')
-                        cancelCatalogItem()
+                        log('player wants to cancel grabbing selected item')
+                        cancelSelectedItem()
                     } else {
                         log('player does not have item selected, just edit it')
                         editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
@@ -117,6 +118,18 @@ export function InputListenSystem(dt: number) {
     if (inputSystem.isTriggered(InputAction.IA_ACTION_5, PointerEventType.PET_DOWN)) {
         // Logic in response to button press
         displayHover(false)
+
+        // Logic in response to button press
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_5, PointerEventType.PET_DOWN)
+        if (result) {
+            if (result.hit && result.hit.entityId) {
+                log('player pressed #3 on an object')
+                if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
+                    log('player pressed #3 on an object in Build mode, need to duplicate in place')
+                    duplicateItemInPlace(result.hit.entityId as Entity)
+                }
+            }
+        }
     }
 
     //#4

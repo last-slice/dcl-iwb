@@ -34,6 +34,12 @@ export function removeShowText(id:string){
     showTexts.length === 0 ? displayShowText(false) : null
 }
 
+export function clearShowTexts(){
+  showTexts.forEach((text)=>{
+    removeShowText(text.id)
+  })
+}
+
 export function createShowTextComponent(){
   return(
     <UiEntity

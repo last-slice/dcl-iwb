@@ -9,6 +9,9 @@ import { localPlayer } from "../../player/player";
 import { utils } from "../../../helpers/libraries";
 import { Color3 } from "@dcl/sdk/math";
 import { handleTriggerAction } from "./actions";
+import { clearShowTexts } from "../../../ui/showTextComponent";
+
+export let delayedActionTimers:any[] = []
 
 // export function resetEntityForPlayMode(scene:IWBScene, entity:Entity){
 //     log('resetting enttiy for play mode')
@@ -128,10 +131,7 @@ export function check2DCollision(entity:Entity, sceneItem: SceneItem){
 }
 
 export function checkPointers(entity:Entity, sceneItem: SceneItem){
-    log('checking pointers for play asset', sceneItem)
-    if(sceneItem.trigComp && sceneItem.trigComp.triggers.length > 0){
-        log('we have play pointers', sceneItem.trigComp.triggers)
-
+    if(sceneItem.trigComp && sceneItem.trigComp.triggers.length > 0 && sceneItem.trigComp.enabled){
         let pointers:any[] = []
         sceneItem.trigComp.triggers.forEach((trigger:any, i:number)=>{
             pointers.push(
@@ -140,7 +140,7 @@ export function checkPointers(entity:Entity, sceneItem: SceneItem){
                     eventInfo: {
                         button: trigger.pointer,
                         hoverText: "" + trigger.hoverText,
-                        maxDistance: 5
+                        maxDistance: trigger.distance
                     }
                 }
             )
@@ -350,4 +350,19 @@ export function checkAnimation(entity:Entity, sceneItem: SceneItem){
             states:animations
         })//
     }
+}
+
+export function addDelayedActionTimer(timer:any){
+    delayedActionTimers.push(timer)
+}
+
+export function disableDelayedActionTimers(){
+    delayedActionTimers.forEach((timer)=>{
+        utils.timers.clearTimeout(timer)
+    })
+    delayedActionTimers.length = 0
+}
+
+export function disablePlayUI(){
+    clearShowTexts()
 }

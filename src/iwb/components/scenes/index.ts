@@ -33,7 +33,9 @@ import {
     checkPointers,
     checkSmartItem,
     checkVideo,
+    disableDelayedActionTimers,
     disableEntityForPlayMode,
+    disablePlayUI,
     findSceneEntryTrigger,
     getSceneItem,
     runTrigger
@@ -260,7 +262,7 @@ export function loadSceneAsset(sceneId: string, item: SceneItem) {
         // localScene.ass.push(item)
 
         let fn = afterLoadActions.pop()
-        if (fn) fn(sceneId)
+        if (fn) fn(sceneId, entity)
 
     }
 }
@@ -481,6 +483,8 @@ async function disableSceneEntities(sceneId: string) {
 
                 disableEntityForPlayMode(scene.id, entity)
             }
+            disableDelayedActionTimers()
+            disablePlayUI()
         }
         disabledEntities = true
     }
