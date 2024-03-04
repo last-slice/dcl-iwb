@@ -7,9 +7,16 @@ import { localUserId } from '../../../components/player/player'
 import { realm, worlds } from '../../../components/scenes'
 import { displayRealmTravelPanel } from '../realmTravelPanel'
 import { log, paginateArray } from '../../../helpers/functions'
+import { playSound } from '../../../components/sounds'
+import { SOUND_TYPES } from '../../../helpers/types'
+import { displayStatusView } from './settingsPanel'
+import { BuildsPanel, showYourBuilds } from './buildsPanel'
+import { YourWorlds, showWorlds } from './youWorlds'
 
 let visibleIndex = 1
 let visibleItems:any[] = []
+
+export let exploreView:string = "Current World"
 
 export function showAllWorlds(){
     visibleIndex = 1
@@ -25,10 +32,14 @@ export function refreshVisibleItems(){
     visibleItems = paginateArray([...worlds], visibleIndex, 6)
   }
 
+export function updateExploreView(view:string){
+    exploreView = view
+}
+
 export function ExplorePanel() {
     return (
         <UiEntity
-            key={"explorepanel"}
+            key={"iwbexplorepanel"}
             uiTransform={{
                 display: showSetting === "Explore" ? 'flex' : 'none',
                 flexDirection: 'column',
@@ -39,6 +50,93 @@ export function ExplorePanel() {
             }}
         >
 
+             {/* buttons row */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+        // uiBackground={{ color: Color4.Teal() }}
+        >
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%", bottom:'1%', right:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("Current World")
+            }}
+            onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
+                showYourBuilds()
+                updateExploreView("Current World")
+            }}
+            uiText={{value:"Current World", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            />
+
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("All Worlds")
+            }}
+            onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
+                // displayStatusView("All Worlds")
+                showAllWorlds()
+                updateExploreView("All Worlds")
+            }}
+            uiText={{value:"All Worlds", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%", bottom:'1%', left:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("My Worlds")
+            }}
+            onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
+                showWorlds()
+                updateExploreView("My Worlds")
+            }}
+            uiText={{value:"My Worlds", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            />
+
+        </UiEntity>
+
             {/* realm button row */}
             <UiEntity
             uiTransform={{
@@ -47,7 +145,7 @@ export function ExplorePanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '11%',
+                height: '10%',
             }}
             // uiBackground={{color:Color4.Blue()}}
             >
@@ -62,7 +160,7 @@ export function ExplorePanel() {
                 width: '100%',
                 height: '100%',
             }}
-            uiText={{value:"Current Realm: " + realm,  textAlign:'middle-left', color:Color4.White(), fontSize:sizeFont(25,15)}}
+            uiText={{value:"Current World: " + realm,  textAlign:'middle-left', color:Color4.White(), fontSize:sizeFont(25,15)}}
             />
 
 
@@ -76,7 +174,8 @@ export function ExplorePanel() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '90%',
+                height: '80%',
+                display: exploreView === "All Worlds" ? 'flex' : 'none',
             }}
             // uiBackground={{color:Color4.Gray()}}
             >
@@ -126,7 +225,7 @@ export function ExplorePanel() {
                 margin:{left:"1%"}
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Creator Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
+            uiText={{value:"World", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -296,6 +395,9 @@ export function ExplorePanel() {
         </UiEntity>
 
             </UiEntity>
+
+            <BuildsPanel/>
+            <YourWorlds/>
 
         
         </UiEntity>
@@ -473,4 +575,13 @@ function generateCreatorRows(){
     }
 
     return arr
+}
+
+
+function getButtonState(button:string){
+    if(exploreView === button){
+        return getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }else{
+        return getImageAtlasMapping(uiSizes.buttonPillBlack)
+    }
 }

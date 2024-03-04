@@ -9,6 +9,7 @@ import { formatDollarAmount, formatSize, log, paginateArray } from '../../../hel
 import { sceneBuilds } from '../../../components/scenes'
 import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from '../builds/buildsIndex'
 import { teleportToScene } from '../../../components/modes/play'
+import { exploreView } from './explorePanel'
 
 let visibleIndex = 1
 let visibleItems:any[] = []
@@ -51,20 +52,19 @@ export function refreshVisibleItems(){
 export function BuildsPanel() {
     return (
         <UiEntity
-            key={"mybuildspanel"}
+            key={"iwbmybuildspanel"}
             uiTransform={{
-                display: showSetting === "Builds" ? 'flex' : 'none',
+                display: exploreView === "Current World" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '100%',
+                height: '80%',
             }}
         >
 
             <UiEntity
             uiTransform={{
-                display: showSetting === "Builds" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',

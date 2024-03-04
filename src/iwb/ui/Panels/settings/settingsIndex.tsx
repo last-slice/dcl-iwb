@@ -3,7 +3,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { BuildsPanel, showYourBuilds } from './buildsPanel'
-import { ExplorePanel, showAllWorlds } from './explorePanel'
+import { ExplorePanel, showAllWorlds, updateExploreView } from './explorePanel'
 import { SettingsPanel, displayStatusView } from './settingsPanel'
 import { CreateScenePanel } from './createPanel'
 import { YourWorlds, showWorlds } from './youWorlds'
@@ -23,8 +23,8 @@ export let showSetting = "Explore"
 
 export let buttons:any[] = [
     {label:"Explore", pressed:false},
-    {label:"My Worlds", pressed:false},
-    {label:"Builds", pressed:false},
+    // {label:"My Worlds", pressed:false},
+    // {label:"Builds", pressed:false},
     {label:"Create", pressed:false},
     {label:"Settings", pressed:false},
     {label:"Info", pressed:false},
@@ -34,7 +34,8 @@ export let buttons:any[] = [
 export function displaySettingsPanel(value: boolean) {
     showSettingsPanel = value
     if(showSettingsPanel){
-        showAllWorlds()
+        showYourBuilds()
+        displaySetting("Explore")
     }
 }
 
@@ -126,8 +127,8 @@ export function createSettingsPanel() {
                     // uiBackground={{color:Color4.Blue()}}
                     >
 
-                    <YourWorlds/>
-                    <BuildsPanel/>
+                    {/* <YourWorlds/> */}
+                    {/* <BuildsPanel/> */}
                     <ExplorePanel/>
                     <CreateScenePanel/>
                     <SettingsPanel/>
@@ -139,7 +140,7 @@ export function createSettingsPanel() {
 
 
                 {/* connection status label */}
-            <UiEntity
+            {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -150,7 +151,7 @@ export function createSettingsPanel() {
                 position:{bottom:'10%', left: '25%'}
             }}
             uiText={{value:"Status: " + (connected ? "Connected" : "Disconnected"), textAlign:'middle-left', fontSize: sizeFont(20,15), color:Color4.White()}}
-            />
+            /> */}
 
             </UiEntity>
 
@@ -191,7 +192,8 @@ function generateSettingsButtons(buttons:any[]){
                 displaySetting(button.label)
             }
             else if(button.label === "Explore"){
-                showAllWorlds()
+                showYourBuilds()
+                updateExploreView("Current World")
                 displaySetting(button.label)
             }
             else if(button.label === "Builds"){

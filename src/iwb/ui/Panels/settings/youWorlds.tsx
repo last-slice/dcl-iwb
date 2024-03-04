@@ -1,57 +1,48 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { displaySetting, displaySettingsPanel, showSetting } from './settingsIndex'
+import { displaySetting, displaySettingsPanel } from './settingsIndex'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { localUserId, players, worldTravel } from '../../../components/player/player'
 import { displayInitalizeWorldPanel } from '../initaliteWorldPanel'
 import { worlds } from '../../../components/scenes'
-import { log } from '../../../helpers/functions'
+import { log, paginateArray } from '../../../helpers/functions'
 import { displayRealmTravelPanel } from '../realmTravelPanel'
 import { playSound } from '../../../components/sounds'
 import { SOUND_TYPES } from '../../../helpers/types'
+import { exploreView } from './explorePanel'
 
-let visibleIndex = 0
+let visibleIndex = 1
 let visibleItems:any[] = []
 
 export function showWorlds(){
-    visibleIndex = 0
+    visibleIndex = 1
     visibleItems.length = 0
     refreshVisibleItems()
 }
 
 export function refreshVisibleItems(){
-    log('we are here in rewfresh')
     visibleItems.length = 0
 
     let worlds = [...players.get(localUserId)!.worlds]
     worlds.sort((a, b) => a.name.localeCompare(b.name));
-    log('worlds legnth is', worlds.length)
-  
-    for(let i = (visibleIndex * 6); i < (visibleIndex * 6) + 6; i++){
-      visibleItems.push(worlds[i])
-      }
-  
-      let top = (visibleIndex * 6) + 6
-      if(top > worlds.length){
-          for(let i = 0; i < (top - worlds.length); i++){
-              visibleItems.pop()
-          }
-      }
+
+    visibleItems = paginateArray([...worlds], visibleIndex, 6)
+    console.log('visibile worlds are ', visibleItems)
   }
 
 export function YourWorlds() {
     return (
         <UiEntity
-            key={"yourworldspanel"}
+            key={"iwbyourworldspanel"}
             uiTransform={{
-                display: showSetting === "My Worlds" ? 'flex' : 'none',
+                display: exploreView === "My Worlds" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '100%',
-            }}//
+                height: '80%',
+            }}
         >
 
             {/* explore creators table */}

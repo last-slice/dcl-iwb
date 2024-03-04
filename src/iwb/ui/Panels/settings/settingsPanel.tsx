@@ -15,8 +15,6 @@ export let settingsView = "Visual"
 
 export function displayStatusView(view:string){
     settingsView = view
-
-    console.log("player settings", settings)
 }
 
 
@@ -70,7 +68,7 @@ export function SettingsPanel() {
             uiText={{value:"Visual", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
-            {/* <UiEntity
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -90,7 +88,7 @@ export function SettingsPanel() {
                 displayStatusView("Audio")
             }}
             uiText={{value:"Audio", color:Color4.White(), fontSize:sizeFont(30,20)}}
-            /> */}
+            />
 
         </UiEntity>
 
