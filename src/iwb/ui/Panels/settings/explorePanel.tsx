@@ -82,34 +82,11 @@ export function ExplorePanel() {
                 showYourBuilds()
                 updateExploreView("Current World")
             }}
-            uiText={{value:"Current World", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"Current World", color:Color4.White(), fontSize:sizeFont(30,15)}}
             />
 
 
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
-                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
-                margin:{top:"1%", bottom:'1%'},
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getButtonState("All Worlds")
-            }}
-            onMouseDown={() => {
-                playSound(SOUND_TYPES.SELECT_3)
-                // displayStatusView("All Worlds")
-                showAllWorlds()
-                updateExploreView("All Worlds")
-            }}
-            uiText={{value:"All Worlds", color:Color4.White(), fontSize:sizeFont(30,20)}}
-            />
+            
 
             <UiEntity
             uiTransform={{
@@ -132,7 +109,32 @@ export function ExplorePanel() {
                 showWorlds()
                 updateExploreView("My Worlds")
             }}
-            uiText={{value:"My Worlds", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            uiText={{value:"My Worlds", color:Color4.White(), fontSize:sizeFont(30,15)}}
+            />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%", bottom:'1%', left:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getButtonState("All Worlds")
+            }}
+            onMouseDown={() => {
+                playSound(SOUND_TYPES.SELECT_3)
+                // displayStatusView("All Worlds")
+                showAllWorlds()
+                updateExploreView("All Worlds")
+            }}
+            uiText={{value:"All Worlds", color:Color4.White(), fontSize:sizeFont(30,15)}}
             />
 
         </UiEntity>

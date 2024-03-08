@@ -8,7 +8,7 @@ import { showCatalogInfoPanel } from './CatalogInfoPanel'
 import { log, paginateArray } from '../../helpers/functions'
 import { Billboard, BillboardMode, Entity, GltfContainer, MeshRenderer, Transform, VisibilityComponent, engine } from '@dcl/sdk/ecs'
 import { items } from '../../components/catalog'
-import { duplicateItem, editItem, sendServerDelete } from '../../components/modes/build'
+import { deleteSelectedItem, duplicateItem, editItem, sendServerDelete } from '../../components/modes/build'
 import { entitiesFromItemIds, sceneBuilds } from '../../components/scenes'
 import { displaySceneInfoPanel, displaySceneSetting } from './builds/buildsIndex'
 import { sendServerMessage } from '../../components/messaging'
@@ -24,6 +24,7 @@ export function displaySceneAssetInfoPanel(value: boolean) {
     showSceneInfoPanel = value
 
     if(value){
+        deselectRow()
         visibleIndex = 1
         visibleItems.length = 0
         if (!showSceneInfoPanel || !localPlayer || !localPlayer.activeScene) return null
@@ -284,7 +285,7 @@ export function createSceneInfoPanel() {
                         deselectRow()
                         duplicateItem(selectedEntity as Entity)
                     }}
-                    uiText={{value: "Duplicate", color: Color4.White(), fontSize: sizeFont(30, 20)}}
+                    uiText={{value: "Copy", color: Color4.White(), fontSize: sizeFont(30, 20)}}
                 />
 
 
@@ -338,7 +339,7 @@ export function createSceneInfoPanel() {
                     onMouseDown={() => {
                     }}
                     onMouseUp={() => {
-                        sendServerDelete(selectedEntity as Entity)
+                        deleteSelectedItem(selectedEntity as Entity)
                         VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
                         deselectRow()
                     }}

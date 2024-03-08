@@ -347,7 +347,7 @@ uiText={{value:"Toggle all scene assets for others", fontSize:sizeFont(22,15), c
         </UiEntity>
 
         {/* scene limitations */}
-        {/* <UiEntity
+        <UiEntity
 uiTransform={{
 flexDirection: 'row',
 alignItems: 'center',
@@ -356,7 +356,7 @@ alignContent:'flex-start',
 width: '100%',
 height: '10%',
 margin:{bottom:'2%'},
-display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
+// display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
 }}
 // uiBackground={{color:Color4.Green()}}
 >
@@ -391,8 +391,8 @@ src: 'assets/atlas2.png'
 uvs: getButtonState("Limits")
 }}
 onMouseDown={() => {
-scene!.priv = !scene!.priv        
-}}
+    scene!.lim = !scene!.lim        
+    }}
 />
 
 <UiEntity
@@ -409,14 +409,13 @@ margin:{left: '2%'}
 uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,15), color:Color4.White(), textAlign:'middle-left'}}
 />
 
-        </UiEntity> */}
+        </UiEntity>
 
 
             {/* buttons row */}
         <UiEntity
             uiTransform={{
                 // display: 'flex',
-                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -434,6 +433,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
             height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
+            display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -478,7 +478,8 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
                     desc: scene!.d,
                     image: scene!.im,
                     enabled: scene!.e,
-                    priv: scene!.priv
+                    priv: scene!.priv,
+                    lim: scene!.lim
                 })
 
             displaySceneInfoPanel(false, scene)
@@ -497,6 +498,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
             height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
+            display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -521,7 +523,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
         {/* view image link */}
         <UiEntity
             uiTransform={{
-                display: 'flex',
+                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -550,8 +552,8 @@ function getButtonState(button:string){
             case 'Public':
                 return scene!.priv ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)
 
-            // case 'Limits':
-            //     return scene!.lim ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)
+            case 'Limits':
+                return scene!.lim ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
     
             default:
                 return getImageAtlasMapping(uiSizes.toggleOnTrans)

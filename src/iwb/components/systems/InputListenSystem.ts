@@ -88,7 +88,7 @@ export function InputListenSystem(dt: number) {
                 if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
                     if (selectedItem && selectedItem.enabled) {
                         log('player wants to delete selected item')
-                        deleteSelectedItem()
+                        deleteSelectedItem(selectedItem.entity)
                     } else {
                         log('player pressed #1 on nothing in Build mode, need to grab')
                     }
@@ -198,7 +198,7 @@ export function InputListenSystem(dt: number) {
                     if (selectedItem && selectedItem.enabled) {
                         log('player has selected item, need to delete')
                         if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            deleteSelectedItem()
+                            deleteSelectedItem(selectedItem.entity)
                         } else {
                             console.log('pressed F while editing asset, do nothing')
                         }
@@ -207,7 +207,7 @@ export function InputListenSystem(dt: number) {
                         if(settings.confirms){
                             displayConfirmDeletePanel(true, result.hit.entityId as Entity)
                         }else{
-                            sendServerDelete(result.hit.entityId as Entity)
+                            deleteSelectedItem(result.hit.entityId as Entity)
                         }
                     }
                 }
@@ -217,7 +217,7 @@ export function InputListenSystem(dt: number) {
                     if (selectedItem && selectedItem.enabled) {
                         log('player has selected item, need to delete')
                         if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            deleteSelectedItem()
+                            deleteSelectedItem(selectedItem.entity)
                         } else {
                             // saveItem()
                         }

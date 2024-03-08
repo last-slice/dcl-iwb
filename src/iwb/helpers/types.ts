@@ -177,6 +177,7 @@ export interface IWBScene {
     entities:Entity[],
     im?:string,
     priv:boolean,
+    lim:boolean
     // actions:any[]
 }
 

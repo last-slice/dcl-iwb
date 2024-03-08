@@ -112,12 +112,13 @@ export function createPlaylists(){
     AudioSource.create(playlistEntity, {
         volume: builderPlaylistVolume,
         audioClipUrl:"",
-        loop:true
+        loop:true,
+        playing:false
     })
 
     buildPlaylist = [...items.values()].filter((item:any)=> item.ty === "Audio" && item.cat === "Loops")
 
-    playPlaylist()
+    // playPlaylist()
 }
 
 export function playPlaylist(){

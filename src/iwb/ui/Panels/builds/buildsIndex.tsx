@@ -17,8 +17,6 @@ import { SpawnPanel, showSpawnPanel } from './buildSpawnPanel'
 export let showSettingsPanel = false
 export let buildInfoTab = "Info"
 
-//
-
 export let buttons:any[] = [
     {label:"Info", pressed:false},
     // {label:"Config", pressed:false},

@@ -113,7 +113,7 @@ export function createEditObjectPanel() {
                         }}
                         uiText={{value: "Delete", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
-                            deleteSelectedItem()
+                            deleteSelectedItem(selectedItem.entity)
                         }}
                     />
 

@@ -815,9 +815,33 @@ export function grabItem(entity: Entity) {
     // Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
 }
 
-export function deleteSelectedItem() {
-    sendServerDelete(selectedItem.entity)
-    removeSelectedItem()
+export function deleteSelectedItem(entity:Entity) {
+    console.log('entity to delete is ', entity)
+    let assetId = itemIdsFromEntities.get(entity)
+    console.log('found asset id', assetId)
+    if (assetId) {
+        sceneBuilds.forEach((scene: IWBScene) => {
+            log('this scene to find items to delete is', scene)
+            let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
+            if (sceneItem && !sceneItem.locked) {
+                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {
+                    assetId: assetId,
+                    sceneId: scene.id,
+                    entity: entity
+                })
+                let data:any = {
+                    assetId: assetId,
+                    sceneId: scene.id,
+                    entity: entity
+                }
+                sendServerDelete(entity, data)
+                removeSelectedItem()
+                return
+            }else{
+                playSound(SOUND_TYPES.ERROR_2)
+            }
+        })
+    }
 }
 
 export function cancelSelectedItem() {
@@ -1057,14 +1081,19 @@ export function cancelCatalogItem() {
     removeSelectedItem()
 }
 
-export function sendServerDelete(entity: Entity) {
+export function sendServerDelete(entity: Entity, data?:any) {
+    if(data){
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, data)
+        return 
+    }
+
+    console.log('entity to delete is ', entity)
     let assetId = itemIdsFromEntities.get(entity)
     console.log('found asset id', assetId)
     if (assetId) {
         sceneBuilds.forEach((scene: IWBScene) => {
             log('this scene to find items to delete is', scene)
             let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
-            console.log('scene item to delete is', sceneItem)
             if (sceneItem) {
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {
                     assetId: assetId,
@@ -1181,7 +1210,7 @@ export function removeEditSelectionPointer(aid: string) {
 
 
 function check2DCollision(entity: Entity, sceneItem: SceneItem) {
-    if (sceneItem.type === "2D") {
+    if (sceneItem.type === "2D" && !sceneItem.textComp) {
         MeshRenderer.setPlane(entity)
 
         if (sceneItem.colComp.iMask === 2 || sceneItem.colComp.vMask === 2) {
@@ -1190,9 +1219,6 @@ function check2DCollision(entity: Entity, sceneItem: SceneItem) {
             MeshCollider.setPlane(entity, ColliderLayer.CL_POINTER)
         }
     }
-    // if(sceneItem.type === "2D" && sceneItem.textComp){
-    //     MeshRenderer.setPlane(entity)
-    // }
 }
 
 function check3DCollision(entity: Entity, sceneItem: SceneItem) {
