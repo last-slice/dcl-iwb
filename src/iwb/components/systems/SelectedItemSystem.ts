@@ -93,16 +93,15 @@ export function SelectedItemSystem(dt: number) {
                 z: snapPos[1]
             }
 
-            const snapRot = getWorldRotation(engine.PlayerEntity)
-
-            const selEul = Quaternion.toEulerAngles(selEntityTransform.rotation)
-
-            selEntityTransform.rotation  =
-                Quaternion.fromEulerDegrees(
-                    selEul.x,
-                    getSnapYRotation(playerRotation, selEntityTransform.rotation),
-                    selEul.z
-                )
+            // const snapRot = getWorldRotation(engine.PlayerEntity)
+            // const selEul = Quaternion.toEulerAngles(selEntityTransform.rotation)
+            //
+            // selEntityTransform.rotation  =
+            //     Quaternion.fromEulerDegrees(
+            //         selEul.x,
+            //         getSnapYRotation(playerRotation, selEntityTransform.rotation),
+            //         selEul.z
+            //     )
 
             // Set new item position w.o snap
         } else {
