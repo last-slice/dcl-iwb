@@ -12,7 +12,6 @@ https://twitter.com/LastSliceCo
 lastraum@lastslice.co
 
 
-
 Powered by
 ![powered by the Decentraland DAO](https://bafkreibci6gg3wbjvxzlqpuh353upzrssalqqoddb6c4rez33bcagqsc2a.ipfs.nftstorage.link/)
 
