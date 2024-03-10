@@ -67,6 +67,7 @@ export enum SERVER_MESSAGE_TYPES {
     ADDED_TUTORIAL = 'added_tutorial',
     REMOVED_TUTORIAL = 'removed_tutorial',
     UPDATED_TUTORIAL_CID = 'updated_tutorial_cid',
+    WORLD_TRAVEL = 'world_travel',
     
     CUSTOM = "custom"
 }

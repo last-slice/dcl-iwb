@@ -10,6 +10,7 @@ import resources from "../../helpers/resources";
 import {Color4, Vector3} from "@dcl/sdk/math";
 import { refreshVisibleItems } from "../../ui/Panels/settings/uploadsPanel";//
 import { displayTutorialVideoControls } from "../../ui/tutorialVideoControlPanel";
+import { realm } from "../scenes";
 
 export let localUserId: string
 export let localPlayer: Player
@@ -185,6 +186,7 @@ export function worldTravel(world: any) {
     displaySettingsPanel(false)
     displayRealmTravelPanel(false, {})
     changeRealm({realm: "https://worlds.dcl-iwb.co/world/" + world.ens})
+    sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_TRAVEL, {from: realm, to:world.ens})
 }
 
 export function hasBuildPermissions() {

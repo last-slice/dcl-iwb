@@ -206,6 +206,10 @@ function generateSettingsButtons(buttons:any[]){
                 displayStatusView("Version")
                 displaySetting(button.label)
             }
+            else if(button.label ==="Settings"){
+                displayStatusView("Visual")
+                displaySetting(button.label)
+            }
             else{
                 displaySetting(button.label)
             }

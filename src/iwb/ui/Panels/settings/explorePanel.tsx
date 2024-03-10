@@ -82,7 +82,7 @@ export function ExplorePanel() {
                 showYourBuilds()
                 updateExploreView("Current World")
             }}
-            uiText={{value:"Current World", color:Color4.White(), fontSize:sizeFont(30,15)}}
+            uiText={{value:"Current World", color:Color4.White(), fontSize:sizeFont(30,12)}}
             />
 
 
