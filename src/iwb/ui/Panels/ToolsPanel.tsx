@@ -168,12 +168,12 @@ function CreateToolIcon(data:any){
         uvs: config.uvOverride ? config.uvOverride() : getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
     }}
     onMouseDown={()=>{
-        if(data.toggle){
-            log('need to toggle button state')
-            // config.enabled = !config.enabled//
+        if(config.toggle){
+            config.enabled = !config.enabled
         }
 
         if(config.fn){
+            log('tool icon function enabled')
             config.fn()
         }
         playSound(SOUND_TYPES.WOOD_3)

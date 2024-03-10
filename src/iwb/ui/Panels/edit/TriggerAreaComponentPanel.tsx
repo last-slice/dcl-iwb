@@ -16,9 +16,9 @@ export let triggerAreaView = "main"
 export let actionView:string = ""
 let selectedIndex:number = 0
 
-let actionNames:string[] = []
-let actionIds:string[] = []
-let actionLabels:any[] = []
+export let actionNames:string[] = []
+export let actionIds:string[] = []
+export let actionLabels:any[] = []
 
 let currentActions:any[] = []
 let currentActionIds:any[] = []

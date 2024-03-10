@@ -5,26 +5,28 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { uiSizes } from '../../uiConfig'
 import { iwbConfig, localPlayer, localUserId, players } from '../../../components/player/player'
 import { realm, worlds } from '../../../components/scenes'
-import { log, paginateArray } from '../../../helpers/functions'
+import { formatDollarAmount, formatSize, log, paginateArray } from '../../../helpers/functions'
 import { cRoom } from '../../../components/messaging'
 import { showNotification } from '../notificationUI'
-import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../../helpers/types'
-import { newItems } from '../../../components/catalog/items'
+import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem } from '../../../helpers/types'
+import { newItems, playerItemsOriginal } from '../../../components/catalog/items'
 import { statusView } from './StatusPanel'
 import { playSound } from '../../../components/sounds'
 
 let visibleIndex = 0
 let visibleItems:any[] = []
-let visibleItemsPerPage:number = 7
+let visibleItemsPerPage:number = 5
+let total:number = 0
 
 export function showUploads(){
+    total = getTotalSize()
     visibleIndex = 0
     visibleItems.length = 0
     refreshVisibleItems()
 }
 
 export function refreshVisibleItems(){
-    visibleItems = paginateArray([...localPlayer.uploads], visibleIndex + 1, visibleItemsPerPage)
+    visibleItems = paginateArray([...playerItemsOriginal], visibleIndex + 1, visibleItemsPerPage)
 }
 
 
@@ -51,24 +53,10 @@ export function UploadsPanel() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '90%',
+                height: '60%',
             }}
-            // uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.Teal()}}
             >
-
-            {/* asset table bg */}
-            <UiEntity
-            uiTransform={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '85%',
-                positionType:'absolute'
-            }}
-            // uiBackground={{color:Color4.Gray()}}
-            />
 
             {/* header row */}
         <UiEntity
@@ -78,7 +66,7 @@ export function UploadsPanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '10%',
+                height: '18%',
             }}
             // uiBackground={{color:Color4.Blue()}}
             uiBackground={{
@@ -96,7 +84,7 @@ export function UploadsPanel() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '60%',
+                width: '40%',
                 height: '100%',
                 margin:{left:'1%'}
             }}
@@ -110,20 +98,48 @@ export function UploadsPanel() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{value:"Type", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             />
-
+            
             <UiEntity
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '10%',
+                width: '15%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Poly", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
+            />
+
+
+<UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Size", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
+            />
+
+
+<UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -141,7 +157,7 @@ export function UploadsPanel() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '80%',
+                height: '90%',
             }}
             // uiBackground={{color:Color4.Yellow()}}
         >
@@ -150,7 +166,9 @@ export function UploadsPanel() {
 
         </UiEntity>
 
-       {/* buttons row */}
+            </UiEntity>
+
+                   {/* buttons row */}
        <UiEntity
             uiTransform={{
                 display: 'flex',
@@ -239,13 +257,81 @@ export function UploadsPanel() {
             </UiEntity>
 
         </UiEntity>
+
+                    {/* size graph row */}
+                    <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+            }}
+            // uiBackground={{color:Color4.White()}}
+        >
+
+            {/* file size label */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            // uiBackground={{color:Color4.Gray()}}
+            uiText={{value:"Custom Assets Size: " + parseFloat(formatSize(total)) + "MB" , color:Color4.White(), fontSize:sizeFont(25,16)}}
+            />
+
+            {/* File count size container */}
+                        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '90%',
+                height: '90%',
+            }}
+            uiBackground={{color:Color4.Gray()}}
+            >
+
+            {/* File count size container */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: getSizeWidth(),
+                height: '100%',
+            }}
+            uiBackground={{color: getSizeColor()}}
+            />
+
+         {/* asset percent size text */}
+                         <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%',
+                display:'flex',
+                positionType:'absolute'
+            }}
+            uiText={{value: "" + (parseFloat(formatSize(total)) / 50 * 100).toFixed(0) + "%", fontSize:sizeFont(15,15), textAlign:'middle-center', color:Color4.White()}}
+            />
+
+
+            </UiEntity>
+
+            
             </UiEntity>
 
 
         </UiEntity>
     )
 }
-
 
 function generateRows(){
     let arr:any[] = []
@@ -259,8 +345,9 @@ function generateRows(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '15%',
-                display:'flex'
+                height: '18%',
+                display:'flex',
+                margin:{top:'1%'}
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -282,12 +369,12 @@ function generateRows(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent:'flex-start',
-                width: '60%',
+                width: '40%',
                 height: '100%',
                 display:'flex',
                 margin:{left:'1%'}
             }}
-            uiText={{value: asset.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
+            uiText={{value: asset.n, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
             />
 
             {/* asset type */}
@@ -296,25 +383,53 @@ function generateRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
+                width: '15%',
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "" + asset.type, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+            uiText={{value: "" + asset.ty, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             />
 
-            {/* asset status */}
-            <UiEntity
+             {/* asset poly */}
+             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '10%',
+                width: '15%',
                 height: '100%',
                 display:'flex'
             }}
-            uiText={{value: "" + asset.status, fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+            uiText={{value: "" + formatDollarAmount(asset?.pc), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             />
+
+
+             {/* asset size */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+                display:'flex'
+            }}
+            uiText={{value: "" + (asset?.si / 1024 / 1024).toFixed(2) + "MB", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+            />
+
+                    {/* asset status */}
+                        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+                display:'flex'
+            }}
+            uiText={{value: "" + asset.pending ? "Ready" : "Live", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+            />
+
 
                 </UiEntity>
                 )
@@ -323,3 +438,23 @@ function generateRows(){
 
     return arr
 }
+
+function getTotalSize(){
+    let total:number = 0
+    playerItemsOriginal.forEach((asset:SceneItem)=>{
+        total += asset.si
+    })
+    return total
+}
+
+function getSizeWidth():any {
+    if(parseFloat(formatSize(total)) > 50){
+        return '100%'
+    }
+    return `${parseFloat(formatSize(total)) / 50 * 100}%`
+}
+
+function getSizeColor():any {
+    return parseFloat(formatSize(total)) / 50 > 0.75 ? Color4.Red() : Color4.Green()
+}
+

@@ -43,6 +43,7 @@ import { createTutorialVideoControPanel } from './tutorialVideoControlPanel'
 import { createLoadingScreen } from './Panels/LoadingScreen'
 import { createWelcomeScreen } from './Panels/welcomeScreen'
 import { createConfirmDeleteItemPanel } from './Panels/confirmDeleteItemPanel'
+import { createShowTextComponent } from './showTextComponent'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -90,6 +91,7 @@ const uiComponent = () => [
   createClearScenePanel(),
   createTutorialVideoControPanel(),
   createConfirmDeleteItemPanel(),
+  createShowTextComponent(),
   
 
   createCustomUI(),

@@ -67,6 +67,7 @@ export enum SERVER_MESSAGE_TYPES {
     ADDED_TUTORIAL = 'added_tutorial',
     REMOVED_TUTORIAL = 'removed_tutorial',
     UPDATED_TUTORIAL_CID = 'updated_tutorial_cid',
+    WORLD_TRAVEL = 'world_travel',
     
     CUSTOM = "custom"
 }
@@ -177,6 +178,7 @@ export interface IWBScene {
     entities:Entity[],
     im?:string,
     priv:boolean,
+    lim:boolean
     // actions:any[]
 }
 
@@ -323,6 +325,8 @@ export enum Actions {
     TELEPORT_PLAYER = 'telport',
     EMOTE = 'emote',
     OPEN_LINK = 'open_link',
+    SHOW_TEXT = 'show_text',
+    HIDE_TEXT = 'hide_text',
     SHOW_TOAST = 'show_toast',
     HIDE_TOAST = 'hide_toast',
     START_DELAY = 'start_delay',
@@ -339,7 +343,8 @@ export enum Actions {
 
 export enum Triggers {
     ON_CLICK = "on_click",
-    ON_SPAWN = "on_spawn"
+    ON_ENTER = "on_enter",
+    ON_LEAVE = "on_leave"
 }
 
 export enum Materials {
@@ -357,7 +362,11 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Play Animation",
     "Stop Animation",
     "Teleport Player",
-    "Play Emote"
+    "Play Emote",
+    "Set Visibility",
+    "Show Text",
+    "Hide Text",
+    "Start Delay"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -369,11 +378,17 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.PLAY_ANIMATION,
     Actions.STOP_ANIMATION,
     Actions.TELEPORT_PLAYER,
-    Actions.EMOTE
+    Actions.EMOTE,
+    Actions.SET_VISIBILITY,
+    Actions.SHOW_TEXT,
+    Actions.HIDE_TEXT,
+    Actions.START_DELAY
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
-    "On Click"
+    "On Click",
+    "On Enter",
+    "On Leave"
 ]
 
 export let ENTITY_POINTER_LABELS:any[] = [
@@ -395,7 +410,9 @@ export let ENTITY_POINTER_LABELS:any[] = [
 
 
 export let ENTITY_TRIGGER_SLUGS:any[] = [
-    Triggers.ON_CLICK
+    Triggers.ON_CLICK,
+    Triggers.ON_ENTER,
+    Triggers.ON_LEAVE
 ]
 
 export let MATERIAL_TYPES:Materials[] =[
@@ -450,4 +467,28 @@ export let ENTITY_EMOTES_SLUGS:any[] = [
     "disco",
     "dab",
     "headexplode",
+]
+
+export let TEXT_ALIGN:string[] = [
+    "Middle Center",
+    "Middle Left",
+    "Middle Right",
+    "Top Center",
+    "Top Left",
+    "Top Right",
+    "Bottom Center",
+    "Bottom Left",
+    "Bottom Right",
+]
+
+export let TEXT_ALIGN_SLUGS:string[] = [
+    "middle-center",
+    "middle-left",
+    "middle-right",
+    "top-center",
+    "top-left",
+    "top-right",
+    "bottom-center",
+    "bottom-left",
+    "bottom-right"
 ]

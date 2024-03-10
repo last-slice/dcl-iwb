@@ -14,7 +14,7 @@ import {CollisionComponentPanel} from './CollisionComponentPanel'
 import {NFTComponentPanel} from './NFTComponentPanel'
 import {TextComponentPanel} from './TextComponentPanel'
 import {ActionComponent} from './ActionComponent'
-import {TriggerComponent, updateActionView, updateTriggerActions} from './TriggerComponent'
+import {TriggerComponent, triggerView, updateActionView, updateTriggerActions} from './TriggerComponent'
 import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
 import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerAreaComponentPanel'
@@ -168,6 +168,17 @@ export function EditObjectData() {
                                 else{
                                     openEditComponent("")
                                 }
+                                break;
+
+                            case COMPONENT_TYPES.TRIGGER_COMPONENT:
+                                if(triggerView === "actions" || triggerView == "add"){
+                                    updateActionView("list")//
+                                }
+
+                                else{
+                                    openEditComponent("")
+                                }
+                                
                                 break;
 
                             default:

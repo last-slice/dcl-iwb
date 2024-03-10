@@ -4,6 +4,8 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { uiSizes } from '../../uiConfig'
 import { settingsView } from './settingsPanel'
 import { items } from '../../../components/catalog'
+import { buildPlaylist, buildPlaylistIndex, changeBuildVolume, playNextSong, playPlaylist, playlistEntity, stopPlaylist } from '../../../components/sounds'
+import { AudioSource } from '@dcl/sdk/ecs'
 
 let playlistIndex:number = 0
 let audionames:any[] = []
@@ -24,7 +26,7 @@ export function AudioSettings() {
             >
 
             {/* playlist row */}
-        <UiEntity
+        {/* <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -32,10 +34,10 @@ export function AudioSettings() {
                 width: '80%',
                 height: '15%',
             }}
-            >
+            > */}
 
             {/* playlist label */}
-            <UiEntity
+            {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -70,10 +72,10 @@ export function AudioSettings() {
 
             </UiEntity>
 
-        </UiEntity>
+        </UiEntity> */}
 
           {/* artist row */}
-          <UiEntity
+          {/* <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -81,10 +83,10 @@ export function AudioSettings() {
                 width: '80%',
                 height: '15%',
             }}
-            >
+            > */}
 
             {/* artist label */}
-            <UiEntity
+            {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -106,7 +108,7 @@ export function AudioSettings() {
             uiText={{value:"Mease", fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-left'}}
             />
                 
-        </UiEntity>
+        </UiEntity> */}
 
              {/* track row */}
              <UiEntity
@@ -139,7 +141,7 @@ export function AudioSettings() {
                 width: '50%',
                 height: '100%',
             }}
-            uiText={{value:"Track Name", fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"" + (buildPlaylist.length > 0 && buildPlaylist[buildPlaylistIndex].n), fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-left'}}
             />
                 
         </UiEntity>
@@ -164,7 +166,7 @@ export function AudioSettings() {
                 width: '50%',
                 height: '100%',
             }}
-            uiText={{value:"Volume: 30", fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"Volume: " + (AudioSource.has(playlistEntity) && AudioSource.get(playlistEntity).volume?.toFixed(1)), fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-left'}}
             />
 
             <UiEntity
@@ -193,7 +195,10 @@ export function AudioSettings() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            onMouseDown={()=>{
+                changeBuildVolume(-.1)
             }}
             />
 
@@ -212,7 +217,10 @@ export function AudioSettings() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            onMouseDown={()=>{
+                changeBuildVolume(.1)
             }}
             />
 
@@ -249,7 +257,10 @@ export function AudioSettings() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            onMouseDown={()=>{
+                playNextSong(-1)
             }}
             />
 
@@ -269,7 +280,10 @@ export function AudioSettings() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            onMouseDown={()=>{
+                stopPlaylist()
             }}
             />
 
@@ -289,7 +303,10 @@ export function AudioSettings() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            onMouseDown={()=>{
+                playPlaylist()
             }}
             />
 
@@ -309,7 +326,10 @@ export function AudioSettings() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
+                uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            onMouseDown={()=>{
+                playNextSong(1)
             }}
             />
                 
@@ -325,46 +345,6 @@ export function AudioSettings() {
                 height: '15%',
             }}
             >
-
-            {/* Rewind Button */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '23%',
-                height: '100%',
-                margin:{left:'1%', right:'1%'}
-            }}
-            uiText={{value:"Rewind", fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-center'}}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
-            }}
-            />
-
-             {/* Pause Button */}
-             <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '23%',
-                height: '100%',
-                margin:{left:'1%', right:'1%'}
-            }}
-            uiText={{value:"Pause", fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-center'}}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs:getImageAtlasMapping(uiSizes.blueButton)
-            }}
-            />
            
                  </UiEntity>
 

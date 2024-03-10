@@ -198,10 +198,15 @@ export function TutorialsPanel() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: calculateSquareImageDimensions(25).width,
-                height: calculateSquareImageDimensions(25).height,
+                height: calculateSquareImageDimensions(20).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
-            uiBackground={{color:Color4.Black()}}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: '' + (tutorial && tutorial.image ? tutorial.image : "")
+                }
+            }}
             />
 
             </UiEntity>
@@ -369,7 +374,12 @@ function generateRowItems(count:number){
             height: '90%',
             margin:{top:"1%", bottom:'1%'},
         }}
-        uiBackground={{color:Color4.Black()}}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: '' + visibleItems && visibleItems[count + rowcount] ? visibleItems[count + rowcount].image : ""
+            }
+        }}
         onMouseDown={()=>{
             playSound(SOUND_TYPES.SELECT_3)
             tutorial = visibleItems[count + j]

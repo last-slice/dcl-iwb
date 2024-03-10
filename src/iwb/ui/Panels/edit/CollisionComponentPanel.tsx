@@ -10,7 +10,7 @@ import { selectedItem } from '../../../components/modes/build'
 let invisibleIndex:number = 2
 let visibleIndex:number = 1
 
-let invisibleLayers:any[] = [
+export let invisibleLayers:any[] = [
     "None",
     "Pointer",
     "Physics",
@@ -25,7 +25,7 @@ let invisibleLayers:any[] = [
     "Custom9",
 ]
 
-let visibleLayers:any[] = [
+export let visibleLayers:any[] = [
     "None",
     "Pointer",
     "Physics",

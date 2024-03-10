@@ -3,20 +3,21 @@ import resources from "../../helpers/resources";
 import { items } from "../catalog";
 import { SOUND_TYPES } from "../../helpers/types";
 import { getRandomIntInclusive, log } from "../../helpers/functions";
+import { utils } from "../../helpers/libraries";
 
 export let sounds:Map<string,any> = new Map()
 export let audioClips = new Map<string, any>()
 export let catalogSoundEntity:Entity
 
-// export let playlists:any[] = []
-// export let playlistName:string = "Gallery/Venue"
-export let playlist:any[] = []
-export let playlistIndex:number = 0
+export let buildPlaylist:any[] = []
+export let buildPlaylistIndex:number = 0
 export let playlistEntity:Entity
-// export let playlistPlaying:boolean = false
 
-let loopTimes = 0
+let loopTimes = -1
+let playedTimes = 0
+let builderPlaylistVolume = 0.1
 
+let timeout:any
 
 export async function createSounds(){
     catalogSoundEntity = engine.addEntity()
@@ -48,16 +49,16 @@ export async function createSounds(){
             })
         }else{
             // if(sound.pos){
-            //     angzaarLog("adding position to sound")
+            //     angzaarLog("adding position to sound")//
             //     Transform.create(sEntity, {
             //         position: sound.pos,    
             //     })
             //     MeshRenderer.setBox(sEntity)
-            // }
+            // }//
         }
         sounds.set(sound.key, data)
     })
-    // createPlaylists()
+    createPlaylists()
 }
 
 export function playSound(key:SOUND_TYPES | string, volume?:number, loop?:boolean){
@@ -72,7 +73,6 @@ export function playSound(key:SOUND_TYPES | string, volume?:number, loop?:boolea
         }    
     }
 }
-
 
 export function stopSound(id:string){
     const sound = sounds.get(id)
@@ -109,50 +109,81 @@ function playLoop(id:string, volume?:number){
 export function createPlaylists(){
     playlistEntity = engine.addEntity()
     Transform.createOrReplace(playlistEntity, {parent:engine.PlayerEntity})
-    AudioSource.create(playlistEntity)
-
-    playlist = [...items.values()].filter((item:any)=> item.ty === "Audio" && item.cat === "Loops")
-
-    // for (const item of audioItems) {
-    //   const { sty, n, cat, len } = item;
-
-
-
-    AudioSource.onChange(playlistEntity, (info:any)=>{
-        console.log('audio change', info)
+    AudioSource.create(playlistEntity, {
+        volume: builderPlaylistVolume,
+        audioClipUrl:"",
+        loop:true,
+        playing:false
     })
 
-    playPlaylist()
+    buildPlaylist = [...items.values()].filter((item:any)=> item.ty === "Audio" && item.cat === "Loops")
+
+    // playPlaylist()
 }
 
 export function playPlaylist(){
-    playlistIndex = getRandomIntInclusive(0, playlist.length - 1)
-    stopPlaylist()
-    playNextSong()
+    if(AudioSource.has(playlistEntity) && !AudioSource.get(playlistEntity).playing){
+        buildPlaylistIndex = getRandomIntInclusive(0, buildPlaylist.length - 1)
+        stopPlaylist()
+        playNextSong()
+    }
 }
 
 export function stopPlaylist(){
     AudioSource.getMutable(playlistEntity).playing = false
 }
 
-export function playNextSong(seek?:boolean){
+export function playNextSong(seek?:number, loop?:boolean){
     if(seek){
-        playlistIndex++
+        utils.timers.clearTimeout(timeout)
+        buildPlaylistIndex += seek
+        buildPlaylistIndex <= 0 ? buildPlaylistIndex = 0 : null
     }
 
     let player = AudioSource.getMutable(playlistEntity)
     player.playing = false 
 
+    playedTimes = 0
+    loopTimes = 0
+
     // let playlist = playlistData[playlistName]
     // let item = audioItems.find((audio:any)=> audio.n === playlist[playlistIndex])
 
-    let song = playlist[playlistIndex]
-    loopTimes = song.len
+    let song = buildPlaylist[buildPlaylistIndex]
+    loopTimes = song.len < 5 ? 7 : 5 // need to determine how many times to loop based on song length
 
-    console.log('audio playlist item is', song)
+    console.log('song is', song, builderPlaylistVolume)
 
-    player.audioClipUrl = "assets/" + song.id + ".mp3"
-    player.playing = true
+    AudioSource.createOrReplace(playlistEntity,{
+        volume: builderPlaylistVolume,
+        audioClipUrl: "assets/" + song.id + ".mp3",
+        playing:true,
+        loop:true
+    })
 
-    // playlistPlaying = true
+    timeout = utils.timers.setTimeout(()=>{
+        loopTrack()
+    }, 1000 * song.len ? song.len : 3)
+}
+
+export function stopBuildSong(){
+    utils.timers.clearTimeout(timeout)
+    stopPlaylist()
+}
+
+export function changeBuildVolume(direction:number){
+    builderPlaylistVolume += direction
+    let audio = AudioSource.getMutable(playlistEntity)
+    if(audio){
+        audio.volume = builderPlaylistVolume
+    }
+}
+
+function loopTrack(){
+    playedTimes++
+    console.log(playedTimes, loopTimes)
+    if(playedTimes >= loopTimes){
+        utils.timers.clearTimeout(timeout)
+        playNextSong(1)
+    }
 }

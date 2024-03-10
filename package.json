@@ -11,8 +11,8 @@
     "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.3.40",
-    "@dcl/sdk": "latest"
+    "@dcl/js-runtime": "7.4.2",
+    "@dcl/sdk": "7.4.2"
   },
   "engines": {
     "node": ">=16.0.0",

@@ -85,7 +85,7 @@ export async function getPreview(){
 
 export function log(...args:any){
   if(isPreview){
-    console.log(args)
+    console.log(JSON.stringify(args))
   }
 }
 

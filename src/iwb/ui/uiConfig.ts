@@ -20,6 +20,7 @@ import { hideAllPanels } from "./ui"
 import { getImageAtlasMapping } from "./helpers"
 import { log } from "../helpers/functions"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "./Panels/sceneInfoPanel"
+import {isSnapEnabled, toggleSnapMode} from "../components/systems/playerTracking";
 
 export let uiModes: any = {
     0://playmode
@@ -120,6 +121,32 @@ export let topTools: any[] = [
                 hideAllPanels()
                 displayCatalogPanel(true)
             }
+        }
+    },
+    {
+        name: "Snap",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 4,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 3,
+            sourceLeft: 128 * 4,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: false,
+        visible: true,
+        toggle:true,
+        fn: () => {
+            toggleSnapMode()
         }
     },
     {

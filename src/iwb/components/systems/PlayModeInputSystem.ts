@@ -1,20 +1,6 @@
 import {engine, Entity, InputAction, inputSystem, PointerEvents, PointerEventsResult, PointerEventType} from "@dcl/sdk/ecs"
 import {setButtonState} from "../listeners/inputListeners"
-import {
-    cancelCatalogItem,
-    cancelSelectedItem,
-    deleteSelectedItem,
-    dropSelectedItem,
-    duplicateItem,
-    editItem,
-    grabItem,
-    saveItem,
-    selectedItem,
-    sendServerDelete
-} from "../modes/build"
-import {checkShortCuts} from "../listeners/shortcuts"
 import {log} from "../../helpers/functions"
-import {localUserId, players} from "../player/player"
 import {EDIT_MODES, ENTITY_TRIGGER_SLUGS, SCENE_MODES, Triggers} from "../../helpers/types"
 import {displayHover, updateContextEvents} from "../../ui/contextMenu"
 import { findTriggerActionForEntity } from "../modes/play"

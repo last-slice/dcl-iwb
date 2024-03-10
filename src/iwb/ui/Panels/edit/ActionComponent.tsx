@@ -13,6 +13,9 @@ import { log } from '../../../helpers/functions'
 import { ActionAnimationComponent, selectedAnimationIndex, selectedAnimationLoop } from './Actions/ActionAnimationComponent'
 import { ActionTeleportPlayerCompoent, teleportPosition } from './Actions/ActionTeleportPlayerComponent'
 import { ActionPlayEmoteComponent, selectedEmoteIndex } from './Actions/ActionEmoteComponent'
+import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibilityCollideriMask, actionVisibilityIndex } from './Actions/ActionVisibilityComponent'
+import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
+import { ActionStartDelayComponent, startDelayAction, updateDelayActions } from './Actions/ActionStartDelayComponent'
 
 let view = "list"
 let newName:string = ""
@@ -79,7 +82,7 @@ export function ActionComponent() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '80%',
+                height: '95%',
                 display: view === "add" ? "flex" : "none"
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -223,7 +226,7 @@ export function ActionComponent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '35%',
+                height: '55%',
                 margin:{top:"5%", bottom:'5%'}
             }}
             // uiBackground={{color:Color4.Blue()}}
@@ -241,8 +244,9 @@ export function ActionComponent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '15%',
+                height: '10%',
             }}
+            // uiBackground={{color:Color4.Teal()}}
             >
 
         <UiEntity
@@ -499,6 +503,19 @@ function getActionData(){
 
         case 8:
             return {aid:selectedItem.aid, type:Actions.EMOTE, emote:ENTITY_EMOTES_SLUGS[selectedEmoteIndex]}
+
+        case 9:
+                return {aid:selectedItem.aid, type:Actions.SET_VISIBILITY, vis: actionVisibilityIndex, vMask:actionVisibilityColliderVMask, iMask:actionVisibilityCollideriMask}
+
+        case 10:
+            return {aid:selectedItem.aid, type:Actions.SHOW_TEXT, text: showText}
+
+        case 11:
+            return {aid:selectedItem.aid, type:Actions.HIDE_TEXT, text: showText}
+
+        case 12:
+            return {aid:selectedItem.aid, type:Actions.START_DELAY, delay: startDelayAction}
+
     }
 }
 
@@ -521,5 +538,18 @@ function getActionDataPanel(){
 
         case 8:
             return <ActionPlayEmoteComponent/>
+
+        case 9:
+            return <ActionVisibilityComponent/>
+
+        case 10:
+            return <ActionShowTextComponent/>
+
+        case 11:
+            return
+        
+        case 12:
+            updateDelayActions()
+            return <ActionStartDelayComponent/>
     }
 }

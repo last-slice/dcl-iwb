@@ -95,7 +95,7 @@ export function SizePanel() {
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: scene && scene !== null ? `${(scene.pc / (scene.pcls.length * 10000) * 100)}%` :0 ,
+                width: getPolyWidth(),
                 height: '100%',
             }}
             uiBackground={{color:  scene && scene !== null ? (scene.pc / (scene.pcls.length * 10000)) > 0.75 ? Color4.Red() : Color4.Green()  : Color4.Green()}}
@@ -136,7 +136,7 @@ export function SizePanel() {
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: scene && scene !== null ? `${((parseFloat(formatSize(scene.si))) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15))* 100}%`  : 0,
+                width: getSizeWidth(),
                 height: '100%',
             }}
             uiBackground={{color:  scene && scene !== null ? (parseFloat(formatSize(scene.si)) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15)) > 0.75 ? Color4.Red() : Color4.Green()  : Color4.Green()}}
@@ -146,4 +146,26 @@ export function SizePanel() {
         
         </UiEntity>
     )
+}
+
+function getPolyWidth():any {
+    if(scene && scene !== null){
+        if(scene.pc / (scene.pcls.length * 10000) * 100 >= 1){
+            return `100%`
+        }
+        return `${(scene.pc / (scene.pcls.length * 10000) * 100)}%`
+    }else{
+        return `0%`
+    }
+}
+
+function getSizeWidth():any {
+    if(scene && scene !== null){
+        if(((parseFloat(formatSize(scene.si))) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15))* 100 >= 300){
+            return `100%`
+        }
+        return `${((parseFloat(formatSize(scene.si))) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15))* 100}%`
+    }else{
+        return `0%`
+    }
 }

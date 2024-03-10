@@ -37,21 +37,21 @@ export function initIWB() {
             //add input listeners
             createInputListeners()
 
-            // // Login with dcl auth and retrieve jwt
-            // const {body, status} = await signedFetch({
-            //     url: resources.endpoints.validateTest + "/login",
-            //     init: {
-            //         method: "POST",
-            //         headers: {}
-            //     }
-            // })
-            // let json = JSON.parse(body)
-            // //console.log('login response', status, json)
+                // // Login with dcl auth and retrieve jwt
+                // const {body, status} = await signedFetch({
+                //     url: resources.endpoints.validateTest + "/login",
+                //     init: {
+                //         method: "POST",
+                //         headers: {}
+                //     }
+                // })
+                // let json = JSON.parse(body)
+                // //console.log('login response', status, json)
 
-            // connect with userData and token
-            // colyseusConnect(data, json.data.token)
-            joinWorld(realm)
-            // colyseusConnect(data, "")
-        })
+                // connect with userData and token
+                // colyseusConnect(data, json.data.token)
+                joinWorld(realm)
+                // colyseusConnect(data, "")
+            })
     })
 }

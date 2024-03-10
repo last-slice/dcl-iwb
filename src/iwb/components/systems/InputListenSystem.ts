@@ -6,6 +6,7 @@ import {
     deleteSelectedItem,
     dropSelectedItem,
     duplicateItem,
+    duplicateItemInPlace,
     editItem,
     grabItem,
     saveItem,
@@ -34,6 +35,7 @@ export function removeInputSystem(){
     added = false
 }
 
+export let hoveredEntity:Entity
 
 export function InputListenSystem(dt: number) {
 
@@ -44,12 +46,16 @@ export function InputListenSystem(dt: number) {
         if (hoverEvents && !selectedItem || !selectedItem.enabled) {
             updateContextEvents([...hoverEvents.pointerEvents])
             displayHover(true)
+            hoveredEntity = hoverResult.hit.entityId as Entity
         }
     }
 
     const hover = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
-    if (hover) {
-        selectedItem && !selectedItem.enabled ? displayHover(false) : null
+    if (hover && hover.hit && hover.hit.entityId) {
+        if(selectedItem && !selectedItem.enabled){
+            displayHover(false)
+            hoveredEntity = -500 as Entity
+        }
     }
 
 
@@ -71,8 +77,8 @@ export function InputListenSystem(dt: number) {
                 log('player pressed #1 on an object')
                 if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
                     if (selectedItem && selectedItem.enabled) {
-                        log('player wants to delete selected item')
-                        cancelCatalogItem()
+                        log('player wants to cancel grabbing selected item')
+                        cancelSelectedItem()
                     } else {
                         log('player does not have item selected, just edit it')
                         editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
@@ -82,7 +88,7 @@ export function InputListenSystem(dt: number) {
                 if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
                     if (selectedItem && selectedItem.enabled) {
                         log('player wants to delete selected item')
-                        deleteSelectedItem()
+                        deleteSelectedItem(selectedItem.entity)
                     } else {
                         log('player pressed #1 on nothing in Build mode, need to grab')
                     }
@@ -112,6 +118,18 @@ export function InputListenSystem(dt: number) {
     if (inputSystem.isTriggered(InputAction.IA_ACTION_5, PointerEventType.PET_DOWN)) {
         // Logic in response to button press
         displayHover(false)
+
+        // Logic in response to button press
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_5, PointerEventType.PET_DOWN)
+        if (result) {
+            if (result.hit && result.hit.entityId) {
+                log('player pressed #3 on an object')
+                if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
+                    log('player pressed #3 on an object in Build mode, need to duplicate in place')
+                    duplicateItemInPlace(result.hit.entityId as Entity)
+                }
+            }
+        }
     }
 
     //#4
@@ -180,7 +198,7 @@ export function InputListenSystem(dt: number) {
                     if (selectedItem && selectedItem.enabled) {
                         log('player has selected item, need to delete')
                         if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            deleteSelectedItem()
+                            deleteSelectedItem(selectedItem.entity)
                         } else {
                             console.log('pressed F while editing asset, do nothing')
                         }
@@ -189,22 +207,23 @@ export function InputListenSystem(dt: number) {
                         if(settings.confirms){
                             displayConfirmDeletePanel(true, result.hit.entityId as Entity)
                         }else{
-                            sendServerDelete(result.hit.entityId as Entity)
+                            deleteSelectedItem(result.hit.entityId as Entity)
                         }
                     }
                 }
             } else {
                 if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
-                    log('player pressed #F on an object with no result in Build mode, need to edit')
+                    log('player pressed #F on an object with no result in Build mode, need to delete', hoveredEntity)
                     if (selectedItem && selectedItem.enabled) {
                         log('player has selected item, need to delete')
                         if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            deleteSelectedItem()
+                            deleteSelectedItem(selectedItem.entity)
                         } else {
                             // saveItem()
                         }
                     } else {
                         log('player does not have item selected')
+                        sendServerDelete(hoveredEntity)
                     }
                 } else {
                     //didnt hit an object and not in build mode
