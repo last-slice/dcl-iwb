@@ -5,6 +5,8 @@
 
 For help and additional resources, reach out to the Last Slice Collective team
 
+https://twitter.com/InWorldBuilder
+
 https://discord.gg/WhbDmePB4W
 
 https://twitter.com/LastSliceCo
