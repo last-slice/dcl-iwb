@@ -9,7 +9,7 @@ import { sendServerMessage } from "../../messaging";
 import { sceneBuilds, scenesLoaded } from "../../scenes";
 import { utils } from "../../../helpers/libraries";
 import { log } from "../../../helpers/functions";
-import { createBuildCompeitionUI } from "./ui";
+import { addMate, createBuildCompeitionUI, team } from "./ui";
 import { addCustomView, customViews, redrawCustomUI, updateCustomView } from "../ui";
 
 const MESSAGE_ACTION = "buildCompetition"
@@ -18,7 +18,8 @@ enum BUILD_TYPES {
     SIGNUP = 'signup',
     GET_SCENES = 'getscenes',
     CAST_VOTE = 'cast-vote',
-    UPDATE = 'update'
+    UPDATE = 'update',
+    CHECK_BUILDER_EXISTS = 'check_builder_exists'
 }
 
 let room:any//
@@ -48,8 +49,12 @@ function areScenesLoaded(){
     }else{
         createMessageListeners(room)
         sendServerMessage(SERVER_MESSAGE_TYPES.CUSTOM, {action:MESSAGE_ACTION, data:{type:BUILD_TYPES.GET_SCENES}})
-        // createSignup()
+        // createSignup()//
     }
+}
+
+export function addTeammate(mate:string){
+    sendServerMessage(SERVER_MESSAGE_TYPES.CUSTOM, {action:MESSAGE_ACTION, data:{mate:mate, type:BUILD_TYPES.CHECK_BUILDER_EXISTS}})
 }
 
 export async function attemptSignup(){
@@ -76,7 +81,7 @@ export async function attemptSignup(){
           id: 999999999
          },async(err,res)=>{
             console.log(res)
-            sendServerMessage(SERVER_MESSAGE_TYPES.CUSTOM, {action:MESSAGE_ACTION, data:{signature:res.result, message:eip712TypedData, type:BUILD_TYPES.SIGNUP}})
+            sendServerMessage(SERVER_MESSAGE_TYPES.CUSTOM, {action:MESSAGE_ACTION, data:{signature:res.result, message:eip712TypedData, type:BUILD_TYPES.SIGNUP, team:team}})
          })
 
     }else{
@@ -105,6 +110,12 @@ function createMessageListeners(room:any){
         log(SERVER_MESSAGE_TYPES.CUSTOM + ' received', info)
         if(info.action === MESSAGE_ACTION){
             switch(info.data.type){
+                case BUILD_TYPES.CHECK_BUILDER_EXISTS:
+                    if(info.data.value !== "false"){
+                        addMate(info.data.value)
+                    }
+                    break;
+
                 case BUILD_TYPES.GET_SCENES:
                     competitionScenes = info.data.value.scenes
                     enabled = info.data.value.enabled
