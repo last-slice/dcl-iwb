@@ -247,6 +247,10 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             MeshRenderer.setBox(selectedItem.entity)
 
             if (selectedItem.itemData.bb) {
+                if(typeof selectedItem.itemData.bb === "string"){
+                    console.log('bb is a string')
+                    selectedItem.itemData.bb = JSON.parse(selectedItem.itemData.bb)
+                }
                 scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.z, selectedItem.itemData.bb.y)
             }
 
@@ -1224,8 +1228,10 @@ function check2DCollision(entity: Entity, sceneItem: SceneItem) {
 function check3DCollision(entity: Entity, sceneItem: SceneItem) {
     if (sceneItem.type === "3D") {
         let gltf = GltfContainer.getMutable(entity)
-        gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
-        gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
+        if(gltf){
+            gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
+            gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
+        }
     }
 }
 

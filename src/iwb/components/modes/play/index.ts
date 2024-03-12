@@ -222,9 +222,11 @@ export function checkVideo(entity:Entity, sceneItem: SceneItem){
 
 export function check3DCollision(entity: Entity, sceneItem: SceneItem) {
     if (sceneItem.type === "3D") {
-        let gltf = GltfContainer.getMutable(entity)
-        gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
-        gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
+        let gltf = GltfContainer.getMutableOrNull(entity)
+        if(gltf){
+            gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
+            gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
+        }
     }
 }
 

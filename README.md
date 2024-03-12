@@ -5,6 +5,8 @@
 
 For help and additional resources, reach out to the Last Slice Collective team
 
+https://twitter.com/InWorldBuilder
+
 https://discord.gg/WhbDmePB4W
 
 https://twitter.com/LastSliceCo
@@ -12,6 +14,9 @@ https://twitter.com/LastSliceCo
 lastraum@lastslice.co
 
 
-
 Powered by
 ![powered by the Decentraland DAO](https://bafkreibci6gg3wbjvxzlqpuh353upzrssalqqoddb6c4rez33bcagqsc2a.ipfs.nftstorage.link/)
+
+
+
+
