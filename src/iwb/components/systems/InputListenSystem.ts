@@ -88,14 +88,15 @@ export function InputListenSystem(dt: number) {
                 if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
                     if (selectedItem && selectedItem.enabled) {
                         log('player wants to delete selected item')
-                        deleteSelectedItem(selectedItem.entity)
+                        // deleteSelectedItem(selectedItem.entity)
+                        cancelSelectedItem()
                     } else {
                         log('player pressed #1 on nothing in Build mode, need to grab')
                     }
                 }
             }
         }
-    }//
+    }
 
     //#2//
     if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)) {

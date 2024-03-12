@@ -63,8 +63,10 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
             switch(asset.type){
                 case "3D":
                     VisibilityComponent.createOrReplace(entity, {visible: action.vis})
-                    GltfContainer.getMutable(entity).invisibleMeshesCollisionMask = action.iMask
-                    GltfContainer.getMutable(entity).visibleMeshesCollisionMask = action.vMask
+                    if(GltfContainer.has(entity)){
+                        GltfContainer.getMutable(entity).invisibleMeshesCollisionMask = action.iMask
+                        GltfContainer.getMutable(entity).visibleMeshesCollisionMask = action.vMask
+                    }                    
                     break;
 
                 case '2D':
