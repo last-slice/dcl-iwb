@@ -19,8 +19,8 @@ import { VisibilityComponent } from "@dcl/sdk/ecs";
 import { npcComponentListener } from "./listeners/NPCComponent";
 
 export function assetListener(scene:any){
-    scene.ass.onAdd((asset:any, key:any)=>{
-        loadSceneAsset(scene.id, asset)
+    scene.ass.onAdd(async (asset:any, key:any)=>{
+        await loadSceneAsset(scene.id, asset)
 
         //editing asset
         asset.listen("editing", (currentValue:any, previousValue:any) => {

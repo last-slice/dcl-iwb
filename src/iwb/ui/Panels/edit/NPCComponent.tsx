@@ -3,12 +3,13 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from './EditObjectDataPanel'
-import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_EMOTES_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_EMOTES_SLUGS, IWBScene, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
 import { selectedItem } from '../../../components/modes/build'
 import { uiSizes } from '../../uiConfig'
 import { AvatarShape } from '@dcl/sdk/ecs'
 import { getRandomString, paginateArray } from '../../../helpers/functions'
+import { entitiesFromItemIds } from '../../../components/scenes'
 
 export let npcComponentView = "main"
 
@@ -106,7 +107,7 @@ export function NPCComponent() {
                     height: '15%',
                     margin:{bottom:'5%'}
                 }}
-            uiText={{value:"NPC Name", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"NPC Name", fontSize:sizeFont(15, 10), color:Color4.White(), textAlign:'middle-left'}}
             />
 
         <UiEntity
@@ -237,7 +238,7 @@ export function NPCComponent() {
                     height: '15%',
                     margin:{bottom:'5%'}
                 }}
-            uiText={{value:"NPC Type", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{value:"NPC Type", fontSize:sizeFont(10, 10), color:Color4.White(), textAlign:'middle-left'}}
             />
 
         <UiEntity
@@ -257,11 +258,11 @@ export function NPCComponent() {
                 onChange={selectNPCType}
                 uiTransform={{
                     width: '100%',
-                    height: '100%',
+                    height: '120%',
                 }}
                 // uiBackground={{color:Color4.Purple()}}
                 color={Color4.White()}
-                fontSize={sizeFont(20, 15)}
+                fontSize={sizeFont(10,10)}
             />
 
             </UiEntity>
@@ -387,14 +388,14 @@ export function NPCComponent() {
                     onChange={(value)=>{
                         tempNPC.hairColor.r = parseInt(value)
                     }}
-                    fontSize={sizeFont(20,12)}
+                    fontSize={sizeFont(12,10)}
                     value={"" + tempNPC.hairColor.r}
                     placeholder={''}
                     placeholderColor={Color4.White()}
                     color={Color4.White()}
                     uiTransform={{
                         width: '100%',
-                        height: '120%',
+                        height: '140%',
                     }}
                     ></Input>
 
@@ -1322,10 +1323,6 @@ function addWearable(){
 
 function updateWearables(type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.NPC_COMPONENT, type:type, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, value:value}})
-    
-    if(type === "update"){
-        updateNPC()
-    }
 }
 
 
@@ -1337,19 +1334,25 @@ function selectNPCbodyShape(index:number){
     tempNPC.bodyShape = index
 }
 
-function updateNPC(){
-    let wearables:string[] = []
-    tempNPC.wearables.forEach((wearable:string)=>{
-        wearables.push("urn:decentraland:matic:collections-v2:" + wearable)
-    })
-    AvatarShape.createOrReplace(selectedItem.entity, {
-        id: tempNPC.name !== "" ? tempNPC.name : getRandomString(5),
-        name: tempNPC.dName ? tempNPC.name : "",
-        bodyShape: tempNPC.bodyShape == 0 ? "urn:decentraland:off-chain:base-avatars:BaseMale" :  "urn:decentraland:off-chain:base-avatars:BaseFemale",
-        wearables:wearables,
-        emotes:[],
-        hairColor: Color4.create(tempNPC.hairColor.r / 255, tempNPC.hairColor.g / 255, tempNPC.hairColor.b / 255),
-        skinColor: Color4.create(tempNPC.skinColor.r  / 255, tempNPC.skinColor.g / 255, tempNPC.skinColor.b / 255),
-        eyeColor: Color4.create(tempNPC.eyeColor.r  / 255, tempNPC.eyeColor.g / 255, tempNPC.eyeColor.b / 255)
-    })
+export function updateNPC(scene:IWBScene, assetId:any){
+    let ent = entitiesFromItemIds.get(assetId)
+    if(ent){
+        let sceneItem = scene.ass.find((asset:any)=> asset.aid === assetId)
+        if(sceneItem){
+            let wearables:string[] = []
+            sceneItem.npcComp.wearables.forEach((wearable:string)=>{
+                wearables.push("urn:decentraland:matic:collections-v2:" + wearable)
+            })
+            AvatarShape.createOrReplace(ent, {
+                id: sceneItem.npcComp.name !== "" ? sceneItem.npcComp.name : getRandomString(5),
+                name: sceneItem.npcComp.dName ? sceneItem.npcComp.name : "",
+                bodyShape: sceneItem.npcComp.bodyShape == 0 ? "urn:decentraland:off-chain:base-avatars:BaseMale" :  "urn:decentraland:off-chain:base-avatars:BaseFemale",
+                wearables:wearables,
+                emotes:[],
+                hairColor: Color4.create(sceneItem.npcComp.hairColor.r / 255, sceneItem.npcComp.hairColor.g / 255, sceneItem.npcComp.hairColor.b / 255),
+                skinColor: Color4.create(sceneItem.npcComp.skinColor.r  / 255, sceneItem.npcComp.skinColor.g / 255, sceneItem.npcComp.skinColor.b / 255),
+                eyeColor: Color4.create(sceneItem.npcComp.eyeColor.r  / 255, sceneItem.npcComp.eyeColor.g / 255, sceneItem.npcComp.eyeColor.b / 255)
+            })
+        }
+    }
 }
