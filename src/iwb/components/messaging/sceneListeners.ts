@@ -167,7 +167,6 @@ export function addSceneStateListeners(room:any){
     })
 
     room.state.players.onAdd((player:any, key:string)=>{
-        log('player is', player)
         player.listen("selectedAsset", (current:any, previous:any)=>{
             log('player selected asset', previous, current)
             if(player.address !== localUserId){
@@ -175,9 +174,13 @@ export function addSceneStateListeners(room:any){
                     otherUserRemovedSeletedItem(player.address)
                 }else{
                     current.user = player.address
-                    otherUserSelectedItem(current)
+                    if(current.grabbed){
+                        otherUserSelectedItem(current)
+                    }
                 }
             }
         })
     })
 }
+
+//

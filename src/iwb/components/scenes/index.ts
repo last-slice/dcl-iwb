@@ -497,7 +497,7 @@ function enableSceneEntities(sceneId: string) {
         findSceneEntryTrigger(scene)
         
         for (let i = 0; i < scene.entities.length; i++) {
-            let entity = scene.entities[i]
+            let entity = scene.entities[i]//
 
             let sceneItem = getSceneItem(scene, entity)
             if (sceneItem) {

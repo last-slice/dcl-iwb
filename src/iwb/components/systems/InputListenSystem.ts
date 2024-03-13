@@ -2,6 +2,7 @@ import {engine, Entity, InputAction, inputSystem, PointerEvents, PointerEventTyp
 import {setButtonState} from "../listeners/inputListeners"
 import {
     cancelCatalogItem,
+    cancelEditingItem,
     cancelSelectedItem,
     deleteSelectedItem,
     dropSelectedItem,
@@ -77,8 +78,10 @@ export function InputListenSystem(dt: number) {
                 log('player pressed #1 on an object')
                 if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
                     if (selectedItem && selectedItem.enabled) {
-                        log('player wants to cancel grabbing selected item')
-                        cancelSelectedItem()
+                        if(selectedItem.mode === EDIT_MODES.GRAB){
+                            log('player wants to cancel grabbing selected item')//
+                            cancelSelectedItem()
+                        }
                     } else {
                         log('player does not have item selected, just edit it')
                         editItem(result.hit.entityId as Entity, EDIT_MODES.EDIT)
@@ -86,7 +89,7 @@ export function InputListenSystem(dt: number) {
                 }
             } else {
                 if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
-                    if (selectedItem && selectedItem.enabled) {
+                    if (selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB) {
                         log('player wants to delete selected item')
                         // deleteSelectedItem(selectedItem.entity)
                         cancelSelectedItem()
@@ -153,17 +156,16 @@ export function InputListenSystem(dt: number) {
         const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
         if (result) {
             if (result.hit && result.hit.entityId) {
-                log('player pressed #E on an object')
                 if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
-                    log('player pressed #E on an object in Build mode')
                     if (selectedItem && selectedItem.enabled) {
                         if (selectedItem.mode === EDIT_MODES.GRAB) {
+                            console.log('dropping item')
                             dropSelectedItem()
                         } else {
                             console.log('pressed e while editing asset, do nothing')
                         }
                     } else {
-                        log('player pressed #1 on an object in Build mode, need to grab')
+                        log('player pressed #E on an object in Build mode, need to grab')
                         grabItem(result.hit.entityId as Entity)
                     }
                 }

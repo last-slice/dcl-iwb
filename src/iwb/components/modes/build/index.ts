@@ -460,7 +460,7 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
                 sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {
                     user: localUserId,
                     item: {catalogId: sceneItem.id, aid: assetId, sceneId: selectedItem.sceneId}
-                })
+                })//
                 return
             }
         })
@@ -816,7 +816,7 @@ export function grabItem(entity: Entity) {
     // let rot = Quaternion.toEulerAngles(transform.rotation)
     // rot.y += 180
     // transform.rotation = Quaternion.fromEulerDegrees(rot.x, rot.y, rot.z)
-    // Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})
+    // Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})//
 }
 
 export function deleteSelectedItem(entity:Entity) {
@@ -846,7 +846,7 @@ export function deleteSelectedItem(entity:Entity) {
             }
         })
     }
-}
+}//
 
 export function cancelSelectedItem() {
     log('canceled selected item is', selectedItem)
@@ -870,7 +870,7 @@ export function cancelEditingItem() {
     log('canceled editing item is', selectedItem)
     openEditComponent("")
     dropSelectedItem(true, true)
-    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_CANCEL,//
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_CANCEL,
         {
             user: localUserId,
             item: {
@@ -1227,7 +1227,7 @@ function check2DCollision(entity: Entity, sceneItem: SceneItem) {
 
 function check3DCollision(entity: Entity, sceneItem: SceneItem) {
     if (sceneItem.type === "3D") {
-        let gltf = GltfContainer.getMutable(entity)
+        let gltf = GltfContainer.getMutableOrNull(entity)
         if(gltf){
             gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
             gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
@@ -1283,7 +1283,6 @@ function checkSmartItems(entity:Entity, sceneItem: SceneItem){
         if(sceneItem.id === "78f04fcf-5c50-4001-840c-6ba717ce6037"){
             // Transform.getMutable(entity).scale = Vector3.create(1,3,1)
             // MeshRenderer.setBox(entity)
-
         }
         else{
             MeshRenderer.setBox(entity)
@@ -1300,4 +1299,4 @@ function checkSmartItems(entity:Entity, sceneItem: SceneItem){
             }
         }
     }
-}//
+}

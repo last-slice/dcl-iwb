@@ -18,8 +18,6 @@ export function refreshSortedItems() {
     original = [...items.values()].filter((it:any)=> !it.ugc)
     playerItemsOriginal = [...items.values()].filter((it:any)=> it.ugc)
 
-    console.log('player items', playerItemsOriginal)//
-
     sortedAll = sortByType(selectedSetting === 0 ? original : playerItemsOriginal)
     Sorted3D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "3D")
     Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")

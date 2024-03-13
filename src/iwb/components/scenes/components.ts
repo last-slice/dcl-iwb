@@ -363,7 +363,7 @@ export function updateCollision(sceneId:string, assetId:string, layer:string, va
             switch(asset.type){
                 case '3D':
                     if(entity && !asset.pending){
-                        let gltf = GltfContainer.getMutable(entity)
+                        let gltf = GltfContainer.getMutableOrNull(entity)
                         if(gltf){
                             if(layer === COLLISION_LAYERS.INVISIBLE){
                                 gltf.invisibleMeshesCollisionMask = value
@@ -515,7 +515,7 @@ export function stopVideoFile(){
         video.playing = false
     }
 }
-//
+
 export function addNPCAvatar(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
     console.log('creating npc', item.npcComp)
     let wearables:string[] = []
