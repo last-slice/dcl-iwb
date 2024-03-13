@@ -160,12 +160,12 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
         let floor = engine.addEntity()
         entities.push(floor)
     
-        Transform.createOrReplace(parent)
+        //Transform.createOrReplace(parent)
     
         Transform.createOrReplace(floor, {
-            position: Vector3.create(centerx, 0, centery),
+            position: Vector3.create(centerx, -.09, centery),
             rotation: Quaternion.fromEulerDegrees(90, 0, 0),
-            scale: Vector3.create(16, 16, 1),
+            scale: Vector3.create(16, 16, 0.01),
             parent:parent
         })
         MeshRenderer.setPlane(floor)

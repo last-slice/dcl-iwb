@@ -61,7 +61,7 @@ import {disableAnimations} from "../play"
 import {displayHover, updateContextEvents} from "../../../ui/contextMenu"
 import {displayCatalogInfoPanel} from "../../../ui/Panels/CatalogInfoPanel";
 import {getWorldPosition} from "@dcl-sdk/utils";
-import {findSceneByParcel, getCenterOfParcels} from "../../../helpers/build";
+import {findSceneByParcel, getCenterOfParcels, isEntityInScene} from "../../../helpers/build";
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -529,7 +529,7 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     const curScene = findSceneByParcel(parcel)
     const bpsCurScene = checkBuildPermissionsForScene(curScene)
 
-    if (curScene && bpsCurScene) {
+    if (curScene && bpsCurScene && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
         canDrop = true
         playSound(SOUND_TYPES.DROP_1_STEREO)
 
@@ -572,12 +572,13 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
                     eulRot.z
                 )
             }
+
+            t.parent = curSceneParent
         }
 
-        t.parent = curSceneParent
 
-        log('new transform is', t)
-        log('new rot is', Quaternion.toEulerAngles(t.rotation))
+        // log('new transform is', t)
+        // log('new rot is', Quaternion.toEulerAngles(t.rotation))
 
         // if(selectedItem.already){
         //     log('dropping already selected item')
@@ -587,8 +588,13 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
         // }
 
         grabbedAssets.delete(selectedItem.aid)
-
+        selectedItem.enabled = false
         selectedItem.sceneId = curScene.id
+
+        // if no previous transform, this was a catalog asset
+        if(!t){
+            return;
+        }
 
         sendServerMessage(
             SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
@@ -608,7 +614,6 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
             }
         )
 
-        selectedItem.enabled = false
 
         console.log('selected item', selectedItem)
         return
