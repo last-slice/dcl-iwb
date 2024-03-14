@@ -3,14 +3,14 @@ import { Color4 } from '@dcl/sdk/math'
 import { displaySetting, displaySettingsPanel, showSetting } from './settingsIndex'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
-import { iwbConfig, localPlayer, localUserId, players } from '../../../components/player/player'
-import { realm, worlds } from '../../../components/scenes'
+import { iwbConfig, localPlayer, localUserId, players, settings } from '../../../components/player/player'
+import { findUGCAssetBeforeDeleting, realm, worlds } from '../../../components/scenes'
 import { formatDollarAmount, formatSize, log, paginateArray } from '../../../helpers/functions'
 import { cRoom } from '../../../components/messaging'
 import { showNotification } from '../notificationUI'
 import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem } from '../../../helpers/types'
 import { newItems, playerItemsOriginal } from '../../../components/catalog/items'
-import { statusView } from './StatusPanel'
+import { displayStatusView, statusView } from './StatusPanel'
 import { playSound } from '../../../components/sounds'
 
 let visibleIndex = 0
@@ -30,7 +30,7 @@ export function refreshVisibleItems(){
 }
 
 
-export function UploadsPanel() {
+export function UploadsPanel() {//
     return (
         <UiEntity
             key={"uploadspanel"}
@@ -84,7 +84,7 @@ export function UploadsPanel() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '30%',
                 height: '100%',
                 margin:{left:'1%'}
             }}
@@ -144,6 +144,19 @@ export function UploadsPanel() {
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{value:"Status", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
+            />
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '10%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            uiText={{value:"Delete", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
 
@@ -369,7 +382,7 @@ function generateRows(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent:'flex-start',
-                width: '40%',
+                width: '30%',
                 height: '100%',
                 display:'flex',
                 margin:{left:'1%'}
@@ -429,6 +442,46 @@ function generateRows(){
             }}
             uiText={{value: "" + asset.pending ? "Ready" : "Live", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             />
+
+                  {/* delete asset icon */}
+                  <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+                display:'flex'
+            }}
+            >
+                <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            width: calculateSquareImageDimensions(3.5).width,
+            height: calculateSquareImageDimensions(3.5).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
+        }}
+        onMouseDown={()=>{
+            displaySettingsPanel(false)
+            displaySetting("Explore")
+            displayStatusView("Version")
+            if(settings.confirm){
+
+            }else{
+                findUGCAssetBeforeDeleting(asset.n, asset.id)
+            }
+        }}
+    />
+            </UiEntity>
 
 
                 </UiEntity>

@@ -1,66 +1,61 @@
-import { localPlayer, localUserId, players } from "../components/player/player"
+import {localUserId, players} from "../components/player/player"
 import resources from "../helpers/resources"
-import { NOTIFICATION_TYPES, VIEW_MODES } from "../helpers/types"
-import { displayBlockPanel, showBlockPanel } from "./Panels/BlockPanel"
-import { displayCatalogInfoPanel } from "./Panels/CatalogInfoPanel"
-import { displayCatalogPanel, showCatalogPanel } from "./Panels/CatalogPanel"
-import { showNotificationPanel, displayNotificationPanel } from "./Panels/NotificationPanel"
-import { displayRectanglePanel, showRectanglePanel } from "./Panels/RectanglePanel"
-import { displayAssetUploadUI } from "./Panels/assetUploadUI"
-import { displayDeleteBuildPanel, showDeleteBuildPanel } from "./Panels/deleteBuildPanel"
-import { showInfoPanel, displayInfoPanel } from "./Panels/infoPanel"
-import { showLoadBuildPanel, displayLoadBuildPanel } from "./Panels/loadBuildPanel"
-import { displayNoWeb3 } from "./Panels/noWeb3Panel"
-import { showNotification } from "./Panels/notificationUI"
-import { showPBuildConfirmPanel, displayPBuildConfirmPanel } from "./Panels/pBuildConfirmPanel"
-import { showSaveBuildPanel, displaySaveBuildPanel } from "./Panels/saveBuildPanel"
-import { showSettingsPanel, displaySettingsPanel } from "./Panels/settings/settingsIndex"
+import {VIEW_MODES} from "../helpers/types"
+import {displayCatalogPanel, showCatalogPanel} from "./Panels/CatalogPanel"
+import {displayNotificationPanel, showNotificationPanel} from "./Panels/NotificationPanel"
+import {displayAssetUploadUI} from "./Panels/assetUploadUI"
+import {displayDeleteBuildPanel, showDeleteBuildPanel} from "./Panels/deleteBuildPanel"
+import {displayInfoPanel, showInfoPanel} from "./Panels/infoPanel"
+import {displayLoadBuildPanel, showLoadBuildPanel} from "./Panels/loadBuildPanel"
+import {displayNoWeb3} from "./Panels/noWeb3Panel"
+import {displayPBuildConfirmPanel, showPBuildConfirmPanel} from "./Panels/pBuildConfirmPanel"
+import {displaySaveBuildPanel, showSaveBuildPanel} from "./Panels/saveBuildPanel"
+import {displaySettingsPanel, showSettingsPanel} from "./Panels/settings/settingsIndex"
 import {toggleFlyMode} from "../components/modes/flying";
-import { hideAllPanels } from "./ui"
-import { getImageAtlasMapping } from "./helpers"
-import { log } from "../helpers/functions"
-import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "./Panels/sceneInfoPanel"
-import {isSnapEnabled, toggleSnapMode} from "../components/systems/playerTracking";
+import {hideAllPanels} from "./ui"
+import {getImageAtlasMapping} from "./helpers"
+import {displaySceneAssetInfoPanel, showSceneInfoPanel} from "./Panels/sceneInfoPanel"
+import {toggleSnapMode} from "../components/systems/SelectedItemSystem";
 
 export let uiModes: any = {
     0://playmode
-    {
-        atlas: "assets/atlas1.png",
-        uvs: {
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 128 * 6,
-            sourceLeft: 128 * 6,
-            sourceWidth: 128,
-            sourceHeight: 128
+        {
+            atlas: "assets/atlas1.png",
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 128 * 6,
+                sourceLeft: 128 * 6,
+                sourceWidth: 128,
+                sourceHeight: 128
+            },
         },
-    },
 
     1://create scene mode
-    {
-        atlas: "assets/atlas1.png",
-        uvs: {
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 128 * 0,
-            sourceLeft: 128 * 1,
-            sourceWidth: 128,
-            sourceHeight: 128
+        {
+            atlas: "assets/atlas1.png",
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 128 * 0,
+                sourceLeft: 128 * 1,
+                sourceWidth: 128,
+                sourceHeight: 128
+            },
         },
-    },
 
     2://build mode
-    {
-        atlas: "assets/atlas1.png",
-        uvs: {
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 128 * 6,
-            sourceLeft: 128 * 7,
-            sourceWidth: 128,
-            sourceHeight: 128
+        {
+            atlas: "assets/atlas1.png",
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 128 * 6,
+                sourceLeft: 128 * 7,
+                sourceWidth: 128,
+                sourceHeight: 128
+            },
         },
-    },
 }
 
 export let topTools: any[] = [
@@ -83,12 +78,12 @@ export let topTools: any[] = [
             sourceWidth: 128,
             sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn:()=>{
+        enabled: true,
+        visible: true,
+        fn: () => {
             toggleFlyMode()
         },
-        uvOverride:()=>{
+        uvOverride: () => {
             return players.has(localUserId) ? players.get(localUserId)!.viewMode === VIEW_MODES.GOD ? getImageAtlasMapping(uiSizes.godModeButton) : getImageAtlasMapping(uiSizes.carpenterButton) : getImageAtlasMapping()
         }
     },
@@ -116,8 +111,7 @@ export let topTools: any[] = [
         fn: () => {
             if (showCatalogPanel) {
                 displayCatalogPanel(false)
-            }
-            else {
+            } else {
                 hideAllPanels()
                 displayCatalogPanel(true)
             }
@@ -144,7 +138,7 @@ export let topTools: any[] = [
         },
         enabled: false,
         visible: true,
-        toggle:true,
+        toggle: true,
         fn: () => {
             toggleSnapMode()
         }
@@ -171,7 +165,7 @@ export let topTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
-            if (players.has(localUserId) && (players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) && players.get(localUserId)!.homeWorld) {
+            if (players.has(localUserId) && (!players.get(localUserId)!.dclData.isGuest || resources.allowNoWeb3) && players.get(localUserId)!.homeWorld) {
                 displayAssetUploadUI(true)
             } else {
                 displayNoWeb3(true)
@@ -197,12 +191,12 @@ export let topTools: any[] = [
             sourceWidth: 128,
             sourceHeight: 128
         },
-        enabled:true,
-        visible:true,
-        fn:()=>{
-            if(showSceneInfoPanel){
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showSceneInfoPanel) {
                 displaySceneAssetInfoPanel(false)
-            }else{
+            } else {
                 hideAllPanels()
                 displaySceneAssetInfoPanel(true)
             }
@@ -393,7 +387,7 @@ export let bottomTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
-            if (players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) {
+            if (players.has(localUserId) && !players.get(localUserId)!.dclData.isGuest || resources.allowNoWeb3) {
                 displayAssetUploadUI(true)
             } else {
                 displayNoWeb3(true)
@@ -424,8 +418,7 @@ export let bottomTools: any[] = [
         fn: () => {
             if (showSaveBuildPanel) {
                 displaySaveBuildPanel(false)
-            }
-            else {
+            } else {
                 displaySaveBuildPanel(true)
             }
 
@@ -455,8 +448,7 @@ export let bottomTools: any[] = [
         fn: () => {
             if (showLoadBuildPanel) {
                 displayLoadBuildPanel(false)
-            }
-            else {
+            } else {
                 displayLoadBuildPanel(true)
             }
 
@@ -486,8 +478,7 @@ export let bottomTools: any[] = [
         fn: () => {
             if (showDeleteBuildPanel) {
                 displayDeleteBuildPanel(false)
-            }
-            else {
+            } else {
                 displayDeleteBuildPanel(true)
             }
 
@@ -517,8 +508,7 @@ export let bottomTools: any[] = [
         fn: () => {
             if (showNotificationPanel) {
                 displayNotificationPanel(false)
-            }
-            else {
+            } else {
                 displayNotificationPanel(true)
             }
 
@@ -548,8 +538,7 @@ export let bottomTools: any[] = [
         fn: () => {
             if (showPBuildConfirmPanel) {
                 displayPBuildConfirmPanel(false)
-            }
-            else {
+            } else {
                 displayPBuildConfirmPanel(true)
             }
 
@@ -579,8 +568,7 @@ export let bottomTools: any[] = [
         fn: () => {
             if (showInfoPanel) {
                 displayInfoPanel(false)
-            }
-            else {
+            } else {
                 displayInfoPanel(true)
             }
 
@@ -589,39 +577,38 @@ export let bottomTools: any[] = [
 ]
 
 export let settingsIconData: any =
-{
-    name: "Settings",
-    atlas: "assets/atlas1.png",
-    enabledUV: {
-        atlasHeight: 1024,
-        atlasWidth: 1024,
-        sourceTop: 128 * 4,
-        sourceLeft: 128 * 6,
-        sourceWidth: 128,
-        sourceHeight: 128
-    },
-    disabledUV: {
-        atlasHeight: 1024,
-        atlasWidth: 1024,
-        sourceTop: 128 * 5,
-        sourceLeft: 128 * 6,
-        sourceWidth: 128,
-        sourceHeight: 128
-    },
-    enabled: true,
-    visible: true,
-    fn: () => {
-        if (showSettingsPanel) {
-            displaySettingsPanel(false)
-        }
-        else {
-            displaySettingsPanel(true)
+    {
+        name: "Settings",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 6,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 6,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            if (showSettingsPanel) {
+                displaySettingsPanel(false)
+            } else {
+                displaySettingsPanel(true)
+            }
         }
     }
-}
 
-export let uiSizes:any ={
-    heartIconRed:{
+export let uiSizes: any = {
+    heartIconRed: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
@@ -629,7 +616,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    heartIconWhite:{
+    heartIconWhite: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
@@ -637,7 +624,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    goIcon:{
+    goIcon: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
@@ -645,47 +632,47 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-     rowPillDark:{
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 924,
-            sourceLeft: 142,
-            sourceWidth: 540,
-            sourceHeight: 50
-        },
-        rowPillLight:{
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 974,
-            sourceLeft: 142,
-            sourceWidth: 540,
-            sourceHeight: 50
-        },
-        rowPillLightest:{
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 897,
-            sourceLeft: 142,
-            sourceWidth: 292,
-            sourceHeight: 27
-        },
-        buttonPillBlack:{
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 974,
-            sourceLeft: 0,
-            sourceWidth: 117.65,
-            sourceHeight: 50
-        },
-        buttonPillBlue:{
-            atlasHeight: 1024,
-            atlasWidth: 1024,
-            sourceTop: 924,
-            sourceLeft: 0,
-            sourceWidth: 117.65,
-            sourceHeight: 50
-        },
-        magnifyPressed:{
+    rowPillDark: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 924,
+        sourceLeft: 142,
+        sourceWidth: 540,
+        sourceHeight: 50
+    },
+    rowPillLight: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 974,
+        sourceLeft: 142,
+        sourceWidth: 540,
+        sourceHeight: 50
+    },
+    rowPillLightest: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 897,
+        sourceLeft: 142,
+        sourceWidth: 292,
+        sourceHeight: 27
+    },
+    buttonPillBlack: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 974,
+        sourceLeft: 0,
+        sourceWidth: 117.65,
+        sourceHeight: 50
+    },
+    buttonPillBlue: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 924,
+        sourceLeft: 0,
+        sourceWidth: 117.65,
+        sourceHeight: 50
+    },
+    magnifyPressed: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128 * 4,
@@ -693,7 +680,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    magnifyIcon:{
+    magnifyIcon: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128 * 5,
@@ -701,7 +688,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    scaleIconPressed:{
+    scaleIconPressed: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -709,7 +696,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    scaleIcon:{
+    scaleIcon: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128,
@@ -717,7 +704,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    rotationIconPressed:{
+    rotationIconPressed: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -725,7 +712,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    rotationIcon:{
+    rotationIcon: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128,
@@ -733,7 +720,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    positionIconPressed:{
+    positionIconPressed: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -741,7 +728,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    positionIcon:{
+    positionIcon: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128,
@@ -749,7 +736,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    rightArrow:{
+    rightArrow: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 150,
@@ -757,7 +744,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    leftArrow:{
+    leftArrow: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 150,
@@ -765,7 +752,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    downArrow:{
+    downArrow: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 150,
@@ -773,7 +760,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    upArrow:{
+    upArrow: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 150,
@@ -781,7 +768,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    upCarot:{
+    upCarot: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 150,
@@ -789,7 +776,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    downCarot:{
+    downCarot: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 150,
@@ -797,7 +784,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    leftCarot:{
+    leftCarot: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 180,
@@ -805,7 +792,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    rightCarot:{
+    rightCarot: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 180,
@@ -813,7 +800,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    blackArrowRight:{
+    blackArrowRight: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 120,
@@ -821,7 +808,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    blackArrowLeft:{
+    blackArrowLeft: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 120,
@@ -829,7 +816,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    opaqueSearchBG:{
+    opaqueSearchBG: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 898,
@@ -837,7 +824,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    opaqueSearchTransparent:{
+    opaqueSearchTransparent: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 898,
@@ -845,7 +832,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    opaqueSearchIcon:{
+    opaqueSearchIcon: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -853,7 +840,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    opaqueArrowRight:{
+    opaqueArrowRight: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -861,7 +848,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    opaqueArrowleft:{
+    opaqueArrowleft: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -869,8 +856,8 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    
-    toggleOn:{
+
+    toggleOn: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
@@ -1013,7 +1000,7 @@ export let uiSizes:any ={
         sourceHeight: 383
     },
 
-    horzRectangleOpaque:{
+    horzRectangleOpaque: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 774,
@@ -1021,7 +1008,7 @@ export let uiSizes:any ={
         sourceWidth: 331,
         sourceHeight: 200
     },
-    
+
     smallPill: {
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -1040,7 +1027,7 @@ export let uiSizes:any ={
         sourceHeight: 263
     },
 
-    infoButtonBlack:{
+    infoButtonBlack: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 0,
@@ -1048,7 +1035,7 @@ export let uiSizes:any ={
         sourceWidth: 128,
         sourceHeight: 128
     },
-    
+
     backButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -1090,7 +1077,7 @@ export let uiSizes:any ={
         sourceHeight: 128
     },
 
-    infoButtonOpaque:{
+    infoButtonOpaque: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 128,
@@ -1755,7 +1742,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    oneButtonClick:{
+    oneButtonClick: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 877,
@@ -1763,7 +1750,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    twoButtonClick:{
+    twoButtonClick: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 877,
@@ -1771,7 +1758,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    threeButtonClick:{
+    threeButtonClick: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 877,
@@ -1779,7 +1766,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    fourButtonClick:{
+    fourButtonClick: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 877,
@@ -1788,7 +1775,7 @@ export let uiSizes:any ={
         sourceHeight: 30
     },
 
-    eButtonClick:{
+    eButtonClick: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 210,
@@ -1796,7 +1783,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    fButtonClick:{
+    fButtonClick: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 210,
@@ -1804,7 +1791,7 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-    wButtonClick:{
+    wButtonClick: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 210,
@@ -1830,11 +1817,6 @@ export let uiSizes:any ={
         sourceWidth: 30,
         sourceHeight: 30
     },
-
-
-
-
-
 
 
 }

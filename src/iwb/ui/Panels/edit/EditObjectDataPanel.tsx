@@ -20,6 +20,7 @@ import { MaterialComponentPanel } from './MaterialComponentPanel'
 import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerAreaComponentPanel'
 import { AnimationComponent } from './AnimationComponentPanel'
 import { NPCComponent, npcComponentView, updateNPCView } from './NPCComponent'
+import { DialogComponent, updateDialogView } from './DialogComponent'
 
 export let visibleComponent: string = ""
 
@@ -34,6 +35,10 @@ export function openEditComponent(value: string, subMenu?:string) {
 
     if(value === "Trigger Area"){
         updateTriggerAreaActionView("main")
+    }
+
+    if(value === "Dialog"){
+        updateDialogView("list")
     }
 
     visibleComponent = value
@@ -181,6 +186,7 @@ export function EditObjectData() {
                                 
                                 break;
 
+                              
                             default:
                                 openEditComponent("")
                         }
@@ -218,6 +224,7 @@ export function EditObjectData() {
                     <TriggerAreaComponent/>
                     <AnimationComponent/>
                     <NPCComponent/>
+                    <DialogComponent/>
 
                 </UiEntity>
             </UiEntity>

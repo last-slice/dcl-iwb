@@ -100,7 +100,7 @@ export function SpawnPanel() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '30%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -113,11 +113,11 @@ export function SpawnPanel() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '50%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Camera", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
+            uiText={{value:"Camera", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -308,7 +308,7 @@ function generateCreatorRows(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent:'flex-start',
-                width: '40%',
+                width: '30%',
                 height: '100%',
                 display:'flex'
             }}
@@ -321,10 +321,11 @@ function generateCreatorRows(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '50%',
                 height: '100%',
                 display:'flex'
             }}
+            // uiBackground={{color:Color4.Teal()}}
             uiText={{value: "x:" + visibleCameras[i].split(",")[0] + ", y:" + visibleCameras[i].split(",")[1] + ", z:" + visibleCameras[i].split(",")[2], fontSize:sizeFont(25,15), textAlign:'middle-left', color:Color4.White()}}
             />
 

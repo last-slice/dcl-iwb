@@ -180,7 +180,7 @@ export function setUVs(rows: number, cols: number) {
 
 export async function getAssetUploadToken(){
   let player = players.get(localUserId)
-  if(player && player.dclData.hasConnectedWeb3 || resources.allowNoWeb3){
+  if(player && !player.dclData.isGuest || resources.allowNoWeb3){
     log('web3 user, we can get token')
     let response = await fetch((resources.DEBUG ? resources.endpoints.deploymentTest : resources.endpoints.deploymentProd) + resources.endpoints.assetSign +  "/" + localUserId)
     let json = await response.json()
@@ -197,12 +197,12 @@ export function attemptAssetUploader(){
   let player = players.get(localUserId)
   if(!player) return
 
-  if((player.dclData.hasConnectedWeb3 && player.uploadToken) || resources.allowNoWeb3){
+  if((!player.dclData.isGuest && player.uploadToken) || resources.allowNoWeb3){
     log('we have web3 and access token')
     openExternalUrl({url:(resources.DEBUG ? resources.endpoints.toolsetTest : resources.endpoints.toolsetProd) + "/" + localUserId + "/" + player.uploadToken})
   }else{
     log('we dont have web3 or access token')
-    if(!player.dclData.hasConnectedWeb3){
+    if(player.dclData.isGuest){
       log('not web3')
     }
   }

@@ -16,6 +16,7 @@ import { ActionPlayEmoteComponent, selectedEmoteIndex } from './Actions/ActionEm
 import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibilityCollideriMask, actionVisibilityIndex } from './Actions/ActionVisibilityComponent'
 import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
 import { ActionStartDelayComponent, startDelayAction, updateDelayActions } from './Actions/ActionStartDelayComponent'
+import { ActionDialogComponent } from './Actions/ActionDialogComponent'
 
 let view = "list"
 let newName:string = ""
@@ -516,6 +517,8 @@ function getActionData(){
         case 12:
             return {aid:selectedItem.aid, type:Actions.START_DELAY, delay: startDelayAction}
 
+        case 13:
+        return {aid:selectedItem.aid, type:Actions.SHOW_DIALOG, dialID: selectedItem.itemData.dialComp.id}
     }
 }
 
@@ -551,5 +554,8 @@ function getActionDataPanel(){
         case 12:
             updateDelayActions()
             return <ActionStartDelayComponent/>
+
+        case 13:
+            return <ActionDialogComponent/>
     }
 }

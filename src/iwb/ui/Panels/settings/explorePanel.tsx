@@ -15,6 +15,7 @@ import { YourWorlds, showWorlds } from './youWorlds'
 
 let visibleIndex = 1
 let visibleItems:any[] = []
+let lobbyRealm = "BuilderWorld"
 
 export let exploreView:string = "Current World"
 
@@ -27,9 +28,15 @@ export function showAllWorlds(){
 export function refreshVisibleItems(){
     visibleItems.length = 0
 
-    worlds.sort((a, b) => a.name.localeCompare(b.name));
+    worlds.sort((a, b) => {
+        if (a.name === lobbyRealm) return -1;
+        if (b.name === lobbyRealm) return 1;
+      
+        return a.name.localeCompare(b.name);
+      });
 
     visibleItems = paginateArray([...worlds], visibleIndex, 6)
+    console.log('worlds are', worlds)
   }
 
 export function updateExploreView(view:string){

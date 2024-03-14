@@ -1,6 +1,6 @@
 import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
-import {IWBScene, NOTIFICATION_TYPES, Player, SCENE_MODES, SceneItem} from "../../helpers/types"
+import {IWBScene, NOTIFICATION_TYPES, Player, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../modes/create"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import {items} from "../catalog"
@@ -27,6 +27,7 @@ import {
     updateTextComponent
 } from "./components"
 import {
+    check2DCollision,
     check3DCollision,
     checkAnimation,
     checkAudio,
@@ -41,6 +42,9 @@ import {
     runTrigger
 } from "../modes/play"
 import {displaySceneAssetInfoPanel} from "../../ui/Panels/sceneInfoPanel"
+import { displayUGCSceneList } from "../../ui/Panels/ugcSceneListPanel"
+import { showUploads } from "../../ui/Panels/settings/uploadsPanel"
+import { sendServerMessage } from "../messaging"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -512,6 +516,7 @@ function enableSceneEntities(sceneId: string) {
                 //check video
                 if (VideoLoadedComponent.has(entity) && !VideoLoadedComponent.get(entity).init) {
                     checkVideo(entity, sceneItem)
+                    check2DCollision(entity, sceneItem)
                     VideoLoadedComponent.getMutable(entity).init = true
                 }
 
@@ -559,3 +564,22 @@ export function checkAllScenesLoaded() {
         scenesLoaded = true
     }
 }
+
+export function findUGCAssetBeforeDeleting(name:string, id:string){
+    console.log('finding ugc asset in world before deleting', id)
+    let list:string[] = []
+    sceneBuilds.forEach((scene:IWBScene)=>{
+        scene.ass.forEach((asset:any)=>{
+            if(asset.id === id){
+                list.push(scene.n)
+            }
+        })
+    })
+    if(list.length > 0){
+        console.log("found custom asset in scene, show popup to delete that first")
+        displayUGCSceneList(true, list)
+    }else{
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Deleting your UGC Asset\n" + name + "\nfrom the IWB Servers", animate:{enabled:true, return:true, time:5}})
+        sendServerMessage(SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET, {id:id})//
+    }
+}//

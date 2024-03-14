@@ -1,6 +1,7 @@
 import {engine, Entity, InputAction, inputSystem, PointerEvents, PointerEventType} from "@dcl/sdk/ecs"
 import {setButtonState} from "../listeners/inputListeners"
 import {
+    addEditSelectionPointer,
     cancelCatalogItem,
     cancelEditingItem,
     cancelSelectedItem,
@@ -16,10 +17,12 @@ import {
 } from "../modes/build"
 import {checkShortCuts} from "../listeners/shortcuts"
 import {log} from "../../helpers/functions"
-import {localUserId, players, settings} from "../player/player"
+import {localPlayer, localUserId, players, settings} from "../player/player"
 import {EDIT_MODES, SCENE_MODES} from "../../helpers/types"
 import {displayHover, updateContextEvents} from "../../ui/contextMenu"
 import { displayConfirmDeletePanel } from "../../ui/Panels/confirmDeleteItemPanel"
+import { itemIdsFromEntities } from "../scenes"
+import { items } from "../catalog"
 
 
 export let added = false

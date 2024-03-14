@@ -115,6 +115,10 @@ export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:Sce
         case 'NPC':
             addNPCAvatar(scene, entity, item, name)
             break;
+
+        case 'Dialog':
+            addDialogComponent(scene, entity, item, name)
+            break;
     }
 
     if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
@@ -533,4 +537,10 @@ export function addNPCAvatar(scene:IWBScene, entity:Entity, item:SceneItem, name
         skinColor: item.npcComp ?  Color4.create(item.npcComp.skinColor.r  / 255, item.npcComp.skinColor.g / 255, item.npcComp.skinColor.b / 255) : undefined,
         eyeColor: item.npcComp ?   Color4.create(item.npcComp.eyeColor.r  / 255, item.npcComp.eyeColor.g / 255, item.npcComp.eyeColor.b / 255) : undefined
     })
+}
+
+export function addDialogComponent(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
+    if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+        resetEntityForBuildMode(scene, entity)
+    }
 }

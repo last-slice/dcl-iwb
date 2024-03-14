@@ -6,6 +6,7 @@ import { addShowText } from "../../../ui/showTextComponent";
 import { entitiesFromItemIds } from "../../scenes";
 import { utils } from "../../../helpers/libraries";
 import { addDelayedActionTimer } from ".";
+import { showDialogPanel } from "../../../ui/Panels/DialogPanel";
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
     switch(action.type){
@@ -104,6 +105,11 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
                 }
             }, 1000 * action.startDTimer)
             addDelayedActionTimer(timer)
+            break;
+
+        case Actions.SHOW_DIALOG:
+            console.log('need to show dialog panel', action.aid)
+            showDialogPanel(true, action.aid)
             break;
     }
 }

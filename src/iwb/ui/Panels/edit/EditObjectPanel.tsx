@@ -22,6 +22,8 @@ import {EDIT_MODES, EDIT_MODIFIERS} from '../../../helpers/types'
 import {EditObjectDetails} from './EditObjectDetails'
 import {EditObjectData, openEditComponent, visibleComponent} from './EditObjectDataPanel'
 import {Color4} from '@dcl/sdk/math'
+import { settings } from '../../../components/player/player'
+import { displayConfirmDeletePanel } from '../confirmDeleteItemPanel'
 
 export function createEditObjectPanel() {
     return (
@@ -114,6 +116,12 @@ export function createEditObjectPanel() {
                         uiText={{value: "Delete", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
                             deleteSelectedItem(selectedItem.entity)
+
+                            if(settings.confirms){
+                                displayConfirmDeletePanel(true, selectedItem.entity)
+                            }else{
+                                deleteSelectedItem(selectedItem.entity)
+                            }
                         }}
                     />
 
