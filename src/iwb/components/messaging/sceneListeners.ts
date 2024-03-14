@@ -20,6 +20,8 @@ import { displaySceneInfoPanel, displaySceneSetting } from "../../ui/Panels/buil
 import { openExternalUrl } from "~system/RestrictedActions"
 import { displayDeployPendingPanel } from "../../ui/Panels/deployConfirmationPanel"
 import { playSound } from "../sounds"
+import { items } from "../catalog"
+import { refreshSortedItems } from "../catalog/items"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -145,6 +147,12 @@ export function createSceneListeners(room: any) {
             if(!info.valid && info.player === localUserId){
                 playSound(SOUND_TYPES.ERROR_2)
             }
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET, (info: any) => {
+            log(SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET + ' received', info)
+            items.delete(info.id)
+            refreshSortedItems()
         })
 }
 

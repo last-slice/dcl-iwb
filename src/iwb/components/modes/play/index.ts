@@ -121,12 +121,13 @@ export function check2DCollision(entity:Entity, sceneItem: SceneItem){
         if(sceneItem.colComp.iMask === 2 || sceneItem.colComp.vMask === 2){
             MeshCollider.setPlane(entity)
         }else{
+            console.log('setting video plane mask to', sceneItem.colComp)
             MeshCollider.setPlane(entity, sceneItem.colComp.vMask)
         }
 
         // if(sceneItem.textComp){
         //     MeshRenderer.deleteFrom(entity)
-        // }
+        // }//
     }
 }
 
@@ -209,13 +210,13 @@ export function checkAudio(entity:Entity, sceneItem: SceneItem){
 }
 
 export function checkVideo(entity:Entity, sceneItem: SceneItem){
-    if(sceneItem.vidComp && sceneItem.vidComp.autostart){
-        let video = VideoPlayer.getMutableOrNull(entity)
-        if(video){
-            log('setting new video', sceneItem, video)
-            video.playing = true
-            video.position = 0
-            log('setting new video', sceneItem, video)
+    if(sceneItem.vidComp){
+        if(sceneItem.vidComp.autostart){
+            let video = VideoPlayer.getMutableOrNull(entity)
+            if(video){
+                video.playing = true
+                video.position = 0
+            }
         }
     }
 }
@@ -271,6 +272,14 @@ function disableSmartItems(entity:Entity, sceneItem: SceneItem){
             MeshCollider.deleteFrom(entity)
             Material.deleteFrom(entity)
             PointerEvents.deleteFrom(entity)
+            break;
+
+        case 'Dialog':
+            MeshRenderer.deleteFrom(entity)
+            MeshCollider.deleteFrom(entity)
+            Material.deleteFrom(entity)
+            PointerEvents.deleteFrom(entity)
+            TextShape.deleteFrom(entity)
             break;
     }
 }

@@ -165,7 +165,7 @@ export let topTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
-            if (players.has(localUserId) && (players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) && players.get(localUserId)!.homeWorld) {
+            if (players.has(localUserId) && (!players.get(localUserId)!.dclData.isGuest || resources.allowNoWeb3) && players.get(localUserId)!.homeWorld) {
                 displayAssetUploadUI(true)
             } else {
                 displayNoWeb3(true)
@@ -387,7 +387,7 @@ export let bottomTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
-            if (players.has(localUserId) && players.get(localUserId)!.dclData.hasConnectedWeb3 || resources.allowNoWeb3) {
+            if (players.has(localUserId) && !players.get(localUserId)!.dclData.isGuest || resources.allowNoWeb3) {
                 displayAssetUploadUI(true)
             } else {
                 displayNoWeb3(true)

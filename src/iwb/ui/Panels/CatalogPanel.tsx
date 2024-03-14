@@ -143,7 +143,8 @@ function filterCatalog() {
             (item.sty && item.sty.toLowerCase().includes(searchFilter.toLowerCase())) ||
             (item.cat && item.cat.toLowerCase().includes(searchFilter.toLowerCase())) ||
             (item.d && item.d.toLowerCase().includes(searchFilter.toLowerCase())) ||
-            (item.on && item.on.toLowerCase().includes(searchFilter.toLowerCase()))
+            (item.on && item.on.toLowerCase().includes(searchFilter.toLowerCase())) ||
+            (item.tag && item.tag.includes(searchFilter.toLowerCase()))
         );
         log('search filter result', result)
         filteredResult = [...result]
@@ -753,7 +754,27 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         selectCatalogItem(item.id, EDIT_MODES.GRAB, false)
                     }
                 }}
+            >
+
+<UiEntity
+                uiTransform={{
+                    display: item.anim ? 'flex' : 'none',
+                    justifyContent: 'flex-start',
+                    width: calculateSquareImageDimensions(2).width,
+                    height: calculateSquareImageDimensions(2).height,
+                    positionType:'absolute',
+                    position:{right:0, bottom:0}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png',
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.rotateLeftArrow2Trans)
+                }}
             />
+
+            </UiEntity>
 
             <UiEntity
                 uiTransform={{

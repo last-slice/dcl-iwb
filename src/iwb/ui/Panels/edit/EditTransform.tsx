@@ -260,6 +260,10 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                         onChange={(value) => {
                             sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
                         }}
+
+                        onSubmit={(value) => {
+                            sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
+                        }}
                         fontSize={sizeFont(20, 12)}
                         placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
                         placeholderColor={Color4.White()}
@@ -288,6 +292,9 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 >
                     <Input
                         onChange={(value) => {
+                            sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
+                        }}
+                        onSubmit={(value) => {
                             sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
                         }}
                         fontSize={sizeFont(20, 12)}
@@ -319,6 +326,9 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 >
                     <Input
                         onChange={(value) => {
+                            sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
+                        }}
+                        onSubmit={(value) => {
                             sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
                         }}
                         fontSize={sizeFont(20, 12)}

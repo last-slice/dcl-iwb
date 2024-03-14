@@ -37,6 +37,7 @@ export enum SERVER_MESSAGE_TYPES {
     PLAYER_ASSET_PENDING = 'player_asset_pending',
     UPDATE_ASSET_LOCKED = 'update_asset_locked',
     UPDATE_ASSET_BUILD_VIS = 'update_asset_build_visibility',
+    DELETE_UGC_ASSET = 'delete_ugc_asset',
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
@@ -179,7 +180,7 @@ export interface IWBScene {
     im?:string,
     priv:boolean,
     lim:boolean
-    // actions:any[]
+    // actions:any[]//
 }
 
 export interface CatalogItemType {
@@ -198,6 +199,7 @@ export interface CatalogItemType {
     sty:string
     tag: Array<string>
     bb:any
+    anim:any[]
 }
 
 export interface SceneItem extends CatalogItemType{
@@ -222,6 +224,7 @@ export interface SceneItem extends CatalogItemType{
     clickArComp:any
     npcComp:any
     animComp:any
+    dialComp:any
     editing:boolean
     ugc:boolean
     pending:boolean
@@ -267,7 +270,8 @@ export enum COMPONENT_TYPES {
     TRIGGER_AREA_COMPONENT = "Trigger Area",
     CLICK_AREA_COMPONENT = "Click Area",
     ANIMATION_COMPONENT = "Animation",
-    NPC_COMPONENT = "NPC"
+    NPC_COMPONENT = "NPC",
+    DIALOG_COMPONENT = "Dialog"
 }
 
 export enum COLLISION_LAYERS {
@@ -338,7 +342,8 @@ export enum Actions {
     SHOW_IMAGE = 'show_image',
     HIDE_IMAGE = 'hide_image',
     PLAY_ANIMATION = 'play_animation',
-    STOP_ANIMATION = 'stop_animation'
+    STOP_ANIMATION = 'stop_animation',
+    SHOW_DIALOG ='show_dialog',
 }
 
 export enum Triggers {
@@ -366,7 +371,8 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Set Visibility",
     "Show Text",
     "Hide Text",
-    "Start Delay"
+    "Start Delay",
+    "Show Dialog"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -382,7 +388,8 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.SET_VISIBILITY,
     Actions.SHOW_TEXT,
     Actions.HIDE_TEXT,
-    Actions.START_DELAY
+    Actions.START_DELAY,
+    Actions.SHOW_DIALOG
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [

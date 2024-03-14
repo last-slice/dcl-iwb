@@ -8,7 +8,7 @@ import {
     sizeFont
 } from '../helpers'
 import {uiSizes} from '../uiConfig'
-import {localPlayer, localUserId, players} from '../../components/player/player'
+import {localPlayer, localUserId, players, settings} from '../../components/player/player'
 import SceneAssetList from "./scenes/SceneAssetsList.ui";
 import {paginateArray} from '../../helpers/functions'
 import {
@@ -23,13 +23,14 @@ import {
     VisibilityComponent
 } from '@dcl/sdk/ecs'
 import {items} from '../../components/catalog'
-import {deleteSelectedItem, duplicateItem, editItem} from '../../components/modes/build'
+import {deleteSelectedItem, duplicateItem, duplicateItemInPlace, editItem} from '../../components/modes/build'
 import {entitiesFromItemIds, sceneBuilds} from '../../components/scenes'
 import {displaySceneInfoPanel, displaySceneSetting} from './builds/buildsIndex'
 import {sendServerMessage} from '../../components/messaging'
 import {EDIT_MODES, NOTIFICATION_TYPES, SceneItem, SERVER_MESSAGE_TYPES} from '../../helpers/types'
 import {showNotification} from './notificationUI'
 import {displayClearScenePanel} from './clearScenePanel'
+import { displayConfirmDeletePanel } from './confirmDeleteItemPanel'
 
 export let showSceneInfoPanel = false
 
@@ -333,7 +334,7 @@ export function createSceneInfoPanel() {
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     width: '80%',
                     height: '10%',
                 }}
@@ -347,9 +348,8 @@ export function createSceneInfoPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
-                        height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
-                        margin: {right: "1%"},
+                        width: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).height,
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -366,7 +366,35 @@ export function createSceneInfoPanel() {
                         deselectRow()
                         duplicateItem(selectedEntity as Entity)
                     }}
-                    uiText={{value: "Copy", color: Color4.White(), fontSize: sizeFont(30, 20)}}
+                    uiText={{value: "Copy", color: Color4.White(), fontSize: sizeFont(30, 15)}}
+                />
+
+                {/* duplicate in place button */}
+                <UiEntity
+                    uiTransform={{
+                        display: selectedRow !== -1 ? 'flex' : 'none',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).height,
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                    }}
+                    onMouseDown={() => {
+                    }}
+                    onMouseUp={() => {
+                        // VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
+                        displaySceneAssetInfoPanel(false)
+                        deselectRow()
+                        duplicateItemInPlace(selectedEntity as Entity)
+                    }}
+                    uiText={{value: "Copy Place", color: Color4.White(), fontSize: sizeFont(30, 15)}}
                 />
 
 
@@ -377,9 +405,8 @@ export function createSceneInfoPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
-                        height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
-                        margin: {right: "1%"},
+                        width: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).height,
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -396,7 +423,7 @@ export function createSceneInfoPanel() {
                         editItem(selectedEntity as Entity, EDIT_MODES.EDIT)
                         deselectRow()
                     }}
-                    uiText={{value: "Edit", color: Color4.White(), fontSize: sizeFont(30, 20)}}
+                    uiText={{value: "Edit", color: Color4.White(), fontSize: sizeFont(30, 15)}}
                 />
 
                 {/* delete button */}
@@ -406,9 +433,8 @@ export function createSceneInfoPanel() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).width,
-                        height: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlack)).height,
-                        margin: {right: "1%"},
+                        width: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).height,
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -420,11 +446,16 @@ export function createSceneInfoPanel() {
                     onMouseDown={() => {
                     }}
                     onMouseUp={() => {
-                        deleteSelectedItem(selectedEntity as Entity)
-                        VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
-                        deselectRow()
+                        if(settings.confirms){
+                            displayConfirmDeletePanel(true, selectedEntity as Entity)
+                        }else{
+                            deleteSelectedItem(selectedEntity as Entity)
+                            VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
+                            deselectRow()
+                        }
+
                     }}
-                    uiText={{value: "Delete", color: Color4.White(), fontSize: sizeFont(30, 20)}}
+                    uiText={{value: "Delete", color: Color4.White(), fontSize: sizeFont(30, 15)}}
                 />
 
             </UiEntity>

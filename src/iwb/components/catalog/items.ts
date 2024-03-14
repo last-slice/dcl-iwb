@@ -33,6 +33,10 @@ export function setAllItems(updates: SceneItem[]) {
 }
 
 export function updateItem(id: string, update: SceneItem) {
+    if(update.anim){
+        update.tag ? update.tag.push("animation") : update.tag['animation']
+    }
+
     items.set(id, update)
 }
 

@@ -27,7 +27,7 @@ export function initIWB() {
                 await getPlayerNames()
 
                 let realmData = await getRealm({})
-                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "mattimus.dcl.eth" : realmData.realmInfo.realmName : "")
+                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld.dcl.eth" : realmData.realmInfo.realmName : "")
 
                 engine.addSystem(BuildModeVisibiltyComponents)
 

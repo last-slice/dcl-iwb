@@ -30,7 +30,7 @@ export function AnimationComponent() {
         >
 
      {/* enabled  row */}
-        <UiEntity
+        {/* <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -90,14 +90,14 @@ export function AnimationComponent() {
         </UiEntity>
 
 
-        </UiEntity>
+        </UiEntity> */}
 
         {/* autostart setting */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 justifyContent: 'center',
-                width: '100%',
+                width: '90%',
                 height: '20%',
                 margin:{top:"1%", bottom:'2%'}
             }}
@@ -110,7 +110,7 @@ export function AnimationComponent() {
                 width: '100%',
                 height: '30%',
             }}
-        uiText={{value:"Autostart", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{value:"Auto Start Animation", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
                 <UiEntity
@@ -128,7 +128,7 @@ export function AnimationComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '47%',
+                width: '100%',
                 height: '100%',
             }}
         >
@@ -149,15 +149,53 @@ export function AnimationComponent() {
 
         </UiEntity>
 
+            </UiEntity>
+
+            </UiEntity>
+
+   {/* autostart loop */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '90%',
+                height: '20%',
+                margin:{top:"1%", bottom:'1%'}
+            }}
+        >
+
+
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '47%',
+                width: '50%',
                 height: '100%',
+                margin:{right:'1%'}
             }}
         >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '30%',
+            }}
+        uiText={{value:"Auto start", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            height: '70%',
+                        }}
+                    >
 
                         <Dropdown
                     key={"animation-autostart-type-dropdown"}
@@ -171,22 +209,18 @@ export function AnimationComponent() {
                     color={Color4.White()}
                     fontSize={sizeFont(20, 15)}
                 />
+                </UiEntity>
 
         </UiEntity>
 
-
-            </UiEntity>
-
-            </UiEntity>
-
-   {/* autostart loop */}
-            <UiEntity
+        <UiEntity
             uiTransform={{
-                flexDirection: 'row',
+                flexDirection: 'column',
+                alignItems: 'center',
                 justifyContent: 'center',
-                width: '95%',
-                height: '10%',
-                margin:{top:"1%", bottom:'1%'}
+                width: '50%',
+                height: '100%',
+                margin:{left:"1%"}
             }}
         >
                     <UiEntity
@@ -194,10 +228,10 @@ export function AnimationComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '70%',
-                height: '100%',
+                width: '100%',
+                height: '30%',
             }}
-        uiText={{value:"Autoloop", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{value:"Loop", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
             <UiEntity
@@ -205,8 +239,8 @@ export function AnimationComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
-                height: '100%',
+                width: '100%',
+                height: '70%',
             }}
         >
 
@@ -219,11 +253,12 @@ export function AnimationComponent() {
                         width: '100%',
                         height: '120%',
                     }}
-                    // uiBackground={{color:Color4.Purple()}}
+                    // uiBackground={{color:Color4.Purple()}}//
                     color={Color4.White()}
                     fontSize={sizeFont(20, 15)}
                 />
 
+        </UiEntity>
         </UiEntity>
 
             </UiEntity>
@@ -234,7 +269,7 @@ export function AnimationComponent() {
             uiTransform={{
                 flexDirection: 'column',
                 justifyContent: 'center',
-                width: '100%',
+                width: '90%',
                 height: '20%',
                 margin:{top:"1%"}
             }}
@@ -288,7 +323,7 @@ export function AnimationComponent() {
                 justifyContent: 'center',
                 alignContent:'flex-start',
                 alignItems:'flex-start',
-                width: '100%',
+                width: '90%',
                 height: '10%',
                 margin:{top:"1%"}
             }}

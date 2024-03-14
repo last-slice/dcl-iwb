@@ -460,7 +460,7 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
                 sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {
                     user: localUserId,
                     item: {catalogId: sceneItem.id, aid: assetId, sceneId: selectedItem.sceneId}
-                })//
+                })
                 return
             }
         })
@@ -529,7 +529,7 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     const curScene = findSceneByParcel(parcel)
     const bpsCurScene = checkBuildPermissionsForScene(curScene)
 
-    if (curScene && bpsCurScene && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
+    if (curScene && bpsCurScene){//} && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
         canDrop = true
         playSound(SOUND_TYPES.DROP_1_STEREO)
 
@@ -937,7 +937,26 @@ function addGrabbedComponent(entity: Entity, catalogId: string, itemData: any) {
                     updateAudioComponent(itemData.aid, itemData.id, itemData.audComp)
                 }
                 MeshRenderer.setBox(selectedItem.entity)
-                MeshCollider.setBox(selectedItem.entity)
+                break;
+
+            case 'SM':
+                MeshRenderer.setBox(selectedItem.entity)
+                if(selectedItem.itemData.trigArComp){
+                    Material.setPbrMaterial(entity,{ 
+                        albedoColor: Color4.create(1,1,0,.5)
+                    })
+                }
+                else if(selectedItem.itemData.dialComp){
+                    Material.setPbrMaterial(entity, {
+                        albedoColor: Color4.create(1, 0, 1, .5)
+                    })
+                    TextShape.createOrReplace(entity, {text: "" + selectedItem.itemData.dialComp.name, fontSize: 3})
+                }
+                else{
+                    Material.setPbrMaterial(entity,{
+                        albedoColor: Color4.create(54/255,221/255,192/255, .5)
+                    })
+                }
                 break;
         }
     }
@@ -1201,6 +1220,8 @@ export function addEditSelectionPointer(aid: string, itemData: any) {
             position: Vector3.create(0, itemData.bb.z + 1, 0),
             parent: ent
         })
+
+        console.log('edit pointer transform', Transform.get(edit))
         editAssets.set(aid, edit)
     }
 }
@@ -1282,7 +1303,8 @@ function checkVideo(entity: Entity, sceneItem: SceneItem) {
 }
 
 function checkSmartItems(entity:Entity, sceneItem: SceneItem){
-    if(sceneItem.type === "SM"){//
+    if(sceneItem.type === "SM"){
+        console.log('checking smart item component for build mode', sceneItem)
         MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
 
         if(sceneItem.id === "78f04fcf-5c50-4001-840c-6ba717ce6037"){
@@ -1291,13 +1313,21 @@ function checkSmartItems(entity:Entity, sceneItem: SceneItem){
         }
         else{
             MeshRenderer.setBox(entity)
+            MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
 
             if(sceneItem.trigArComp){
                 Material.setPbrMaterial(entity,{ 
                     albedoColor: Color4.create(1,1,0,.5)
                 })
                 utils.triggers.enableTrigger(entity, false)
-            }else{
+            }
+            else if(sceneItem.dialComp){
+                Material.setPbrMaterial(entity, {
+                    albedoColor: Color4.create(1, 0, 1, .5)
+                })
+                TextShape.createOrReplace(entity, {text: "" + sceneItem.dialComp.name, fontSize: 3})
+            }
+            else{
                 Material.setPbrMaterial(entity,{
                     albedoColor: Color4.create(54/255,221/255,192/255, .5)
                 })

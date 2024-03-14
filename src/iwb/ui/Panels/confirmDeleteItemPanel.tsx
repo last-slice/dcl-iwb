@@ -3,7 +3,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { Entity } from '@dcl/sdk/ecs'
-import { selectedItem, sendServerDelete } from '../../components/modes/build'
+import { addEditSelectionPointer, removeEditSelectionPointer, selectedItem, sendServerDelete } from '../../components/modes/build'
 import { SceneItem } from '../../helpers/types'
 import { itemIdsFromEntities, sceneBuilds } from '../../components/scenes'
 import { localPlayer } from '../../components/player/player'
@@ -12,6 +12,7 @@ import { items } from '../../components/catalog'
 export let show = false
 export let toDelete:Entity
 export let toDeleteItem:SceneItem
+export let toDeleteAssetId:string
 
 export function displayConfirmDeletePanel(value: boolean, entity?:Entity) {
     show = value
@@ -20,15 +21,24 @@ export function displayConfirmDeletePanel(value: boolean, entity?:Entity) {
         toDelete = entity
         let assetId = itemIdsFromEntities.get(entity)
         if (assetId) {
+            toDeleteAssetId = assetId
+
             let sceneItem = localPlayer!.activeScene!.ass.find((asset) => asset.aid === assetId) 
             if(sceneItem){
-                let catItem = [...items.values()].find((id:any)=> id.id === sceneItem?.id)
-                console.log(catItem)
+                let itemData = items.get(sceneItem.id)
+                itemData && itemData.bb ? addEditSelectionPointer(assetId, itemData) : null
+
                 toDeleteItem = sceneItem
-                toDeleteItem.n = catItem!.n
+                toDeleteItem.n = itemData!.n
             }
         }
     }
+
+    if(!value){
+        toDelete ? removeEditSelectionPointer(toDeleteAssetId) : null
+    }
+
+    
 }
 
 export function createConfirmDeleteItemPanel() {
