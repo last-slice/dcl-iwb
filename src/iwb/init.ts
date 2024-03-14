@@ -11,23 +11,21 @@ import {realm, updateRealm} from "./components/scenes";
 import {getPlayer} from "@dcl/sdk/players";
 import {FlyModeSystem} from "./components/systems/FlyModeSystem";
 import {SelectedItemSystem} from "./components/systems/SelectedItemSystem";
+import {getUserData} from "~system/UserIdentity";
 
 export function initIWB() {
     setupUi()
 
-    getPreview().then(() => {
+    getPreview().then(()=>{
 
-        const playerData = getPlayer()
-
-        log("getuserdata is", playerData)
-        if (playerData) {
-
-            executeTask(async () => {
-                await addPlayer(playerData.userId, true, [{dclData: playerData}])
+        getUserData({}).then(async ({data})=>{
+            log("getuserdata is", data)
+            if(data){
+                await addPlayer(data.userId, true, [{dclData:data}])
                 await getPlayerNames()
 
                 let realmData = await getRealm({})
-                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "mattimus.dcl.eth" : realmData.realmInfo.realmName : "")
+                updateRealm(realmData.realmInfo ? realmData.realmInfo.realmName === "LocalPreview" ? "BuilderWorld.dcl.eth" : realmData.realmInfo.realmName : "")
 
                 engine.addSystem(BuildModeVisibiltyComponents)
 
@@ -36,27 +34,26 @@ export function initIWB() {
                 engine.addSystem(PlayerTrackingSystem)
                 engine.addSystem(FlyModeSystem)
                 engine.addSystem(SelectedItemSystem)
+            }
 
+            //add input listeners
+            createInputListeners()
 
-                //add input listeners
-                createInputListeners()
+            // // Login with dcl auth and retrieve jwt
+            // const {body, status} = await signedFetch({
+            //     url: resources.endpoints.validateTest + "/login",
+            //     init: {
+            //         method: "POST",
+            //         headers: {}
+            //     }
+            // })
+            // let json = JSON.parse(body)
+            // //console.log('login response', status, json)
 
-                // // Login with dcl auth and retrieve jwt
-                // const {body, status} = await signedFetch({
-                //     url: resources.endpoints.validateTest + "/login",
-                //     init: {
-                //         method: "POST",
-                //         headers: {}
-                //     }
-                // })
-                // let json = JSON.parse(body)
-                // //console.log('login response', status, json)
-
-                // connect with userData and token
-                // colyseusConnect(data, json.data.token)
-                joinWorld(realm)
-                // colyseusConnect(data, "")
-            })
-        }
+            // connect with userData and token
+            // colyseusConnect(data, json.data.token)
+            joinWorld(realm)
+            // colyseusConnect(data, "")
+        })
     })
 }
