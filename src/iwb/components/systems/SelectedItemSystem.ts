@@ -14,7 +14,6 @@ let lastPlayerPos: Vector3 | undefined = undefined
 let time = 1
 let movetime = 5
 
-
 export let isSnapEnabled = false
 
 export function toggleSnapMode() {
@@ -45,8 +44,8 @@ function getSnapPosition(playerPosition: Vector3, playerRotation: Quaternion, fo
 
     //log('world pos', palyerX, playerZ)
 
-    const newXPos = nearest(worldX, 1) - worldX
-    const newZPos = nearest(worldZ, 1) - worldZ + 4
+    const newXPos = nearest(worldX, 1) //- worldX
+    const newZPos = nearest(worldZ, 1) // - worldZ + 4
 
     //log('new pos', newXPos, newZPos)
 
@@ -56,9 +55,8 @@ function getSnapPosition(playerPosition: Vector3, playerRotation: Quaternion, fo
 function getSnapYRotation(playerRotation: Quaternion, itemRotation: Quaternion) {
     const eulerP = Quaternion.toEulerAngles(playerRotation)
     const eulerI = Quaternion.toEulerAngles(itemRotation)
-    return nearest(eulerI.y, 90) - eulerP.y
+    return nearest(eulerI.y, 90) //- eulerP.y
 }
-
 
 export function SelectedItemSystem(dt: number) {
     if (time > 0) {
@@ -89,26 +87,31 @@ export function SelectedItemSystem(dt: number) {
             //log('selected item pos', playerT.x + snapPos[0], playerT.z + snapPos[1])
             selEntityTransform.position = {
                 x: snapPos[0],
-                y: newYPos,
+                y: newYPos + playerPos.y,
                 z: snapPos[1]
             }
 
-            // const snapRot = getWorldRotation(engine.PlayerEntity)
-            // const selEul = Quaternion.toEulerAngles(selEntityTransform.rotation)
-            //
-            // selEntityTransform.rotation  =
-            //     Quaternion.fromEulerDegrees(
-            //         selEul.x,
-            //         getSnapYRotation(playerRotation, selEntityTransform.rotation),
-            //         selEul.z
-            //     )
+            selEntityTransform.parent = undefined
+
+            const snapRot = getWorldRotation(engine.PlayerEntity)
+            const selEul = Quaternion.toEulerAngles(selEntityTransform.rotation)
+
+            selEntityTransform.rotation =
+                Quaternion.fromEulerDegrees(
+                    selEul.x,
+                    getSnapYRotation(playerRotation, selEntityTransform.rotation),
+                    selEul.z
+                )
+
+        } else {
 
             // Set new item position w.o snap
-        } else {
             selEntityTransform.position = {
-                ...selEntityTransform.position,
+                x: 0, z: 4,
                 y: newYPos //+ selectedItem.initialHeight
             }
+
+            selEntityTransform.parent = engine.PlayerEntity
         }
 
 

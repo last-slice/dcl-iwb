@@ -77,6 +77,7 @@ export function assetListener(scene:any){
     scene.ass.onRemove(async (asset:any, key:any)=>{
         log("scene asset remove", key, asset)
         if(asset.editing && asset.editor === localUserId){
+            asset.sceneId = scene.id
             await confirmGrabItem(asset)
         }
         removeItem(scene.id, asset)
