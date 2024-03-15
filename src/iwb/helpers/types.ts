@@ -231,6 +231,7 @@ export interface SceneItem extends CatalogItemType{
     editor:string
     locked:boolean
     buildVis:boolean
+    sceneId:string
 }
 
 export interface SelectedItem {
