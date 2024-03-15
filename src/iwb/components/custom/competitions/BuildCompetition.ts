@@ -58,7 +58,7 @@ export function addTeammate(mate:string){
 }
 
 export async function attemptSignup(){
-    if(localPlayer && localPlayer.dclData.hasConnectedWeb3){
+    if(localPlayer && !localPlayer.dclData.isGuest){
         console.log('need to sign message')
 
           
