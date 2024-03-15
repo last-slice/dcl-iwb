@@ -68,7 +68,7 @@ export function updateVisibleIndex(amt: number) {
 }
 
 export function updateRows() {
-    visibleItems = paginateArray(sceneBuilds.get(localPlayer.activeScene!.id).ass, visibleIndex, visibleRows)
+    visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
 }
 
 export function selectRow(row: number, pointer?: boolean) {
