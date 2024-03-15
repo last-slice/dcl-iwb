@@ -998,13 +998,14 @@ export function deleteSelectedItem(entity: Entity) {
                     entity: entity
                 }
                 sendServerDelete(entity, data)
-                removeSelectedItem()
                 return
             } else {
                 playSound(SOUND_TYPES.ERROR_2)
             }
         })
     }
+
+    removeSelectedItem()
 }//
 
 export function cancelSelectedItem() {
@@ -1120,10 +1121,13 @@ function addGrabbedComponent(entity: Entity, catalogId: string, itemData: any) {
 
 
 export function removeSelectedItem() {
-    PointerEvents.deleteFrom(selectedItem.entity)
-    engine.removeEntity(selectedItem.entity)
-    selectedItem.enabled = false
-    selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
+
+    if (selectedItem && selectedItem.entity) {
+        PointerEvents.deleteFrom(selectedItem.entity)
+        engine.removeEntity(selectedItem.entity)
+        selectedItem.enabled = false
+        selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
+    }
 
     addAllBuildModePointers()
 }
