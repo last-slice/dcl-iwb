@@ -16,6 +16,12 @@ let movetime = 5
 
 export let isSnapEnabled = false
 
+let userRotationY = 0
+
+export function rotateSelectedItem() {
+    userRotationY = (userRotationY + 90) % 360
+}
+
 export function toggleSnapMode() {
     log('snap mode', isSnapEnabled)
     isSnapEnabled = !isSnapEnabled
@@ -55,7 +61,7 @@ function getSnapPosition(playerPosition: Vector3, playerRotation: Quaternion, fo
 function getSnapYRotation(playerRotation: Quaternion, itemRotation: Quaternion) {
     const eulerP = Quaternion.toEulerAngles(playerRotation)
     const eulerI = Quaternion.toEulerAngles(itemRotation)
-    return nearest(eulerI.y, 90) //- eulerP.y
+    return nearest(eulerI.y, 90)  //+ userRotationY //- eulerP.y
 }
 
 export function SelectedItemSystem(dt: number) {
@@ -91,17 +97,16 @@ export function SelectedItemSystem(dt: number) {
                 z: snapPos[1]
             }
 
-            selEntityTransform.parent = undefined
-
-            const snapRot = getWorldRotation(engine.PlayerEntity)
             const selEul = Quaternion.toEulerAngles(selEntityTransform.rotation)
 
             selEntityTransform.rotation =
                 Quaternion.fromEulerDegrees(
                     selEul.x,
-                    getSnapYRotation(playerRotation, selEntityTransform.rotation),
+                    getSnapYRotation(playerRotation, getWorldRotation(selectedItem.entity)),
                     selEul.z
                 )
+
+            selEntityTransform.parent = undefined
 
         } else {
 
