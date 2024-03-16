@@ -39,7 +39,7 @@ export default {
         wsProd: "wss://dcl-iwb.co/toolset",
 
         deploymentTest: "http://localhost:3525",
-        deploymentProd: "https://dcl-iwb.co/dcl/deployment",
+        deploymentProd: "https://deployment.dcl-iwb.co",
 
         toolsetTest: "http://localhost:3000/toolset",
         toolsetProd: "https://dcl-iwb.co/toolset",
