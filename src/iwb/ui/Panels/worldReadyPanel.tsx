@@ -59,7 +59,7 @@ export function createWorldReadyPanel() {
                         margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"World Ready!", fontSize: sizeFont(45,30), color: Color4.Black()}}
+                uiText={{value:"World Ready!", fontSize: sizeFont(45,30), color: Color4.White()}}
                 />
 
                         {/* world name */}
@@ -71,7 +71,7 @@ export function createWorldReadyPanel() {
                 width: '100%',
                 height: '10%',
             }}
-            uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("" + selectedWorld.worldName, true, 30)}}
+            uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("" + selectedWorld.worldName, true, 30)}}
         />
 
 
@@ -84,7 +84,7 @@ export function createWorldReadyPanel() {
                             width: '100%',
                             height: '25%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Your world is deployed. Join now to start building!", true, 30)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("Your world is deployed. Join now to start building!", true, 30)}}
                     />
 
         <UiEntity
@@ -92,8 +92,8 @@ export function createWorldReadyPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{
@@ -101,13 +101,13 @@ export function createWorldReadyPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
                 worldTravel(selectedWorld)
                 displayWorldReadyPanel(false, {})
             }}
-            uiText={{value: "Join World", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Join World", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity
@@ -115,8 +115,8 @@ export function createWorldReadyPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{
@@ -124,12 +124,12 @@ export function createWorldReadyPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.normalButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
                 displayWorldReadyPanel(false,{})
             }}
-            uiText={{value: "Cancel", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Cancel", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
         </UiEntity>

@@ -242,7 +242,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
 
-        if ((selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > cRoom.state.cv) || (selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
+        if ((selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > cRoom.state.cv) || (!selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
 

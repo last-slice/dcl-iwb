@@ -64,7 +64,7 @@ export function createInitalizeWorldPanel() {
                         margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Initalize World", fontSize: sizeFont(45,30), color: Color4.Black()}}
+                uiText={{value:"Initalize World", fontSize: sizeFont(45,30), color: Color4.White()}}
                 />
 
                         {/* world name */}
@@ -76,7 +76,7 @@ export function createInitalizeWorldPanel() {
                 width: '100%',
                 height: '10%',
             }}
-            uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("" + selectedWorld.name, true, 30)}}
+            uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("" + selectedWorld.name, true, 30)}}
         />
 
 
@@ -89,7 +89,7 @@ export function createInitalizeWorldPanel() {
                             width: '100%',
                             height: '25%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("To begin building in this world, you must initiate it.", true, 30)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("To begin building in this world, you must initiate it.", true, 30)}}
                     />
 
         <UiEntity
@@ -97,8 +97,8 @@ export function createInitalizeWorldPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{
@@ -106,14 +106,14 @@ export function createInitalizeWorldPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
                 cRoom.send(SERVER_MESSAGE_TYPES.INIT_WORLD, {user:localUserId, world:selectedWorld})
                 displayInitalizeWorldPanel(false, {})
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, animate:{enabled:true, return:true, time:5}, message:"Your deployment is pending...please wait for confirmation"})
             }}
-            uiText={{value: "Continue", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Continue", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity
@@ -121,8 +121,8 @@ export function createInitalizeWorldPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(15,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{
@@ -130,13 +130,13 @@ export function createInitalizeWorldPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.normalButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             onMouseDown={() => {
                 displayInitalizeWorldPanel(false,{})
                 displaySettingsPanel(true)
             }}
-            uiText={{value: "Cancel", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Cancel", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
         </UiEntity>
