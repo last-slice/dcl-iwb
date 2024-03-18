@@ -46,7 +46,7 @@ export function createPendingStatusPanel(){
       alignContent:'center',
       alignItems:'center',
       positionType:'absolute',
-      position:{top: '1%', left: isPreview ? '13%' : '5%'}
+      position:{top: '1%', left: isPreview ? '13%' : '11%'}
     }}
     uiBackground={{
       texture:{
@@ -168,7 +168,7 @@ export function createPendingStatusPanel(){
       flexDirection:'row',
       alignContent:'center',
       alignItems:'center',
-      display: view === "update" ? "flex" : "none"
+      display: view === "assetsready" ? "flex" : "none"
     }}
     >
 
@@ -181,7 +181,7 @@ export function createPendingStatusPanel(){
             height: '100%',
             margin:{top:"1%", bottom:'1%'},
         }}
-        uiText={{value:"Update Ready", fontSize:sizeFont(25,20), color:Color4.White()}}
+        uiText={{value:"Asset(s) Ready", fontSize:sizeFont(25,20), color:Color4.White()}}
     />
 
     <UiEntity
@@ -213,7 +213,6 @@ export function createPendingStatusPanel(){
 
         </UiEntity>
 
-
         {/* refresh ready panel */}
         <UiEntity
     uiTransform={{
@@ -237,6 +236,33 @@ export function createPendingStatusPanel(){
             margin:{top:"1%", bottom:'1%'},
         }}
         uiText={{value:"World Updated. Refresh Ready.", fontSize:sizeFont(25,20), color:Color4.White()}}
+    />
+
+        </UiEntity>
+
+        {/* Disconnected panel */}
+        <UiEntity
+    uiTransform={{
+        width: '100%',
+        height: '100%',
+      justifyContent:'center',
+      flexDirection:'row',
+      alignContent:'center',
+      alignItems:'center',
+      display: view === "disconnected" ? "flex" : "none"
+    }}
+    >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiText={{value:"Disconnected", fontSize:sizeFont(25,20), color:Color4.White()}}
     />
 
         </UiEntity>

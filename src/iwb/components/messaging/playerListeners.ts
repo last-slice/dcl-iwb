@@ -24,6 +24,7 @@ export function createPlayerListeners(room: Room) {
             updateItem(info.id, info)
             addPendingAsset(info)
             refreshSortedItems()
+            displayPendingPanel(true, 'assetsready')
         }
     })
 
