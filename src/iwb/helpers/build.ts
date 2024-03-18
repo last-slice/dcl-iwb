@@ -78,6 +78,8 @@ function getParcelRange(parcels: Parcel[]): Range {
     let xmin = Infinity, zmin = Infinity, xmax = -Infinity, zmax = -Infinity;
 
     for (let parcel of parcels) {
+        if(parcel === '') continue;
+
         let [x, z] = parcel.split(',').map(Number);
         xmin = Math.min(xmin, x);
         zmin = Math.min(zmin, z);

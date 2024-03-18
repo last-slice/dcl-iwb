@@ -2,8 +2,16 @@ import {localPlayer} from "../../player/player";
 import {VIEW_MODES} from "../../../helpers/types";
 import {log} from "../../../helpers/functions";
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math";
-import {CameraModeArea, CameraType, engine, Entity, Material, MeshCollider, MeshRenderer, Transform} from "@dcl/sdk/ecs";
-import {getEntitiesWithParent} from "@dcl-sdk/utils";
+import {
+    CameraModeArea,
+    CameraType,
+    ColliderLayer,
+    engine,
+    Entity,
+    Material,
+    MeshCollider,
+    Transform
+} from "@dcl/sdk/ecs";
 
 export let isFlyModeEnabled = false
 
@@ -28,7 +36,7 @@ function createFlyBox() {
     let pos = Transform.get(engine.PlayerEntity).position
 
     const floor = engine.addEntity()
-    MeshCollider.setPlane(floor)
+    MeshCollider.setPlane(floor, ColliderLayer.CL_PHYSICS)
     Material.setPbrMaterial(floor, {albedoColor: Color4.create(0, 0, 0, .1)})
     Transform.createOrReplace(floor, {
         position: Vector3.create(0, 0, 0),
@@ -74,7 +82,7 @@ function createFlyBox() {
     // })
 
     Transform.createOrReplace(invisibleBox, {
-        position: Vector3.create(pos.x, pos.y -.88, pos.z)
+        position: Vector3.create(pos.x, pos.y - .88, pos.z)
     })
 
     const cameraModeE = engine.addEntity()

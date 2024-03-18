@@ -97,8 +97,8 @@ export function createInitalizeWorldPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.buttonPillBlack)).height,
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{
@@ -121,8 +121,8 @@ export function createInitalizeWorldPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.buttonPillBlack)).height,
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlack)).height,
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiBackground={{

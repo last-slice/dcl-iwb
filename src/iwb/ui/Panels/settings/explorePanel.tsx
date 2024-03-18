@@ -73,8 +73,8 @@ export function ExplorePanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
-            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
                 margin:{top:"1%", bottom:'1%', right:'1%'},
             }}
             uiBackground={{

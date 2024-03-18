@@ -91,7 +91,7 @@ export function FeedbackPanel() {
             }}
             onMouseDown={()=>{
                 playSound(SOUND_TYPES.SELECT_3)
-                sendServerMessage(SERVER_MESSAGE_TYPES.SUBMIT_FEEDBACK, {user:localUserId, name: localPlayer.dclData.displayName, feedback:feedback})
+                sendServerMessage(SERVER_MESSAGE_TYPES.SUBMIT_FEEDBACK, {user:localUserId, name: localPlayer.dclData.name, feedback:feedback})
                 feedback = ""
                 updateHelpView("feedbacksent")
 
