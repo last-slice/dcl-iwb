@@ -103,15 +103,6 @@ export async function getPlayerNames() {
                 version: 0
             })
         })
-        localPlayer.worlds.push({
-            name: 'dclbuilder',
-            owner: localUserId,
-            ens: 'dclbuilder.dcl.eth',
-            builds: 0,
-            updated: 0,
-            init: false,
-            version: 0
-        })
     }
 }
 
