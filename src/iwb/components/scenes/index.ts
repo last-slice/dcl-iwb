@@ -77,7 +77,6 @@ export function updateRealm(value: string) {
         let player = players.get(localUserId)
         if (player) {
             player.worlds.forEach(async (world) => {
-                log('world is', world)
                 if ((world.ens === value)) {
                     player!.homeWorld = true
                     await getPlayerLand()

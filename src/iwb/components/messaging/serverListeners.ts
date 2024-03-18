@@ -9,6 +9,7 @@ import {showNotification} from "../../ui/Panels/notificationUI";
 import {addSceneStateListeners} from "./sceneListeners";
 import {refreshSortedItems, setNewItems, updateItem} from "../catalog/items";
 import { createSounds, playSound } from "../sounds";
+import { displayPendingPanel } from "../../ui/Panels/pendingStatusPanel";
 
 
 export function initiateMessageListeners(room: Room) {
@@ -82,6 +83,7 @@ export function initiateMessageListeners(room: Room) {
         log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
         if (info.owner.toLowerCase() === localUserId && info.init) {
             displayWorldReadyPanel(true, info)
+            displayPendingPanel(true, "ready")
         } else {
             log('should display something else')
             showNotification({

@@ -2,8 +2,6 @@ import {engine, Entity, InputAction, inputSystem, PointerEvents, PointerEventTyp
 import {setButtonState} from "../listeners/inputListeners"
 import {
     addEditSelectionPointer,
-    cancelCatalogItem,
-    cancelEditingItem,
     cancelSelectedItem,
     deleteSelectedItem,
     dropSelectedItem,

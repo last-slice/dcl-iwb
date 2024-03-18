@@ -12,6 +12,7 @@ import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../../
 import { newItems } from '../../../components/catalog/items'
 import { statusView } from './StatusPanel'
 import { playSound } from '../../../components/sounds'
+import { displayPendingPanel } from '../pendingStatusPanel'
 
 export function VersionPanel() {
     return (
@@ -89,6 +90,7 @@ export function VersionPanel() {
             displaySetting("Explore")
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
             cRoom.send(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
+            displayPendingPanel(true, "deployment")
         }}
         uiText={{value:"Update", color:Color4.White(), fontSize:sizeFont(30,20)}}
         />
