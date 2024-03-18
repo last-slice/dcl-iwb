@@ -90,7 +90,7 @@ export function createFTPPanel() {
             }}
             onMouseDown={() => {
                 displayFTPPanel(false)
-                joinWorld({world:localUserId, label:players.get(localUserId)?.dclData.displayName})
+                joinWorld({world:localUserId, label:players.get(localUserId)?.dclData.name})
             }}
             uiText={{value: "New Build", color:Color4.Black(), fontSize:sizeFont(30,20)}}
             />
