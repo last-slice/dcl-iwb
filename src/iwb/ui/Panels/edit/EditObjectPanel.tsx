@@ -115,8 +115,6 @@ export function createEditObjectPanel() {
                         }}
                         uiText={{value: "Delete", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
-                            deleteSelectedItem(selectedItem.entity)
-
                             if(settings.confirms){
                                 displayConfirmDeletePanel(true, selectedItem.entity)
                             }else{

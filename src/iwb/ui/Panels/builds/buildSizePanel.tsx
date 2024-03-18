@@ -9,6 +9,7 @@ import { formatDollarAmount, formatSize, log } from '../../../helpers/functions'
 import { buildInfoTab, scene } from './buildsIndex'
 import { cRoom, sendServerMessage } from '../../../components/messaging'
 import { SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import {PositionUnit} from "@dcl/react-ecs/dist/components/uiTransform/types";
 
 let visibleIndex = 0
 let visibleItems:any[] = []
@@ -98,8 +99,7 @@ export function SizePanel() {
                 width: getPolyWidth(),
                 height: '100%',
             }}
-            uiBackground={{color:  scene && scene !== null ? (scene.pc / (scene.pcls.length * 10000)) > 0.75 ? Color4.Red() : Color4.Green()  : Color4.Green()}}
-            />
+            uiBackground={{color: scene?.pc && (scene.pc / (scene.pcls.length * 10000)) > 0.75 ? Color4.Red() : Color4.Green()}}/>
 
             </UiEntity>
 
@@ -115,7 +115,12 @@ export function SizePanel() {
                 margin:{top:"5%"}
             }}
             // uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"Scene File Size: " + (scene && scene !== null ? parseFloat(formatSize(scene.si)) + "MB / " + (scene.pcnt > 20 ? 300 : scene.pcnt * 15) + "MB"  : ""), color:Color4.White(), fontSize:sizeFont(25,16)}}
+            uiText={{
+                value: scene ? `Scene File Size: ${parseFloat(formatSize(scene.si))}MB / ${scene.pcnt > 20 ? 300 : scene.pcnt * 15}MB` : "",
+                color: Color4.White(),
+                fontSize: sizeFont(25,16)
+            }}
+
             />
 
             {/* File count size container */}
@@ -148,24 +153,11 @@ export function SizePanel() {
     )
 }
 
-function getPolyWidth():any {
-    if(scene && scene !== null){
-        if(scene.pc / (scene.pcls.length * 10000) * 100 >= 1){
-            return `100%`
-        }
-        return `${(scene.pc / (scene.pcls.length * 10000) * 100)}%`
-    }else{
-        return `0%`
-    }
+function getPolyWidth(): PositionUnit | undefined {
+    return scene ? `${Math.min((scene.pc / (scene.pcls.length * 10000)) * 100, 100)}%` : '0%';
 }
-
-function getSizeWidth():any {
-    if(scene && scene !== null){
-        if(((parseFloat(formatSize(scene.si))) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15))* 100 >= 300){
-            return `100%`
-        }
-        return `${((parseFloat(formatSize(scene.si))) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15))* 100}%`
-    }else{
-        return `0%`
-    }
+function getSizeWidth():  PositionUnit | undefined {
+    if (!scene) return '0%';
+    const sizeRatio = parseFloat(formatSize(scene.si)) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15) * 100;
+    return `${Math.min(sizeRatio, 100)}%`;
 }
