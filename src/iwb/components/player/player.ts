@@ -102,7 +102,7 @@ export async function getPlayerNames() {
                 init: false,
                 version: 0
             })
-        })//
+        })
     }
 }
 

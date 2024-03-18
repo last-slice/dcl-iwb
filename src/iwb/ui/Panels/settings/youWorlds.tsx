@@ -1,16 +1,15 @@
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { Color4 } from '@dcl/sdk/math'
-import { displaySetting, displaySettingsPanel } from './settingsIndex'
-import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
-import { uiSizes } from '../../uiConfig'
-import { localUserId, players, worldTravel } from '../../../components/player/player'
-import { displayInitalizeWorldPanel } from '../initaliteWorldPanel'
-import { worlds } from '../../../components/scenes'
-import { log, paginateArray } from '../../../helpers/functions'
-import { displayRealmTravelPanel } from '../realmTravelPanel'
-import { playSound } from '../../../components/sounds'
-import { SOUND_TYPES } from '../../../helpers/types'
-import { exploreView } from './explorePanel'
+import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
+import {Color4} from '@dcl/sdk/math'
+import {displaySetting, displaySettingsPanel} from './settingsIndex'
+import {calculateSquareImageDimensions, getImageAtlasMapping, sizeFont} from '../../helpers'
+import {uiSizes} from '../../uiConfig'
+import {localUserId, players} from '../../../components/player/player'
+import {displayInitalizeWorldPanel} from '../initaliteWorldPanel'
+import {paginateArray} from '../../../helpers/functions'
+import {displayRealmTravelPanel} from '../realmTravelPanel'
+import {playSound} from '../../../components/sounds'
+import {SOUND_TYPES} from '../../../helpers/types'
+import {exploreView} from './explorePanel'
 
 let visibleIndex = 1
 let visibleItems:any[] = []
@@ -224,7 +223,7 @@ export function YourWorlds() {
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                width: calculateSquareImageDimensions(5).width,
+                width: calculateSquareImageDimensions(3).width,
                 height: calculateSquareImageDimensions(4).height,
             }}
             uiBackground={{
@@ -236,7 +235,7 @@ export function YourWorlds() {
             }}
             onMouseDown={()=>{
                 playSound(SOUND_TYPES.SELECT_3)
-                if(visibleIndex - 1 >=0){
+                if(visibleIndex - 1 > 0){
                     visibleIndex--
                     refreshVisibleItems()
                 }
@@ -249,7 +248,7 @@ export function YourWorlds() {
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                width: calculateSquareImageDimensions(5).width,
+                width: calculateSquareImageDimensions(3).width,
                 height: calculateSquareImageDimensions(4).height,
             }}
             uiBackground={{
@@ -261,9 +260,8 @@ export function YourWorlds() {
             }}
             onMouseDown={()=>{
                 playSound(SOUND_TYPES.SELECT_3)
-                visibleIndex++
-                refreshVisibleItems()
-                if((visibleIndex + 1) * 6 < worlds.length){
+
+                if (players.get(localUserId)!.worlds && (visibleIndex + 1 <= Math.floor([...players.get(localUserId)!.worlds].length / 6) + 1)){
                     visibleIndex++
                     refreshVisibleItems()
                 }

@@ -1023,7 +1023,17 @@ export function cancelSelectedItem() {
     //     selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
     // }else{
     //     log('no scene found to cancel selected item')
-    // }
+    // }//
+
+    sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_CANCELED_CATALOG_ASSET,
+        {
+            user: localUserId,
+            item: {
+                catalogId: selectedItem.catalogId,
+                aid: selectedItem.aid,
+                sceneId: selectedItem.sceneId
+            }
+        })
 }
 
 export function cancelEditingItem() {

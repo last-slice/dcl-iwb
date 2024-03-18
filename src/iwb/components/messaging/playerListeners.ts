@@ -7,6 +7,7 @@ import {iwbEvents} from "."
 import {refreshSortedItems, updateItem} from "../catalog/items";
 import { displayDownloadPendingPanel } from "../../ui/Panels/downloadPendingPanel"
 import { displayWelcomeScreen } from "../../ui/Panels/welcomeScreen"
+import { displayPendingPanel } from "../../ui/Panels/pendingStatusPanel"
 
 
 export function createPlayerListeners(room: Room) {
@@ -49,6 +50,7 @@ export function createPlayerListeners(room: Room) {
             message: "Your latest asset uploads have been deployed. Refresh to use them.",
             animate: {enabled: true, return: true, time: 10}
         })
+        displayPendingPanel(true, 'ready')
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info: any) => {

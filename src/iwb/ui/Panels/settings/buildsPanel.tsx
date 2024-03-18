@@ -1,15 +1,14 @@
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { Color4 } from '@dcl/sdk/math'
-import { displaySettingsPanel, showSetting } from './settingsIndex'
-import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
-import { uiSizes } from '../../uiConfig'
-import { displayDeleteBuildPanel } from '../deleteBuildPanel'
-import { localPlayer, localUserId, players } from '../../../components/player/player'
-import { formatDollarAmount, formatSize, log, paginateArray } from '../../../helpers/functions'
-import { sceneBuilds } from '../../../components/scenes'
-import { buildInfoTab, displaySceneInfoPanel, displaySceneSetting, scene } from '../builds/buildsIndex'
-import { teleportToScene } from '../../../components/modes/play'
-import { exploreView } from './explorePanel'
+import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
+import {Color4} from '@dcl/sdk/math'
+import {displaySettingsPanel} from './settingsIndex'
+import {calculateSquareImageDimensions, getImageAtlasMapping, sizeFont} from '../../helpers'
+import {uiSizes} from '../../uiConfig'
+import {localPlayer} from '../../../components/player/player'
+import {formatDollarAmount, formatSize, paginateArray} from '../../../helpers/functions'
+import {sceneBuilds} from '../../../components/scenes'
+import {displaySceneInfoPanel} from '../builds/buildsIndex'
+import {teleportToScene} from '../../../components/modes/play'
+import {exploreView} from './explorePanel'
 
 let visibleIndex = 1
 let visibleItems:any[] = []
@@ -228,7 +227,7 @@ export function BuildsPanel() {
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                width: calculateSquareImageDimensions(5).width,
+                width: calculateSquareImageDimensions(3).width,
                 height: calculateSquareImageDimensions(4).height,
             }}
             uiBackground={{
@@ -239,7 +238,7 @@ export function BuildsPanel() {
                 uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
             }}
             onMouseDown={()=>{
-                if(visibleIndex - 1 >=0){
+                if(visibleIndex - 1 > 0){
                     visibleIndex--
                     refreshVisibleItems()
                 }
@@ -252,7 +251,7 @@ export function BuildsPanel() {
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                width: calculateSquareImageDimensions(5).width,
+                width: calculateSquareImageDimensions(3).width,
                 height: calculateSquareImageDimensions(4).height,
             }}
             uiBackground={{
@@ -263,8 +262,10 @@ export function BuildsPanel() {
                 uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
             }}
             onMouseDown={()=>{
-                visibleIndex++
-                refreshVisibleItems()
+                if (sceneBuilds && (visibleIndex + 1 <= Math.floor([...sceneBuilds.values()].length / 6) + 1)){
+                    visibleIndex++
+                    refreshVisibleItems()
+                }
             }}
             />
 

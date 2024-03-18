@@ -973,6 +973,15 @@ export let uiSizes: any = {
         sourceHeight: 41
     },
 
+    largeHorizontalPill:{
+        atlasHeight:1024,
+        atlasWidth:1024,
+        sourceTop:0,
+        sourceLeft:0,
+        sourceWidth:824,
+        sourceHeight:263
+    },
+
     horizRectangle: {
         atlasHeight: 1024,
         atlasWidth: 1024,
@@ -986,8 +995,8 @@ export let uiSizes: any = {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 266,
-        sourceLeft: 577,
-        sourceWidth: 447,
+        sourceLeft: 579,
+        sourceWidth: 446,
         sourceHeight: 431
     },
 
