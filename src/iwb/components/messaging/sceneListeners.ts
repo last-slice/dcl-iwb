@@ -190,5 +190,3 @@ export function addSceneStateListeners(room:any){
         })
     })
 }
-
-//

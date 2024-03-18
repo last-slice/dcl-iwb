@@ -46,6 +46,8 @@ import { createConfirmDeleteItemPanel } from './Panels/confirmDeleteItemPanel'
 import { createShowTextComponent } from './showTextComponent'
 import { createDialogPanel } from './Panels/DialogPanel'
 import { createUGCSceneListPanel } from './Panels/ugcSceneListPanel'
+import { createIWBMap } from './map'
+import { createPendingStatusPanel } from './Panels/pendingStatusPanel'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -55,6 +57,8 @@ export function setupUi() {
 const uiComponent = () => [
   createWelcomeScreen(),
   createLoadingScreen(),
+  createIWBMap(),
+  createPendingStatusPanel(),
   createNoWeb3Panel(),
   createCatalogInfoPanel(),
   createSettingsPanel(),
