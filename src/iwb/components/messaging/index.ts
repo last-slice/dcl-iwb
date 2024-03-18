@@ -11,6 +11,7 @@ import {localUserId, players} from '../player/player'
 import {Room} from 'colyseus.js'
 import { createCustomCode } from '../custom'
 import { addLoadingScreen } from '../systems/LoadingSystem'
+import { displayPendingPanel } from '../../ui/Panels/pendingStatusPanel'
 
 export let data: any
 export let cRoom: Room
@@ -36,6 +37,7 @@ export async function colyseusConnect(data: any, token: string, world?: any) {
         room.onLeave((code: number) => {
             log('left room with code', code)
             connected = false
+            displayPendingPanel(true, "disconnected")
         })
 
         createIWBEventListeners()
