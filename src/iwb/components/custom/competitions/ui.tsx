@@ -6,6 +6,7 @@ import { addTeammate, attemptSignup, canSignup, competitionScenes, enabled, getE
 import resources from '../../../helpers/resources'
 import { localUserId } from '../../player/player'
 import { redrawCustomUI } from '../ui'
+import { isPreview } from '../../../helpers/functions'
 
 let showSplash = false
 export function displaySplash(value:boolean){
@@ -73,86 +74,18 @@ export function createBuildCompeitionUI(){
                 displaySplash(false)
                 updateUI()
             }}
-        />
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: calculateImageDimensions(12.5, getAspect(uiSizes.vertRectangle)).width,
-                height: calculateImageDimensions(12.5, getAspect(uiSizes.vertRectangle)).width,
-                positionType: 'absolute',
-                position:{left:'-0.5%', top:'20%'}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.vertRectangle)
-            }}
         >
-
             <UiEntity
-            uiTransform={{
-                display:'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-                margin:{top:'10%'}
-            }}
-            uiText={{value:"Build Competition", fontSize:sizeFont(30,20), textAlign:'middle-center', color:Color4.White()}}
-        />
-
-            <UiEntity
-            uiTransform={{
-                display: voting ? 'flex' : 'none',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-                margin:{top:'10%'}
-            }}
-            uiText={{value:"Voting ends\nMarch 20th!", fontSize:sizeFont(30,20), textAlign:'middle-center', color:Color4.White()}}
-        />
-
-    <UiEntity
-            uiTransform={{
-                display:'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
-                height: calculateImageDimensions(4,getAspect(uiSizes.buttonPillBlue)).height,
-                margin:{top:'5%'}
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
-            }}
-            uiText={{value:"Details", fontSize:sizeFont(30,20), textAlign:'middle-center', color:Color4.White()}}
-            onMouseDown={()=>{
-                displaySplash(true)
-                updateUI()
-            }}
-        />
-
-<UiEntity
             uiTransform={{
                 display: canSignup && localUserId && !competitionScenes.find((scene:any)=> scene.builder === localUserId) ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                positionType:'absolute',
+                position:{top:'3%', right:'3%'},       
                 width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
-                height: calculateImageDimensions(4,getAspect(uiSizes.buttonPillBlue)).height,
-                margin:{top:'2%'}
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+               
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -169,7 +102,10 @@ export function createBuildCompeitionUI(){
             }}
         />
 
-        <UiEntity
+        </UiEntity>
+
+
+        {/* <UiEntity
             uiTransform={{
                 display: voting ? 'flex' : "none",
                 flexDirection: 'column',
@@ -180,9 +116,32 @@ export function createBuildCompeitionUI(){
                 margin:{top:"1%", bottom:'1%'},
             }}
             uiText={{value:"Your Votes: " + votes + "/3", fontSize:sizeFont(30,20), textAlign:'middle-center', color:Color4.White()}}
-        />
+        /> */}
 
-        </UiEntity>
+    <UiEntity
+            uiTransform={{
+                display:'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+                positionType: 'absolute',
+                position:{top: isPreview ? '50%' : '23%', left:isPreview ? '2%' : '1%'}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+            }}
+            uiText={{value:"Competition", fontSize:sizeFont(30,20), textAlign:'middle-center', color:Color4.White()}}
+            onMouseDown={()=>{
+                displaySplash(true)
+                updateUI()
+            }}
+        />
 
            {/* team sign up info  */}
            <UiEntity
