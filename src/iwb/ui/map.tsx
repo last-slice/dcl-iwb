@@ -5,8 +5,12 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import resources from '../helpers/resources'
 import { uiSizes } from './uiConfig'
 import { isPreview } from '../helpers/functions'
+import { localPlayer } from '../components/player/player'
+import { SCENE_MODES } from '../helpers/types'
+import { realm } from '../components/scenes'
+import { rotateUVs } from '../../ui_components/utilities'
 
-let showView = false
+let showView = true
 export function displayIWBMap(value:boolean){
     showView = value
 }
@@ -16,10 +20,10 @@ export function createIWBMap(){
     <UiEntity
     key={"iwbmap"}
     uiTransform={{
-        width: calculateImageDimensions(11, getAspect(uiSizes.vertRectangle)).width,
-        height: calculateImageDimensions(11,getAspect(uiSizes.vertRectangle)).height,
+        width: calculateImageDimensions(12.5, getAspect(uiSizes.vertRectangle)).width,
+        height: calculateImageDimensions(12.5,getAspect(uiSizes.vertRectangle)).height,
       display: showView ? 'flex' : 'none',
-      justifyContent:'center',
+      justifyContent:'flex-start',
       flexDirection:'column',
       alignContent:'center',
       alignItems:'center',
@@ -40,26 +44,135 @@ export function createIWBMap(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
-                height: '80%',
+                width: '84%',
+                height: '76%',
+                positionType:'absolute',
+                margin:{top:"4%"}
             }}
-            uiText={{value:"Map Coming soon", color:Color4.White(), textAlign:'middle-center'}}            
-            />
+            >
 
-
-<UiEntity
+        <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '85%',
+                width:calculateSquareImageDimensions(3).width,
+                height: calculateSquareImageDimensions(3).height,
+                positionType:'absolute',
+            }}
+            uiBackground={{
+              texture:{
+                  src: "images/map_arrow.png"
+              },
+              textureMode: 'stretch',
+              uvs:rotateUVs(localPlayer && localPlayer.rotation ? localPlayer.rotation : 0)
+            }}
+            />
+
+            </UiEntity>
+
+         
+
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '84%',
+                height: '76%',
+                margin:{top:'4%'}
+            }}
+            />
+
+
+          <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '86.5%',
                 height: '20%',
                 positionType:'absolute',
                 position:{bottom:'5.5%'}
             }}
             uiBackground={{color:Color4.Black()}}
-            uiText={{value:"Play Mod3", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+            >
+
+            {/* left column info */}
+          <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '50%',
+            }}
+            uiText={{value:"" + (localPlayer && realm.split(".")[0]), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
             />
+
+    <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '50%',
+            }}
+            uiText={{value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+            />
+
+              </UiEntity>
+
+
+            {/* right column info */}
+              <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '50%',
+            }}
+            uiText={{value:"" + (localPlayer && localPlayer.mode === SCENE_MODES.PLAYMODE ? "Play Mode" : "Build Mode"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+            />
+
+    <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '50%',
+            }}
+            uiText={{value:"" + (localPlayer && localPlayer.currentParcel), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+            />
+
+              </UiEntity>
+
+
+
+            </UiEntity>
 
   </UiEntity>
 
