@@ -46,62 +46,12 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: 'auto',
+                        width: '100%',
                         height: '50%',
                     }}
 
                     uiText={{value: modifierName, fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
                 />
-
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '95%',
-                        height: '50%',
-                    }}
-                >
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '30%',
-                            height: '100%',
-                        }}
-
-                        uiText={{value: "X", fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
-                    />
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '30%',
-                            height: '100%',
-                        }}
-
-                        uiText={{value: "Y", fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
-                    />
-
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '30%',
-                            height: '100%',
-                        }}
-
-                        uiText={{value: "Z", fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
-                    />
-
-
-                </UiEntity>
 
 
             </UiEntity>
@@ -111,7 +61,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     width: '100%',
                     height: '30%',
                     margin: {top: '1%'}
@@ -129,30 +79,8 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                         height: '100%',
                     }}
                     // uiBackground={{color:Color4.Green()}}
-                >
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(5).height,
-                            margin: {right: '2%'}
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.upArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'x', 1, false)
-
-                            pressed.left = true
-                        }}
-                    />
+                    uiText={{value: "X: " + (selectedItem && selectedItem.enabled ? props.valueFn("x") : ""), fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
+                    >
                 </UiEntity>
 
                 {/* y positive  */}
@@ -164,31 +92,9 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                         width: '30%',
                         height: '100%',
                     }}
-                    // uiBackground={{color:Color4.Green()}}
+                    // uiBackground={{color:Color4.Blue()}}
+                    uiText={{value: "Y: " + (selectedItem && selectedItem.enabled ? props.valueFn("y") : ""), fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
                 >
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(5).height,
-                            margin: {right: '2%'}
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.upArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'y', 1, false)
-
-                            pressed.left = true
-                        }}
-                    />
                 </UiEntity>
 
                 {/* z positive  */}
@@ -200,31 +106,9 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                         width: '30%',
                         height: '100%',
                     }}
-                    // uiBackground={{color:Color4.Green()}}
+                    // uiBackground={{color:Color4.Teal()}}
+                    uiText={{value: "Z: " + (selectedItem && selectedItem.enabled ? props.valueFn("z") : ""), fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
                 >
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(5).height,
-                            margin: {right: '2%'}
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.upArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'z', 1, false)
-
-                            pressed.left = true
-                        }}
-                    />
                 </UiEntity>
 
 
@@ -235,7 +119,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     width: '100%',
                     height: '35%',
                     margin: {top: '1%'}
@@ -257,9 +141,9 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                     // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
                 >
                     <Input
-                        onChange={(value) => {
-                            sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
-                        }}
+                        // onChange={(value) => {
+                        //     sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
+                        // }}
 
                         onSubmit={(value) => {
                             sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
@@ -272,7 +156,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                             height: '100%',
                         }}
                         color={Color4.White()}
-                        value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
+                        // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
                     />
 
                 </UiEntity>
@@ -291,9 +175,9 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                     // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
                 >
                     <Input
-                        onChange={(value) => {
-                            sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
-                        }}
+                        // onChange={(value) => {
+                        //     sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
+                        // }}
                         onSubmit={(value) => {
                             sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
                         }}
@@ -305,7 +189,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                             height: '100%',
                         }}
                         color={Color4.White()}
-                        value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
+                        // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
                     />
 
                 </UiEntity>
@@ -325,9 +209,9 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                     // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
                 >
                     <Input
-                        onChange={(value) => {
-                            sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
-                        }}
+                        // onChange={(value) => {
+                        //     sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
+                        // }}
                         onSubmit={(value) => {
                             sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
                         }}
@@ -339,7 +223,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                             height: '100%',
                         }}
                         color={Color4.White()}
-                        value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
+                        // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
                     />
 
                 </UiEntity>
@@ -350,7 +234,8 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    alignContent:'center',
+                    justifyContent: 'space-between',
                     width: '100%',
                     height: '30%',
                     margin: {top: '1%'}
@@ -361,13 +246,12 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 {/* x negative  */}
                 <UiEntity
                     uiTransform={{
-                        flexDirection: 'column',
+                        flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '30%',
                         height: '100%',
                     }}
-                    // uiBackground={{color:Color4.Green()}}
                 >
 
                     <UiEntity
@@ -376,7 +260,28 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(5).height,
+                            height: calculateSquareImageDimensions(3.5).height,
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.upArrow)
+                        }}
+                        onMouseDown={() => {
+                            sendServerEdit(props.modifier, 'x', 1, false)
+                        }}
+                    />
+
+
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateSquareImageDimensions(3.5).width,
+                            height: calculateSquareImageDimensions(3.5).height,
                             margin: {right: '2%'}
                         }}
                         uiBackground={{
@@ -397,7 +302,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 {/* y negative  */}
                 <UiEntity
                     uiTransform={{
-                        flexDirection: 'column',
+                        flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '30%',
@@ -412,7 +317,27 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(5).height,
+                            height: calculateSquareImageDimensions(3.5).height,
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.upArrow)
+                        }}
+                        onMouseDown={() => {
+                            sendServerEdit(props.modifier, 'y', 1, false)
+                        }}
+                    />
+
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateSquareImageDimensions(3.5).width,
+                            height: calculateSquareImageDimensions(3.5).height,
                             margin: {right: '2%'}
                         }}
                         uiBackground={{
@@ -433,7 +358,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                 {/* z negative  */}
                 <UiEntity
                     uiTransform={{
-                        flexDirection: 'column',
+                        flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '30%',
@@ -442,13 +367,33 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Fun
                     // uiBackground={{color:Color4.Green()}}
                 >
 
+                <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: calculateSquareImageDimensions(3.5).width,
+                            height: calculateSquareImageDimensions(3.5).height,
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.upArrow)
+                        }}
+                        onMouseDown={() => {
+                            sendServerEdit(props.modifier, 'z', 1, false)
+                        }}
+                    />
+
                     <UiEntity
                         uiTransform={{
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(5).height,
+                            height: calculateSquareImageDimensions(3.5).height,
                             margin: {right: '2%'}
                         }}
                         uiBackground={{

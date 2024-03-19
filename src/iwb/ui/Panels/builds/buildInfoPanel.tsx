@@ -93,7 +93,6 @@ export function BuildInfo() {
             {/* scene name */}
             <UiEntity
             uiTransform={{
-                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -135,7 +134,6 @@ export function BuildInfo() {
              {/* scene description */}
              <UiEntity
             uiTransform={{
-                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -177,7 +175,6 @@ export function BuildInfo() {
                {/* scene image link */}
                <UiEntity
             uiTransform={{
-                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -226,7 +223,6 @@ export function BuildInfo() {
                 width: '100%',
                 height: '10%',
                 margin:{bottom:'2%'},
-                display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
             }}
             // uiBackground={{color:Color4.Green()}}
             >
@@ -291,7 +287,6 @@ alignContent:'flex-start',
 width: '100%',
 height: '10%',
 margin:{bottom:'2%'},
-display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
 }}
 // uiBackground={{color:Color4.Green()}}
 >
@@ -356,7 +351,6 @@ alignContent:'flex-start',
 width: '100%',
 height: '10%',
 margin:{bottom:'2%'},
-// display: scene?.n === "Realm Lobby" ? 'none' : 'flex'
 }}
 // uiBackground={{color:Color4.Green()}}
 >
@@ -433,7 +427,6 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
             height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
-            display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -443,9 +436,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
-            console.log('on clicked')
             editCurrentParcels(scene!.id)
-            // createTempScene(scene.name, scene.description, scene.enabled)
             displaySceneInfoPanel(false, null)
             displaySettingsPanel(false)
             displaySetting("Explore")
@@ -498,7 +489,6 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
             height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{right:"1%"},
-            display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
         }}
         uiBackground={{
             textureMode: 'stretch',
