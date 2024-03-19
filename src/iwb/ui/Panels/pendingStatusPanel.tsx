@@ -46,7 +46,7 @@ export function createPendingStatusPanel(){
       alignContent:'center',
       alignItems:'center',
       positionType:'absolute',
-      position:{top: '1%', left: isPreview ? '13%' : '13%'}
+      position:{top: '1%', left: isPreview ? '14%' : '13%'}
     }}
     uiBackground={{
       texture:{

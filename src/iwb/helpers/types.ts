@@ -150,6 +150,7 @@ export interface Player {
     landsAvailable:any[]
     worldsAvailable:any[]
     deploymentLink:string
+    rotation:number
 }
 
 export interface IWBScene {
