@@ -80,10 +80,10 @@ export function createBuildCompeitionUI(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: calculateImageDimensions(13, getAspect(uiSizes.vertRectangle)).width,
-                height: calculateImageDimensions(13, getAspect(uiSizes.vertRectangle)).width,
+                width: calculateImageDimensions(12.5, getAspect(uiSizes.vertRectangle)).width,
+                height: calculateImageDimensions(12.5, getAspect(uiSizes.vertRectangle)).width,
                 positionType: 'absolute',
-                position:{left:resources.DEBUG ? '20%' : '2%', top:'0%'}
+                position:{left:'-0.5%', top:'20%'}
             }}
             uiBackground={{
                 textureMode: 'stretch',
