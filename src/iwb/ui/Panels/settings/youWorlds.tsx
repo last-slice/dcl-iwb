@@ -113,7 +113,7 @@ export function YourWorlds() {
                 height: '100%',
             }}
 
-            uiText={{value:"Init", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
+            uiText={{value:"Created", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
             <UiEntity
@@ -330,7 +330,7 @@ function generateBuildRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + (scene.init ? "Y" : "N"), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+        uiText={{value: "" + (scene.init ? "Yes" : "No"), fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         />
 
 

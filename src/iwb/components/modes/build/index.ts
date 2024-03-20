@@ -522,26 +522,31 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
             let t = Transform.getMutable(selectedItem.entity);
             t = selectedItem.transform!;
 
-            // remove grabbed entity
-            engine.removeEntity(selectedItem.entity);
-            grabbedAssets.delete(selectedItem.aid);
+            if(selectedItem.mode === EDIT_MODES.GRAB){
+                // add back to scene at previous position
+                console.log('selection was grab mode')
 
-            // add back to scene at previous position
-            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
-                item: {
-                    entity: selectedItem.entity,
-                    sceneId: selectedItem.sceneId,
-                    aid: selectedItem.aid,
-                    id: selectedItem.catalogId,
-                    position: roundVector(t.position, 2),
-                    rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-                    scale: roundVector(t.scale, 2),
-                    duplicate: selectedItem.duplicate,
-                    ugc: selectedItem.ugc
-                }
-            });
+                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
+                    item: {
+                        entity: selectedItem.entity,
+                        sceneId: selectedItem.sceneId,
+                        aid: selectedItem.aid,
+                        id: selectedItem.catalogId,
+                        position: roundVector(t.position, 2),
+                        rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+                        scale: roundVector(t.scale, 2),
+                        duplicate: selectedItem.duplicate,
+                        ugc: selectedItem.ugc
+                    }
+                });
+
+                engine.removeEntity(selectedItem.entity);
+                grabbedAssets.delete(selectedItem.aid);
+            }
+
         } else {
-            // item was catalog select, just remove it
+            console.log('item was catalog item, just remove it')
+
             engine.removeEntity(selectedItem.entity);
             grabbedAssets.delete(selectedItem.aid);
         }
@@ -987,15 +992,15 @@ export function deleteSelectedItem(entity: Entity) {
             log('this scene to find items to delete is', scene)
             let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
             if (sceneItem && !sceneItem.locked) {
-                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {
-                    assetId: assetId,
-                    sceneId: scene.id,
-                    entity: entity
-                })
+                // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {
+                //     assetId: assetId,
+                //     sceneId: scene.id,
+                //     entity: entity
+                // })
                 let data: any = {
                     assetId: assetId,
                     sceneId: scene.id,
-                    entity: entity
+                    entity: entity 
                 }
                 sendServerDelete(entity, data)
                 return

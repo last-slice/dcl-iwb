@@ -8,6 +8,7 @@ import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
 import { cRoom } from '../../components/messaging'
 import { localUserId } from '../../components/player/player'
 import { log } from '../../helpers/functions'
+import { displayPendingPanel } from './pendingStatusPanel'
 
 export let showInitalizeWorldPanel = false
 
@@ -111,6 +112,7 @@ export function createInitalizeWorldPanel() {
             onMouseDown={() => {
                 cRoom.send(SERVER_MESSAGE_TYPES.INIT_WORLD, {user:localUserId, world:selectedWorld})
                 displayInitalizeWorldPanel(false, {})
+                displayPendingPanel(true, "deployment")
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, animate:{enabled:true, return:true, time:5}, message:"Your deployment is pending...please wait for confirmation"})
             }}
             uiText={{value: "Continue", color:Color4.White(), fontSize:sizeFont(30,20)}}
