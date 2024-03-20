@@ -107,7 +107,7 @@ export function createWorldReadyPanel() {
                 worldTravel(selectedWorld)
                 displayWorldReadyPanel(false, {})
             }}
-            uiText={{value: "Join World", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Join", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity

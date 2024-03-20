@@ -118,7 +118,7 @@ export function createIWBMap(){
                 width: '100%',
                 height: '50%',
             }}
-            uiText={{value:"" + (localPlayer && realm.split(".")[0]), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+            uiText={{value:"" + (localPlayer && realm.split(".")[0]), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
             />
 
     <UiEntity
@@ -129,7 +129,7 @@ export function createIWBMap(){
                 width: '100%',
                 height: '50%',
             }}
-            uiText={{value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+            uiText={{value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
             />
 
               </UiEntity>

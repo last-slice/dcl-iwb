@@ -118,7 +118,7 @@ function filterCatalog() {
         case 'Audio':
             toFilter = SortedAudio;
             break;
-        case 'SM':
+        case 'Smart Items':
             toFilter = SortedSmartItems;
             break;
         default:
@@ -447,7 +447,7 @@ export function createCatalogPanel() {
 
                 <Dropdown
                     key={"type-dropdown"}
-                    options={[`All`, `3D`, `2D`, `Audio`, `SM`]}
+                    options={[`All`, `3D`, `2D`, `Audio`, `Smart Items`]}
                     selectedIndex={assetTypeSelectedIndex}
                     onChange={selectDimension}
                     uiTransform={{
@@ -880,7 +880,7 @@ function selectDimension(index: number) {
             totalPages = Math.ceil(SortedAudio.length / (columns * rows));
             break;
         case 4:
-            typeFilter = 'SM';
+            typeFilter = 'Smart Items';
             totalPages = Math.ceil(SortedSmartItems.length / (columns * rows));
             break;
     }

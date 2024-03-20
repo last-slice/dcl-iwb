@@ -128,7 +128,7 @@ export function createPendingStatusPanel(){
             height: '100%',
             margin:{top:"1%", bottom:'1%'},
         }}
-        uiText={{value:"Update Ready", fontSize:sizeFont(25,20), color:Color4.White()}}
+        uiText={{value:"Update Ready", fontSize:sizeFont(25,15), color:Color4.White()}}
     />
 
     <UiEntity
@@ -153,13 +153,14 @@ export function createPendingStatusPanel(){
             displaySettingsPanel(false)
             displaySetting("Explore")
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
-            // cRoom.send(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
+            cRoom.send(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
             displayPendingPanel(true, "deployment")
         }}
     />
 
         </UiEntity>
 
+        {/* assets ready panel */}
         <UiEntity
     uiTransform={{
         width: '100%',
@@ -181,7 +182,7 @@ export function createPendingStatusPanel(){
             height: '100%',
             margin:{top:"1%", bottom:'1%'},
         }}
-        uiText={{value:"Asset(s) Ready", fontSize:sizeFont(25,20), color:Color4.White()}}
+        uiText={{value:"Asset(s) Ready", fontSize:sizeFont(25,15), color:Color4.White()}}
     />
 
     <UiEntity
@@ -235,7 +236,7 @@ export function createPendingStatusPanel(){
             height: '100%',
             margin:{top:"1%", bottom:'1%'},
         }}
-        uiText={{value:"World Updated. Refresh Ready.", fontSize:sizeFont(25,20), color:Color4.White()}}
+        uiText={{value:"World Updated. Refresh Ready.", fontSize:sizeFont(25,15), color:Color4.White()}}
     />
 
         </UiEntity>
@@ -262,7 +263,7 @@ export function createPendingStatusPanel(){
             height: '100%',
             margin:{top:"1%", bottom:'1%'},
         }}
-        uiText={{value:"Disconnected", fontSize:sizeFont(25,20), color:Color4.White()}}
+        uiText={{value:"Disconnected", fontSize:sizeFont(25,15), color:Color4.White()}}
     />
 
         </UiEntity>
