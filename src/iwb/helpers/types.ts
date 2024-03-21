@@ -374,7 +374,8 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Show Text",
     "Hide Text",
     "Start Delay",
-    "Show Dialog"
+    "Show Dialog",
+    "Start Tween"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -391,7 +392,8 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.SHOW_TEXT,
     Actions.HIDE_TEXT,
     Actions.START_DELAY,
-    Actions.SHOW_DIALOG
+    Actions.SHOW_DIALOG,
+    Actions.START_TWEEN
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
@@ -501,3 +503,23 @@ export let TEXT_ALIGN_SLUGS:string[] = [
     "bottom-left",
     "bottom-right"
 ]
+
+export let TWEEN_TYPE_SLUGS:string[] = [
+    "MOVE",
+    "ROTATION",
+    "SCALE"
+]
+
+export enum TWEEN_TYPES {
+    MOVE,
+    ROTATION,
+    SCALE
+}
+
+export let TWEEN_EASE_SLUGS:string[] = [
+    "LINEAR"
+]
+
+export enum TWEEN_EASE_TYPES {
+    LINEAR
+}

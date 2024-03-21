@@ -17,6 +17,7 @@ import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibil
 import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
 import { ActionStartDelayComponent, startDelayAction, updateDelayActions } from './Actions/ActionStartDelayComponent'
 import { ActionDialogComponent } from './Actions/ActionDialogComponent'
+import { ActionTweenComponent } from './Actions/ActionTweenComponent'
 
 let view = "list"
 let newName:string = ""
@@ -89,18 +90,6 @@ export function ActionComponent() {
             // uiBackground={{color:Color4.Green()}}
             >
 
-                {/* action header */}
-         <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '10%',
-        }}
-        uiText={{value: "Add New Action", fontSize: sizeFont(20, 16), textAlign:'middle-left'}}
-    />
-
              {/* action input row */}
     <UiEntity
             uiTransform={{
@@ -108,8 +97,8 @@ export function ActionComponent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '20%',
-                margin:{top:"5%"}
+                height: '15%',
+                margin:{top:"1%"}
             }}
             // uiBackground={{color:Color4.Green()}}
         >
@@ -557,5 +546,8 @@ function getActionDataPanel(){
 
         case 13:
             return <ActionDialogComponent/>
+
+        case 14:
+            return <ActionTweenComponent/>
     }
 }
