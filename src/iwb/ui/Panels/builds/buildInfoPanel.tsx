@@ -127,6 +127,7 @@ export function BuildInfo() {
                     width: '80%',
                     height:'100%',
                 }}
+                color={Color4.White()}
                 value={"" + (scene && scene !== null ? scene.n : "")}
             />
             </UiEntity>
@@ -168,6 +169,7 @@ export function BuildInfo() {
                     width: '80%',
                     height:'100%',
                 }}
+                color={Color4.White()}
                 value={"" + (scene && scene !== null ? scene.d : "")}
             />
             </UiEntity>

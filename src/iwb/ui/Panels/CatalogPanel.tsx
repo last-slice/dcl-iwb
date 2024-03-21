@@ -104,7 +104,7 @@ function filterByStyle(index: number) {
     filterCatalog()
 }
 
-function filterCatalog() {
+export function filterCatalog() {
     currentPage = 0
 
     let toFilter: CatalogItemType[]

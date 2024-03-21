@@ -225,8 +225,8 @@ export function check3DCollision(entity: Entity, sceneItem: SceneItem) {
     if (sceneItem.type === "3D") {
         let gltf = GltfContainer.getMutableOrNull(entity)
         if(gltf){
-            gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
-            gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
+            gltf.invisibleMeshesCollisionMask = (sceneItem.colComp.iMask === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : sceneItem.colComp.iMask)
+            gltf.visibleMeshesCollisionMask = (sceneItem.colComp.vMask === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : sceneItem.colComp.vMask)
         }
     }
 }
@@ -376,4 +376,22 @@ export function disableDelayedActionTimers(){
 
 export function disablePlayUI(){
     clearShowTexts()
+}
+
+export function findAndRunAction(id:string){
+    let scene = localPlayer.activeScene
+    if(scene){
+        let asset = scene.ass.find((asset:any)=> asset.actComp && asset.actComp.actions[id])
+        if(asset){
+            let action = asset.actComp.actions[id]
+            action.id = id
+            console.log('actions are ',[action])
+            runTrigger(asset, [action])
+        }else{
+            console.log('did not find scene asset with action')
+        }
+    }else{
+        console.log('no scene')
+    }
+
 }

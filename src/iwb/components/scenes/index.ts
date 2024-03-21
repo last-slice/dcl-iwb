@@ -39,7 +39,6 @@ import {
     disablePlayUI,
     findSceneEntryTrigger,
     getSceneItem,
-    runTrigger
 } from "../modes/play"
 import {displaySceneAssetInfoPanel} from "../../ui/Panels/sceneInfoPanel"
 import { displayUGCSceneList } from "../../ui/Panels/ugcSceneListPanel"
