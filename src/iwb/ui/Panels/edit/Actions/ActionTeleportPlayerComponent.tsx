@@ -11,6 +11,13 @@ export let teleportPosition:any = {
     z:0
 }
 
+
+export let cameraPosition:any = {
+    x:0,
+    y:0,
+    z:0
+}
+
 export function ActionTeleportPlayerCompoent(){
     return(
         <UiEntity
@@ -32,7 +39,7 @@ export function ActionTeleportPlayerCompoent(){
             justifyContent: 'center',
             width: '100%',
             height: '15%',
-            margin:{bottom:'2%'}
+            margin:{bottom:'2%'}//
         }}
     uiText={{value:"Location", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
     />
@@ -63,7 +70,7 @@ export function ActionTeleportPlayerCompoent(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '33%',
-            height: '15%',
+            height: '10%',
         }}
         uiText={{value: "X", fontSize:sizeFont(25,20), color:Color4.White()}}
         />
@@ -99,7 +106,7 @@ export function ActionTeleportPlayerCompoent(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '33%',
-            height: '15%',
+            height: '10%',
         }}
         uiText={{value: "Y", fontSize:sizeFont(25,20), color:Color4.White()}}
         />
@@ -135,7 +142,7 @@ export function ActionTeleportPlayerCompoent(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '33%',
-            height: '15%',
+            height: '10%',
         }}
         uiText={{value: "Z", fontSize:sizeFont(25,20), color:Color4.White()}}
         />
@@ -173,7 +180,7 @@ export function ActionTeleportPlayerCompoent(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
                     height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
             }}
             uiBackground={{
@@ -190,6 +197,14 @@ export function ActionTeleportPlayerCompoent(){
                 teleportPosition.x = player.x - scene.x
                 teleportPosition.y = player.y - scene.y
                 teleportPosition.z = player.z - scene.z
+
+                let fake = Vector3.Forward()
+                fake = Vector3.scale(fake, 5)
+                fake = Vector3.rotate(fake, Transform.get(engine.CameraEntity).rotation)
+                let hitpoint = Vector3.add(teleportPosition, fake) 
+                cameraPosition.x = hitpoint.x
+                cameraPosition.y = hitpoint.y
+                cameraPosition.z = hitpoint.z
             }}
         />
         </UiEntity>

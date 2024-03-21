@@ -1,9 +1,9 @@
 import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
-import {Color4} from '@dcl/sdk/math'
+import {Color4, Vector3} from '@dcl/sdk/math'
 import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import resources from '../../../helpers/resources'
-import { Transform, engine } from '@dcl/sdk/ecs'
+import { MeshRenderer, Transform, engine } from '@dcl/sdk/ecs'
 import { localPlayer } from '../../../components/player/player'
 import { sendServerMessage } from '../../../components/messaging'
 import { SERVER_MESSAGE_TYPES } from '../../../helpers/types'
@@ -214,15 +214,27 @@ export function createAddSpawnPointPanel() {
                     }}
                     onMouseDown={() => {
                         let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
-                        let player = Transform.get(engine.PlayerEntity).position
-                        spawn.x = player.x - scene.x
-                        spawn.y = player.y - scene.y
-                        spawn.z = player.z - scene.z
+                        let player = Transform.get(engine.PlayerEntity)
+                        spawn.x = player.position.x - scene.x
+                        spawn.y = player.position.y - scene.y
+                        spawn.z = player.position.z - scene.z
+
+                        console.log(spawn)
+                        console.log(localPlayer.rotation)// 
+
+                        let fake = Vector3.Forward()
+                        fake = Vector3.scale(fake, 5)
+                        fake = Vector3.rotate(fake, Transform.get(engine.CameraEntity).rotation)
+                        let hitpoint = Vector3.add(spawn, fake) 
+
+                        camera.x = hitpoint.x
+                        camera.y = hitpoint.y
+                        camera.z = hitpoint.z
                     }}
                     uiText={{value: "Set Spawn", fontSize:sizeFont(20,15), color:Color4.White()}}
                 />
 
-            <UiEntity
+            {/* <UiEntity
                     uiTransform={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -247,7 +259,7 @@ export function createAddSpawnPointPanel() {
                         camera.z = player.z - scene.z
                     }}
                     uiText={{value: "Set Camera", fontSize:sizeFont(20,15), color:Color4.White()}}
-                />
+                /> */}
                 </UiEntity>
 
 

@@ -754,11 +754,11 @@ function getRelativePosition(type: string) {
 
                 switch (type) {
                     case 'x':
-                        return transform.position.x.toFixed(2)
+                        return transform.position.x.toFixed(3)
                     case 'y':
-                        return transform.position.y.toFixed(2)
+                        return transform.position.y.toFixed(3)
                     case 'z':
-                        return (transform.position.z).toFixed(2)
+                        return (transform.position.z).toFixed(3)
                 }
                 break;
 
@@ -802,11 +802,11 @@ function getRotationValue(type: string) {
 
 
     if (type === 'x') {
-        return Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).x.toFixed(2)
+        return Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).x.toFixed(3)
     } else if (type === 'y') {
-        return Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).y.toFixed(2)
+        return Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).y.toFixed(3)
     } else if (type === 'z') {
-        return Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).z.toFixed(2)
+        return Quaternion.toEulerAngles(Transform.get(selectedItem.entity).rotation).z.toFixed(3)
     }
 
 }
@@ -817,11 +817,11 @@ function getScaleValue(type: string) {
     }
 
     if (type === 'x') {
-        return Transform.get(selectedItem.entity).scale.x
+        return Transform.get(selectedItem.entity).scale.x.toFixed(3)
     } else if (type === 'y') {
-        return Transform.get(selectedItem.entity).scale.y
+        return Transform.get(selectedItem.entity).scale.y.toFixed(3)
     } else if (type === 'z') {
-        return Transform.get(selectedItem.entity).scale.z
+        return Transform.get(selectedItem.entity).scale.z.toFixed(3)
     }
 }
 

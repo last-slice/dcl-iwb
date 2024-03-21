@@ -51,8 +51,9 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
 
         case Actions.TELEPORT_PLAYER:
             let pos = action.teleport.split(",")
+            let cam = action.teleCam ? action.teleCam.split(",") : "0,0,0"
             let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
-            movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}})
+            movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}, cameraTarget:{x: scene.x + parseFloat(cam[0]), y: scene.y + parseFloat(cam[1]), z:scene.z + parseFloat(cam[2])}})
             break;
 
         case Actions.EMOTE:
