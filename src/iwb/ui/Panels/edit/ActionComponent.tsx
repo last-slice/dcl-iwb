@@ -11,7 +11,7 @@ import { ActionLinkComponent, url } from './Actions/ActionLinkData'
 import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selectedAudioIndex } from './Actions/ActionPlayAudioComponent'
 import { log } from '../../../helpers/functions'
 import { ActionAnimationComponent, selectedAnimationIndex, selectedAnimationLoop } from './Actions/ActionAnimationComponent'
-import { ActionTeleportPlayerCompoent, teleportPosition } from './Actions/ActionTeleportPlayerComponent'
+import { ActionTeleportPlayerCompoent, cameraPosition, teleportPosition } from './Actions/ActionTeleportPlayerComponent'
 import { ActionPlayEmoteComponent, selectedEmoteIndex } from './Actions/ActionEmoteComponent'
 import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibilityCollideriMask, actionVisibilityIndex } from './Actions/ActionVisibilityComponent'
 import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
@@ -500,7 +500,7 @@ function getActionData(){
             return {aid:selectedItem.aid, type:Actions.STOP_ANIMATION}
 
         case 7:
-            return {aid:selectedItem.aid, type:Actions.TELEPORT_PLAYER, location: "" + teleportPosition.x + "," + teleportPosition.y + "," + teleportPosition.z}
+            return {aid:selectedItem.aid, type:Actions.TELEPORT_PLAYER, location: "" + teleportPosition.x + "," + teleportPosition.y + "," + teleportPosition.z, camera: "" + cameraPosition.x + "," + cameraPosition.y + "," + cameraPosition.z}
 
         case 8:
             return {aid:selectedItem.aid, type:Actions.EMOTE, emote:ENTITY_EMOTES_SLUGS[selectedEmoteIndex]}

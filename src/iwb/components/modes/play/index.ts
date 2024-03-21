@@ -359,7 +359,7 @@ export function checkAnimation(entity:Entity, sceneItem: SceneItem){
 
         Animator.createOrReplace(entity, {
             states:animations
-        })//
+        })
     }
 }
 
