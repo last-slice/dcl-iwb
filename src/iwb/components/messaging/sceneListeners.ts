@@ -22,6 +22,7 @@ import { displayDeployPendingPanel } from "../../ui/Panels/deployConfirmationPan
 import { playSound } from "../sounds"
 import { items } from "../catalog"
 import { refreshSortedItems } from "../catalog/items"
+import { filterCatalog } from "../../ui/Panels/CatalogPanel"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -153,6 +154,7 @@ export function createSceneListeners(room: any) {
             log(SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET + ' received', info)
             items.delete(info.id)
             refreshSortedItems()
+            filterCatalog()
         })
 }
 

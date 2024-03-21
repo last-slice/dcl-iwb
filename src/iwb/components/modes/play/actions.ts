@@ -9,6 +9,7 @@ import { addDelayedActionTimer } from ".";
 import { showDialogPanel } from "../../../ui/Panels/DialogPanel";
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
+    console.log('handling trigger action', entity, asset, action, actionId)
     switch(action.type){
         case Actions.OPEN_LINK:
             openExternalUrl({url:"" + action.url})

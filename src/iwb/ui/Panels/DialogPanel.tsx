@@ -2,32 +2,40 @@ import * as utils from '@dcl-sdk/utils'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { InputAction, MeshCollider, MeshRenderer, Texture, Transform, engine, pointerEventsSystem } from '@dcl/sdk/ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { NOTIFICATION_DETAIL, NOTIFICATION_TYPES, SOUND_TYPES } from '../../helpers/types'
+import { Actions, NOTIFICATION_DETAIL, NOTIFICATION_TYPES, SOUND_TYPES } from '../../helpers/types'
 import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import { calculateImageDimensions, dimensions, getImageAtlasMapping, addLineBreak, sizeFont, calculateSquareImageDimensions, getAspect } from '../helpers'
 import { playSound } from '../../components/sounds'
 import { localPlayer, settings } from '../../components/player/player'
 import { uiSizes } from '../uiConfig'
+import { findAndRunAction } from '../../components/modes/play'
 
 let show = false
 
 let currentDialog:any = {
     index:0,
     name:"",
-    dialogs:[]
+    dialogs:[
+        {text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+        buttons:[{label:"Test Button", action: "aid"}]
+    }
+    ]
 }
 
 export function showDialogPanel(value:boolean, aid?:string){
-    show = value
     if(value){
         let sceneItem = localPlayer.activeScene?.ass.find((asset:any)=> asset.aid === aid)
-        if(sceneItem && sceneItem.dialComp){
+        if(sceneItem && sceneItem.dialComp && sceneItem.dialComp.dialogs.length > 0){
             let dialComp = sceneItem.dialComp
             currentDialog.dialogs = [...dialComp.dialogs]
             currentDialog.index = dialComp.i
+            show = value
+        }else{
+            show = false
         }
     }else{
+        show = value
         resetDialog()
     }
 }
@@ -78,6 +86,7 @@ export function createDialogPanel(){
         }}
       >
 
+        {/* name text */}
         <UiEntity
         uiTransform={{
           width: '90%',
@@ -93,6 +102,7 @@ export function createDialogPanel(){
         uiText={{value:"" + (currentDialog && currentDialog.dialogs.length > 0 && currentDialog.dialogs[currentDialog.index].name), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
+        {/* dialog text */}
         <UiEntity
         uiTransform={{
           width: '90%',
@@ -101,7 +111,7 @@ export function createDialogPanel(){
           flexDirection:'column',
         }}
         // uiBackground={{color:Color4.Green()}}
-        uiText={{value:addLineBreak("" + (currentDialog && currentDialog.dialogs.length > 0 && currentDialog.dialogs[currentDialog.index].text), undefined, 80), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'top-left'}}
+            uiText={{value:addLineBreak("" + (currentDialog && currentDialog.dialogs.length > 0 && currentDialog.dialogs[currentDialog.index].text), undefined, 80), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'top-left'}}
         />
 
         <UiEntity
@@ -110,96 +120,58 @@ export function createDialogPanel(){
           height: '20%',
           justifyContent:'center',
           flexDirection:'row',
-          display:'none'
+          display:'flex'
         }}
         >
-             <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
-                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    margin: {left: "1%", right: "1%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                uiText={{value: "Play", fontSize: sizeFont(20, 16)}}
-                onMouseDown={() => {
-                }}
-            />
-
-<UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
-                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    margin: {left: "1%", right: "1%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                uiText={{value: "Play", fontSize: sizeFont(20, 16)}}
-                onMouseDown={() => {
-                }}
-            />
-
-<UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
-                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    margin: {left: "1%", right: "1%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                uiText={{value: "Play", fontSize: sizeFont(20, 16)}}
-                onMouseDown={() => {
-                }}
-            />
-
-<UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
-                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    margin: {left: "1%", right: "1%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                uiText={{value: "Play", fontSize: sizeFont(20, 16)}}
-                onMouseDown={() => {
-                }}
-            />
-
+            {generateButtons()}
         </UiEntity>
 
 </UiEntity>
 
     )
-  }
+}
+
+function generateButtons(){
+    let arr:any[] = []
+    let count = 0
+    if(currentDialog.dialogs.length > 0 && currentDialog.dialogs[currentDialog.index].buttons){
+        currentDialog.dialogs[currentDialog.index].buttons.forEach((button:any)=>{
+            arr.push(<DialogButton button={button} count={count} />)
+        })
+    }
+    return arr
+}
+
+function DialogButton(data:any){
+    let info = data.button
+    let count = data.count
+    return(
+        <UiEntity
+        key={"dialog-button-" + count}
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
+        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+            margin: {left: "1%", right: "1%"}
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{value: "" + (info.label), fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            advanceDialog()
+            if(info.actions){
+                info.actions.forEach((action:string)=>{
+                    findAndRunAction(action)
+                })
+            }
+        }}
+    />
+    )
+}

@@ -14,6 +14,7 @@ export function uiSizer(dt:number){
   else{
     timer = 3
     let canvas = UiCanvasInformation.get(engine.RootEntity)
+    // console.log(canvas.interactableArea)
     // console.log("CANVAS DIMENSIONS: ", canvas.width, canvas.height)
     dimensions.width = canvas.width
     dimensions.height = canvas.height

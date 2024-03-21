@@ -16,14 +16,23 @@ import { ActionPlayEmoteComponent, selectedEmoteIndex } from './Actions/ActionEm
 import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibilityCollideriMask, actionVisibilityIndex } from './Actions/ActionVisibilityComponent'
 import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
 import { ActionStartDelayComponent, startDelayAction, updateDelayActions } from './Actions/ActionStartDelayComponent'
+import { localPlayer } from '../../../components/player/player'
 
-let view = "list"
-let newName:string = ""
-let selectedIndex:number = 0
+export let dialogView = "list"
 
 export let dArray:any[] = []
 export let visibleItems:any[] = []
 export let visibleIndex:number = 1
+
+let selectedActionIndex:number = 0
+let newButton:any = {
+    actions:[],
+    label:"",
+}
+
+let actionNames:string[] = []
+let actionIds:string[] = []
+let actionLabels:any[] = []
 
 let dialog:any = {
     name:"",
@@ -32,15 +41,21 @@ let dialog:any = {
 
 let newDialog:any = {
     text:"",
-    name:""
+    name:"",
+    buttons:[]
 }
 
 export function updateDialogView(v:string){
-    view = v
+    dialogView = v
 
     if(v === "list"){
         visibleIndex = 1
         refreshDialogs()
+    }
+
+    if(v === "addbutton"){
+        newButton.actions.length = 0
+        updateTriggerActions()
     }
 }
 
@@ -70,7 +85,7 @@ export function DialogComponent() {
             }}
         >
 
-        {/* add action button row */}
+        {/* add dialog button row */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -79,7 +94,7 @@ export function DialogComponent() {
                 width: '100%',
                 height: '10%',
                 margin:{bottom:"2%"},
-                display: view === "list" ? "flex" : "none"
+                display: dialogView === "list" ? "flex" : "none"
             }}
             >
         
@@ -100,6 +115,8 @@ export function DialogComponent() {
         }}
         uiText={{value: "Add Dialog", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
+            newDialog.buttons.length = 0
+            newDialog.text = ""
             updateDialogView("add")
         }}
     />
@@ -114,22 +131,10 @@ export function DialogComponent() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '95%',
-                display: view === "add" ? "flex" : "none"
+                display: dialogView === "add" ? "flex" : "none"
             }}
             // uiBackground={{color:Color4.Green()}}
             >
-
-                {/* action header */}
-         <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '10%',
-        }}
-        uiText={{value: "Add New Action", fontSize: sizeFont(20, 16), textAlign:'middle-left'}}
-    />
 
              {/* action data panel */}
              <UiEntity
@@ -138,10 +143,9 @@ export function DialogComponent() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '55%',
-                margin:{top:"5%", bottom:'5%'}
+                height: '85%',
+                margin:{top:"5%", bottom:'1%'}
             }}
-            // uiBackground={{color:Color4.Blue()}}
         >
 
 <UiEntity
@@ -151,7 +155,7 @@ export function DialogComponent() {
             justifyContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{bottom:'5%'}
+            margin:{bottom:'1%'}
         }}
     uiText={{value:"New Dialog Sentence", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
     />
@@ -162,7 +166,7 @@ export function DialogComponent() {
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '25%',
+            height: '20%',
         }}
     >
     <Input
@@ -170,7 +174,6 @@ export function DialogComponent() {
             newDialog.text = value
         }}
         fontSize={sizeFont(20,12)}
-        value={url}
         placeholder={'Enter dialog sentence'}
         placeholderColor={Color4.White()}
         color={Color4.White()}
@@ -179,14 +182,84 @@ export function DialogComponent() {
             height: '100%',
         }}
         ></Input>
+    </UiEntity>
 
+
+    {/* dialog buttons */}
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            margin:{top:'1%'}
+        }}
+    >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+    uiText={{value:"Dialog buttons", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+    />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+    >
+         <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '100%',
+            display: newDialog.buttons && (newDialog.buttons.length === 0 || newDialog.buttons.length < 4) ? 'flex' : 'none'
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{value: "Add Button", fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            updateDialogView("addbutton")
+        }}
+    />
 
     </UiEntity>
+
+    </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '50%',
+            margin:{top:'1%'}
+        }}
+    >
+        {generateButtonRows()}
+
+        </UiEntity>
 
             </UiEntity>
 
         
-                    {/* add action confirm buttons */}
+                    {/* add dialog confirm buttons */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
@@ -248,7 +321,7 @@ export function DialogComponent() {
             </UiEntity>
 
 
-            {/* action rows */}
+            {/* dialog rows */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -256,13 +329,399 @@ export function DialogComponent() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '80%',
-                display: view === "list" ? "flex" : "none"
+                display: dialogView === "list" ? "flex" : "none"
             }}
             >   
             {generateActionRows()}
             </UiEntity>
+
+
+            {/* add new dialog panel */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '95%',
+                display: dialogView === "addbutton" ? "flex" : "none"
+            }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'}
+                }}
+            uiText={{value:"Button Label", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '12%',
+                }}
+            >
+            <Input
+                onChange={(value)=>{
+                    newButton.label = value
+                }}
+                fontSize={sizeFont(20,12)}
+                placeholder={'Enter button label'}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                ></Input>
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{top:'1%', bottom:"1%"}
+                }}
+            uiText={{value:"Button Actions List", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '12%',
+                }}
+            >
+
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+            >
+            <Dropdown
+        key={"button-action-list-dropdown"}
+        options={[...actionNames]}
+        selectedIndex={selectedActionIndex}
+        onChange={selectAction}
+        uiTransform={{
+            width: '100%',
+            height: '120%',
+        }}
+        // uiBackground={{color:Color4.Purple()}}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}
+            />
+
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+            >
+    
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            newButton.actions.push({id:actionIds[selectedActionIndex], name:actionNames[selectedActionIndex]})
+        }}
+    />
+                </UiEntity>
+
+            </UiEntity>
+
+
+
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '40%',
+        }}
+    >
+
+        {generateButtonActionRows()}
+
+
+    </UiEntity>
+
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+        }}
+    >
+         <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '30%',
+            height: '100%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{value: "Add Button", fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            newDialog.buttons ? newDialog.buttons.push({...newButton}) : newDialog.buttons = [{...newButton}]
+            updateDialogView("add")
+            newButton = {
+                actions:[],
+                label:"",
+            }
+        }}
+    />
+
+    </UiEntity>
+
+            </UiEntity>
      
         </UiEntity>
+    )
+}
+
+
+
+function generateButtonRows(){
+    let arr:any[] = []
+    let count = 0
+
+    if(newDialog.buttons){
+        newDialog.buttons.forEach((button:any, i:number)=>{
+            arr.push(<ButtonRow button={button} rowCount={count} />)
+            count++
+        })
+    }
+
+    return arr
+}
+
+function ButtonRow(dialog:any){
+    let button = dialog.button
+
+    return(
+        <UiEntity
+        key={"dialog-button-row-"+ dialog.rowCount}
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"1%", bottom:'1%'}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
+            >  
+
+            {/* action name column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '75%',
+                height: '100%',
+            }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%',
+            }}
+            uiText={{value:"" + button.label, fontSize:sizeFont(20,15), color:Color4.White()}}
+        />
+
+
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+        >
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.trashButton)
+        }}
+        onMouseDown={() => {
+            newDialog.buttons.splice(dialog.rowCount, 1)
+        }}
+    />
+
+
+        </UiEntity>
+
+
+            </UiEntity>
+    )
+}
+
+function generateButtonActionRows(){
+    let arr:any[] = []
+    let count = 0
+
+    if(newButton.actions){
+        newButton.actions.forEach((action:any, i:number)=>{
+            arr.push(<ButtonActionRow action={action} rowCount={count} />)
+            count++
+        })
+    }
+
+    return arr
+}
+
+function ButtonActionRow(dialog:any){
+    let action = dialog.action
+    return(
+        <UiEntity
+        key={"dialog-button-action-row-"+ dialog.rowCount}
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"1%", bottom:'1%'}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
+            >  
+
+            {/* action name column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '75%',
+                height: '100%',
+            }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%',
+            }}
+            uiText={{value:"" + action.name, fontSize:sizeFont(20,15), color:Color4.White()}}
+        />
+
+
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+        >
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.trashButton)
+        }}
+        onMouseDown={() => {
+            newButton.actions.splice(dialog.rowCount, 1)
+        }}
+    />
+
+
+        </UiEntity>
+
+
+            </UiEntity>
     )
 }
 
@@ -298,30 +757,18 @@ function DialogRow(dialog:any){
                 uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
             >  
 
-            {/* action name column */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40%',
-                height: '85%',
-            }}
-            >
 
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
-                height: '50%',
+                width: '80%',
+                height: '100%',
+                margin:{left:'2%'}
             }}
-            uiText={{value:"" + data.text.substring(0, 25) + "...", fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{value:"" + data.text.substring(0, 35) + "...", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
         />
-
-
-            </UiEntity>
 
             <UiEntity
             uiTransform={{
@@ -362,11 +809,11 @@ function DialogRow(dialog:any){
 }
 
 function selectAction(index:number){
-    selectedIndex = index
+    selectedActionIndex = index
 }
 
 function buildAction(){
-    // refreshItems()//
+    // refreshItems()
     updateDialogView("list")
     updateAction("add", "new", {dialog: newDialog})
 }
@@ -376,80 +823,19 @@ function updateAction(action:any, type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.DIALOG_COMPONENT, action:action, type:type, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, value:value}})
 }
 
-function getActionData(){
-    switch(selectedIndex){
-        case 0://
-            return {aid:selectedItem.aid, url: url, type:Actions.OPEN_LINK}
-
-        case 1:
-            return {aid:audioAssetIds[selectedAudioIndex], type:Actions.PLAY_AUDIO}
-
-        case 2:
-            return {aid:selectedItem.aid, type:Actions.STOP_AUDIO}
-
-        case 3:
-            return {aid:selectedItem.aid, type:Actions.PLAY_VIDEO}
-
-        case 4:
-            return {aid:selectedItem.aid, type:Actions.TOGGLE_VIDEO}
-
-        case 5:
-            return {aid:selectedItem.aid, animLoop:selectedAnimationLoop === 0 ? false : true, animName: selectedItem.itemData.animComp.animations[selectedAnimationIndex], type:Actions.PLAY_ANIMATION}
-
-        case 6:
-            return {aid:selectedItem.aid, type:Actions.STOP_ANIMATION}
-
-        case 7:
-            return {aid:selectedItem.aid, type:Actions.TELEPORT_PLAYER, location: "" + teleportPosition.x + "," + teleportPosition.y + "," + teleportPosition.z}
-
-        case 8:
-            return {aid:selectedItem.aid, type:Actions.EMOTE, emote:ENTITY_EMOTES_SLUGS[selectedEmoteIndex]}
-
-        case 9:
-                return {aid:selectedItem.aid, type:Actions.SET_VISIBILITY, vis: actionVisibilityIndex, vMask:actionVisibilityColliderVMask, iMask:actionVisibilityCollideriMask}
-
-        case 10:
-            return {aid:selectedItem.aid, type:Actions.SHOW_TEXT, text: showText}
-
-        case 11:
-            return {aid:selectedItem.aid, type:Actions.HIDE_TEXT, text: showText}
-
-        case 12:
-            return {aid:selectedItem.aid, type:Actions.START_DELAY, delay: startDelayAction}
-    }
-}
-
-function getActionDataPanel(){
-    switch(selectedIndex){
-        case 0:
-        return <ActionLinkComponent/>
-
-        case 1:
-        case 2:
-            getSceneAudioComponents()
-            return <ActionPlayAudioComponent/>
-
-        case 5:
-        case 6:
-            return <ActionAnimationComponent/>
-
-        case 7:
-            return <ActionTeleportPlayerCompoent/>
-
-        case 8:
-            return <ActionPlayEmoteComponent/>
-
-        case 9:
-            return <ActionVisibilityComponent/>
-
-        case 10:
-            return <ActionShowTextComponent/>
-
-        case 11:
-            return
-        
-        case 12:
-            updateDelayActions()
-            return <ActionStartDelayComponent/>
+export function updateTriggerActions(){
+    actionNames.length = 0
+    actionIds.length = 0
+    actionLabels.length = 0
+    if(localPlayer.activeScene){
+        localPlayer.activeScene.ass.forEach((asset)=>{
+            if(asset.actComp){
+                asset.actComp.actions.forEach((action:any, key:any)=>{
+                    actionNames.push(action.name)
+                    actionIds.push(key)
+                    actionLabels.push(action.type)
+                })
+            }
+        })
     }
 }
