@@ -411,7 +411,7 @@ function ActionRow(action:any){
                 width: '40%',
                 height: '100%',
             }}
-            uiText={{value:"" + ENTITY_ACTIONS_LABELS[ENTITY_ACTIONS_SLUGS.findIndex((ea)=> ea === data.type)], fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{value:"" + (ENTITY_ACTIONS_LABELS[ENTITY_ACTIONS_SLUGS.findIndex((ea)=> ea === data.type)] !== undefined ? ENTITY_ACTIONS_LABELS[ENTITY_ACTIONS_SLUGS.findIndex((ea)=> ea === data.type)] : ""), fontSize:sizeFont(20,15), color:Color4.White()}}
         />
 
             </UiEntity>
@@ -513,6 +513,19 @@ function getActionData(){
 
         case 14:
             return {aid:selectedItem.aid, type:Actions.START_TWEEN, tween:{type:selectedTweenType, ease:selectedTweenEaseType, duration:tweenDuration, loop:selectedTweenLoop, end:tweenEndValues}}
+
+        case 15:
+            return {aid:selectedItem.aid, type:Actions.ENABLE_CLICK_AREA}
+
+        case 16:
+            return {aid:selectedItem.aid, type:Actions.DISABLE_CLICK_AREA}
+
+        case 17:
+            return {aid:selectedItem.aid, type:Actions.ENABLE_TRIGGER_AREA}
+
+        case 18:
+                return {aid:selectedItem.aid, type:Actions.DISABLE_TRIGGER_AREA}
+
     }
 }
 

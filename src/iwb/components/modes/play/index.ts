@@ -132,6 +132,7 @@ export function check2DCollision(entity:Entity, sceneItem: SceneItem){
 }
 
 export function checkPointers(entity:Entity, sceneItem: SceneItem){
+    console.log('checking pointer', sceneItem.trigComp)
     if(sceneItem.trigComp && sceneItem.trigComp.triggers.length > 0 && sceneItem.trigComp.enabled){
         let pointers:any[] = []
         sceneItem.trigComp.triggers.forEach((trigger:any, i:number)=>{
@@ -263,7 +264,7 @@ function disableSmartItems(entity:Entity, sceneItem: SceneItem){
                 MeshRenderer.deleteFrom(entity)
                 MeshCollider.deleteFrom(entity)
                 Material.deleteFrom(entity)
-                utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
+                utils.triggers.enableTrigger(entity, false)
             }
             break;
 
@@ -315,16 +316,17 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
 
     switch(items.get(sceneItem.id)?.n){
         case 'Trigger Area':
-            console.log('need to enable all trigger areas')
-
-            if(sceneItem.trigComp){
+            if(sceneItem.trigArComp && sceneItem.trigArComp.enabled){
                 utils.triggers.enableTrigger(entity, sceneItem.trigArComp.enabled)
+            }else{
+                utils.triggers.enableTrigger(entity, false)
             }
             break;
 
         case 'Click Area':
-            console.log('found lcick area for enable')
-            MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
+            if(sceneItem.trigComp && sceneItem.trigComp.enabled){
+                MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
+            }
             break;
     }
 }

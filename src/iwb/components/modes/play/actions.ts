@@ -1,13 +1,14 @@
-import { Animator, AudioSource, AudioStream, EasingFunction, Entity, GltfContainer, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
+import { Animator, AudioSource, AudioStream, ColliderLayer, EasingFunction, Entity, GltfContainer, MeshCollider, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
 import { Actions, SceneItem } from "../../../helpers/types";
 import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
 import { localPlayer } from "../../player/player";
 import { addShowText } from "../../../ui/showTextComponent";
 import { entitiesFromItemIds } from "../../scenes";
 import { utils } from "../../../helpers/libraries";
-import { addDelayedActionTimer } from ".";
+import { addDelayedActionTimer, checkPointers } from ".";
 import { showDialogPanel } from "../../../ui/Panels/DialogPanel";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
+import { items } from "../../catalog";
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
     console.log('handling trigger action', entity, asset, action, actionId)
@@ -151,8 +152,26 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
                 console.log('need to loop animation')
                 TweenSequence.create(entity, { sequence: [], loop: action.twL})
               }
-              
-              
+            
+            break;
+
+        case Actions.ENABLE_CLICK_AREA:
+            asset.trigComp.enabled = true
+            MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
+            checkPointers(entity, asset)
+            break;
+
+        case Actions.DISABLE_CLICK_AREA:
+            asset.trigComp.enabled = false
+            MeshCollider.deleteFrom(entity)
+            break;
+
+        case Actions.ENABLE_TRIGGER_AREA:
+            utils.triggers.enableTrigger(entity, true)
+            break;
+
+        case Actions.DISABLE_TRIGGER_AREA:
+            utils.triggers.enableTrigger(entity, false)
             break;
     }
 }
