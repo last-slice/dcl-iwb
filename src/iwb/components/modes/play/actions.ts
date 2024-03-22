@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, Entity, GltfContainer, Transform, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
+import { Animator, AudioSource, AudioStream, EasingFunction, Entity, GltfContainer, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
 import { Actions, SceneItem } from "../../../helpers/types";
 import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
 import { localPlayer } from "../../player/player";
@@ -7,6 +7,7 @@ import { entitiesFromItemIds } from "../../scenes";
 import { utils } from "../../../helpers/libraries";
 import { addDelayedActionTimer } from ".";
 import { showDialogPanel } from "../../../ui/Panels/DialogPanel";
+import { Quaternion, Vector3 } from "@dcl/sdk/math";
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
     console.log('handling trigger action', entity, asset, action, actionId)
@@ -110,8 +111,48 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
             break;
 
         case Actions.SHOW_DIALOG:
-            console.log('need to show dialog panel', action.aid)
             showDialogPanel(true, action.aid)
+            break;
+
+        case Actions.START_TWEEN:
+            let mode:any
+            let start = Transform.get(entity)
+
+            switch(action.twT){
+                case 0:
+                    mode = Tween.Mode.Move({
+                        start: start.position,
+                        end: Vector3.create(action.twEX, action.twEY, action.twEZ),
+                      })
+                    break;
+
+                case 1:
+                    mode = Tween.Mode.Rotate({
+                        start: start.rotation,
+                        end: Quaternion.fromEulerDegrees(action.twEX, action.twEY, action.twEZ),
+                      })
+                    break;
+
+                case 2:
+                    mode = Tween.Mode.Scale({
+                        start: start.scale,
+                        end: Vector3.create(action.twEX, action.twEY, action.twEZ),
+                      })
+                    break;
+            }
+
+            Tween.createOrReplace(entity, {
+                mode: mode,
+                duration: 1000 * action.twD,
+                easingFunction: action.twE,
+              })
+
+              if(action.twL !== 2){
+                console.log('need to loop animation')
+                TweenSequence.create(entity, { sequence: [], loop: action.twL})
+              }
+              
+              
             break;
     }
 }

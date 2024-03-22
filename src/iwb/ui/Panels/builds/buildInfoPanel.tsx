@@ -515,7 +515,6 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
         {/* view image link */}
         <UiEntity
             uiTransform={{
-                display: scene?.n === "Realm Lobby" ? 'none' : 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',

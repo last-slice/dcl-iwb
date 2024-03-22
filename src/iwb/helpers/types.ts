@@ -1,4 +1,4 @@
-import { Entity, InputAction, TransformType } from "@dcl/sdk/ecs"
+import { Entity, InputAction, TransformType, TweenLoop } from "@dcl/sdk/ecs"
 
 
 export enum SERVER_MESSAGE_TYPES {
@@ -375,7 +375,7 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Hide Text",
     "Start Delay",
     "Show Dialog",
-    "Start Tween"
+    // "Start Tween"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -523,3 +523,9 @@ export let TWEEN_EASE_SLUGS:string[] = [
 export enum TWEEN_EASE_TYPES {
     LINEAR
 }
+
+export let TWEEN_LOOP_SLUGS:string[] = [
+    "RESTART",
+    "YOYO",
+    "NONE"
+]

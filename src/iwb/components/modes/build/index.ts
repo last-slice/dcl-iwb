@@ -22,6 +22,8 @@ import {
     PointerEventType,
     TextShape,
     Transform,
+    Tween,
+    TweenSequence,
     VideoPlayer,
     VisibilityComponent
 } from "@dcl/sdk/ecs"
@@ -67,11 +69,12 @@ export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
 export let selectedItem: SelectedItem
 export let playerParentEntities: Map<string, Entity> = new Map()
+export let tweenPlacementEntity:Entity = engine.addEntity()
 
 let ITEM_DEPTH_DEFAULT = 4
 let ITEM_HEIGHT_DEFAULT = -.88
 
-function getFactor(mod: EDIT_MODIFIERS) {
+export function getFactor(mod: EDIT_MODIFIERS) {
     switch (mod) {
         case EDIT_MODIFIERS.POSITION:
             return selectedItem.pFactor
@@ -147,6 +150,7 @@ export function toggleModifier(mod: EDIT_MODIFIERS) {
             } else if (selectedItem.pFactor === 0.001) {
                 selectedItem.pFactor = 1
             }
+            console.log('mod is', selectedItem.pFactor)
             break;
         case EDIT_MODIFIERS.SCALE:
             if (selectedItem.sFactor === 1) {
@@ -158,6 +162,7 @@ export function toggleModifier(mod: EDIT_MODIFIERS) {
             } else if (selectedItem.sFactor === 0.001) {
                 selectedItem.sFactor = 1
             }
+            console.log('mod is', selectedItem.sFactor)
             break;
 
         case EDIT_MODIFIERS.ROTATION:
@@ -172,6 +177,7 @@ export function toggleModifier(mod: EDIT_MODIFIERS) {
             } else if (selectedItem.rFactor === 1) {
                 selectedItem.rFactor = 90
             }
+            console.log('mod is', selectedItem.rFactor)
             break;
     }
 }
@@ -859,7 +865,7 @@ export function duplicateItemInPlace(entity: Entity) {
                             duplicate: sceneItem.aid,
                             ugc: sceneItem.ugc
                         }
-                    }//
+                    }
                 )
                 return
             }
@@ -1364,6 +1370,7 @@ export function resetEntityForBuildMode(scene: IWBScene, entity: Entity) {
             checkVideo(entity, sceneItem)
             checkSmartItems(entity, sceneItem)
             disableAnimations(entity, sceneItem)
+            resetTweenPositions(entity, sceneItem, scene)
         }
     }
 }
@@ -1506,4 +1513,39 @@ function checkSmartItems(entity: Entity, sceneItem: SceneItem) {
             }
         }
     }
+}
+
+export function resetTweenPositions(entity:Entity, sceneItem:SceneItem, scene:IWBScene){
+    if(Tween.has(entity)){
+        console.log('scene item position to reset', sceneItem)
+        let tweenData = Tween.getMutable(entity)
+        tweenData.playing = false
+        Tween.deleteFrom(entity)
+        TweenSequence.deleteFrom(entity)
+
+        Transform.createOrReplace(entity, {
+            parent: scene.parentEntity, 
+            position: Vector3.create(sceneItem.p.x, sceneItem.p.y, sceneItem.p.z),
+            rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
+            scale: Vector3.create(sceneItem.s.x, sceneItem.s.y, sceneItem.s.z)
+        })
+    }
+}
+
+export function enableTweenPlacementEntity(){
+    switch(selectedItem.itemData.type){
+        case '3D':
+            GltfContainer.createOrReplace(tweenPlacementEntity as Entity, {
+                src: "assets/" + selectedItem.itemData.id + ".glb",
+            })
+            Transform.createOrReplace(tweenPlacementEntity as Entity, selectedItem.transform)
+            Transform.getMutable(tweenPlacementEntity as Entity).parent = sceneBuilds.get(selectedItem.sceneId).parentEntity
+            break;
+    }
+}
+
+export function disableTweenPlacementEntity(){
+    GltfContainer.deleteFrom(tweenPlacementEntity)
+    Transform.deleteFrom(tweenPlacementEntity)
+    MeshRenderer.deleteFrom(tweenPlacementEntity)
 }
