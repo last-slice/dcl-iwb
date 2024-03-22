@@ -57,18 +57,34 @@ export function displaySceneAssetInfoPanel(value: boolean) {
 }
 
 export let visibleIndex = 1
-export let visibleRows = 6
+export let visibleRows = 7
 export let visibleItems: any[] = []
 export let selectedRow = -1
 export let selectedEntity: number = -1
 export let localScene = false
+export let sceneAssetSearchFilter:string = ""
+
+export function updateAssetSearchFilter(s:string){
+    sceneAssetSearchFilter = s
+    updateRows()
+}
 
 export function updateVisibleIndex(amt: number) {
     visibleIndex += amt
 }
 
 export function updateRows() {
-    visibleItems = paginateArray([...sceneBuilds.get(localPlayer.activeScene!.id).ass], visibleIndex, visibleRows)
+    let sceneAssets:any[] = [...sceneBuilds.get(localPlayer.activeScene!.id).ass]
+
+    if(sceneAssetSearchFilter !== ""){
+        sceneAssets.forEach((asset:any) => {
+            asset.n = items.get(asset.id)?.n
+        })
+    
+        sceneAssets = sceneAssets.filter(item => item.n.toLowerCase().includes(sceneAssetSearchFilter.toLowerCase()))
+    }
+    visibleItems = paginateArray(sceneAssets, visibleIndex, visibleRows)
+    console.log('visible items', visibleItems)
 }
 
 export function selectRow(row: number, pointer?: boolean) {

@@ -5,7 +5,7 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { visibleComponent } from './EditObjectDataPanel'
 import { Actions, COMPONENT_TYPES, EDIT_MODES, ENTITY_ACTIONS_LABELS, ENTITY_ACTIONS_SLUGS, ENTITY_EMOTES_SLUGS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sendServerMessage } from '../../../components/messaging'
-import { selectedItem } from '../../../components/modes/build'
+import { disableTweenPlacementEntity, selectedItem } from '../../../components/modes/build'
 import { uiSizes } from '../../uiConfig'
 import { ActionLinkComponent, url } from './Actions/ActionLinkData'
 import { ActionPlayAudioComponent, audioAssetIds, getSceneAudioComponents, selectedAudioIndex } from './Actions/ActionPlayAudioComponent'
@@ -17,14 +17,14 @@ import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibil
 import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
 import { ActionStartDelayComponent, startDelayAction, updateDelayActions } from './Actions/ActionStartDelayComponent'
 import { ActionDialogComponent } from './Actions/ActionDialogComponent'
-import { ActionTweenComponent } from './Actions/ActionTweenComponent'
+import { ActionTweenComponent, actionTweenView, selectedTweenEaseType, selectedTweenLoop, selectedTweenType, tweenDuration, tweenEndValues, updateTweenEndDefaultAssetPosition } from './Actions/ActionTweenComponent'
 
-let view = "list"
+export let acionMainview = "list"
 let newName:string = ""
-let selectedIndex:number = 0
+export let selectedActionIndex:number = 0
 
-export function updateActionView(v:string){
-    view = v
+export function updateActionComponentView(v:string){
+    acionMainview = v
 }
 
 export function ActionComponent() {
@@ -50,7 +50,7 @@ export function ActionComponent() {
                 width: '100%',
                 height: '10%',
                 margin:{bottom:"2%"},
-                display: view === "list" ? "flex" : "none"
+                display: acionMainview === "list" ? "flex" : "none"
             }}
             >
         
@@ -71,7 +71,7 @@ export function ActionComponent() {
         }}
         uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
-            updateActionView("add")
+            updateActionComponentView("add")
         }}
     />
 
@@ -85,7 +85,7 @@ export function ActionComponent() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '95%',
-                display: view === "add" ? "flex" : "none"
+                display: acionMainview === "add" ? "flex" : "none"
             }}
             // uiBackground={{color:Color4.Green()}}
             >
@@ -190,7 +190,7 @@ export function ActionComponent() {
                         <Dropdown
                     key={"action-selector-dropdown"}
                     options={ENTITY_ACTIONS_LABELS}
-                    selectedIndex={selectedIndex}
+                    selectedIndex={selectedActionIndex}
                     onChange={selectAction}
                     uiTransform={{
                         width: '100%',
@@ -235,6 +235,7 @@ export function ActionComponent() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '10%',
+                display: getActionButtonConfirmDisplay()
             }}
             // uiBackground={{color:Color4.Teal()}}
             >
@@ -256,8 +257,9 @@ export function ActionComponent() {
         }}
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
-            updateActionView("list")
+            updateActionComponentView("list")
             buildAction()
+            disableTweenPlacementEntity()
         }}
     />
 
@@ -279,7 +281,8 @@ export function ActionComponent() {
             }}
             uiText={{value: "Cancel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
-                updateActionView("list")
+                updateActionComponentView("list")
+                disableTweenPlacementEntity()
             }}
         />
 
@@ -297,7 +300,7 @@ export function ActionComponent() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '80%',
-                display: view === "list" ? "flex" : "none"
+                display: acionMainview === "list" ? "flex" : "none"
             }}
             >   
             {generateActionRows()}
@@ -453,7 +456,7 @@ function ActionRow(action:any){
 }
 
 function selectAction(index:number){
-    selectedIndex = index
+    selectedActionIndex = index
 }
 
 function buildAction(){
@@ -461,13 +464,12 @@ function buildAction(){
 }
 
 function updateAction(action:any, type:string, value:any){
-    console.log()
     sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.ACTION_COMPONENT, action:action, type:type, data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, value:value}})
 }
 
 function getActionData(){
-    switch(selectedIndex){
-        case 0://
+    switch(selectedActionIndex){
+        case 0:
             return {aid:selectedItem.aid, url: url, type:Actions.OPEN_LINK}
 
         case 1:
@@ -507,12 +509,15 @@ function getActionData(){
             return {aid:selectedItem.aid, type:Actions.START_DELAY, delay: startDelayAction}
 
         case 13:
-        return {aid:selectedItem.aid, type:Actions.SHOW_DIALOG, dialID: selectedItem.itemData.dialComp.id}
+            return {aid:selectedItem.aid, type:Actions.SHOW_DIALOG, dialID: selectedItem.itemData.dialComp.id}
+
+        case 14:
+            return {aid:selectedItem.aid, type:Actions.START_TWEEN, tween:{type:selectedTweenType, ease:selectedTweenEaseType, duration:tweenDuration, loop:selectedTweenLoop, end:tweenEndValues}}
     }
 }
 
 function getActionDataPanel(){
-    switch(selectedIndex){
+    switch(selectedActionIndex){
         case 0:
         return <ActionLinkComponent/>
 
@@ -548,6 +553,17 @@ function getActionDataPanel(){
             return <ActionDialogComponent/>
 
         case 14:
+            updateTweenEndDefaultAssetPosition()
             return <ActionTweenComponent/>
+    }
+}
+
+function getActionButtonConfirmDisplay(){
+    switch(selectedActionIndex){
+        case 14:
+            return actionTweenView === "main" ? 'flex' : 'none'
+
+        default:
+            return 'flex'
     }
 }

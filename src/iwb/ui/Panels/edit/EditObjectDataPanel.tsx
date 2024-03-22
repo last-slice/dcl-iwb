@@ -1,7 +1,7 @@
 import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
 import {calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont} from '../../helpers'
-import {selectedItem} from '../../../components/modes/build'
+import {disableTweenPlacementEntity, selectedItem} from '../../../components/modes/build'
 import {sceneBuilds} from '../../../components/scenes'
 import {COMPONENT_TYPES, EDIT_MODES, IWBScene} from '../../../helpers/types'
 import {ImageComponentPanel} from './ImageComponentPanel'
@@ -13,7 +13,7 @@ import {log} from '../../../helpers/functions'
 import {CollisionComponentPanel} from './CollisionComponentPanel'
 import {NFTComponentPanel} from './NFTComponentPanel'
 import {TextComponentPanel} from './TextComponentPanel'
-import {ActionComponent} from './ActionComponent'
+import {ActionComponent, acionMainview, selectedActionIndex, updateActionComponentView} from './ActionComponent'
 import {TriggerComponent, triggerView, updateActionView, updateTriggerActions} from './TriggerComponent'
 import {AudioComponentPanel} from "./AudioComponentPanel";
 import { MaterialComponentPanel } from './MaterialComponentPanel'
@@ -21,6 +21,7 @@ import { TriggerAreaComponent, updateTriggerAreaActionView } from './TriggerArea
 import { AnimationComponent } from './AnimationComponentPanel'
 import { NPCComponent, npcComponentView, updateNPCView } from './NPCComponent'
 import { DialogComponent, dialogView, updateDialogView } from './DialogComponent'
+import { actionTweenView, updateActionTweenView } from './Actions/ActionTweenComponent'
 
 export let visibleComponent: string = ""
 
@@ -177,7 +178,7 @@ export function EditObjectData() {
 
                             case COMPONENT_TYPES.TRIGGER_COMPONENT:
                                 if(triggerView === "actions" || triggerView == "add"){
-                                    updateActionView("list")//
+                                    updateActionView("list")
                                 }
 
                                 else{
@@ -194,6 +195,32 @@ export function EditObjectData() {
                                 }else{
                                     openEditComponent("")
                                 }
+                                break;
+
+                            case COMPONENT_TYPES.ACTION_COMPONENT:
+                                console.log("pressing back on action component", selectedActionIndex, actionTweenView, acionMainview)
+                                disableTweenPlacementEntity()
+                                if(acionMainview === "list"){
+                                    openEditComponent("")
+                                }else{
+                                    switch(selectedActionIndex){
+                                        case 14:
+                                            switch(actionTweenView){
+                                                case 'main':
+                                                    updateActionComponentView("list")
+                                                    break;
+    
+                                                case 'end':
+                                                    updateActionTweenView("main")
+                                            }
+                                            break;
+    
+                                        default:
+                                            updateActionComponentView('list')
+                                            break;
+                                    }
+                                }
+
                                 break;
 
                               

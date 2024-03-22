@@ -1,4 +1,4 @@
-import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
+import ReactEcs, {Input, UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
 import {calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont} from '../../helpers'
 import {uiSizes} from '../../uiConfig'
@@ -8,7 +8,7 @@ import {items} from "../../../components/catalog";
 import {editItem, selectedItem, sendServerDelete} from "../../../components/modes/build";
 import {COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types";
 import {entitiesFromItemIds, sceneBuilds} from "../../../components/scenes";
-import {deselectRow, localScene, sceneInfoEntitySelector, selectRow, selectedEntity, selectedRow, showSceneInfoPanel, updateRows, updateVisibleIndex, visibleIndex, visibleItems} from "../sceneInfoPanel";
+import {deselectRow, localScene, sceneInfoEntitySelector, selectRow, selectedEntity, selectedRow, showSceneInfoPanel, updateAssetSearchFilter, updateRows, updateVisibleIndex, visibleIndex, visibleItems} from "../sceneInfoPanel";
 import { sendServerMessage } from '../../../components/messaging'
 import { Entity, VisibilityComponent } from '@dcl/sdk/ecs'
 
@@ -26,6 +26,34 @@ const SceneAssetList = () => {
                 height: '90%',
             }}
         >
+
+                {/* searh row */}
+                <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    alignItems:'flex-start',
+                    width: '100%',
+                    height: '15%',
+                    margin:{bottom:'2%'}
+                }}
+                >
+                <Input
+                        onChange={(value) => {
+                            updateAssetSearchFilter(value.trim())
+                        }}
+                        fontSize={sizeFont(20, 15)}
+                        placeholder={'Search Assets'}
+                        placeholderColor={Color4.White()}
+                        uiTransform={{
+                            width: '50%',
+                            height: '100%',
+                        }}
+                        color={Color4.White()}
+                    ></Input>
+                </UiEntity>
 
     {/* labels row */}
     <UiEntity
@@ -51,7 +79,7 @@ const SceneAssetList = () => {
             // uiBackground={{color:Color4.Green()}}
             uiText={{
                 value: "Asset Name",
-                fontSize: sizeFont(25, 20),
+                fontSize: sizeFont(25, 15),
                 textAlign: 'middle-left',
                 color: Color4.White()
             }}
@@ -61,16 +89,16 @@ const SceneAssetList = () => {
         <UiEntity
             uiTransform={{
                 display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
                 width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
                 value: "Polys",
-                fontSize: sizeFont(25, 20),
+                fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
                 color: Color4.White()
             }}
@@ -80,16 +108,16 @@ const SceneAssetList = () => {
         <UiEntity
             uiTransform={{
                 display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
                 width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
                 value: "Size",
-                fontSize: sizeFont(25, 20),
+                fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
                 color: Color4.White()
             }}
@@ -99,16 +127,16 @@ const SceneAssetList = () => {
         <UiEntity
             uiTransform={{
                 display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
                 width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
                 value: "View",
-                fontSize: sizeFont(25, 20),
+                fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
                 color: Color4.White()
             }}
@@ -117,16 +145,16 @@ const SceneAssetList = () => {
 <UiEntity
             uiTransform={{
                 display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
                 width: '15%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
                 value: "Lock",
-                fontSize: sizeFont(25, 20),
+                fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
                 color: Color4.White()
             }}
@@ -337,7 +365,7 @@ function SceneAssetRow(data:any){
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        height: '10%',
+        height: '12%',
         display: 'flex',
         margin:{top:"1%", bottom:"1%"}
     }}
@@ -401,9 +429,9 @@ function SceneAssetRow(data:any){
 <UiEntity
         uiTransform={{
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             width: '15%',
             height: '100%',
         }}
@@ -419,9 +447,9 @@ function SceneAssetRow(data:any){
 <UiEntity
         uiTransform={{
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             width: '15%',
             height: '100%',
         }}
@@ -437,9 +465,9 @@ function SceneAssetRow(data:any){
     <UiEntity
         uiTransform={{
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             width: '15%',
             height: '100%',
         }}
@@ -470,9 +498,9 @@ function SceneAssetRow(data:any){
     <UiEntity
         uiTransform={{
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             width: '15%',
             height: '100%',
         }}
@@ -494,6 +522,7 @@ function SceneAssetRow(data:any){
             uvs: getLocked(aid)
         }}
         onMouseDown={()=>{
+            console.log('aid', aid)
             sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:SERVER_MESSAGE_TYPES.UPDATE_ASSET_LOCKED, action:"toggle", data:{aid:aid, sceneId:localPlayer.activeScene!.id}})
         }}
     />
@@ -560,6 +589,6 @@ function getLocked(aid:string){
     if(asset){
         return asset.locked ?  getImageAtlasMapping(uiSizes.lockedIcon) :  getImageAtlasMapping(uiSizes.unlockedIcon)
     }else{
-        return  getImageAtlasMapping(uiSizes.eyeTrans)
+        return  getImageAtlasMapping(uiSizes.unlockedIcon)
     }  
 }

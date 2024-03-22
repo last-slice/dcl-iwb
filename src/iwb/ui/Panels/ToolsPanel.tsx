@@ -7,6 +7,7 @@ import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from
 import { uiModes, topTools, bottomTools, settingsIconData } from "../uiConfig"
 import { connected } from "../../components/messaging"
 import { playSound } from "../../components/sounds"
+import { selectedItem } from "../../components/modes/build"
 
 export let showToolsPanel = false
 
@@ -66,6 +67,10 @@ export function createToolsPanel() {
                 uvs: players.has(localUserId) ? getImageAtlasMapping(uiModes[players.get(localUserId)!.mode].uvs) : getImageAtlasMapping()
             }}
             onMouseDown={()=>{
+                if(selectedItem && selectedItem.enabled){
+                    return
+                }
+                
                 if(players.has(localUserId)){
                    let mode = players.get(localUserId)!.mode
                    if(mode == 0 && hasBuildPermissions()){
@@ -168,6 +173,10 @@ function CreateToolIcon(data:any){
         uvs: config.uvOverride ? config.uvOverride() : getImageAtlasMapping(config.enabled ? config.enabledUV : config.disabledUV)
     }}
     onMouseDown={()=>{
+        if(selectedItem && selectedItem.enabled){
+            return
+        }
+
         if(config.toggle){
             config.enabled = !config.enabled
         }
