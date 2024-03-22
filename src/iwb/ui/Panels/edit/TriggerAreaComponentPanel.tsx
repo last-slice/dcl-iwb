@@ -64,7 +64,7 @@ export function TriggerAreaComponent() {
             uiTransform={{
                 flexDirection: 'row',
                 justifyContent: 'center',
-                width: '100%',
+                width: '90%',
                 height: '10%',
                 margin:{top:"1%", bottom:'2%'}
             }}
@@ -121,7 +121,7 @@ export function TriggerAreaComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                width: '90%',
                 height: '10%',
                 margin: {top: "2%"}
             }}
@@ -139,7 +139,7 @@ export function TriggerAreaComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                width: '90%',
                 height: '10%',
                 margin: {top: "2%"}
             }}
@@ -160,7 +160,7 @@ export function TriggerAreaComponent() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: '100%',
+                width: '90%',
                 height: '80%',
                 display: actionView === "eActions" && triggerAreaView === "eActions" ? "flex" : "none"
             }}
@@ -206,7 +206,7 @@ export function TriggerAreaComponent() {
             },
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
-        uiText={{value: "Add Enter Action", fontSize: sizeFont(20, 16)}}
+        uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
             updateTriggerActions()
             updateTriggerAreaActionView("add")
@@ -410,7 +410,7 @@ export function TriggerAreaComponent() {
             },
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
-        uiText={{value: "Add Leave Action", fontSize: sizeFont(20, 16)}}
+        uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
             updateTriggerActions()
             updateTriggerAreaActionView("add")

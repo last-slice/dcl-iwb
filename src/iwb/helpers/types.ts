@@ -346,6 +346,10 @@ export enum Actions {
     PLAY_ANIMATION = 'play_animation',
     STOP_ANIMATION = 'stop_animation',
     SHOW_DIALOG ='show_dialog',
+    ENABLE_CLICK_AREA = 'enable_click_area',
+    DISABLE_CLICK_AREA = 'disable_click_area',
+    ENABLE_TRIGGER_AREA = 'enable_trigger_area',
+    DISABLE_TRIGGER_AREA = 'disable_trigger_area',
 }
 
 export enum Triggers {
@@ -375,7 +379,11 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Hide Text",
     "Start Delay",
     "Show Dialog",
-    // "Start Tween"
+    "Start Tween",
+    "Enable Click Area",
+    "Disable Click Area",
+    "Enable Trigger Area",
+    "Disable Trigger Area",
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -393,7 +401,11 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.HIDE_TEXT,
     Actions.START_DELAY,
     Actions.SHOW_DIALOG,
-    Actions.START_TWEEN
+    Actions.START_TWEEN,
+    Actions.ENABLE_CLICK_AREA,
+    Actions.DISABLE_CLICK_AREA,
+    Actions.ENABLE_TRIGGER_AREA,
+    Actions.DISABLE_TRIGGER_AREA
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
