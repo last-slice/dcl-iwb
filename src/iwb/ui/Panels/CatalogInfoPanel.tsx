@@ -166,7 +166,9 @@ export function createCatalogInfoPanel() {
                         }}
                         onMouseDown={() => {
                             if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
-                                placeCenterCurrentScene(selectedItem?.id)
+                                if(selectedItem && selectedItem.id){
+                                    placeCenterCurrentScene(selectedItem.id)
+                                }
                             }
                         }}
                         uiText={{value: "Place Centered", color: Color4.White(), fontSize: sizeFont(25, 20)}}
