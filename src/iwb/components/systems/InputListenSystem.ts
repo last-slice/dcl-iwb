@@ -227,7 +227,7 @@ export function InputListenSystem(dt: number) {
                         }
                     } else {
                         log('player does not have item selected')
-                        sendServerDelete(hoveredEntity)
+                        deleteSelectedItem(hoveredEntity)
                     }
                 } else {
                     //didnt hit an object and not in build mode

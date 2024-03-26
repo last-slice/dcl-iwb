@@ -997,7 +997,7 @@ export function deleteSelectedItem(entity: Entity) {
         sceneBuilds.forEach((scene: IWBScene) => {
             log('this scene to find items to delete is', scene)
             let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
-            if (sceneItem && !sceneItem.locked) {
+            if (sceneItem && !sceneItem.locked && sceneItem.sceneId === localPlayer.activeScene?.id) {
                 // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {
                 //     assetId: assetId,
                 //     sceneId: scene.id,
@@ -1009,14 +1009,13 @@ export function deleteSelectedItem(entity: Entity) {
                     entity: entity 
                 }
                 sendServerDelete(entity, data)
+                removeSelectedItem()
                 return
             } else {
                 playSound(SOUND_TYPES.ERROR_2)
             }
         })
     }
-
-    removeSelectedItem()
 }//
 
 export function cancelSelectedItem() {
