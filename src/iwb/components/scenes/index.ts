@@ -538,7 +538,7 @@ function enableSceneEntities(sceneId: string) {
                 console.log('about to check smart items for play mod')
                 if (SmartItemLoadedComponent.has(entity) && !SmartItemLoadedComponent.get(entity).init) {
                     console.log('need to check for smart item play mode')
-                    checkSmartItem(entity, sceneItem)
+                    checkSmartItem(entity, sceneItem, scene)
                     SmartItemLoadedComponent.getMutable(entity).init = true
                 }
 
@@ -577,7 +577,7 @@ export function findUGCAssetBeforeDeleting(name:string, id:string){
         console.log("found custom asset in scene, show popup to delete that first")
         displayUGCSceneList(true, list)
     }else{
-        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Deleting your UGC Asset\n" + name + "\nfrom the IWB Servers", animate:{enabled:true, return:true, time:5}})
-        sendServerMessage(SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET, {id:id})//
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Deleting your UGC Asset from the IWB Servers\n" + name, animate:{enabled:true, return:true, time:5}})
+        sendServerMessage(SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET, {id:id})
     }
-}//
+}

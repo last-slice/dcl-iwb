@@ -7,9 +7,10 @@ import { items } from "../../catalog";
 import { displaySettingsPanel } from "../../../ui/Panels/settings/settingsIndex";
 import { localPlayer } from "../../player/player";
 import { utils } from "../../../helpers/libraries";
-import { Color3 } from "@dcl/sdk/math";
+import { Color3, Quaternion } from "@dcl/sdk/math";
 import { handleTriggerAction } from "./actions";
 import { clearShowTexts } from "../../../ui/showTextComponent";
+import { sceneParent } from "../../iwb";
 
 export let delayedActionTimers:any[] = []
 
@@ -308,7 +309,7 @@ export function teleportToScene(scene:IWBScene){
     movePlayerTo({newRelativePosition:position, cameraTarget:camera})
 }
 
-export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
+export function checkSmartItem(entity:Entity, sceneItem: SceneItem, scene:IWBScene){
     console.log("checking smart item for play mode", sceneItem)
     MeshRenderer.deleteFrom(entity)
     MeshCollider.deleteFrom(entity)
@@ -327,6 +328,15 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem){
             if(sceneItem.trigComp && sceneItem.trigComp.enabled){
                 MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
             }
+            break;
+
+        case 'NPC':
+            Transform.createOrReplace(entity, {
+                parent: sceneParent,
+                position: sceneItem.p,
+                rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
+                scale: sceneItem.s
+            })
             break;
     }
 }
