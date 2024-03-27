@@ -29,6 +29,7 @@ import {
 } from "@dcl/sdk/ecs"
 import {cRoom, sendServerMessage} from "../../messaging";
 import {
+    Actions,
     COMPONENT_TYPES,
     EDIT_MODES,
     EDIT_MODIFIERS,
@@ -64,6 +65,7 @@ import {displayHover, updateContextEvents} from "../../../ui/contextMenu"
 import {displayCatalogInfoPanel} from "../../../ui/Panels/CatalogInfoPanel";
 import {getWorldPosition, getWorldRotation} from "@dcl-sdk/utils";
 import {bbE, findSceneByParcel, getCenterOfParcels, isEntityInScene} from "../../../helpers/build";
+import { updateTweenEndDefaultAssetPosition } from "../../../ui/Panels/edit/Actions/ActionTweenComponent"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -990,14 +992,15 @@ export function grabItem(entity: Entity) {
 }
 
 export function deleteSelectedItem(entity: Entity) {
-    console.log('entity to delete is ', entity)
+    // console.log('entity to delete is ', entity)
     let assetId = itemIdsFromEntities.get(entity)
     console.log('found asset id', assetId)
     if (assetId) {
         sceneBuilds.forEach((scene: IWBScene) => {
-            log('this scene to find items to delete is', scene)
+            // log('this scene to find items to delete is', scene)
             let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
-            if (sceneItem && !sceneItem.locked && sceneItem.sceneId === localPlayer.activeScene?.id) {
+            console.log('scene item to delete is', sceneItem)
+            if (sceneItem && !sceneItem.locked && scene.id === localPlayer.activeScene?.id) {
                 // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_ITEM, {
                 //     assetId: assetId,
                 //     sceneId: scene.id,
@@ -1515,23 +1518,27 @@ function checkSmartItems(entity: Entity, sceneItem: SceneItem) {
 }
 
 export function resetTweenPositions(entity:Entity, sceneItem:SceneItem, scene:IWBScene){
-    if(Tween.has(entity)){
-        console.log('scene item position to reset', sceneItem)
-        let tweenData = Tween.getMutable(entity)
-        tweenData.playing = false
-        Tween.deleteFrom(entity)
-        TweenSequence.deleteFrom(entity)
-
-        Transform.createOrReplace(entity, {
-            parent: scene.parentEntity, 
-            position: Vector3.create(sceneItem.p.x, sceneItem.p.y, sceneItem.p.z),
-            rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
-            scale: Vector3.create(sceneItem.s.x, sceneItem.s.y, sceneItem.s.z)
-        })
+    if(sceneItem.actComp && sceneItem.actComp.actions){
+        sceneItem.actComp.actions.forEach((action:any) => {
+            if(action.type === Actions.START_TWEEN){        
+                let tweenData = Tween.getMutableOrNull(entity)
+                tweenData ? tweenData.playing = false : null
+                TweenSequence.deleteFrom(entity)
+                Tween.deleteFrom(entity)
+        
+                Transform.createOrReplace(entity, {
+                    parent: scene.parentEntity, 
+                    position: Vector3.create(sceneItem.p.x, sceneItem.p.y, sceneItem.p.z),
+                    rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
+                    scale: Vector3.create(sceneItem.s.x, sceneItem.s.y, sceneItem.s.z)
+                })
+            }
+          });
     }
 }
 
 export function enableTweenPlacementEntity(){
+    updateTweenEndDefaultAssetPosition()
     switch(selectedItem.itemData.type){
         case '3D':
             GltfContainer.createOrReplace(tweenPlacementEntity as Entity, {

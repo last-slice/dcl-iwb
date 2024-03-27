@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, ColliderLayer, EasingFunction, Entity, GltfContainer, MeshCollider, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
+import { Animator, AudioSource, AudioStream, ColliderLayer, EasingFunction, Entity, GltfContainer, MeshCollider, Transform, Tween, TweenLoop, TweenSequence, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
 import { Actions, SceneItem } from "../../../helpers/types";
 import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
 import { localPlayer } from "../../player/player";
@@ -117,7 +117,7 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
 
         case Actions.START_TWEEN:
             let mode:any
-            let start = Transform.get(entity)
+            let start = {...Transform.get(entity)}
 
             switch(action.twT){
                 case 0:
@@ -149,8 +149,7 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
               })
 
               if(action.twL !== 2){
-                console.log('need to loop animation')
-                TweenSequence.create(entity, { sequence: [], loop: action.twL})
+                TweenSequence.createOrReplace(entity, { sequence: [], loop: action.twL})
               }
             
             break;

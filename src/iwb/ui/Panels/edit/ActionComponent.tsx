@@ -17,7 +17,7 @@ import { ActionVisibilityComponent, actionVisibilityColliderVMask, actionVisibil
 import { ActionShowTextComponent, showText } from './Actions/ActionShowTextComponent'
 import { ActionStartDelayComponent, startDelayAction, updateDelayActions } from './Actions/ActionStartDelayComponent'
 import { ActionDialogComponent } from './Actions/ActionDialogComponent'
-import { ActionTweenComponent, actionTweenView, selectedTweenEaseType, selectedTweenLoop, selectedTweenType, tweenDuration, tweenEndValues, updateTweenEndDefaultAssetPosition } from './Actions/ActionTweenComponent'
+import { ActionTweenComponent, actionTweenView, selectedTweenEaseType, selectedTweenLoop, selectedTweenType, tweenDuration, tweenEndValues } from './Actions/ActionTweenComponent'
 
 export let acionMainview = "list"
 let newName:string = ""
@@ -566,7 +566,6 @@ function getActionDataPanel(){
             return <ActionDialogComponent/>
 
         case 14:
-            updateTweenEndDefaultAssetPosition()
             return <ActionTweenComponent/>
     }
 }
