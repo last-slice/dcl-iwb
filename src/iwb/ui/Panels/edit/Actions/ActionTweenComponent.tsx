@@ -24,11 +24,9 @@ export function updateActionTweenView(v:string){
     actionTweenView = v
 }
 
-export function updateTweenEndDefaultAssetPosition(
-
-){
+export function updateTweenEndDefaultAssetPosition(){
     console.log('updating tween osition')
-    let transform = Transform.get(selectedItem.entity)
+    let transform = {...Transform.get(selectedItem.entity)}
 
     switch(selectedTweenType){
         case EDIT_MODIFIERS.POSITION:
@@ -928,10 +926,12 @@ function selectTweenType(index:number){
     if(index !== selectedTweenType){
         selectedTweenType = index
         // updateTweenEndDefaultAssetPosition()
+        updateTweenEndDefaultAssetPosition()
     }
 }
 
 function selectTweenLoop(index:number){
+    selectedTweenLoop = index
 }
 
 function selectTweenEaseType(index:number){

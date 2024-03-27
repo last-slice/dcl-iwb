@@ -11,6 +11,7 @@ import { Color3, Quaternion } from "@dcl/sdk/math";
 import { handleTriggerAction } from "./actions";
 import { clearShowTexts } from "../../../ui/showTextComponent";
 import { sceneParent } from "../../iwb";
+import { resetTweenPositions } from "../build";
 
 export let delayedActionTimers:any[] = []
 
@@ -60,6 +61,7 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
                 disableVisibility(entity, sceneItem)
                 PointerEvents.deleteFrom(entity)
                 sceneItem.visComp ? VisibilityComponent.createOrReplace(entity, {visible: sceneItem.visComp.visible}) : null
+                resetTweenPositions(entity, sceneItem, scene)
             }
         }
     }
