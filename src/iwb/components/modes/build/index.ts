@@ -65,13 +65,14 @@ import {displayHover, updateContextEvents} from "../../../ui/contextMenu"
 import {displayCatalogInfoPanel} from "../../../ui/Panels/CatalogInfoPanel";
 import {getWorldPosition, getWorldRotation} from "@dcl-sdk/utils";
 import {bbE, findSceneByParcel, getCenterOfParcels, isEntityInScene} from "../../../helpers/build";
-import { updateTweenEndDefaultAssetPosition } from "../../../ui/Panels/edit/Actions/ActionTweenComponent"
+import {updateTweenEndDefaultAssetPosition} from "../../../ui/Panels/edit/Actions/ActionTweenComponent"
+import {isSnapEnabled} from "../../systems/SelectedItemSystem";
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
 export let selectedItem: SelectedItem
 export let playerParentEntities: Map<string, Entity> = new Map()
-export let tweenPlacementEntity:Entity = engine.addEntity()
+export let tweenPlacementEntity: Entity = engine.addEntity()
 
 let ITEM_DEPTH_DEFAULT = 4
 let ITEM_HEIGHT_DEFAULT = -.88
@@ -530,7 +531,7 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
             let t = Transform.getMutable(selectedItem.entity);
             t = selectedItem.transform!;
 
-            if(selectedItem.mode === EDIT_MODES.GRAB){
+            if (selectedItem.mode === EDIT_MODES.GRAB) {
                 // add back to scene at previous position
                 console.log('selection was grab mode')
 
@@ -580,16 +581,21 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
         localPlayer.activeScene = curScene;
         let t = Transform.getMutable(selectedItem.entity);
 
+        // set rotation to current rotation
+        if(isSnapEnabled) {
+            t.rotation = getWorldRotation(selectedItem.entity)
+        } else {
+            let eulRot = Quaternion.toEulerAngles(t.rotation);
+            let playerRot = Quaternion.toEulerAngles(Transform.get(engine.PlayerEntity).rotation);
+            t.rotation =  Quaternion.fromEulerDegrees(eulRot.x + playerRot.x, eulRot.y + playerRot.y, eulRot.z + playerRot.z);
+        }
+
         // find position relative to scene parent
         const curSceneParent = curScene.parentEntity;
         const curSceneParentPosition = Transform.get(curSceneParent).position;
         finalPosition.x = finalPosition.x - curSceneParentPosition.x;
         finalPosition.z = finalPosition.z - curSceneParentPosition.z;
-
         t.position = finalPosition
-
-        // set rotation to current rotation
-        t.rotation = getWorldRotation(selectedItem.entity);
 
         // set parent to scene parent
         t.parent = curSceneParent;
@@ -937,14 +943,14 @@ export function confirmGrabItem(asset: SceneItem) {
         }
 
         const {rotation: playerRot} = Transform.get(engine.PlayerEntity)
-        const euler = Quaternion.toEulerAngles(playerRot)
+        const playereuler = Quaternion.toEulerAngles(playerRot)
 
         Transform.createOrReplace(
             selectedItem.entity,
             {
                 position: {x: 0, y: -.88, z: 4},
                 scale: scale,
-                rotation: Quaternion.fromEulerDegrees(euler.x - transRot.x, transRot.y - euler.y, euler.z - transRot.z),
+                rotation: Quaternion.fromEulerDegrees(transRot.x - playereuler.x, transRot.y - playereuler.y, transRot.z - playereuler.z),
                 parent: engine.PlayerEntity
             })
 
@@ -1009,7 +1015,7 @@ export function deleteSelectedItem(entity: Entity) {
                 let data: any = {
                     assetId: assetId,
                     sceneId: scene.id,
-                    entity: entity 
+                    entity: entity
                 }
                 sendServerDelete(entity, data)
                 removeSelectedItem()
@@ -1151,6 +1157,8 @@ export function removeSelectedItem() {
         selectedItem.enabled = false
         selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
     }
+
+    VisibilityComponent.createOrReplace(bbE, {visible: false})
 
     addAllBuildModePointers()
 }
@@ -1517,29 +1525,29 @@ function checkSmartItems(entity: Entity, sceneItem: SceneItem) {
     }
 }
 
-export function resetTweenPositions(entity:Entity, sceneItem:SceneItem, scene:IWBScene){
-    if(sceneItem.actComp && sceneItem.actComp.actions){
-        sceneItem.actComp.actions.forEach((action:any) => {
-            if(action.type === Actions.START_TWEEN){        
+export function resetTweenPositions(entity: Entity, sceneItem: SceneItem, scene: IWBScene) {
+    if (sceneItem.actComp && sceneItem.actComp.actions) {
+        sceneItem.actComp.actions.forEach((action: any) => {
+            if (action.type === Actions.START_TWEEN) {
                 let tweenData = Tween.getMutableOrNull(entity)
                 tweenData ? tweenData.playing = false : null
                 TweenSequence.deleteFrom(entity)
                 Tween.deleteFrom(entity)
-        
+
                 Transform.createOrReplace(entity, {
-                    parent: scene.parentEntity, 
+                    parent: scene.parentEntity,
                     position: Vector3.create(sceneItem.p.x, sceneItem.p.y, sceneItem.p.z),
                     rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
                     scale: Vector3.create(sceneItem.s.x, sceneItem.s.y, sceneItem.s.z)
                 })
             }
-          });
+        });
     }
 }
 
-export function enableTweenPlacementEntity(){
+export function enableTweenPlacementEntity() {
     updateTweenEndDefaultAssetPosition()
-    switch(selectedItem.itemData.type){
+    switch (selectedItem.itemData.type) {
         case '3D':
             GltfContainer.createOrReplace(tweenPlacementEntity as Entity, {
                 src: "assets/" + selectedItem.itemData.id + ".glb",
@@ -1550,7 +1558,7 @@ export function enableTweenPlacementEntity(){
     }
 }
 
-export function disableTweenPlacementEntity(){
+export function disableTweenPlacementEntity() {
     GltfContainer.deleteFrom(tweenPlacementEntity)
     Transform.deleteFrom(tweenPlacementEntity)
     MeshRenderer.deleteFrom(tweenPlacementEntity)
