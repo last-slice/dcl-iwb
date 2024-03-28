@@ -23,7 +23,7 @@ let actionLabels:any[] = []
 let selectedTrigger:any
 
 export function updateActionView(v:string){
-    triggerView = v
+    triggerView = v//
 }
 
 export function TriggerComponent() {

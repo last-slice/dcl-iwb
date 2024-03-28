@@ -47,7 +47,7 @@ export function refreshVisibleItems() {
         if (a.name === lobbyRealm) return -1;
         if (b.name === lobbyRealm) return 1;
 
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name);//
     });
 
     visibleItems = paginateArray([...worlds], visibleIndex, 6)
