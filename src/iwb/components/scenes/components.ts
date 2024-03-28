@@ -118,7 +118,7 @@ export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:Sce
 
         case 'Dialog':
             addDialogComponent(scene, entity, item, name)
-            break;
+            break;//
     }
 
     if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
@@ -459,7 +459,7 @@ export function addAnimationComponent(scene:IWBScene, entity:Entity, item:SceneI
     })
 
     Animator.createOrReplace(entity, {
-        states:animations//
+        states:animations
     })
 
     console.log('animator is now', Animator.get(entity))

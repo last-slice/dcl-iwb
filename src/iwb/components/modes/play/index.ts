@@ -332,13 +332,13 @@ export function checkSmartItem(entity:Entity, sceneItem: SceneItem, scene:IWBSce
             }
             break;
 
-        case 'NPC':
-            Transform.createOrReplace(entity, {
-                parent: sceneParent,
-                position: sceneItem.p,
-                rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
-                scale: sceneItem.s
-            })
+        case 'NPC'://
+            // Transform.createOrReplace(entity, {
+            //     parent: sceneParent,
+            //     position: sceneItem.p,
+            //     rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
+            //     scale: sceneItem.s
+            // })
             break;
     }
 }
@@ -407,5 +407,4 @@ export function findAndRunAction(id:string){
     }else{
         console.log('no scene')
     }
-
 }

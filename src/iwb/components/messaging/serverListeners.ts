@@ -84,6 +84,7 @@ export function initiateMessageListeners(room: Room) {
         if (info.owner.toLowerCase() === localUserId) {
             if(info.init){
                 displayWorldReadyPanel(true, info)
+                displayPendingPanel(false, "ready")
             }
             else{
                 displayPendingPanel(true, "ready")
