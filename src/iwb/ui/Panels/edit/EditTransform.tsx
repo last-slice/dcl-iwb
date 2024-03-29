@@ -10,412 +10,6 @@ import {visibleComponent} from './EditObjectDataPanel'
 
 let pressed: any = {}
 
-function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, valueFn: Function }) {
-
-    const modifierName =
-        props.modifier === EDIT_MODIFIERS.POSITION ? "Position" :
-            props.modifier === EDIT_MODIFIERS.ROTATION ? "Rotation" : "Scale"
-
-    return (
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '95%',
-                height: '35%',
-                margin: {top: '1%', bottom: '1%'}
-            }}
-            // uiBackground={{color:Color4.Black()}}
-        >
-
-            {/* header */}
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '15%',
-                    margin: {top: '1%', bottom: '2%'}
-                }}
-            >
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '50%',
-                    }}
-
-                    uiText={{value: modifierName, fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
-                />
-
-
-            </UiEntity>
-
-            {/* positive button row */}
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                    height: '30%',
-                    margin: {top: '1%'}
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
-
-                {/* x positive  */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                    }}
-                    // uiBackground={{color:Color4.Green()}}
-                    uiText={{value: "X: " + (selectedItem && selectedItem.enabled ? props.valueFn("x") : ""), fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
-                    >
-                </UiEntity>
-
-                {/* y positive  */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                    }}
-                    // uiBackground={{color:Color4.Blue()}}
-                    uiText={{value: "Y: " + (selectedItem && selectedItem.enabled ? props.valueFn("y") : ""), fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
-                >
-                </UiEntity>
-
-                {/* z positive  */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                    }}
-                    // uiBackground={{color:Color4.Teal()}}
-                    uiText={{value: "Z: " + (selectedItem && selectedItem.enabled ? props.valueFn("z") : ""), fontSize: sizeFont(25, 12), textAlign: 'middle-center'}}
-                >
-                </UiEntity>
-
-
-            </UiEntity>
-
-            {/* position input row */}
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                    height: '35%',
-                    margin: {top: '1%'}
-                }}
-                // uiBackground={{color:Color4.Red()}}
-            >
-
-                {/* x cell */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                        margin: {right: '2%'}
-                    }}
-                    uiBackground={{color: Color4.Gray()}}
-                    // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
-                >
-                    <Input
-                        // onChange={(value) => {
-                        //     sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
-                        // }}
-
-                        onSubmit={(value) => {
-                            sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
-                        }}
-                        fontSize={sizeFont(20, 12)}
-                        placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
-                        placeholderColor={Color4.White()}
-                        uiTransform={{
-                            width: '100%',
-                            height: '100%',
-                        }}
-                        color={Color4.White()}
-                        // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
-                    />
-
-                </UiEntity>
-
-                {/* y cell */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                        margin: {right: '2%'}
-                    }}
-                    uiBackground={{color: Color4.Gray()}}
-                    // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
-                >
-                    <Input
-                        // onChange={(value) => {
-                        //     sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
-                        // }}
-                        onSubmit={(value) => {
-                            sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
-                        }}
-                        fontSize={sizeFont(20, 12)}
-                        placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
-                        placeholderColor={Color4.White()}
-                        uiTransform={{
-                            width: '100%',
-                            height: '100%',
-                        }}
-                        color={Color4.White()}
-                        // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
-                    />
-
-                </UiEntity>
-
-
-                {/* z cell */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                        margin: {right: '2%'}
-                    }}
-                    uiBackground={{color: Color4.Gray()}}
-                    // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
-                >
-                    <Input
-                        // onChange={(value) => {
-                        //     sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
-                        // }}
-                        onSubmit={(value) => {
-                            sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
-                        }}
-                        fontSize={sizeFont(20, 12)}
-                        placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
-                        placeholderColor={Color4.White()}
-                        uiTransform={{
-                            width: '100%',
-                            height: '100%',
-                        }}
-                        color={Color4.White()}
-                        // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
-                    />
-
-                </UiEntity>
-            </UiEntity>
-
-            {/* negative button row // */}
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    alignContent:'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                    height: '30%',
-                    margin: {top: '1%'}
-                }}
-                // uiBackground={{color:Color4.Green()}}
-            >
-
-                {/* x negative  */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                    }}
-                >
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(3.5).height,
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.upArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'x', 1, false)
-                        }}
-                    />
-
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(3.5).height,
-                            margin: {right: '2%'}
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.downArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'x', -1, false)
-
-                            pressed.left = true
-                        }}
-                    />
-                </UiEntity>
-
-                {/* y negative  */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                    }}
-                    // uiBackground={{color:Color4.Green()}}
-                >
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(3.5).height,
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.upArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'y', 1, false)
-                        }}
-                    />
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(3.5).height,
-                            margin: {right: '2%'}
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.downArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'y', -1, false)
-
-                            pressed.left = true
-                        }}
-                    />
-                </UiEntity>
-
-                {/* z negative  */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30%',
-                        height: '100%',
-                    }}
-                    // uiBackground={{color:Color4.Green()}}
-                >
-
-                <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(3.5).height,
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.upArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'z', 1, false)
-                        }}
-                    />
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: calculateSquareImageDimensions(3.5).width,
-                            height: calculateSquareImageDimensions(3.5).height,
-                            margin: {right: '2%'}
-                        }}
-                        uiBackground={{
-                            textureMode: 'stretch',
-                            texture: {
-                                src: 'assets/atlas2.png'
-                            },
-                            uvs: getImageAtlasMapping(uiSizes.downArrow)
-                        }}
-                        onMouseDown={() => {
-                            sendServerEdit(props.modifier, 'z', -1, false)
-
-                            pressed.left = true
-                        }}
-                    />
-                </UiEntity>
-
-            </UiEntity>
-        </UiEntity>
-    )
-
-}
 
 export function EditTransform() {
     return (
@@ -432,317 +26,650 @@ export function EditTransform() {
             // uiBackground={{color:Color4.Red()}}
         >
 
-
             {/* PRS information container */}
             <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
-                    width: '80%',
+                    width: '100%',
                     height: '100%',
                 }}
                 // uiBackground={{color:Color4.Teal()}}
             >
 
                 {/* position row */}
-                <TransformInputModifiers modifier={EDIT_MODIFIERS.POSITION} valueFn={getRelativePosition}/>
+                <TransformInputModifiers modifier={EDIT_MODIFIERS.POSITION}
+                                         factor={selectedItem && selectedItem.pFactor}
+                                         valueFn={getRelativePosition}/>
 
                 {/* rotation row */}
-                <TransformInputModifiers modifier={EDIT_MODIFIERS.ROTATION} valueFn={getRotationValue}/>
+                <TransformInputModifiers modifier={EDIT_MODIFIERS.ROTATION}
+                                         factor={selectedItem && selectedItem.rFactor}
+                                         valueFn={getRotationValue}/>
 
                 {/* scale row */}
-                <TransformInputModifiers modifier={EDIT_MODIFIERS.SCALE} valueFn={getScaleValue}/>
+                <TransformInputModifiers modifier={EDIT_MODIFIERS.SCALE}
+                                         factor={selectedItem && selectedItem.sFactor}
+                                         valueFn={getScaleValue}/>
             </UiEntity>
+        </UiEntity>
+    )
+}
 
-            {/* modifier container */}
+function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: number, valueFn: Function }) {
+
+    const modifierName =
+        props.modifier === EDIT_MODIFIERS.POSITION ? "Position" :
+            props.modifier === EDIT_MODIFIERS.ROTATION ? "Rotation" : "Scale"
+
+    return (
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '35%',
+                margin: {top: '1%', bottom: '1%'}
+            }}
+            // uiBackground={{color:Color4.Black()}}
+        >
+
+            {/* left side items */}
             <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '20%',
+                    width: '80%',
                     height: '100%',
-                    margin: {top: '1%', bottom: '1%'}
                 }}
+                // uiBackground={{color:Color4.Black()}}
             >
 
-                {/* position modifier */}
+                {/* header */}
                 <UiEntity
                     uiTransform={{
-                        flexDirection: 'column',
+                        flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '90%',
-                        height: '35%',
-                        margin: {top: '1%', bottom: '1%'}
+                        width: '100%',
+                        height: '15%',
+                        margin: {top: '1%', bottom: '2%'}
                     }}
-                    //uiBackground={{color:Color4.Black()}}
                 >
-
-                    {/* position modifier header */}
                     <UiEntity
                         uiTransform={{
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: '100%',
-                            height: '15%',
-                            margin: {top: '1%', bottom: '2%'}
+                            height: '50%',
+                        }}
+
+                        uiText={{value: modifierName, fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
+                    />
+
+                </UiEntity>
+
+                {/* label value row */}
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        height: '30%',
+                        margin: {top: '1%'}
+                    }}
+                    // uiBackground={{color:Color4.Blue()}}
+                >
+
+                    {/* x label  */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                        }}
+                        // uiBackground={{color:Color4.Green()}}
+                        uiText={{
+                            value: "X: " + (selectedItem && selectedItem.enabled ? props.valueFn("x") : ""),
+                            fontSize: sizeFont(25, 12),
+                            textAlign: 'middle-center'
                         }}
                     >
-                        <UiEntity
-                            uiTransform={{
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '100%',
-                                height: '50%',
-                            }}
+                    </UiEntity>
 
-                            uiText={{value: "Factor", fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
+                    {/* y label  */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                        }}
+                        // uiBackground={{color:Color4.Blue()}}
+                        uiText={{
+                            value: "Y: " + (selectedItem && selectedItem.enabled ? props.valueFn("y") : ""),
+                            fontSize: sizeFont(25, 12),
+                            textAlign: 'middle-center'
+                        }}
+                    >
+                    </UiEntity>
+
+                    {/* z label  */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                        }}
+                        // uiBackground={{color:Color4.Teal()}}
+                        uiText={{
+                            value: "Z: " + (selectedItem && selectedItem.enabled ? props.valueFn("z") : ""),
+                            fontSize: sizeFont(25, 12),
+                            textAlign: 'middle-center'
+                        }}
+                    >
+                    </UiEntity>
+
+
+                </UiEntity>
+
+                {/* value input row */}
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        height: '35%',
+                        margin: {top: '1%'}
+                    }}
+                    // uiBackground={{color:Color4.Red()}}
+                >
+
+                    {/* x cell */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                            margin: {right: '2%'}
+                        }}
+                        uiBackground={{color: Color4.Gray()}}
+                        // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
+                    >
+                        <Input
+                            // onChange={(value) => {
+                            //     sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
+                            // }}
+
+                            onSubmit={(value) => {
+                                sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
+                            }}
+                            fontSize={sizeFont(20, 12)}
+                            placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
+                            placeholderColor={Color4.White()}
+                            uiTransform={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            color={Color4.White()}
+                            // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
                         />
 
                     </UiEntity>
 
+                    {/* y cell */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                            margin: {right: '2%'}
+                        }}
+                        uiBackground={{color: Color4.Gray()}}
+                        // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
+                    >
+                        <Input
+                            // onChange={(value) => {
+                            //     sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
+                            // }}
+                            onSubmit={(value) => {
+                                sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
+                            }}
+                            fontSize={sizeFont(20, 12)}
+                            placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
+                            placeholderColor={Color4.White()}
+                            uiTransform={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            color={Color4.White()}
+                            // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
+                        />
+
+                    </UiEntity>
+
+
+                    {/* z cell */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                            margin: {right: '2%'}
+                        }}
+                        uiBackground={{color: Color4.Gray()}}
+                        // uiText={{value:"" + (selectedItem && selectedItem.enabled ? getRelativePosition("x") : ""), fontSize:sizeFont(20,15)}}
+                    >
+                        <Input
+                            // onChange={(value) => {
+                            //     sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
+                            // }}
+                            onSubmit={(value) => {
+                                sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
+                            }}
+                            fontSize={sizeFont(20, 12)}
+                            placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
+                            placeholderColor={Color4.White()}
+                            uiTransform={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            color={Color4.White()}
+                            // value={"" + (selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
+                        />
+
+                    </UiEntity>
+                </UiEntity>
+
+                {/* button modifiers row // */}
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        alignContent: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        height: '30%',
+                        margin: {top: '1%'}
+                    }}
+                    // uiBackground={{color:Color4.Green()}}
+                >
+
+                    {/* x modifier buttons  */}
                     <UiEntity
                         uiTransform={{
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: '100%',
-                            height: '85%',
-                            margin: {top: '1%', bottom: '1%'}
+                            width: '30%',
+                            height: '100%',
                         }}
-                        //uiBackground={{color:Color4.Green()}}
                     >
+                        {/* x positive */}
                         <UiEntity
                             uiTransform={{
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: calculateSquareImageDimensions(5).width,
-                                height: calculateSquareImageDimensions(4).height,
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
                             }}
                             uiBackground={{
                                 textureMode: 'stretch',
                                 texture: {
-                                    src: 'assets/atlas1.png'
+                                    src: 'assets/atlas2.png'
                                 },
-                                uvs: getImageAtlasMapping(uiSizes.magnifyIcon)
+                                uvs: getImageAtlasMapping(uiSizes.upArrow)
                             }}
                             onMouseDown={() => {
-                                toggleModifier(EDIT_MODIFIERS.POSITION)
+                                sendServerEdit(props.modifier, 'x', 1, false)
                             }}
                         />
 
+
+                        {/* x negative */}
                         <UiEntity
                             uiTransform={{
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: calculateSquareImageDimensions(5).width,
-                                height: calculateSquareImageDimensions(4).height,
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
                                 margin: {right: '2%'}
-                            }}
-                            uiText={{
-                                value: "" + (selectedItem && selectedItem.enabled ? selectedItem.pFactor : ""),
-                                fontSize: sizeFont(15, 12)
-                            }}
-                        />
-
-
-                    </UiEntity>
-
-                </UiEntity>
-
-
-                {/* rotation modifier */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '90%',
-                        height: '35%',
-                        margin: {top: '1%', bottom: '1%'}
-                    }}
-                    //uiBackground={{color:Color4.Black()}}
-                >
-
-                    {/* position modifier header */}
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '100%',
-                            height: '15%',
-                            margin: {top: '1%', bottom: '2%'}
-                        }}
-                    >
-                        <UiEntity
-                            uiTransform={{
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '100%',
-                                height: '50%',
-                            }}
-
-                            uiText={{value: "Factor", fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
-                        />
-
-                    </UiEntity>
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '100%',
-                            height: '85%',
-                            margin: {top: '1%', bottom: '1%'}
-                        }}
-                        //uiBackground={{color:Color4.Green()}}
-                    >
-                        <UiEntity
-                            uiTransform={{
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: calculateSquareImageDimensions(5).width,
-                                height: calculateSquareImageDimensions(4).height,
                             }}
                             uiBackground={{
                                 textureMode: 'stretch',
                                 texture: {
-                                    src: 'assets/atlas1.png'
+                                    src: 'assets/atlas2.png'
                                 },
-                                uvs: getImageAtlasMapping(uiSizes.magnifyIcon)
+                                uvs: getImageAtlasMapping(uiSizes.downArrow)
                             }}
                             onMouseDown={() => {
-                                toggleModifier(EDIT_MODIFIERS.ROTATION)
+                                sendServerEdit(props.modifier, 'x', -1, false)
+
+                                pressed.left = true
                             }}
                         />
-
-                        <UiEntity
-                            uiTransform={{
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: calculateSquareImageDimensions(5).width,
-                                height: calculateSquareImageDimensions(4).height,
-                                margin: {right: '2%'}
-                            }}
-                            uiText={{
-                                value: "" + (selectedItem && selectedItem.enabled ? selectedItem.rFactor : ""),
-                                fontSize: sizeFont(15, 12)
-                            }}
-                        />
-
-
                     </UiEntity>
 
-                </UiEntity>
-
-
-                {/* scale modifier */}
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '90%',
-                        height: '35%',
-                        margin: {top: '1%', bottom: '1%'}
-                    }}
-                    // uiBackground={{color:Color4.Black()}}
-                >
-
-                    {/* position modifier header */}
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '100%',
-                            height: '15%',
-                            margin: {top: '1%', bottom: '2%'}
-                        }}
-                    >
-                        <UiEntity
-                            uiTransform={{
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '100%',
-                                height: '50%',
-                            }}
-
-                            uiText={{value: "Factor", fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
-                        />
-
-                    </UiEntity>
-
+                    {/* y modifier buttons   */}
                     <UiEntity
                         uiTransform={{
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: '100%',
-                            height: '85%',
-                            margin: {top: '1%', bottom: '1%'}
+                            width: '30%',
+                            height: '100%',
                         }}
                         // uiBackground={{color:Color4.Green()}}
                     >
+
+                        {/* y positive */}
                         <UiEntity
                             uiTransform={{
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: calculateSquareImageDimensions(5).width,
-                                height: calculateSquareImageDimensions(4).height,
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
                             }}
                             uiBackground={{
                                 textureMode: 'stretch',
                                 texture: {
-                                    src: 'assets/atlas1.png'
+                                    src: 'assets/atlas2.png'
                                 },
-                                uvs: getImageAtlasMapping(uiSizes.magnifyIcon)
+                                uvs: getImageAtlasMapping(uiSizes.upArrow)
                             }}
                             onMouseDown={() => {
-                                toggleModifier(EDIT_MODIFIERS.SCALE)
+                                sendServerEdit(props.modifier, 'y', 1, false)
                             }}
                         />
 
+                        {/* y negative */}
                         <UiEntity
                             uiTransform={{
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: calculateSquareImageDimensions(5).width,
-                                height: calculateSquareImageDimensions(4).height,
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
                                 margin: {right: '2%'}
                             }}
-                            uiText={{
-                                value: "" + (selectedItem && selectedItem.enabled ? selectedItem.sFactor : ""),
-                                fontSize: sizeFont(15, 12)
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas2.png'
+                                },
+                                uvs: getImageAtlasMapping(uiSizes.downArrow)
+                            }}
+                            onMouseDown={() => {
+                                sendServerEdit(props.modifier, 'y', -1, false)
+
+                                pressed.left = true
+                            }}
+                        />
+                    </UiEntity>
+
+                    {/* z modifier buttons   */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                        }}
+                        // uiBackground={{color:Color4.Green()}}
+                    >
+
+                        {/* z positive  */}
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas2.png'
+                                },
+                                uvs: getImageAtlasMapping(uiSizes.upArrow)
+                            }}
+                            onMouseDown={() => {
+                                sendServerEdit(props.modifier, 'z', 1, false)
                             }}
                         />
 
+                        {/* z negative  */}
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
+                                margin: {right: '2%'}
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas2.png'
+                                },
+                                uvs: getImageAtlasMapping(uiSizes.downArrow)
+                            }}
+                            onMouseDown={() => {
+                                sendServerEdit(props.modifier, 'z', -1, false)
 
+                                pressed.left = true
+                            }}
+                        />
                     </UiEntity>
-
                 </UiEntity>
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '5%',
+                    height: '100%',
+                }}
+                //uiBackground={{color:Color4.Black()}}
+            >
+                {/* scale group modifier  */}
+                {modifierName === "Scale" && <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        //padding: {top: '25%'}
+                    }}
+                    //uiBackground={{color:Color4.Green()}}
+                >
+
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',// calculateSquareImageDimensions(3.5).width,
+                            height: calculateSquareImageDimensions(3.5).height,
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.upArrow)
+                        }}
+                        onMouseDown={() => {
+                            sendServerEdit(props.modifier, 'x', 1, false)
+                            sendServerEdit(props.modifier, 'y', 1, false)
+                            sendServerEdit(props.modifier, 'z', 1, false)
+                        }}
+                    />
+
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',//calculateSquareImageDimensions(3.5).width,
+                            height: calculateSquareImageDimensions(3.5).height,
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.downArrow)
+                        }}
+                        onMouseDown={() => {
+                            sendServerEdit(props.modifier, 'x', -1, false)
+                            sendServerEdit(props.modifier, 'y', -1, false)
+                            sendServerEdit(props.modifier, 'z', -1, false)
+
+                            pressed.left = true
+                        }}
+                    />
+                </UiEntity>}
 
 
             </UiEntity>
 
 
+            {/* Right side items */}
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '15%',
+                    height: '100%',
+                }}
+                // uiBackground={{color:Color4.Black()}}
+            >
+
+                {/* precision value modifier parent */}
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '100%',
+                        margin: {top: '1%', bottom: '1%'}
+                    }}
+                    //uiBackground={{color:Color4.Black()}}
+                >
+
+                    {/* precision value modifier header */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            height: '15%',
+                            margin: {top: '1%', bottom: '2%'}
+                        }}
+                    >
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '100%',
+                                height: '50%',
+                            }}
+
+                            uiText={{value: "Factor", fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
+                        />
+
+                    </UiEntity>
+
+
+                    {/* precision modifier main area */}
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            height: '100%',
+                        }}
+                        //uiBackground={{color:Color4.Red()}}
+                    >
+
+
+                        {/* microscope button  */}
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '75%',// calculateSquareImageDimensions(5).width,
+                                height: calculateSquareImageDimensions(4).height,
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas1.png'
+                                },
+                                uvs: getImageAtlasMapping(uiSizes.magnifyIcon)
+                            }}
+                            onMouseDown={() => {
+                                toggleModifier(props.modifier)
+                            }}
+                        />
+
+                        {/* precision value display */}
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '25%', //calculateSquareImageDimensions(5).width,
+                                height: calculateSquareImageDimensions(4).height,
+                                margin: {right: '2%'}
+                            }}
+                            uiText={{
+                                value: "" + (props.factor ?? ""),
+                                fontSize: sizeFont(15, 12)
+                            }}
+                        />
+
+                    </UiEntity>
+                </UiEntity>
+            </UiEntity>
         </UiEntity>
     )
+
 }
+
 
 function getRelativePosition(type: string) {
     if (players.get(localUserId)!.activeScene) {

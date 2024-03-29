@@ -23,7 +23,7 @@ let actionLabels:any[] = []
 let selectedTrigger:any
 
 export function updateActionView(v:string){
-    triggerView = v//
+    triggerView = v
 }
 
 export function TriggerComponent() {
@@ -914,15 +914,22 @@ export function updateTriggerActions(){
     actionNames.length = 0
     actionIds.length = 0
     actionLabels.length = 0
+
+    let actions:any[] = []
     if(localPlayer.activeScene){
         localPlayer.activeScene.ass.forEach((asset)=>{
             if(asset.actComp){
                 asset.actComp.actions.forEach((action:any, key:any)=>{
-                    actionNames.push(action.name)
-                    actionIds.push(key)
-                    actionLabels.push(action.type)
+                    actions.push({name:action.name, key:key, type:action.type})
                 })
             }
         })
     }
+
+    actions.sort((a, b) => a.name.localeCompare(b.name));
+    actions.forEach((action)=>{
+        actionNames.push(action.name)
+        actionIds.push(action.key)
+        actionLabels.push(action.type)
+    })
 }
