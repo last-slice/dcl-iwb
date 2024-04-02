@@ -33,7 +33,7 @@ export function FlyModeSystem(dt: number) {
                 //console.log('jumped')
 
                 if (!shift) {
-                    flyBoxtransform.position = {...flyBoxtransform.position, y: playerPos.y - .5}
+                    flyBoxtransform.position = {...flyBoxtransform.position, y: playerPos.y + .3}
                 }
             }
 

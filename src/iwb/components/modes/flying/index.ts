@@ -82,7 +82,7 @@ function createFlyBox() {
     // })
 
     Transform.createOrReplace(invisibleBox, {
-        position: Vector3.create(pos.x, pos.y - .88, pos.z)
+        position: Vector3.create(pos.x, pos.y, pos.z)
     })
 
     const cameraModeE = engine.addEntity()
