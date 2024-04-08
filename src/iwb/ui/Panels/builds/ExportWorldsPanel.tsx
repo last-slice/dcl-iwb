@@ -39,7 +39,7 @@ export function ExportDCLWorldsPanel() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
-            }}//
+            }}
         >
 
             {/* table */}
@@ -66,7 +66,7 @@ export function ExportDCLWorldsPanel() {
                 height: '85%',
                 positionType:'absolute'
             }}
-            uiBackground={{color:Color4.Gray()}}
+            // uiBackground={{color:Color4.Gray()}}
             />
 
             {/* header row */}
@@ -85,14 +85,7 @@ export function ExportDCLWorldsPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping({
-                    atlasHeight: 1024,
-                    atlasWidth: 1024,
-                    sourceTop: 801,
-                    sourceLeft: 802,
-                    sourceWidth: 223,
-                    sourceHeight: 41
-                })
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)
             }}
             
         >
@@ -106,7 +99,7 @@ export function ExportDCLWorldsPanel() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.Black()}}
+            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -119,7 +112,7 @@ export function ExportDCLWorldsPanel() {
                 height: '100%',
             }}
 
-            uiText={{value:"Deploy", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.Black()}}
+            uiText={{value:"Deploy", fontSize:sizeFont(25,15), textAlign:'middle-center',color:Color4.White()}}
             />
 
         </UiEntity>
@@ -154,7 +147,7 @@ export function ExportDCLWorldsPanel() {
                 width: '100%',
                 height: '15%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
              <UiEntity
             uiTransform={{
@@ -165,7 +158,7 @@ export function ExportDCLWorldsPanel() {
                 width: '85%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Black()}}
+            // uiBackground={{color:Color4.White()}}
         >
         </UiEntity>
 
@@ -262,11 +255,11 @@ function generateRows(){
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.normalButton)
+            uvs: i % 2 === 0 ? getImageAtlasMapping(uiSizes.rowPillLight)
 
             : 
 
-            getImageAtlasMapping(uiSizes.normalLightestButton)
+            getImageAtlasMapping(uiSizes.rowPillDark)
         }}
         >
 
@@ -281,7 +274,7 @@ function generateRows(){
             height: '100%',
             display:'flex'
         }}
-        uiText={{value: "" + scene.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.Black()}}
+        uiText={{value: "" + scene.name, fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
         />
 
         {/* deploy button */}
@@ -301,17 +294,17 @@ function generateRows(){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: calculateImageDimensions(5, getAspect(uiSizes.rectangleButton)).width,
-            height: calculateImageDimensions(10,getAspect(uiSizes.rectangleButton)).height,
+            width: calculateImageDimensions(4, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(4,getAspect(uiSizes.buttonPillBlue)).height,
         }}
         uiBackground={{
             textureMode: 'stretch',
             texture: {
                 src: 'assets/atlas2.png'
             },
-            uvs: getImageAtlasMapping(uiSizes.blueButton)
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
-        uiText={{value: "Deploy", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+        uiText={{value: "Deploy", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
         onMouseDown={()=>{
             showExportConfirmPanel("Worlds", scene.name + ".dcl.eth")
         }}

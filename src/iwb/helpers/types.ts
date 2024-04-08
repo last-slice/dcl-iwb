@@ -127,6 +127,7 @@ export type NOTIFICATION_DETAIL = {
     label?:string,
     forceShow?:boolean,
     fn?:any
+    noSound?:boolean
 }
 
 export interface Player {

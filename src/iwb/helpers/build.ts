@@ -4,6 +4,7 @@ import {Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import {log} from "./functions";
 import {getWorldPosition, getWorldRotation} from "@dcl-sdk/utils";
 import {items} from "../components/catalog";
+import { settings } from "../components/player/player";
 
 type Parcel = string;
 type Range = { xmin: number, xmax: number, zmin: number, zmax: number };
@@ -14,6 +15,9 @@ Material.setPbrMaterial(bbE, {albedoColor: Color4.create(1, 1, 0, 0.5)})
 VisibilityComponent.create(bbE, {visible: false})
 
 export function isEntityInScene(entity: Entity, catalogId: string): boolean {
+    if(settings && !settings.sceneCheck){
+        return true
+    }
     // check if object inside scene boundaries
     const itemWorldPositon = getWorldPosition(entity)
     const itemWorldRotation = getWorldRotation(entity)

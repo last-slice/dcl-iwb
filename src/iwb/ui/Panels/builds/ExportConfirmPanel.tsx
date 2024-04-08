@@ -29,7 +29,7 @@ export function ExportConfirmPanel() {
                 display: buildInfoTab === "Export" && exportPanel === "Confirm" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
             }}
@@ -42,10 +42,10 @@ export function ExportConfirmPanel() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '10%',
-                alignSelf:'flex-start'
+                alignSelf:'center'
             }}
             // uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"Confirm your export to\n" + (type === "Worlds" ? "Decentraland Worlds" : "Genesis City"), color:Color4.Black(), fontSize:sizeFont(30,25)}}
+            uiText={{value:"Exporting to: " + (type === "Worlds" ? "Decentraland Worlds" : "Genesis City"), color:Color4.White(), fontSize:sizeFont(30,25)}}
             />
 
                     <UiEntity
@@ -58,7 +58,7 @@ export function ExportConfirmPanel() {
                 alignSelf:'flex-start'
             }}
             // uiBackground={{color:Color4.Gray()}}
-            uiText={{value:"" + (type === "Worlds" ? deployData : ""), color:Color4.Black(), fontSize:sizeFont(30,25)}}
+            uiText={{value:"" + (type === "Worlds" ? deployData : ""), color:Color4.White(), fontSize:sizeFont(30,25)}}
             />
 
             <UiEntity
@@ -66,18 +66,18 @@ export function ExportConfirmPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(10, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
-                margin:{top:"2%"}
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"5%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
-            uiText={{value: "Confirm", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Confirm", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY,{
                     sceneId:scene?.id,
@@ -95,8 +95,8 @@ export function ExportConfirmPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(10, getAspect(uiSizes.dangerButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.dangerButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
                 margin:{top:"2%"}
             }}
             uiBackground={{
@@ -104,9 +104,9 @@ export function ExportConfirmPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.dangerButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
-            uiText={{value: "Cancel", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.Black()}}
+            uiText={{value: "Cancel", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 updateExportPanelView("main")
             }}

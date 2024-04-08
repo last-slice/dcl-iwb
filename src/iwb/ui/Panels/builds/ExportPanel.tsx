@@ -70,6 +70,7 @@ export function ExportPanel() {
                 justifyContent: 'center',
                 width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
                 height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -86,22 +87,22 @@ export function ExportPanel() {
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, {sceneId: localPlayer.activeScene!.id})
             }}
             />
-
-            {/* <UiEntity
+{/* 
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(10, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
-                margin:{top:"2%"}
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
             uiText={{value: "Genesis City", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
@@ -114,23 +115,46 @@ export function ExportPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(10, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
-                margin:{top:"2%"}
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.blueButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
             uiText={{value: "DCL Worlds", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 showExportWorlds()
             }}
             />
-         */}
+
+<UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                margin:{top:"1%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+            }}
+            uiText={{value: "Scene Pool", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+            onMouseDown={()=>{
+                // showExportWorlds()
+            }}
+            /> */}
+        
+        
 
             </UiEntity>
 

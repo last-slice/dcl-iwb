@@ -242,4 +242,5 @@ export function stopTutorialVideo(){
 
 export function setSettings(sets:any){
     settings = sets
+    settings.sceneCheck = true
 }
