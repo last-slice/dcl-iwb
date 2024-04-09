@@ -62,7 +62,7 @@ export function createDeployPendingPanel() {
                         margin:{top:'10%'}
                     }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Deployment Ready!", fontSize: sizeFont(45,30), color: Color4.Black()}}
+                uiText={{value:"Deployment Ready!", fontSize: sizeFont(45,30), color: Color4.White()}}
                 />
 
                     {/* popup text */}
@@ -74,7 +74,7 @@ export function createDeployPendingPanel() {
                             width: '100%',
                             height: '25%',
                         }}
-                        uiText={{fontSize:sizeFont(25,20), color:Color4.Black(), value: addLineBreak("Your deployment is ready! Please click the button to sign your deployment.", true, 30)}}
+                        uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("Your deployment is ready! Please click the button to sign your deployment.", true, 30)}}
                     />
 
             <UiEntity
@@ -82,8 +82,8 @@ export function createDeployPendingPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
                 margin:{top:"5%", bottom:'1%'},
             }}
             uiBackground={{
@@ -91,13 +91,13 @@ export function createDeployPendingPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.positiveButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
             onMouseDown={() => {
                 displayDeployPendingPanel(false)
                 openExternalUrl({url:localPlayer.deploymentLink})
             }}
-            uiText={{value: "Sign", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Sign", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
             <UiEntity
@@ -105,8 +105,8 @@ export function createDeployPendingPanel() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(8, getAspect(uiSizes.rectangleButton)).width,
-                height: calculateImageDimensions(15,getAspect(uiSizes.rectangleButton)).height,
+                width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
                 margin:{top:"5%", bottom:'1%'},
             }}
             uiBackground={{
@@ -114,12 +114,12 @@ export function createDeployPendingPanel() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.normalButton)
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
             onMouseDown={() => {
                 displayDeployPendingPanel(false)
             }}
-            uiText={{value: "Close", color:Color4.Black(), fontSize:sizeFont(30,20)}}
+            uiText={{value: "Close", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />
 
         </UiEntity>

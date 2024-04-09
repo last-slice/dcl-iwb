@@ -18,8 +18,6 @@ export let exportPanel = "main"
 
 export function updateExportPanelView(view:string){
     exportPanel = view
-    log('export panel view is now', exportPanel)
-    log('builds panel is', buildInfoTab)
 }
 
 export function ExportPanel() {
@@ -87,8 +85,8 @@ export function ExportPanel() {
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, {sceneId: localPlayer.activeScene!.id})
             }}
             />
-{/* 
-            <UiEntity
+
+            {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -108,7 +106,7 @@ export function ExportPanel() {
             onMouseDown={()=>{
                 showGenesisCityExportPane()
             }}
-            />
+            /> */}
 
             <UiEntity
             uiTransform={{
@@ -132,7 +130,7 @@ export function ExportPanel() {
             }}
             />
 
-<UiEntity
+{/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
