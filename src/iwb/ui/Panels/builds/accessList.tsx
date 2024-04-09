@@ -107,7 +107,7 @@ export function AccessList() {
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
-            uiText={{value:"Name", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
+            uiText={{value:"Builder", fontSize:sizeFont(25,15), textAlign:'middle-left',color:Color4.White()}}
             />
 
             <UiEntity
@@ -219,7 +219,6 @@ export function AccessList() {
             }}
             uiText={{value: "Add", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
-                log('add wallet is', addWallet)
                 if(addWallet.length > 0){
                     cRoom.send(SERVER_MESSAGE_TYPES.SCENE_ADD_BP, {user:addWallet.toLowerCase(), sceneId:scene!.id})
                     addWallet = ""

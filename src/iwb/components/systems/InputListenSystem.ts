@@ -19,8 +19,7 @@ import {localPlayer, localUserId, players, settings} from "../player/player"
 import {EDIT_MODES, SCENE_MODES} from "../../helpers/types"
 import {displayHover, updateContextEvents} from "../../ui/contextMenu"
 import { displayConfirmDeletePanel } from "../../ui/Panels/confirmDeleteItemPanel"
-import { itemIdsFromEntities } from "../scenes"
-import { items } from "../catalog"
+import { dropGameLobbyPoint, placingGameLobby } from "../modes/gaming"
 
 
 export let added = false
@@ -156,31 +155,36 @@ export function InputListenSystem(dt: number) {
         setButtonState(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
         const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
         if (result) {
-            if (result.hit && result.hit.entityId) {
-                if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
-                    if (selectedItem && selectedItem.enabled) {
-                        if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            console.log('dropping item')
-                            dropSelectedItem()
+            if(placingGameLobby){
+                dropGameLobbyPoint()
+            }
+            else{
+                if (result.hit && result.hit.entityId) {
+                    if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
+                        if (selectedItem && selectedItem.enabled) {
+                            if (selectedItem.mode === EDIT_MODES.GRAB) {
+                                console.log('dropping item')
+                                dropSelectedItem()
+                            } else {
+                                console.log('pressed e while editing asset, do nothing')
+                            }
                         } else {
-                            console.log('pressed e while editing asset, do nothing')
+                            log('player pressed #E on an object in Build mode, need to grab')
+                            grabItem(result.hit.entityId as Entity)
                         }
-                    } else {
-                        log('player pressed #E on an object in Build mode, need to grab')
-                        grabItem(result.hit.entityId as Entity)
                     }
-                }
-            } else {
-                if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
-                    log('player pressed #E in Build mode')
-                    if (selectedItem && selectedItem.enabled) {
-                        if (selectedItem.mode === EDIT_MODES.GRAB) {
-                            dropSelectedItem()
+                } else {
+                    if (players.get(localUserId)!.mode === SCENE_MODES.BUILD_MODE) {
+                        log('player pressed #E in Build mode')
+                        if (selectedItem && selectedItem.enabled) {
+                            if (selectedItem.mode === EDIT_MODES.GRAB) {
+                                dropSelectedItem()
+                            } else {
+                                // saveItem()
+                            }
                         } else {
-                            // saveItem()
+                            log('player pressed #E on in build mode without selecting item or hitting asset')
                         }
-                    } else {
-                        log('player pressed #E on in build mode without selecting item or hitting asset')
                     }
                 }
             }

@@ -18,8 +18,9 @@ import { SCENE_MODES } from "../../helpers/types";
 import { VisibilityComponent } from "@dcl/sdk/ecs";
 import { npcComponentListener } from "./listeners/NPCComponent";
 import { dialogComponentListener } from "./listeners/DialogComponent";
+import { loadGame } from "../modes/gaming";
 
-export function assetListener(scene:any){
+export async function assetListener(scene:any){
     scene.ass.onAdd(async (asset:any, key:any)=>{
         await loadSceneAsset(scene.id, asset)
 

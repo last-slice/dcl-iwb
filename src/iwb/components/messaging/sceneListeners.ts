@@ -23,6 +23,8 @@ import { playSound } from "../sounds"
 import { items } from "../catalog"
 import { refreshSortedItems } from "../catalog/items"
 import { filterCatalog } from "../../ui/Panels/CatalogPanel"
+import { loadGame } from "../modes/gaming"
+import { createGameListeners } from "./gameListeners"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -162,8 +164,15 @@ export function addSceneStateListeners(room:any){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         log('Room Scene Added', key, scene)
         await loadScene(scene)
-        sceneListeners(scene,key)
-        assetListener(scene)
+        await sceneListeners(scene,key)
+        await assetListener(scene)
+        
+        scene.listen("game", async(value:any, prev:any)=>{
+            log('scene has a game asset', prev, value)
+            if(prev === null || prev === undefined){
+                await loadGame(scene, value)
+            }
+        })
     })
 
     room.state.scenes.onRemove((scene:any, key:string)=>{

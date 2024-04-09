@@ -70,7 +70,13 @@ export enum SERVER_MESSAGE_TYPES {
     UPDATED_TUTORIAL_CID = 'updated_tutorial_cid',
     WORLD_TRAVEL = 'world_travel',
     
-    CUSTOM = "custom"
+    CUSTOM = "custom",
+
+
+
+
+    //GAMING
+    CREATE_GAME_LOBBY = 'create_game_lobby'
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -182,6 +188,7 @@ export interface IWBScene {
     im?:string,
     priv:boolean,
     lim:boolean
+    game:string
     // actions:any[]//
 }
 

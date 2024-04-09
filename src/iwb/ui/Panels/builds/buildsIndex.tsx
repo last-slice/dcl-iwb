@@ -13,6 +13,7 @@ import { SizePanel } from './buildSizePanel'
 import { DownloadPanel } from './downloadInfoPanel'
 import { ExportPanel, updateExportPanelView } from './ExportPanel'
 import { SpawnPanel, showSpawnPanel } from './buildSpawnPanel'
+import { Gaming } from './gamingIndex'
 
 export let showSettingsPanel = false
 export let buildInfoTab = "Info"
@@ -20,9 +21,10 @@ export let buildInfoTab = "Info"
 export let buttons:any[] = [
     {label:"Info", pressed:false},
     // {label:"Config", pressed:false},
-    {label:"Access", pressed:false},
+    // {label:"Access", pressed:false},
     {label:"Size", pressed:false},
     {label:"Spawns", pressed:false},
+    {label:"Gaming", pressed:false},
     {label:"Export", pressed:false},
     // {label:"Delete", pressed:false},
 
@@ -143,9 +145,9 @@ export function createScenePanel() {
                     <AccessList/>
                     <BuildInfo/>
                     <SizePanel/>
-                    {/* <DownloadPanel/>       */}
                     <ExportPanel/>          
                     <SpawnPanel/>        
+                    <Gaming/>
 
                     </UiEntity>
 

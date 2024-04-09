@@ -8,7 +8,7 @@ import { localPlayer, localUserId, setPlayMode } from "../player/player"
 import { entitiesFromItemIds, itemIdsFromEntities, loadSceneAsset, sceneBuilds } from "../scenes"
 
 
-export function sceneListeners(scene:any, key:any){
+export async function sceneListeners(scene:any, key:any){
     scene.bps.onAdd((permission:string, permissionKey:any)=>{
         log('adding new build permissions', permissionKey, permission)
     })
