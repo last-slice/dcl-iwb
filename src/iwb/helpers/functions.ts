@@ -16,7 +16,7 @@ export function paginateArray(array:any[], page:number, itemsPerPage:number){
 }
 
 export function formatSize(size: number | undefined) {
-  if (!size) return ""
+  if (!size) return "0"
 
   return (size / (1024 ** 2)).toFixed(2)
 }

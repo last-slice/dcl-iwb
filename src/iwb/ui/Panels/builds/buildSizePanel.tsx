@@ -116,7 +116,7 @@ export function SizePanel() {
             }}
             // uiBackground={{color:Color4.Gray()}}
             uiText={{
-                value: scene ? `Scene File Size: ${parseFloat(formatSize(scene.si))}MB / ${scene.pcnt > 20 ? 300 : scene.pcnt * 15}MB` : "",
+                value: scene ? `Scene File Size: ${parseFloat(formatSize(scene.si))} MB / ${scene.pcnt > 12 ? 300 : scene.pcnt * 15} MB` : "",
                 color: Color4.White(),
                 fontSize: sizeFont(25,16)
             }}

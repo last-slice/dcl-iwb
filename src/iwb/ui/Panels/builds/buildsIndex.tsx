@@ -20,13 +20,13 @@ export let buildInfoTab = "Info"
 export let buttons:any[] = [
     {label:"Info", pressed:false},
     // {label:"Config", pressed:false},
-    {label:"Access", pressed:false},
+    // {label:"Access", pressed:false},
     {label:"Size", pressed:false},
     {label:"Spawns", pressed:false},
     {label:"Export", pressed:false},
     // {label:"Delete", pressed:false},
 
-    {label:"Back", pressed:false},
+    // {label:"Back", pressed:false},
     {label:"Close", pressed:false},
 ]
 
