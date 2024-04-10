@@ -48,6 +48,7 @@ import { createDialogPanel } from './Panels/DialogPanel'
 import { createUGCSceneListPanel } from './Panels/ugcSceneListPanel'
 import { createIWBMap } from './map'
 import { createPendingStatusPanel } from './Panels/pendingStatusPanel'
+import { createGamingUI } from './gaming/createGamingUI'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -100,6 +101,7 @@ const uiComponent = () => [
   createShowTextComponent(),
   createDialogPanel(),
   createUGCSceneListPanel(),
+  createGamingUI(),
 
   createCustomUI(),
 ]
