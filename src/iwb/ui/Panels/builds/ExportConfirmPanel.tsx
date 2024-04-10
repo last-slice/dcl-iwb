@@ -11,6 +11,7 @@ import { buildInfoTab, scene } from './buildsIndex'
 import { exportPanel, updateExportPanelView } from './ExportPanel'
 import { sendServerMessage } from '../../../components/messaging'
 import { SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { displayPendingPanel } from '../pendingStatusPanel'
 
 let type = "Worlds"
 let deployData:any
@@ -79,6 +80,7 @@ export function ExportConfirmPanel() {
             }}
             uiText={{value: "Confirm", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
+                displayPendingPanel(true, "deployment")
                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY,{
                     sceneId:scene?.id,
                     dest: type === "Worlds" ? 'worlds' : 'gc',

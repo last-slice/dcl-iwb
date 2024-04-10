@@ -126,20 +126,6 @@ export function setWorlds(config: any) {
             playerWorld.init = true
         }
     })
-
-    if (player!.homeWorld) {
-        let config = player!.worlds.find((w) => w.ens === realm)
-        if (config) {
-            if (config.v < iwbConfig.v) {
-                log('world version behind deployed version, show notification to update')
-                showNotification({
-                    type: NOTIFICATION_TYPES.MESSAGE,
-                    message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
-                    animate: {enabled: true, time: 10, return: true}
-                })
-            }
-        }
-    }
 }
 
 export function setScenes(info: any) {
