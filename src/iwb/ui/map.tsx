@@ -6,16 +6,47 @@ import resources from '../helpers/resources'
 import { uiSizes } from './uiConfig'
 import { isPreview } from '../helpers/functions'
 import { localPlayer } from '../components/player/player'
-import { SCENE_MODES } from '../helpers/types'
-import { realm } from '../components/scenes'
+import { IWBScene, SCENE_MODES } from '../helpers/types'
+import { realm, sceneBuilds } from '../components/scenes'
 import { rotateUVs } from '../../ui_components/utilities'
 
 let showView = true
+let init = false
+
+let size = 9
+
+export let mapParcels:any[] = []
+
+
 export function displayIWBMap(value:boolean){
     showView = value
 }
 
+function initArray(){
+  let xStart = -4
+  let yStart = 4
+
+  let xCount = 0
+  let yCount = 0
+
+  for(let i = 0; i < size; i++){
+    let columns:any[] = []
+    for(let j = 0; j < size; j++){
+      columns.push({coords: (xStart + xCount) + "," + (yStart + yCount), scene:false})
+      xCount++
+    }
+    yCount--
+    xCount = 0
+    mapParcels.push(columns)
+  }
+  refreshMap()
+}
+
 export function createIWBMap(){
+  if(!init){
+    init = true
+    initArray()
+  }
   return(
     <UiEntity
     key={"iwbmap"}
@@ -38,42 +69,8 @@ export function createIWBMap(){
       uvs:getImageAtlasMapping(uiSizes.vertRectangle)
     }}
   >
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '84%',
-                height: '76%',
-                positionType:'absolute',
-                margin:{top:"4%"}
-            }}
-            >
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width:calculateSquareImageDimensions(3).width,
-                height: calculateSquareImageDimensions(3).height,
-                positionType:'absolute',
-            }}
-            uiBackground={{
-              texture:{
-                  src: "images/map_arrow.png"
-              },
-              textureMode: 'stretch',
-              uvs:rotateUVs(localPlayer && localPlayer.rotation ? localPlayer.rotation : 0)
-            }}
-            />
-
-            </UiEntity>
-
-         
-
-
+        
+          {/* map parcels container */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -83,9 +80,15 @@ export function createIWBMap(){
                 height: '76%',
                 margin:{top:'4%'}
             }}
-            />
+            // uiBackground={{color:Color4.Green()}}
+            >
+
+            {generateMapParcels()}
+
+            </UiEntity>
 
 
+            {/* map info container */}
           <UiEntity
             uiTransform={{
                 flexDirection: 'row',
@@ -174,7 +177,136 @@ export function createIWBMap(){
 
             </UiEntity>
 
-  </UiEntity>
 
+      {/* player arrow */}
+      <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '84%',
+                height: '76%',
+                positionType:'absolute',
+                margin:{top:"4%"}
+            }}
+            >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width:calculateSquareImageDimensions(3).width,
+                height: calculateSquareImageDimensions(3).height,
+                positionType:'absolute',
+            }}
+            uiBackground={{
+              texture:{
+                  src: "images/map_arrow.png"
+              },
+              textureMode: 'stretch',
+              uvs:rotateUVs(localPlayer && localPlayer.rotation ? localPlayer.rotation : 0)
+            }}
+            />
+
+            </UiEntity>
+
+  </UiEntity>
   )
+}
+
+function generateMapParcels(){
+  let count = 0
+  let arr:any[] = []
+  for(let i = 0; i < mapParcels.length; i++){
+    arr.push(<MapRow row={mapParcels[i]} rowCount={count} />)
+    count++
+  }
+  return arr
+}
+
+function MapRow(data:any){
+  return(
+    <UiEntity
+    key={"map-row-" + data.rowCount}
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+        margin:{bottom:'1%'}
+    }}
+    >
+      {generateMapColumns(data)}
+      </UiEntity>
+  )
+}
+
+function generateMapColumns(data:any){
+  let row = data.row
+  let count = 0
+  let arr:any[] = []
+  for(let i = 0; i < row.length; i++){
+    arr.push(<MapParcel data={row[i]} rowCount={data.rowCount} columnCount={count} />)
+    count++
+  }
+  return arr
+}
+
+function MapParcel(data:any){
+  let parcel = data.data
+  return(
+    <UiEntity
+    key={"map-parcel-" + data.rowCount + "-" + data.columnCount}
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '10%',
+        height: '100%',
+        margin:{left:'0.5%', right:"0.5%"}
+    }}
+    uiBackground={{color:parcel.scene ? Color4.Green() : Color4.Gray()}}
+    >
+      </UiEntity>
+  )
+}
+
+export function refreshMap(){
+  let xStart = parseInt(localPlayer.currentParcel.split(",")[0]) - 4
+  let yStart = parseInt(localPlayer.currentParcel.split(",")[1]) + 4
+
+  let xCount = 0
+  let yCount = 0
+
+  let sceneParcels:string[] = []
+  sceneBuilds.forEach((scene:IWBScene)=>{
+    scene.pcls.forEach((parcel:string)=>{
+      sceneParcels.push(parcel)
+    })
+  })
+
+  for(let i = 0; i < size; i++){
+    for(let j = 0; j < size; j++){
+      let coord = (xStart + xCount) + "," + (yStart + yCount)
+      mapParcels[i][j].coords = coord
+      xCount++
+    }
+    yCount--
+    xCount = 0
+  }
+
+  xCount = 0
+  yCount = 0
+
+  mapParcels.forEach(subArray => {
+    subArray.forEach((obj:any) => {
+        if (sceneParcels.includes(obj.coords)) {
+            obj.scene = true;
+        }else{
+          obj.scene = false
+        }
+    });
+  });
 }

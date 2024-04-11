@@ -138,6 +138,7 @@ export interface Player {
     scenes:IWBScene[],
     worlds:any[],
     buildingAllowed:boolean,
+    previousParcel:string,
     currentParcel:string,
     uploadToken:string,
     version: number
