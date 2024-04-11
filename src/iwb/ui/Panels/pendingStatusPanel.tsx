@@ -128,10 +128,10 @@ export function createPendingStatusPanel(){
             height: '100%',
             margin:{top:"1%", bottom:'1%'},
         }}
-        uiText={{value:"Update Ready", fontSize:sizeFont(25,15), color:Color4.White()}}
+        uiText={{value:"World Update Ready", fontSize:sizeFont(25,15), color:Color4.White()}}
     />
 
-    <UiEntity
+    {/* <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -156,7 +156,7 @@ export function createPendingStatusPanel(){
             cRoom.send(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
             displayPendingPanel(true, "deployment")
         }}
-    />
+    /> */}
 
         </UiEntity>
 

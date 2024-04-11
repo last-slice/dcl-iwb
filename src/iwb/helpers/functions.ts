@@ -16,7 +16,7 @@ export function paginateArray(array:any[], page:number, itemsPerPage:number){
 }
 
 export function formatSize(size: number | undefined) {
-  if (!size) return ""
+  if (!size) return "0"
 
   return (size / (1024 ** 2)).toFixed(2)
 }
@@ -44,8 +44,8 @@ export function atHQ(){
   return players.has(localUserId) ? HQParcels.find((p)=> p === players.get(localUserId)!.currentParcel) : true
 }
 
-export function formatDollarAmount(amount: number): string {
-  return amount.toLocaleString('en-US', { maximumFractionDigits: 0 });
+export function formatDollarAmount(amount: number, decimal?:number): string {
+  return amount.toLocaleString('en-US', { maximumFractionDigits: decimal ? decimal : 0 });
 }
 
 export function convertETHNumber(amount:any){

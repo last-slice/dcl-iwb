@@ -56,7 +56,10 @@ export function showNextNotification(data:NOTIFICATION_DETAIL){
         startAnimating(data.animate)
 
         //check if play founds
-        playSound(SOUND_TYPES.DOORBELL)
+        if(data.noSound){}
+        else{
+            playSound(SOUND_TYPES.DOORBELL)
+        }
     }
     else{
         showingNotification = false

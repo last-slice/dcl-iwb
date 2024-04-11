@@ -12,6 +12,7 @@ import { sendServerMessage } from '../../../components/messaging'
 import { SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { displaySceneSavedPanel } from '../sceneSavedPanel'
 import { openExternalUrl } from '~system/RestrictedActions'
+import { updateExportPanelView } from './ExportPanel'
 
 let settings:any[] = [
     {label:"Scene Enabled", enabled:true},
@@ -420,6 +421,29 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             }}
             // uiBackground={{color:Color4.White()}}
         >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{right:"1%"},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
+            displaySceneSetting("Access")
+            updateExportPanelView("main")
+        }}
+        uiText={{value: "Edit Builders", color:Color4.White(), fontSize:sizeFont(20,15)}}
+        />
 
 <UiEntity
         uiTransform={{

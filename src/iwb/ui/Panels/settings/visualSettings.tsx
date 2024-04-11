@@ -11,6 +11,7 @@ import { sendServerMessage } from '../../../components/messaging'
 let labels:any[] = [
     {label:"Scene Notifications", key:"nots"},
     {label:"Popup Confirmations", key:"confirms"},
+    {label:"Check Scene Boundaries", key:"sceneCheck"},
 ]
 
 

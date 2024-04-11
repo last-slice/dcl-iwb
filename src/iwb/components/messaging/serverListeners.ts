@@ -10,6 +10,7 @@ import {addSceneStateListeners} from "./sceneListeners";
 import {refreshSortedItems, setNewItems, updateItem} from "../catalog/items";
 import { createSounds, playSound } from "../sounds";
 import { displayPendingPanel } from "../../ui/Panels/pendingStatusPanel";
+import { displayDCLWorldPopup } from "../../ui/Panels/visitDCLWorldPopup";
 
 
 export function initiateMessageListeners(room: Room) {
@@ -93,7 +94,7 @@ export function initiateMessageListeners(room: Room) {
             log('should display something else')
             showNotification({
                 type: NOTIFICATION_TYPES.MESSAGE,
-                message: " New world deployed !\n " + info.ens + "!",
+                message: (info.init? "New world deployed!\n" : "World Updated!\n") + info.ens + "!",
                 animate: {enabled: true, return: true, time: 5}
             })
         }
@@ -113,5 +114,18 @@ export function initiateMessageListeners(room: Room) {
     room.onMessage(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID, (info: any) => {
         log(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID + ' received', info)
         iwbConfig.CID = info
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED + ' received', info)
+        displayPendingPanel(false, "")
+
+        if(info.valid){
+            displayDCLWorldPopup(true, info.world)
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
+        }
+        else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error deploying to your DCL World", animate:{enabled:true, return:true, time:10}})
+        }
     })
 }

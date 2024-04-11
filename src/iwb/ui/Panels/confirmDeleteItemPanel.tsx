@@ -3,7 +3,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions, dimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { Entity } from '@dcl/sdk/ecs'
-import { addEditSelectionPointer, removeEditSelectionPointer, selectedItem, sendServerDelete } from '../../components/modes/build'
+import { addEditSelectionPointer, deleteSelectedItem, removeEditSelectionPointer, selectedItem, sendServerDelete } from '../../components/modes/build'
 import { SceneItem } from '../../helpers/types'
 import { itemIdsFromEntities, sceneBuilds } from '../../components/scenes'
 import { localPlayer } from '../../components/player/player'
@@ -134,7 +134,7 @@ export function createConfirmDeleteItemPanel() {
             }}
             onMouseDown={() => {
                 displayConfirmDeletePanel(false)
-                sendServerDelete(toDelete)
+                deleteSelectedItem(toDelete)
             }}
             uiText={{value: "Delete", color:Color4.White(), fontSize:sizeFont(30,20)}}
             />

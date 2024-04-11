@@ -34,6 +34,7 @@ import {
     EDIT_MODES,
     EDIT_MODIFIERS,
     IWBScene,
+    NOTIFICATION_TYPES,
     SceneItem,
     SelectedItem,
     SERVER_MESSAGE_TYPES,
@@ -67,6 +68,7 @@ import {getWorldPosition, getWorldRotation} from "@dcl-sdk/utils";
 import {bbE, findSceneByParcel, getCenterOfParcels, isEntityInScene} from "../../../helpers/build";
 import {updateTweenEndDefaultAssetPosition} from "../../../ui/Panels/edit/Actions/ActionTweenComponent"
 import {isSnapEnabled} from "../../systems/SelectedItemSystem";
+import { showNotification } from "../../../ui/Panels/notificationUI"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -625,8 +627,9 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
         return;
     }
 
-    log('player cant build here')
-    playSound(SOUND_TYPES.ERROR_2);
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Asset out of bounds", animate:{enabled:true, return:true, time:3},  noSound:true})
+
+        playSound(SOUND_TYPES.ERROR_2);
 }
 
 // export function dropSelectedItem2(canceled?: boolean, editing?: boolean) {
@@ -818,12 +821,13 @@ export function placeCenterCurrentScene(id?: string) {
         const parentT = Transform.get(scene!.parentEntity)
 
         const xPos = center[0] - parentT.position.x
+        const yPos = 0
         const zPos = center[1] - parentT.position.z
 
         sendServerEdit(EDIT_MODIFIERS.POSITION, "x", 1, true, EDIT_MODIFIERS.POSITION, xPos)
+        sendServerEdit(EDIT_MODIFIERS.POSITION, "y", 1, true, EDIT_MODIFIERS.POSITION, yPos)
         sendServerEdit(EDIT_MODIFIERS.POSITION, "z", 1, true, EDIT_MODIFIERS.POSITION, zPos)
-        sendServerEdit(EDIT_MODIFIERS.POSITION, "y", 1, true, EDIT_MODIFIERS.ROTATION, 0)
-
+        sendServerEdit(EDIT_MODIFIERS.ROTATION, "y", 1, true, EDIT_MODIFIERS.ROTATION, 0)
     })
 }
 

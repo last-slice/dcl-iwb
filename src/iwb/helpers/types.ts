@@ -59,6 +59,7 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_ADDED_SPAWN = "scene_added_spawn",
     SCENE_DELETE_SPAWN = "scene_delete_spawn",
     SCENE_CLEAR_ASSETS = 'scene_clear_assets',
+    SCENE_DEPLOY_FINISHED = 'scene_deploy_finished',
     
     //World
     INIT_WORLD = "init_world",
@@ -127,6 +128,7 @@ export type NOTIFICATION_DETAIL = {
     label?:string,
     forceShow?:boolean,
     fn?:any
+    noSound?:boolean
 }
 
 export interface Player {
@@ -136,6 +138,7 @@ export interface Player {
     scenes:IWBScene[],
     worlds:any[],
     buildingAllowed:boolean,
+    previousParcel:string,
     currentParcel:string,
     uploadToken:string,
     version: number
