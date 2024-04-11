@@ -44,6 +44,7 @@ import {displaySceneAssetInfoPanel} from "../../ui/Panels/sceneInfoPanel"
 import { displayUGCSceneList } from "../../ui/Panels/ugcSceneListPanel"
 import { showUploads } from "../../ui/Panels/settings/uploadsPanel"
 import { sendServerMessage } from "../messaging"
+import { refreshMap } from "../../ui/map"
 
 export let realm: string = ""
 export let scenes: any[] = []

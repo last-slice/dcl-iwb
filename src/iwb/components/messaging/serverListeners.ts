@@ -11,6 +11,8 @@ import {refreshSortedItems, setNewItems, updateItem} from "../catalog/items";
 import { createSounds, playSound } from "../sounds";
 import { displayPendingPanel } from "../../ui/Panels/pendingStatusPanel";
 import { displayDCLWorldPopup } from "../../ui/Panels/visitDCLWorldPopup";
+import { refreshMap } from "../../ui/map";
+import { utils } from "../../helpers/libraries";
 
 
 export function initiateMessageListeners(room: Room) {
@@ -61,7 +63,10 @@ export function initiateMessageListeners(room: Room) {
         console.log("iwb config is", iwbConfig)
 
         addSceneStateListeners(room)
-        await createSounds()
+
+        utils.timers.setTimeout(()=>{
+            refreshMap()
+        }, 1000 * 5)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {

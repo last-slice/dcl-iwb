@@ -32,7 +32,7 @@ function initArray(){
   for(let i = 0; i < size; i++){
     let columns:any[] = []
     for(let j = 0; j < size; j++){
-      columns.push({coords: (xStart + xCount) + "," + (yStart + yCount), scene:false})
+      columns.push({coords: (xStart + xCount) + "," + (yStart + yCount), scene:false, cur:false})
       xCount++
     }
     yCount--
@@ -267,46 +267,58 @@ function MapParcel(data:any){
         height: '100%',
         margin:{left:'0.5%', right:"0.5%"}
     }}
-    uiBackground={{color:parcel.scene ? Color4.Green() : Color4.Gray()}}
+    uiBackground={{color: parcel.cur ? Color4.create(0,1,0,.2) : parcel.scene ? Color4.create(.4,.5,.6,1) :  Color4.create(0,0,0,.2)}}
     >
       </UiEntity>
   )
 }
 
 export function refreshMap(){
-  let xStart = parseInt(localPlayer.currentParcel.split(",")[0]) - 4
-  let yStart = parseInt(localPlayer.currentParcel.split(",")[1]) + 4
-
-  let xCount = 0
-  let yCount = 0
-
-  let sceneParcels:string[] = []
-  sceneBuilds.forEach((scene:IWBScene)=>{
-    scene.pcls.forEach((parcel:string)=>{
-      sceneParcels.push(parcel)
+  if(localPlayer && localPlayer.currentParcel){
+    let xStart = parseInt(localPlayer.currentParcel.split(",")[0]) - 4
+    let yStart = parseInt(localPlayer.currentParcel.split(",")[1]) + 4
+  
+    let xCount = 0
+    let yCount = 0
+  
+    let sceneParcels:string[] = []
+    sceneBuilds.forEach((scene:IWBScene)=>{
+      scene.pcls.forEach((parcel:string)=>{
+        sceneParcels.push(parcel)
+      })
     })
-  })
-
-  for(let i = 0; i < size; i++){
-    for(let j = 0; j < size; j++){
-      let coord = (xStart + xCount) + "," + (yStart + yCount)
-      mapParcels[i][j].coords = coord
-      xCount++
+  
+    for(let i = 0; i < size; i++){
+      for(let j = 0; j < size; j++){
+        let coord = (xStart + xCount) + "," + (yStart + yCount)
+        mapParcels[i][j].coords = coord
+        xCount++
+      }
+      yCount--
+      xCount = 0
     }
-    yCount--
+  
     xCount = 0
-  }
-
-  xCount = 0
-  yCount = 0
-
-  mapParcels.forEach(subArray => {
-    subArray.forEach((obj:any) => {
-        if (sceneParcels.includes(obj.coords)) {
-            obj.scene = true;
-        }else{
-          obj.scene = false
-        }
+    yCount = 0
+  
+    mapParcels.forEach(subArray => {
+      subArray.forEach((obj:any) => {
+          if (sceneParcels.includes(obj.coords)) {
+              obj.scene = true;
+          }else{
+            obj.scene = false
+          }
+      });
     });
-  });
+
+    mapParcels.forEach(subArray => {
+      subArray.forEach((obj:any) => {
+          if (localPlayer.activeScene?.pcls.includes(obj.coords)) {
+              obj.cur = true;
+          }else{
+            obj.cur = false
+          }
+      });
+    });
+  }
 }
