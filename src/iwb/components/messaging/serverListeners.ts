@@ -2,7 +2,7 @@ import {log} from "../../helpers/functions"
 import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES} from "../../helpers/types"
 import {updateStyles} from "../catalog"
 import {iwbConfig, localUserId, players, removePlayer} from "../player/player"
-import {setWorlds} from "../scenes";
+import {setWorlds, updateSceneCount} from "../scenes";
 import {Room} from "colyseus.js";
 import {displayWorldReadyPanel} from "../../ui/Panels/worldReadyPanel";
 import {showNotification} from "../../ui/Panels/notificationUI";

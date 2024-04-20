@@ -45,6 +45,9 @@ import { displayUGCSceneList } from "../../ui/Panels/ugcSceneListPanel"
 import { showUploads } from "../../ui/Panels/settings/uploadsPanel"
 import { sendServerMessage } from "../messaging"
 import { refreshMap } from "../../ui/map"
+import { getSceneInformation } from '~system/Runtime'
+import { getCenterOfParcels } from "../../helpers/build"
+
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -64,6 +67,7 @@ export let disabledEntities: boolean = false
 export let scenesLoaded: boolean = false
 export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
+export let emptyParcels:any[] = []
 
 export function updatePlayModeReset(value: boolean) {
     log('updating playmode reset', value)
@@ -182,6 +186,8 @@ export function unloadScene(sceneId: any) {
             deleteParcelEntities(parcel)
         })
 
+        addBlankParcels(localScene.pcls)
+        sceneBuilds.delete(sceneId)
     }
 }
 
@@ -547,6 +553,7 @@ export function updateSceneCount(count: number) {
 export function checkAllScenesLoaded() {
     if (scenesLoadedCount >= sceneCount) {
         scenesLoaded = true
+        loadBlankParcels()
     }
 }
 
@@ -567,4 +574,53 @@ export function findUGCAssetBeforeDeleting(name:string, id:string){
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Deleting your UGC Asset from the IWB Servers\n" + name, animate:{enabled:true, return:true, time:5}})
         sendServerMessage(SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET, {id:id})
     }
+}
+
+export function checkSceneCount(count:number){
+    if(sceneCount !== 0){
+        return
+    }
+    updateSceneCount(count)
+}
+
+async function loadBlankParcels(){
+    const sceneInfo = await getSceneInformation({})
+
+	if (!sceneInfo) return
+
+	const sceneJson = JSON.parse(sceneInfo.metadataJson)
+
+    let occupiedParcels:any[] = []
+    sceneBuilds.forEach((scene:IWBScene)=>{
+        scene.pcls.forEach((parcel:string)=>{
+            occupiedParcels.push(parcel)
+        })
+    })
+	let sceneParcels = sceneJson.scene.parcels
+    let blankParcels = sceneParcels.filter((parcel:string) => 
+        !occupiedParcels.some(sceneCoord => sceneCoord === parcel)
+    );    
+
+    addBlankParcels(blankParcels)
+}
+
+function addBlankParcels(parcels:string[]){
+    parcels.forEach((parcel:string) => {
+        let blank = engine.addEntity()
+        GltfContainer.create(blank, {src: 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb'})
+
+        const center = getCenterOfParcels([parcel])
+        Transform.create(blank, {position: Vector3.create(center[0], 0, center[1])})
+        emptyParcels.push({parcel:parcel, entity:blank})
+    });
+}
+
+export async function removeEmptyParcels(parcels:string[]){
+    parcels.forEach((parcel:string)=>{
+        let index = emptyParcels.findIndex((p:any) => p.parcel === parcel)
+        if(index >=0){
+            engine.removeEntity(emptyParcels[index].entity)
+            emptyParcels.splice(index,1)
+        }
+    })
 }
