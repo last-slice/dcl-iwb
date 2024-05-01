@@ -11,7 +11,7 @@ import {
 } from "../modes/build"
 import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
 import { localPlayer, localUserId, setPlayMode } from "../player/player"
-import { entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, sceneBuilds, unloadScene, updateAsset, updateSceneCount, updateSceneEdits } from "../scenes"
+import { checkSceneCount, entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, removeEmptyParcels, sceneBuilds, unloadScene, updateAsset, updateSceneCount, updateSceneEdits } from "../scenes"
 import { showNotification } from "../../ui/Panels/notificationUI"
 import { sceneListeners } from "./Scene"
 import { assetListener } from "./Asset"
@@ -28,6 +28,10 @@ import { createGameListeners } from "./gameListeners"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
+
+        room.state.listen("sceneCount", (c:any, p:any)=>{
+            checkSceneCount(c)
+        })
 
         room.state.temporaryParcels.onAdd(async(parcel:any, key:string)=>{
             log('temp parcel added', key, parcel)
@@ -162,7 +166,8 @@ export function createSceneListeners(room: any) {
 
 export function addSceneStateListeners(room:any){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
-        log('Room Scene Added', key, scene)
+        // log('Room Scene Added', key, scene)
+        await removeEmptyParcels(scene.pcls)
         await loadScene(scene)
         await sceneListeners(scene,key)
         await assetListener(scene)

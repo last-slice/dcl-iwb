@@ -28,7 +28,7 @@ export let buttons:any[] = [
     {label:"Export", pressed:false},
     // {label:"Delete", pressed:false},
 
-    {label:"Back", pressed:false},
+    // {label:"Back", pressed:false},
     {label:"Close", pressed:false},
 ]
 

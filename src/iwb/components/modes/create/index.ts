@@ -1,5 +1,5 @@
 import {engine, Entity, GltfContainer, Material, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
-import {localUserId, setPlayMode} from "../../player/player"
+import {localPlayer, localUserId, setPlayMode} from "../../player/player"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import {SCENE_MODES, SERVER_MESSAGE_TYPES} from "../../../helpers/types"
 import {displayCreateScenePanel, editCurrentSceneParcels} from "../../../ui/Panels/CreateScenePanel"
@@ -163,7 +163,7 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
         //Transform.createOrReplace(parent)
     
         Transform.createOrReplace(floor, {
-            position: Vector3.create(centerx, -.09, centery),
+            position: Vector3.create(centerx, localPlayer.mode === SCENE_MODES.CREATE_SCENE_MODE ? .1 : -.09, centery),
             rotation: Quaternion.fromEulerDegrees(90, 0, 0),
             scale: Vector3.create(16, 16, 0.01),
             parent:parent

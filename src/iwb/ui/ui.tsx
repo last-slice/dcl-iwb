@@ -48,6 +48,8 @@ import { createDialogPanel } from './Panels/DialogPanel'
 import { createUGCSceneListPanel } from './Panels/ugcSceneListPanel'
 import { createIWBMap } from './map'
 import { createPendingStatusPanel } from './Panels/pendingStatusPanel'
+import { createDCLWorldPopupPanel } from './Panels/visitDCLWorldPopup'
+import { createExpandedMap } from './Panels/expandedMap'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -100,6 +102,8 @@ const uiComponent = () => [
   createShowTextComponent(),
   createDialogPanel(),
   createUGCSceneListPanel(),
+  createDCLWorldPopupPanel(),
+  createExpandedMap(),
 
   createCustomUI(),
 ]
