@@ -821,12 +821,13 @@ export function placeCenterCurrentScene(id?: string) {
         const parentT = Transform.get(scene!.parentEntity)
 
         const xPos = center[0] - parentT.position.x
+        const yPos = 0
         const zPos = center[1] - parentT.position.z
 
         sendServerEdit(EDIT_MODIFIERS.POSITION, "x", 1, true, EDIT_MODIFIERS.POSITION, xPos)
+        sendServerEdit(EDIT_MODIFIERS.POSITION, "y", 1, true, EDIT_MODIFIERS.POSITION, yPos)
         sendServerEdit(EDIT_MODIFIERS.POSITION, "z", 1, true, EDIT_MODIFIERS.POSITION, zPos)
-        sendServerEdit(EDIT_MODIFIERS.POSITION, "y", 1, true, EDIT_MODIFIERS.ROTATION, 0)
-
+        sendServerEdit(EDIT_MODIFIERS.ROTATION, "y", 1, true, EDIT_MODIFIERS.ROTATION, 0)
     })
 }
 

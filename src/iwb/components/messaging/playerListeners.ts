@@ -1,14 +1,14 @@
 import {log} from "../../helpers/functions"
 import {NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES} from "../../helpers/types"
 import {showNotification} from "../../ui/Panels/notificationUI"
-import {addPendingAsset, addPlayerScenes, localPlayer, setSettings} from "../player/player"
+import {addPendingAsset, addPlayerScenes, iwbConfig, localPlayer, setSettings} from "../player/player"
 import {Room} from "colyseus.js"
 import {iwbEvents} from "."
 import {refreshSortedItems, updateItem} from "../catalog/items";
 import { displayDownloadPendingPanel } from "../../ui/Panels/downloadPendingPanel"
 import { displayWelcomeScreen } from "../../ui/Panels/welcomeScreen"
 import { displayPendingPanel } from "../../ui/Panels/pendingStatusPanel"
-
+import { realm } from "../scenes"
 
 export function createPlayerListeners(room: Room) {
     log('creating player listeners for room', room.roomId)
@@ -79,6 +79,21 @@ export function createPlayerListeners(room: Room) {
 
                 if(!info.value.firstTime){
                     displayWelcomeScreen(true)
+                }
+
+                if (localPlayer!.homeWorld) {
+                    let config = localPlayer!.worlds.find((w) => w.ens === realm)
+                    console.log("home world config is", config)
+                    if (config) {
+                        if (config.v < iwbConfig.v) {
+                            log('world version behind deployed version, show notification to update')
+                            showNotification({
+                                type: NOTIFICATION_TYPES.MESSAGE,
+                                message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
+                                animate: {enabled: true, time: 10, return: true}
+                            })
+                        }
+                    }
                 }
 
                 //play music to start

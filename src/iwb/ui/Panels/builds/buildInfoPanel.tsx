@@ -433,6 +433,29 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
+            displaySceneSetting("Access")
+            updateExportPanelView("main")
+        }}
+        uiText={{value: "Edit Builders", color:Color4.White(), fontSize:sizeFont(20,15)}}
+        />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{right:"1%"},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
             editCurrentParcels(scene!.id)
             displaySceneInfoPanel(false, null)
             displaySettingsPanel(false)
