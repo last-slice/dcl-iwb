@@ -1,15 +1,26 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { GamingTimer } from './gamingTimer'
-import { GamingCountdown } from './gamingCountdown'
-import { LevelUI } from './levelUI'
-import { ScoreUI } from './scoreUI'
-import { HealthUI } from './healthUI'
-import { LivesUI } from './livesUI'
+import { GamingTimer, displayGamingTimer } from './gamingTimer'
+import { GamingCountdown, displayGamingCountdown } from './gamingCountdown'
+import { LevelUI, displayLevelUI } from './levelUI'
+import { ScoreUI, displayScoreUI } from './scoreUI'
+import { HealthUI, displayHealthUI } from './healthUI'
+import { LivesUI, displayLivesUI } from './livesUI'
+import { GamingBorderUI, displayGamingBorderUI } from './gamingborderUI'
 
 export let showGaming = true
 
 export function displayGamingUI(value: boolean) {
     showGaming = value
+}
+
+export function resetAllGamingUI(){
+    displayLevelUI(false)
+    displayScoreUI(false)
+    displayHealthUI(false)
+    displayLivesUI(false)
+    displayGamingBorderUI(false)
+    displayGamingTimer(false, 0)
+    displayGamingCountdown(false, 0)
 }
 
 export function createGamingUI() {
@@ -26,6 +37,7 @@ export function createGamingUI() {
                 positionType: 'absolute',
             }}
         >
+            <GamingBorderUI/>
             <GamingCountdown/>
             <GamingTimer/>
             <LevelUI/>

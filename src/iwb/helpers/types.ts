@@ -1,4 +1,5 @@
 import { Entity, InputAction, TransformType, TweenLoop } from "@dcl/sdk/ecs"
+import { Vector3 } from "@dcl/sdk/math"
 
 
 export enum SERVER_MESSAGE_TYPES {
@@ -551,3 +552,45 @@ export let TWEEN_LOOP_SLUGS:string[] = [
     "YOYO",
     "NONE"
 ]
+
+
+
+
+export type LevelTimer = {
+    id:string
+    type:string
+    direction:number
+    start:number
+    end:number
+    current?:number
+    system?:any
+    sound?:string
+}
+
+export type Level = {
+    id:string
+    type:string
+    number:number
+    restricted:boolean
+    showLevel?:boolean
+    timer?:any
+    countdown?:any
+}
+
+export type Game = {
+    id:string
+    name:string
+    desc:string
+    im:string
+    type:number
+    editing:boolean
+    editLvl?:boolean
+    startLives?:number
+    startHealth?:number
+    startScore?:number
+    startLevel?:number
+    uiBorder?:string
+    p:Vector3
+    levels:Level[]
+    currentLevel?:number
+}

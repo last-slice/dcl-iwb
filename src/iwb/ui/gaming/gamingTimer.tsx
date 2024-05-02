@@ -5,9 +5,13 @@ import { Color4 } from '@dcl/sdk/math'
 export let showGamingTimer = false
 export let gameCountdownTimerDisplay = new CustomCounter( 4, 4, 60, 'center', "images/customCounter/number_sheet.png")
 
-export function displayGamingTimer(value: boolean) {
-    showGamingTimer = value
+export function displayGamingTimer(value: boolean, reset?:any) {
+    if(reset){
+        gameCountdownTimerDisplay.setNumber(reset)    
+    }
 
+    showGamingTimer = value
+    
     if(value){
         gameCountdownTimerDisplay.show()
       

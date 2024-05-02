@@ -1,53 +1,65 @@
-import {engine, Transform} from "@dcl/sdk/ecs"
-import {localPlayer} from "../player/player"
-import {checkScenePermissions} from "../scenes";
-import { Quaternion } from "@dcl/sdk/math";
-import { refreshMap } from "../../ui/map";
+import {engine } from "@dcl/sdk/ecs"
 import { utils } from "../../helpers/libraries";
-import { displayGamingCountdown, gameCountdownTimer } from "../../ui/gaming/gamingCountdown";
+import { displayGamingCountdown, levelCountdownTimer } from "../../ui/gaming/gamingCountdown";
 import { displayGamingTimer, gameCountdownTimerDisplay } from "../../ui/gaming/gamingTimer";
-import { gameCountdownEnded, gameTimerEnded } from "../modes/gaming/playing";
+import { levelCountdownEnded, levelTimerEnded, currentGame } from "../modes/gaming/playing";
+import { LevelTimer } from "../../helpers/types";
 
-let gameTimer = 0
-export function startGameTimerSystem(time:number){
-    gameTimer = time
-    engine.addSystem(GameTimerSystem)
+let levelTimer:LevelTimer
+export function startGameTimerSystem(){
+    levelTimer = {...currentGame.currentLevel.timer}
+    levelTimer.current = levelTimer.start
+
+    if(levelTimer.direction > 0){
+        engine.addSystem(LevelTimerUpSystem)
+    }else{
+        engine.addSystem(LevelTimerDownSystem)
+    }
     displayGamingTimer(true)
 }
 
-export function GameTimerSystem(dt: number) {
-    if(gameTimer > 0){
-        gameTimer -= dt
-        gameCountdownTimerDisplay.setNumber(Math.ceil(gameTimer))
+export function LevelTimerDownSystem(dt: number) {
+    if(levelTimer.current! > levelTimer.end){
+        levelTimer.current! -= dt
+        gameCountdownTimerDisplay.setNumber(Math.ceil(levelTimer.current!))
     }else{
-        engine.removeSystem(GameTimerSystem)
-        gameTimer = 0
-        gameTimerEnded()
+        engine.removeSystem(LevelTimerDownSystem)
+        levelTimerEnded()
+    }
+}
+
+export function LevelTimerUpSystem(dt: number) {
+    if(levelTimer.current! < levelTimer.end){
+        levelTimer.current! += dt
+        gameCountdownTimerDisplay.setNumber(Math.floor(levelTimer.current!))
+    }else{
+        engine.removeSystem(LevelTimerUpSystem)
+        levelTimerEnded()
     }
 }
 
 
-export let gameCountdown = 0
-let countdownInterval:any
-export function startGameCountdownTime(time:number){
-    gameCountdown = time
-    gameCountdownTimer.increaseNumberBy(time)
+export let levelCountdown = 0
+let levelCountdownInterval:any
+export function startlevelCountdownTimer(time:number){
+    levelCountdown = time
+    levelCountdownTimer.increaseNumberBy(time)
 
     displayGamingCountdown(true)
 
-    countdownInterval = utils.timers.setInterval(()=>{
-        if(gameCountdown > 1){
-            gameCountdown--
-            gameCountdownTimer.increaseNumberBy(-1)
+    levelCountdownInterval = utils.timers.setInterval(()=>{
+        if(levelCountdown > 1){
+            levelCountdown--
+            levelCountdownTimer.increaseNumberBy(-1)
             
             //play sound based on game config?
         }else{
             clearGameCountdownInterval()
-            gameCountdownEnded()
+            levelCountdownEnded()
         }
     }, 1000)
 }
 
 export function clearGameCountdownInterval(){
-    utils.timers.clearInterval(countdownInterval)
+    utils.timers.clearInterval(levelCountdownInterval)
 }
