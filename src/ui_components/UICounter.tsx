@@ -185,23 +185,4 @@ export class CustomCounter {
     toggle() {
         this.visible = !this.visible
     }
-
-    // createCounterUI(){ 
-    //     return (
-    //         <UiEntity
-    //             uiTransform={{
-    //                 width:"100%",
-    //                 height: "100%",
-    //                 positionType: 'absolute',               
-    //                 flexBasis: this.size,
-    //                 flexDirection: 'row-reverse',
-    //                 alignItems: 'center',
-    //                 alignContent: 'center',
-    //                 justifyContent: this.justifyCounter                   
-    //             }}            
-    //         >
-    //             {this.generateCounterDigitsUI()}
-    //         </UiEntity>      
-    //     )
-    // }   
 }

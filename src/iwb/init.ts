@@ -11,9 +11,7 @@ import {realm, updateRealm} from "./components/scenes";
 import {getPlayer} from "@dcl/sdk/players";
 import {FlyModeSystem} from "./components/systems/FlyModeSystem";
 import {SelectedItemSystem} from "./components/systems/SelectedItemSystem";
-import { displayGamingCountdown } from "./ui/gaming/gamingCountdown";
-import { startGameCountdownTimer } from "./components/modes/gaming/playing";
-import { startGameCountdownTime, startGameTimerSystem } from "./components/systems/GameSystems";
+import { startGameTesting } from "./components/modes/gaming/playing";
 
 export function initIWB() {
     setupUi()
@@ -60,9 +58,9 @@ export function initIWB() {
 
 
 
-                //test functions
-                startGameTimerSystem(10)
-                startGameCountdownTime(7)
+
+                //testing
+                startGameTesting()
             })
         }
     })
