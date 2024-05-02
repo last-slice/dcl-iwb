@@ -11,6 +11,9 @@ import {realm, updateRealm} from "./components/scenes";
 import {getPlayer} from "@dcl/sdk/players";
 import {FlyModeSystem} from "./components/systems/FlyModeSystem";
 import {SelectedItemSystem} from "./components/systems/SelectedItemSystem";
+import { displayGamingCountdown } from "./ui/gaming/gamingCountdown";
+import { startGameCountdownTimer } from "./components/modes/gaming/playing";
+import { startGameCountdownTime, startGameTimerSystem } from "./components/systems/GameSystems";
 
 export function initIWB() {
     setupUi()
@@ -53,9 +56,13 @@ export function initIWB() {
                 // //console.log('login response', status, json)
 
                 // connect with userData and token
-                // colyseusConnect(data, json.data.token)
-                joinWorld(realm)
-                // colyseusConnect(data, "")
+                // joinWorld(realm)
+
+
+
+                //test functions
+                startGameTimerSystem(10)
+                startGameCountdownTime(7)
             })
         }
     })
