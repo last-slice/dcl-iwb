@@ -2,38 +2,37 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { UICounter, CustomCounter } from '../../../ui_components/UICounter'
 import { Color4 } from '@dcl/sdk/math'
 
-export let showGamingTimer = false
-export let gameCountdownTimerDisplay = new CustomCounter( 4, 4, 60, 'center', "images/customCounter/number_sheet.png")
+export let show = false
+export let scoreUI = new CustomCounter( 4, 4, 25, 'center', "images/customCounter/number_sheet.png")
 
-export function displayGamingTimer(value: boolean) {
-    showGamingTimer = value
+export function displayScoreUI(value: boolean) {
+    show = value
 
     if(value){
-        gameCountdownTimerDisplay.show()
+        scoreUI.show()
       
     }else{
-        gameCountdownTimerDisplay.hide()
+        scoreUI.hide()
     }
 }
 
-export function GamingTimer() {
+export function ScoreUI() {
     return (
         <UiEntity
-            key={"iwbgamingtimer"}
+            key={"iwbgamingscoreui"}
             uiTransform={{
-                display: showGamingTimer ? "flex" : "none",
+                display: show ? "flex" : "none",
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: 'auto',
                 height: 'auto',
                 positionType: 'absolute',
-                position:{left:'50%', top:'10%'}
+                position:{right:'5%', top:'20%'}
             }}
-            // uiBackground={{color:Color4.Green()}}
         >
 
-        <UICounter customCounter={gameCountdownTimerDisplay} />
+        <UICounter customCounter={scoreUI} />
 
         </UiEntity>
        

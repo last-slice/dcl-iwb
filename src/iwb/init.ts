@@ -11,6 +11,7 @@ import {realm, updateRealm} from "./components/scenes";
 import {getPlayer} from "@dcl/sdk/players";
 import {FlyModeSystem} from "./components/systems/FlyModeSystem";
 import {SelectedItemSystem} from "./components/systems/SelectedItemSystem";
+import { startGameTesting } from "./components/modes/gaming/playing";
 
 export function initIWB() {
     setupUi()
@@ -53,9 +54,13 @@ export function initIWB() {
                 // //console.log('login response', status, json)
 
                 // connect with userData and token
-                // colyseusConnect(data, json.data.token)
-                joinWorld(realm)
-                // colyseusConnect(data, "")
+                // joinWorld(realm)
+
+
+
+
+                //testing
+                startGameTesting()
             })
         }
     })

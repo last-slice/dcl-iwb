@@ -1,37 +1,17 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { UICounter, CustomCounter } from '../../../ui_components/UICounter'
-import { engine } from '@dcl/sdk/ecs'
-import { utils } from '../../helpers/libraries'
+import { clearGameCountdownInterval, startGameCountdownTime } from '../../components/systems/GameSystems'
 
 export let showGamingCountdown = true
-export let counter = new CustomCounter( 4, 4, 150, 'center', "images/customCounter/number_sheet.png")
-export let countdown = 0
-export let countdownInterval:any
-
-displayGamingCountdown(true, 5)
+export let gameCountdownTimer = new CustomCounter( 4, 4, 150, 'center', "images/customCounter/number_sheet.png")
 
 export function displayGamingCountdown(value: boolean, time?:number) {
     showGamingCountdown = value
 
     if(value){
-        counter.show()
-        if(time){
-            counter.increaseNumberBy(time)
-            countdown = time
-
-            countdownInterval = utils.timers.setInterval(()=>{
-                console.log('countdown is ', countdown)
-                if(countdown > 1){
-                    countdown--
-                    counter.increaseNumberBy(-1)
-                }else{
-                    displayGamingCountdown(false)
-                }
-            }, 1000)
-        }
+        gameCountdownTimer.show()
     }else{
-        counter.hide()
-        utils.timers.clearInterval(countdownInterval)
+        gameCountdownTimer.hide()
     }
 }
 
@@ -52,7 +32,7 @@ export function GamingCountdown() {
             // uiBackground={{color:Color4.Green()}}
         >
 
-        <UICounter customCounter={counter} />
+        <UICounter customCounter={gameCountdownTimer} />
 
         </UiEntity>
        
