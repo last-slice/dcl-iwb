@@ -48,3 +48,8 @@ export let AssetComponentList:any = {
     Visibility: VisibilityComponent,
     Collision: CollisionComponent
 }
+
+
+
+export const EnemyComponent = engine.defineComponent(
+	"iwb::gc::enemy::component",{})

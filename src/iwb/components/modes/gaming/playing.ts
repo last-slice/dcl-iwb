@@ -1,4 +1,5 @@
 import { utils } from "../../../helpers/libraries";
+import { Game, Level } from "../../../helpers/types";
 import { resetAllGamingUI } from "../../../ui/gaming/createGamingUI";
 import { displayGamingCountdown } from "../../../ui/gaming/gamingCountdown";
 import { displayGamingTimer } from "../../../ui/gaming/gamingTimer";
@@ -9,8 +10,9 @@ import { displayLivesUI, livesUI } from "../../../ui/gaming/livesUI";
 import { displayScoreUI, scoreUI } from "../../../ui/gaming/scoreUI";
 import { startGameTimerSystem, startlevelCountdownTimer } from "../../systems/GameSystems";
 import { testGameData } from "./testGameData";
+import { startGameWaves } from "./waveModule";
 
-export let currentGame:any
+export let currentGame:Game
 
 export function levelTimerEnded(){
     displayGamingTimer(false)
@@ -21,12 +23,14 @@ export function levelTimerEnded(){
 export function levelCountdownEnded(){
     displayGamingCountdown(false)
 
-    let level = currentGame.currentLevel
+    let level:Level | undefined = currentGame.currentLevel
 
     //check if game has a timer
-    if(level.timer){
+    if(level && level.timer){
         startGameTimerSystem()
     }
+
+    startGameLevel()
 }
 
 export function attemptGameStart(id:string){
@@ -43,10 +47,10 @@ export function attemptGameStart(id:string){
         displayGamingBorderUI(true)
     }
 
-    startGameLevel(currentGame.startLevel)
+    initGameLevel(currentGame.startLevel)
 }
 
-export function startGameLevel(startLevel:number){
+export function initGameLevel(startLevel:number){
     currentGame.currentLevel = currentGame.levels[startLevel-1]
     console.log('starting level', currentGame.currentLevel)
     
@@ -54,30 +58,40 @@ export function startGameLevel(startLevel:number){
 }
 
 export function setupLevelUI(){
-    let level = currentGame.currentLevel
+    let level:Level | undefined = currentGame.currentLevel
 
-    if(currentGame.startLives){
-        livesUI.setNumber(currentGame.startLives)
-        displayLivesUI(true)
-    }
-
-    if(level.showLevel){
-        levelUI.setNumber(level.number)
-        displayLevelUI(true)
-    }
-
-    if(currentGame.startHealth){
-        healthUI.setNumber(currentGame.startHealth)
-        displayHealthUI(true)
-    }
-
-    if(currentGame.startScore){
-        scoreUI.setNumber(currentGame.startScore)
-        displayScoreUI(true)
-    }
+    if(level){
+        if(currentGame.startLives){
+            livesUI.setNumber(currentGame.startLives)
+            displayLivesUI(true)
+        }
     
-    if(level.countdown){
-        startlevelCountdownTimer(level.countdown.start)
+        if(level.showLevel){
+            levelUI.setNumber(level.number)
+            displayLevelUI(true)
+        }
+    
+        if(currentGame.startHealth){
+            healthUI.setNumber(currentGame.startHealth)
+            displayHealthUI(true)
+        }
+    
+        if(currentGame.startScore){
+            scoreUI.setNumber(currentGame.startScore)
+            displayScoreUI(true)
+        }
+        
+        if(level.countdown){
+            startlevelCountdownTimer(level.countdown.start)
+        }   
+    }
+}
+
+export function startGameLevel(){
+    currentGame.started = true
+
+    if(currentGame.currentLevel && currentGame.currentLevel.waves){
+        startGameWaves(currentGame.currentLevel.waves)
     }
 }
 

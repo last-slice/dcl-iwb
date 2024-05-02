@@ -1,21 +1,24 @@
-import {engine } from "@dcl/sdk/ecs"
+import {engine, tweenSystem } from "@dcl/sdk/ecs"
 import { utils } from "../../helpers/libraries";
 import { displayGamingCountdown, levelCountdownTimer } from "../../ui/gaming/gamingCountdown";
 import { displayGamingTimer, gameCountdownTimerDisplay } from "../../ui/gaming/gamingTimer";
 import { levelCountdownEnded, levelTimerEnded, currentGame } from "../modes/gaming/playing";
 import { LevelTimer } from "../../helpers/types";
+import { EnemyComponent } from "../../helpers/Components";
 
 let levelTimer:LevelTimer
 export function startGameTimerSystem(){
-    levelTimer = {...currentGame.currentLevel.timer}
-    levelTimer.current = levelTimer.start
-
-    if(levelTimer.direction > 0){
-        engine.addSystem(LevelTimerUpSystem)
-    }else{
-        engine.addSystem(LevelTimerDownSystem)
+    if(currentGame.currentLevel && currentGame.currentLevel.timer){
+        levelTimer = {...currentGame.currentLevel.timer}
+        levelTimer.current = levelTimer.start
+    
+        if(levelTimer.direction > 0){
+            engine.addSystem(LevelTimerUpSystem)
+        }else{
+            engine.addSystem(LevelTimerDownSystem)
+        }
+        displayGamingTimer(true)
     }
-    displayGamingTimer(true)
 }
 
 export function LevelTimerDownSystem(dt: number) {
@@ -62,4 +65,13 @@ export function startlevelCountdownTimer(time:number){
 
 export function clearGameCountdownInterval(){
     utils.timers.clearInterval(levelCountdownInterval)
+}
+
+export function WaveEntityEndTweenSystem(){
+    for (const [entity] of engine.getEntitiesWith(EnemyComponent)) {
+        const tweenCompleted = tweenSystem.tweenCompleted(entity)
+        if (tweenCompleted) {
+            engine.removeEntity(entity)
+        }
+       }
 }

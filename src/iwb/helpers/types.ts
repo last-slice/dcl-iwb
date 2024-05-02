@@ -555,6 +555,49 @@ export let TWEEN_LOOP_SLUGS:string[] = [
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//GAME CREATOR ELEMENTS
+
+export type Enemy = {
+    id:string
+    aid:string
+    ty:number
+    cid:string
+    as?:number
+    she:number
+    he?:number
+    def?:number  
+    si:Vector3
+    anim?:any[]
+    snds?:any[]
+}
+
+export enum WaveStartTypes {
+    LEVEL_START = 1,
+    TIMER_BASED = 2,
+    OTHER = 3
+}
+
+export enum WaveSpawnDelayTypes {
+    CONSISTENT = 1,
+    RANDOM = 2
+}
+
+export type Wave = {
+    id:string
+    starts:Vector3[]
+    ends:Vector3[]
+    sTy:number
+    spwnTy:number
+    spwnAmt:number
+    spwnDel?:number
+    spwnDelTy:WaveSpawnDelayTypes
+    spwnDelRng?:string
+    enmy:Enemy
+
+    spawned?:number
+    timeout?:any
+}
 
 export type LevelTimer = {
     id:string
@@ -571,13 +614,16 @@ export type Level = {
     id:string
     type:string
     number:number
-    restricted:boolean
+    rst:boolean
+    rstTy?:boolean
     showLevel?:boolean
     timer?:any
     countdown?:any
+    waves?:Wave[]
 }
 
 export type Game = {
+    started?:boolean
     id:string
     name:string
     desc:string
@@ -588,9 +634,11 @@ export type Game = {
     startLives?:number
     startHealth?:number
     startScore?:number
-    startLevel?:number
+    startLevel:number
     uiBorder?:string
     p:Vector3
     levels:Level[]
-    currentLevel?:number
+    currentLevel?:Level
+    econ?:any[]
+    players?:any[]
 }
