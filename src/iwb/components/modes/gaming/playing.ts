@@ -76,10 +76,10 @@ export function setupLevelUI(){
             displayHealthUI(true)
         }
     
-        if(currentGame.startScore){
-            scoreUI.setNumber(currentGame.startScore)
-            displayScoreUI(true)
-        }
+        // if(currentGame.startScore){
+        //     scoreUI.setNumber(currentGame.startScore)
+        //     displayScoreUI(true)
+        // }//
         
         if(level.countdown){
             startlevelCountdownTimer(level.countdown.start)
@@ -90,11 +90,15 @@ export function setupLevelUI(){
 export function startGameLevel(){
     currentGame.started = true
 
+    if(currentGame.currentLevel?.showScore){
+        scoreUI.setNumber(0)
+        displayScoreUI(true)
+    }
+
     if(currentGame.currentLevel && currentGame.currentLevel.waves){
         startGameWaves(currentGame.currentLevel.waves)
     }
 }
-
 
 
 export function startTestGame(){

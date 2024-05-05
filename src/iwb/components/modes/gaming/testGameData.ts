@@ -14,6 +14,7 @@ export let testGameData:Game = {
     // startHealth:100,
     startScore:0,
     startLevel:1,
+    totalScore:0,
     p:{
         x:10,
         y:1,
@@ -26,6 +27,7 @@ export let testGameData:Game = {
             number:1,
             rst:false,
             showLevel:true,
+            showScore:true,
             countdown:{
                 id:"level-1-countdown-timer",
                 type:"",//again, not sure what type to use here
@@ -33,6 +35,7 @@ export let testGameData:Game = {
                 start: 3,
                 end:0
             },
+            score:0,
             // timer:{
             //     id:"level-1-timer",
             //     type:"",//again, not sure what type to use here
@@ -49,13 +52,14 @@ export let testGameData:Game = {
                     spwnTy:1,
                     spwnAmt:3,
                     spwnDel:3,
-                    spwnDelTy:1,
+                    spwnDelTy:2,
+                    spwnDelRng: "3-10",
                     enmy:{
                         id:"enemy-1",
                         aid:"enemy-1-aid",
                         ty:0,
                         cid: "blue",
-                        as:15,
+                        as:5,
                         she:50,
                         def:0,
                         si:Vector3.create(3,3,3),

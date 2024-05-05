@@ -617,9 +617,11 @@ export type Level = {
     rst:boolean
     rstTy?:boolean
     showLevel?:boolean
+    showScore?:boolean
     timer?:any
     countdown?:any
     waves?:Wave[]
+    score?:number
 }
 
 export type Game = {
@@ -635,6 +637,7 @@ export type Game = {
     startHealth?:number
     startScore?:number
     startLevel:number
+    totalScore?:number
     uiBorder?:string
     p:Vector3
     levels:Level[]

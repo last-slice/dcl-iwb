@@ -1,10 +1,13 @@
-import { EasingFunction, Material, MeshCollider, MeshRenderer, Transform, Tween, engine } from "@dcl/sdk/ecs";
+import { EasingFunction, InputAction, Material, MeshCollider, MeshRenderer, Transform, Tween, engine, pointerEventsSystem } from "@dcl/sdk/ecs";
 import { utils } from "../../../helpers/libraries";
 import { Enemy, Wave, WaveSpawnDelayTypes, WaveStartTypes } from "../../../helpers/types";
-import { Color4 } from "@dcl/sdk/math";
+import { Color4, Matrix } from "@dcl/sdk/math";
 import { EnemyComponent } from "../../../helpers/Components";
 import { WaveEntityEndTweenSystem } from "../../systems/GameSystems";
-import { getDistance } from "../../../helpers/functions";
+import { getDistance, getRandomIntInclusive } from "../../../helpers/functions";
+import { currentGame } from "./playing";
+import { changeNumber } from "./actions";
+import { scoreUI } from "../../../ui/gaming/scoreUI";
 
 
 export function startGameWaves(waves:Wave[]){
@@ -14,23 +17,25 @@ export function startGameWaves(waves:Wave[]){
     waves.forEach((wave:Wave)=>{
         if(wave.sTy === WaveStartTypes.LEVEL_START){
             wave.spawned = 0
-
-            switch(wave.spwnDelTy){
-                case WaveSpawnDelayTypes.CONSISTENT:
-                    setWaveTimeout(wave)
-                    break;
-
-                case WaveSpawnDelayTypes.RANDOM:
-                    break;
-            }
+            setWaveTimeout(wave)
         }
     })
 }
 
 function setWaveTimeout(wave:Wave){
+    let delay:any
+
+    if(wave.spwnDelTy === WaveSpawnDelayTypes.RANDOM){
+        let split = wave.spwnDelRng!.split("-")
+        let range = [parseInt(split[0]), parseInt(split[1])]
+        delay = getRandomIntInclusive(range[0], range[1])
+    }else{
+        delay = (wave.spwnDel ? wave.spwnDel : 0)
+    }
+
     wave.timeout = utils.timers.setTimeout(()=>{
         releaseWave(wave)
-    }, 1000 * (wave.spwnDel ? wave.spwnDel : 0))
+    }, 1000 * delay)
 }
 
 export function releaseWave(wave:Wave){
@@ -89,13 +94,23 @@ export function spawnWaveObject(wave:Wave){
 
     let distance = getDistance(end, start)
 
-    Tween.create(ent, {
+    Tween.createOrReplace(ent, {
         mode: Tween.Mode.Move({
         start: start,
         end: end,
         }),
         duration: 1000 * (distance / (enemy.as ? enemy.as : 1)),
         easingFunction: EasingFunction.EF_LINEAR,
+    })
+
+    pointerEventsSystem.onPointerDown({entity:ent,
+        opts:{showFeedback:true, hoverText:"click me", button:InputAction.IA_POINTER, maxDistance:30}
+    },
+    ()=>{
+        console.log('clicked enemy')
+        engine.removeEntity(ent)
+        changeNumber(currentGame.currentLevel!.score!, 1, scoreUI)
+        //play sound
     })
 }
 
