@@ -22,6 +22,7 @@ import { AnimationComponent } from './AnimationComponentPanel'
 import { NPCComponent, npcComponentView, updateNPCView } from './NPCComponent'
 import { DialogComponent, dialogView, updateDialogView } from './DialogComponent'
 import { actionTweenView, updateActionTweenView } from './Actions/ActionTweenComponent'
+import { RewardComponentPanel, updateRewardInfo } from './RewardComponentPanel'
 
 export let visibleComponent: string = ""
 
@@ -35,11 +36,15 @@ export function openEditComponent(value: string, subMenu?:string) {
     }
 
     if(value === "Trigger Area"){
-        updateTriggerAreaActionView("main")
+        updateTriggerAreaActionView("main")//
     }
 
     if(value === COMPONENT_TYPES.DIALOG_COMPONENT){
         updateDialogView("list")
+    }
+
+    if(value === COMPONENT_TYPES.REWARD_COMPONENT){
+        updateRewardInfo(selectedItem.itemData.rComp)
     }
 
     visibleComponent = value
@@ -220,10 +225,7 @@ export function EditObjectData() {
                                             break;
                                     }
                                 }
-
                                 break;
-
-                              
                             default:
                                 openEditComponent("")
                         }
@@ -262,6 +264,7 @@ export function EditObjectData() {
                     <AnimationComponent/>
                     <NPCComponent/>
                     <DialogComponent/>
+                    <RewardComponentPanel/>
 
                 </UiEntity>
             </UiEntity>

@@ -1330,11 +1330,12 @@ export function sendServerDelete(entity: Entity, data?: any) {
 }
 
 export function removeItem(sceneId: string, info: any) {
-    let scene = sceneBuilds.get(sceneId)
+    let scene = sceneBuilds.get(sceneId)//
     console.log('scene is', scene)
     if (scene) {
         let entity = entitiesFromItemIds.get(info.aid)
         if (entity) {
+            console.log('found entity to remove')
             engine.removeEntity(entity)
             itemIdsFromEntities.delete(entity)
             entitiesFromItemIds.delete(info.aid)
@@ -1520,7 +1521,14 @@ function checkSmartItems(entity: Entity, sceneItem: SceneItem) {
                     albedoColor: Color4.create(1, 0, 1, .5)
                 })
                 TextShape.createOrReplace(entity, {text: "" + sceneItem.dialComp.name, fontSize: 3})
-            } else {
+            } 
+            else if (sceneItem.rComp) {
+                Material.setPbrMaterial(entity, {
+                    albedoColor: Color4.create(54/255, 209/255, 120/255, .5)
+                })
+                TextShape.createOrReplace(entity, {text: "Reward", fontSize: 3})
+            }
+            else {
                 Material.setPbrMaterial(entity, {
                     albedoColor: Color4.create(54 / 255, 221 / 255, 192 / 255, .5)
                 })
@@ -1566,4 +1574,14 @@ export function disableTweenPlacementEntity() {
     GltfContainer.deleteFrom(tweenPlacementEntity)
     Transform.deleteFrom(tweenPlacementEntity)
     MeshRenderer.deleteFrom(tweenPlacementEntity)
+}
+
+export function checkPlayerBuildRights(){
+    let canBuild = false
+    sceneBuilds.forEach((scene: IWBScene, key: string) => {
+        if (scene.pcls.find((parcel) => parcel === localPlayer!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
+            canBuild = true
+        }
+    })
+    localPlayer.canBuild = canBuild
 }

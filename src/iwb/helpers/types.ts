@@ -71,7 +71,11 @@ export enum SERVER_MESSAGE_TYPES {
     UPDATED_TUTORIAL_CID = 'updated_tutorial_cid',
     WORLD_TRAVEL = 'world_travel',
     
-    CUSTOM = "custom"
+    CUSTOM = "custom",
+
+
+    //REMOTE SERVER ACTIONS
+    CLAIM_REWARD = 'claim_reward',
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -229,6 +233,7 @@ export interface SceneItem extends CatalogItemType{
     npcComp:any
     animComp:any
     dialComp:any
+    rComp:any
     editing:boolean
     ugc:boolean
     pending:boolean
@@ -276,7 +281,8 @@ export enum COMPONENT_TYPES {
     CLICK_AREA_COMPONENT = "Click Area",
     ANIMATION_COMPONENT = "Animation",
     NPC_COMPONENT = "NPC",
-    DIALOG_COMPONENT = "Dialog"
+    DIALOG_COMPONENT = "Dialog",
+    REWARD_COMPONENT = 'Reward'
 }
 
 export enum COLLISION_LAYERS {
@@ -353,6 +359,7 @@ export enum Actions {
     DISABLE_CLICK_AREA = 'disable_click_area',
     ENABLE_TRIGGER_AREA = 'enable_trigger_area',
     DISABLE_TRIGGER_AREA = 'disable_trigger_area',
+    GIVE_REWARD = 'give_reward'
 }
 
 export enum Triggers {
@@ -387,6 +394,7 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Disable Click Area",
     "Enable Trigger Area",
     "Disable Trigger Area",
+    "Give Reward"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -408,7 +416,8 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.ENABLE_CLICK_AREA,
     Actions.DISABLE_CLICK_AREA,
     Actions.ENABLE_TRIGGER_AREA,
-    Actions.DISABLE_TRIGGER_AREA
+    Actions.DISABLE_TRIGGER_AREA,
+    Actions.GIVE_REWARD
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
@@ -544,3 +553,7 @@ export let TWEEN_LOOP_SLUGS:string[] = [
     "YOYO",
     "NONE"
 ]
+
+export enum REWARD_TYPES {
+    DCL_ITEM = 'dcl_item'
+}

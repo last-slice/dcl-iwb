@@ -165,6 +165,7 @@ export function loadScene(info: any) {
 
     if (info.bps.includes(localUserId)) {
         players.get(localUserId)!.buildingAllowed = true
+        players.get(localUserId)!.canBuild = true
     }
 
     loadSceneBoundaries(info.id)

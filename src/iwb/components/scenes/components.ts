@@ -118,7 +118,11 @@ export function createSmartItemComponent(scene:IWBScene, entity:Entity, item:Sce
 
         case 'Dialog':
             addDialogComponent(scene, entity, item, name)
-            break;//
+            break;
+
+        case 'Reward':
+            addRewardComponent(scene, entity, item, name)
+            break;
     }
 
     if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
@@ -540,7 +544,18 @@ export function addNPCAvatar(scene:IWBScene, entity:Entity, item:SceneItem, name
 }
 
 export function addDialogComponent(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
-    if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
-        resetEntityForBuildMode(scene, entity)
-    }
+    // if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+    //     resetEntityForBuildMode(scene, entity)
+    // }//
+}
+
+export function addRewardComponent(scene:IWBScene, entity:Entity, item:SceneItem, name:string){
+    console.log('adding reward component', item)
+    
+    // updateAudioAttach(item.aid, item.audComp)
+    // SmartItemLoadedComponent.create(entity, {init:false, sceneId:scene.id})
+
+    // if(localPlayer.mode === SCENE_MODES.BUILD_MODE){
+    //     resetEntityForBuildMode(scene, entity)
+    // }
 }

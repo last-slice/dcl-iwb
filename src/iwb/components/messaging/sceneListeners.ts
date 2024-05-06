@@ -2,6 +2,7 @@ import { GltfContainer, engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
 import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem} from "../../helpers/types"
 import {
+    checkPlayerBuildRights,
     otherUserPlaceditem,
     otherUserRemovedSeletedItem,
     otherUserSelectedItem,
@@ -12,7 +13,7 @@ import {
 import {addBoundariesForParcel, deleteParcelEntities, isParcelInScene, saveNewScene, selectParcel} from "../modes/create"
 import { localPlayer, localUserId, setPlayMode } from "../player/player"
 import { checkSceneCount, entitiesFromItemIds, itemIdsFromEntities, loadScene, loadSceneAsset, removeEmptyParcels, sceneBuilds, unloadScene, updateAsset, updateSceneCount, updateSceneEdits } from "../scenes"
-import { showNotification } from "../../ui/Panels/notificationUI"
+import { hideNotification, showNotification } from "../../ui/Panels/notificationUI"
 import { sceneListeners } from "./Scene"
 import { assetListener } from "./Asset"
 import { updateExportPanelView } from "../../ui/Panels/builds/ExportPanel"
@@ -97,6 +98,7 @@ export function createSceneListeners(room: any) {
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_BP, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_ADD_BP + ' received', info)
             if(info.user === localUserId){
+                localPlayer.canBuild = true
                 showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You were granted build permissions for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
             }
             else{
@@ -107,6 +109,7 @@ export function createSceneListeners(room: any) {
         room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, (info:any) => {
             log(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP + ' received', info)
             if(info.user === localUserId){
+                checkPlayerBuildRights()
                 showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builder permissions were removed for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
             }
             else{
@@ -160,6 +163,16 @@ export function createSceneListeners(room: any) {
             refreshSortedItems()
             filterCatalog()
         })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, (info: any) => {
+            log(SERVER_MESSAGE_TYPES.CLAIM_REWARD + ' received', info)
+            hideNotification()
+            if(info.valid){
+                showNotification({type:NOTIFICATION_TYPES.IMAGE, message:"Item Claimed!\n" + info.name, image:info.image, animate:{enabled:true, return:true, time:7}})
+            }else{
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error: Claim Response\n" + info.reason, animate:{enabled:true, return:true, time:5}})
+            }
+        })
 }
 
 export function addSceneStateListeners(room:any){
@@ -197,3 +210,5 @@ export function addSceneStateListeners(room:any){
         })
     })
 }
+
+//

@@ -526,6 +526,9 @@ function getActionData(){
         case 18:
                 return {aid:selectedItem.aid, type:Actions.DISABLE_TRIGGER_AREA}
 
+        case 19:
+            return {aid:selectedItem.aid, type:Actions.GIVE_REWARD}
+
     }
 }
 

@@ -47,13 +47,13 @@ export function createToolsPanel() {
                 height: '50%',
                 margin:{bottom:"5%"}
             }}
-            // uiBackground={{ color: Color4.Green() }}
+            // uiBackground={{ color: Color4.Green() }}//
         >
 
             {/* mode icon */}
             <UiEntity
             uiTransform={{
-                display: 'flex',
+                display: localPlayer && localPlayer.canBuild ? "flex" : "none",
                 width: calculateSquareImageDimensions(4).width,
                 height: calculateSquareImageDimensions(4).height,
                 flexDirection:'row',

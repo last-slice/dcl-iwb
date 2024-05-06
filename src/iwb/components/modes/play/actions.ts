@@ -1,5 +1,5 @@
 import { Animator, AudioSource, AudioStream, ColliderLayer, EasingFunction, Entity, GltfContainer, MeshCollider, Transform, Tween, TweenLoop, TweenSequence, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
-import { Actions, SceneItem } from "../../../helpers/types";
+import { Actions, SERVER_MESSAGE_TYPES, SceneItem } from "../../../helpers/types";
 import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
 import { localPlayer } from "../../player/player";
 import { addShowText } from "../../../ui/showTextComponent";
@@ -9,6 +9,7 @@ import { addDelayedActionTimer, checkPointers } from ".";
 import { showDialogPanel } from "../../../ui/Panels/DialogPanel";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { items } from "../../catalog";
+import { sendServerMessage } from "../../messaging";
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
     console.log('handling trigger action', entity, asset, action, actionId)
@@ -171,6 +172,11 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
 
         case Actions.DISABLE_TRIGGER_AREA:
             utils.triggers.enableTrigger(entity, false)
+            break;
+
+        case Actions.GIVE_REWARD:
+            console.log('give user reward', action, actionId)
+            sendServerMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
             break;
     }
 }

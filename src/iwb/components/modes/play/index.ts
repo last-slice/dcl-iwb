@@ -279,6 +279,7 @@ function disableSmartItems(entity:Entity, sceneItem: SceneItem){
             break;
 
         case 'Dialog':
+        case 'Reward':
             MeshRenderer.deleteFrom(entity)
             MeshCollider.deleteFrom(entity)
             Material.deleteFrom(entity)
