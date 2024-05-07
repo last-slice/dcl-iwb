@@ -91,27 +91,23 @@ export function updateCurrentNotification(data:NOTIFICATION_DETAIL){
 
 export function hideNotification(){
     log('hiding notification')
-    currentNotification.direction = 2
-    engine.addSystem(animateNotification)
+    currentNotification.animating = true
+    startAnimating({return:true, direction:2})
 }
 
 function startAnimating(animate:any){
     currentNotification.goback = animate.return
     animate.time ? currentNotification.goBackTime = animate.time : currentNotification.goBackTime = 5
-    currentNotification.direction = 1
+    currentNotification.direction = animate.direction ? animate.direction : 1
     engine.removeSystem(animateNotification)
     engine.addSystem(animateNotification)
 }
 
-export function updateOffset(){
-
-}
+export function updateOffset(){}
 
 function checkBounceBack(){
-    log('ending notificatoin move')
     engine.removeSystem(animateNotification)
     if(currentNotification.goback){
-
         utils.timers.setTimeout(()=>{
             currentNotification.goback = false
             currentNotification.goBackTime = 0

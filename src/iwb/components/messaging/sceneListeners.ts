@@ -24,6 +24,7 @@ import { playSound } from "../sounds"
 import { items } from "../catalog"
 import { refreshSortedItems } from "../catalog/items"
 import { filterCatalog } from "../../ui/Panels/CatalogPanel"
+import { utils } from "../../helpers/libraries"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -166,12 +167,14 @@ export function createSceneListeners(room: any) {
 
         room.onMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, (info: any) => {
             log(SERVER_MESSAGE_TYPES.CLAIM_REWARD + ' received', info)
-            hideNotification()
-            if(info.valid){
-                showNotification({type:NOTIFICATION_TYPES.IMAGE, message:"Item Claimed!\n" + info.name, image:info.image, animate:{enabled:true, return:true, time:7}})
-            }else{
-                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error: Claim Response\n" + info.reason, animate:{enabled:true, return:true, time:5}})
-            }
+            utils.timers.setTimeout(()=>{
+                hideNotification()
+                if(info.valid){
+                    showNotification({type:NOTIFICATION_TYPES.IMAGE, message:"Item Claimed!\n" + info.name, image:info.image, animate:{enabled:true, return:true, time:7}})
+                }else{
+                    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error: Claim Response\n" + info.reason, animate:{enabled:true, return:true, time:5}})
+                }
+            }, 1000 * 2)
         })
 }
 
