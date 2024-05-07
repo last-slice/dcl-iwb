@@ -1,5 +1,5 @@
 import { Animator, AudioSource, AudioStream, ColliderLayer, EasingFunction, Entity, GltfContainer, MeshCollider, Transform, Tween, TweenLoop, TweenSequence, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs";
-import { Actions, SERVER_MESSAGE_TYPES, SceneItem } from "../../../helpers/types";
+import { Actions, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SceneItem } from "../../../helpers/types";
 import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
 import { localPlayer } from "../../player/player";
 import { addShowText } from "../../../ui/showTextComponent";
@@ -10,6 +10,7 @@ import { showDialogPanel } from "../../../ui/Panels/DialogPanel";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { items } from "../../catalog";
 import { sendServerMessage } from "../../messaging";
+import { showNotification } from "../../../ui/Panels/notificationUI";
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
     console.log('handling trigger action', entity, asset, action, actionId)
@@ -176,6 +177,7 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
 
         case Actions.GIVE_REWARD:
             console.log('give user reward', action, actionId)
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Claiming Item...", animate:{enabled:true, return:false, time:7}})
             sendServerMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
             break;
     }

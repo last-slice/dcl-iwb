@@ -439,9 +439,6 @@ function updateReward(){
     if(isNaN(reward.start) || isNaN(reward.end) || isNaN(reward.ip) || isNaN(reward.amt)){
         return
     }
-
-    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Claiming Item...", animate:{enabled:true, return:false, time:7}})
-
     sendServerMessage(
         SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, 
         {
