@@ -18,7 +18,7 @@ import {
     saveItem,
     selectedItem
 } from '../../../components/modes/build'
-import {EDIT_MODES, EDIT_MODIFIERS} from '../../../helpers/types'
+import {COMPONENT_TYPES, EDIT_MODES, EDIT_MODIFIERS} from '../../../helpers/types'
 import {EditObjectDetails} from './EditObjectDetails'
 import {EditObjectData, openEditComponent, visibleComponent} from './EditObjectDataPanel'
 import {Color4} from '@dcl/sdk/math'
@@ -30,7 +30,7 @@ export function createEditObjectPanel() {
         <UiEntity
             key={"editobjectpanel"}
             uiTransform={{
-                display: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT ? 'flex' : 'none',
+                display: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && visibleComponent !== COMPONENT_TYPES.ADVANCED_COMPONENT ? 'flex' : 'none',
                 // display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

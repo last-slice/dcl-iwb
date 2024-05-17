@@ -23,28 +23,35 @@ import { NPCComponent, npcComponentView, updateNPCView } from './NPCComponent'
 import { DialogComponent, dialogView, updateDialogView } from './DialogComponent'
 import { actionTweenView, updateActionTweenView } from './Actions/ActionTweenComponent'
 import { RewardComponentPanel, updateRewardInfo } from './RewardComponentPanel'
+import { updateAdvancedEditPanel } from './Advanced'
 
 export let visibleComponent: string = ""
 
 export function openEditComponent(value: string, subMenu?:string) {
-    if(value === COMPONENT_TYPES.NPC_COMPONENT){
-        updateNPCView('main')
-    }
+    switch(value){
+        case COMPONENT_TYPES.NPC_COMPONENT:
+            updateNPCView('main')
+            break;
 
-    if(value === "Trigger"){
-        updateTriggerActions()
-    }
+        case COMPONENT_TYPES.TRIGGER_AREA_COMPONENT:
+            updateTriggerAreaActionView("main")//
+            break;
 
-    if(value === "Trigger Area"){
-        updateTriggerAreaActionView("main")//
-    }
+        case COMPONENT_TYPES.TRIGGER_COMPONENT:
+            updateTriggerActions()
+            break;
 
-    if(value === COMPONENT_TYPES.DIALOG_COMPONENT){
-        updateDialogView("list")
-    }
+        case COMPONENT_TYPES.DIALOG_COMPONENT:
+            updateDialogView("list")
+            break;
 
-    if(value === COMPONENT_TYPES.REWARD_COMPONENT){
-        updateRewardInfo(selectedItem.itemData.rComp)
+        case COMPONENT_TYPES.REWARD_COMPONENT:
+            updateRewardInfo(selectedItem.itemData.rComp)
+            break;
+
+        case COMPONENT_TYPES.ADVANCED_COMPONENT:
+            updateAdvancedEditPanel(true)
+            break;
     }
 
     visibleComponent = value
@@ -249,12 +256,16 @@ export function EditObjectData() {
                         margin: {top: "2%"}
                     }}
                 >
-                    <ImageComponentPanel/>
-                    <VideoComponentPanel/>
-                    <AudioComponentPanel/>
+
                     <EditTransform/>
                     <VisibilityComponentPanel/>
                     <CollisionComponentPanel/>
+
+                    {/* <ImageComponentPanel/>
+                    <VideoComponentPanel/>
+                    <AudioComponentPanel/>
+                 
+                    
                     <NFTComponentPanel/>
                     <TextComponentPanel/>
                     <ActionComponent/>
@@ -264,7 +275,7 @@ export function EditObjectData() {
                     <AnimationComponent/>
                     <NPCComponent/>
                     <DialogComponent/>
-                    <RewardComponentPanel/>
+                    <RewardComponentPanel/> */}
 
                 </UiEntity>
             </UiEntity>
@@ -274,7 +285,15 @@ export function EditObjectData() {
 
 function generateComponentViews() {
     let arr: any[] = []
-    let components = getComponents()
+    // let components = getComponents()
+
+    let components:COMPONENT_TYPES[] = [
+        COMPONENT_TYPES.TRANSFORM_COMPONENT,
+        COMPONENT_TYPES.VISBILITY_COMPONENT,
+        COMPONENT_TYPES.COLLISION_COMPONENT,
+        COMPONENT_TYPES.ADVANCED_COMPONENT
+    ]
+
     components.forEach((component: any, i:number) => {
         arr.push(
             <UiEntity

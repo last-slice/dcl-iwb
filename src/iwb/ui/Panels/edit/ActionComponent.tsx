@@ -529,6 +529,9 @@ function getActionData(){
         case 19:
             return {aid:selectedItem.aid, type:Actions.GIVE_REWARD}
 
+        case 20:
+            return {aid:selectedItem.aid, type:Actions.VERIFY_ACCESS}
+
     }
 }
 

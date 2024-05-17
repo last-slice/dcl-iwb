@@ -6,13 +6,13 @@ import {setWorlds, updateSceneCount} from "../scenes";
 import {Room} from "colyseus.js";
 import {displayWorldReadyPanel} from "../../ui/Panels/worldReadyPanel";
 import {showNotification} from "../../ui/Panels/notificationUI";
-import {addSceneStateListeners} from "./sceneListeners";
 import {refreshSortedItems, setNewItems, updateItem} from "../catalog/items";
 import { createSounds, playSound } from "../sounds";
 import { displayPendingPanel } from "../../ui/Panels/pendingStatusPanel";
 import { displayDCLWorldPopup } from "../../ui/Panels/visitDCLWorldPopup";
 import { refreshMap } from "../../ui/map";
 import { utils } from "../../helpers/libraries";
+import { addSceneStateListeners } from "./sceneListeners";
 
 
 export function initiateMessageListeners(room: Room) {

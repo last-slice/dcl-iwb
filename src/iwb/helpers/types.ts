@@ -76,6 +76,10 @@ export enum SERVER_MESSAGE_TYPES {
 
     //REMOTE SERVER ACTIONS
     CLAIM_REWARD = 'claim_reward',
+    VERIFY_ACCESS = 'verify_access',
+
+    //GAMING
+    CREATE_GAME_LOBBY = 'create_game_lobby'
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -282,7 +286,8 @@ export enum COMPONENT_TYPES {
     ANIMATION_COMPONENT = "Animation",
     NPC_COMPONENT = "NPC",
     DIALOG_COMPONENT = "Dialog",
-    REWARD_COMPONENT = 'Reward'
+    REWARD_COMPONENT = 'Reward',
+    ADVANCED_COMPONENT = 'Advanced'
 }
 
 export enum COLLISION_LAYERS {
@@ -293,6 +298,12 @@ export enum COLLISION_LAYERS {
 export enum BLOCKCHAINS {
     ETH = "eth",
     POLYGON = "polygon"
+}
+
+
+export enum NFT_TYPES {
+    ERC721 = "erc721",
+    ERC1155 = "erc1155"
 }
 
 export enum NFT_FRAMES {
@@ -359,13 +370,63 @@ export enum Actions {
     DISABLE_CLICK_AREA = 'disable_click_area',
     ENABLE_TRIGGER_AREA = 'enable_trigger_area',
     DISABLE_TRIGGER_AREA = 'disable_trigger_area',
-    GIVE_REWARD = 'give_reward'
+    GIVE_REWARD = 'give_reward',
+    VERIFY_ACCESS = 'verify_access',
+
+
+
+
+
+
+
+    ADD_NUMBER = 'add_number',
+    SET_NUMBER = 'set_number',
+    SUBTRACT_NUMBER = 'subtract_number',
+    CHANGE_LEVEL = 'change_level',
+    END_LEVEL = 'end_level',
+    START_TIMER = 'start_timer',
+    STOP_TIMER = 'stop_timer',
+    LOCK_PLAYER = 'lock_player',
+    UNLOCK_PLAYER = 'unlock_player',
+    SET_POSITION = 'set_position',
+    SET_ROTATION = 'set_rotation',
+    SET_SCALE = 'set_scale',
+    
+
+
+
+
 }
 
 export enum Triggers {
     ON_CLICK = "on_click",
     ON_ENTER = "on_enter",
-    ON_LEAVE = "on_leave"
+    ON_LEAVE = "on_leave",
+
+
+
+    //new triggers
+    ON_ACCESS_VERIFIED ='on_access_verified',
+    ON_ACCESS_DENIED ='on_access_denied',
+    // ON_TWEEN_END,
+    // ON_DELAY,
+    // ON_LOOP
+    // ON_CLONE
+    // ON_CLICK_IMAGE
+    // ON_DAMAGE
+    // ON_GLOBAL_CLICK
+    // ON_TICK
+    // ON_HEAL
+    // ON_STATE_CHANGE
+    // ON_COUNTER_CHANGE
+}
+
+export enum TriggerConditions {
+    // VARIABLE_IS
+    // VARIABLE_IS_NOT
+    // COUNTER_IS
+    // COUNTER_IS_LESS
+    // COUNTER_IS_GREATER
 }
 
 export enum Materials {
@@ -394,7 +455,8 @@ export let ENTITY_ACTIONS_LABELS:any[] = [
     "Disable Click Area",
     "Enable Trigger Area",
     "Disable Trigger Area",
-    "Give Reward"
+    "Give Reward",
+    "Verify Access"
 ]
 
 export let ENTITY_ACTIONS_SLUGS:any[] = [
@@ -417,13 +479,16 @@ export let ENTITY_ACTIONS_SLUGS:any[] = [
     Actions.DISABLE_CLICK_AREA,
     Actions.ENABLE_TRIGGER_AREA,
     Actions.DISABLE_TRIGGER_AREA,
-    Actions.GIVE_REWARD
+    Actions.GIVE_REWARD,
+    Actions.VERIFY_ACCESS
 ]
 
 export let ENTITY_TRIGGER_LABELS:any[] = [
     "On Click",
     "On Enter",
-    "On Leave"
+    "On Leave",
+    "On Access Verified",
+    "On Access Denied",
 ]
 
 export let ENTITY_POINTER_LABELS:any[] = [
@@ -443,11 +508,12 @@ export let ENTITY_POINTER_LABELS:any[] = [
     "#4 Press",
 ]
 
-
 export let ENTITY_TRIGGER_SLUGS:any[] = [
     Triggers.ON_CLICK,
     Triggers.ON_ENTER,
-    Triggers.ON_LEAVE
+    Triggers.ON_LEAVE,
+    Triggers.ON_ACCESS_VERIFIED,
+    Triggers.ON_ACCESS_DENIED
 ]
 
 export let MATERIAL_TYPES:Materials[] =[
@@ -556,4 +622,18 @@ export let TWEEN_LOOP_SLUGS:string[] = [
 
 export enum REWARD_TYPES {
     DCL_ITEM = 'dcl_item'
+}
+
+export enum ACCESS_TYPES {
+    NFT_OWNERSHP = 'nft_ownership'
+}
+
+export enum ACCESS_CATEGORIES {
+    HAS_OWNERSHIP = 'has_ownership',
+    HAS_ON = 'has_on'
+}
+
+export enum ACCESS_FILTERS {
+    HAS_ALL = 'has_all',
+    HAS_ANY = 'has_any'
 }

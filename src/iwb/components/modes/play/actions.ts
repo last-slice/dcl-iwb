@@ -11,6 +11,24 @@ import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { items } from "../../catalog";
 import { sendServerMessage } from "../../messaging";
 import { showNotification } from "../../../ui/Panels/notificationUI";
+import { runTrigger } from "./triggers";
+
+export function findAndRunAction(id:string){
+    let scene = localPlayer.activeScene
+    if(scene){
+        let asset = scene.ass.find((asset:any)=> asset.actComp && asset.actComp.actions[id])
+        if(asset){
+            let action = asset.actComp.actions[id]
+            action.id = id
+            console.log('actions are ',[action])
+            runTrigger(asset, [action])
+        }else{
+            console.log('did not find scene asset with action')
+        }
+    }else{
+        console.log('no scene')
+    }
+}
 
 export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, actionId:string){
     console.log('handling trigger action', entity, asset, action, actionId)
@@ -179,6 +197,10 @@ export function handleTriggerAction(entity:Entity, asset:SceneItem, action:any, 
             console.log('give user reward', action, actionId)
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Claiming Item...", animate:{enabled:true, return:false, time:7}})
             sendServerMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
+
+        case Actions.VERIFY_ACCESS:
+            console.log('verifying access')
+            sendServerMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
             break;
     }
 }

@@ -26,7 +26,7 @@ import { resetEntityForBuildMode, selectedItem } from "../modes/build";
 import { items } from "../catalog";
 import { catalogSoundEntity } from "../sounds";
 import { utils } from "../../helpers/libraries";
-import { runTrigger } from "../modes/play";
+import { runTrigger } from "../modes/play/triggers";
 
 export function createVisibilityComponent(scene:IWBScene, entity:Entity, item:SceneItem){
     if(item.comps.includes(COMPONENT_TYPES.VISBILITY_COMPONENT)){

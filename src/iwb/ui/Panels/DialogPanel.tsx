@@ -9,7 +9,7 @@ import { calculateImageDimensions, dimensions, getImageAtlasMapping, addLineBrea
 import { playSound } from '../../components/sounds'
 import { localPlayer, settings } from '../../components/player/player'
 import { uiSizes } from '../uiConfig'
-import { findAndRunAction } from '../../components/modes/play'
+import { findAndRunAction } from '../../components/modes/play/actions'
 
 let show = false
 

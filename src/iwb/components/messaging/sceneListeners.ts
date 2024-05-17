@@ -1,6 +1,6 @@
 import { GltfContainer, engine } from "@dcl/sdk/ecs"
 import {log} from "../../helpers/functions"
-import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem} from "../../helpers/types"
+import {COLLISION_LAYERS, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem, Triggers} from "../../helpers/types"
 import {
     checkPlayerBuildRights,
     otherUserPlaceditem,
@@ -25,6 +25,7 @@ import { items } from "../catalog"
 import { refreshSortedItems } from "../catalog/items"
 import { filterCatalog } from "../../ui/Panels/CatalogPanel"
 import { utils } from "../../helpers/libraries"
+import { findEntitiesWithTrigger } from "../modes/play/triggers"
 
 export function createSceneListeners(room: any) {
         log('creating scene listeners for room', room.roomId)
@@ -175,6 +176,11 @@ export function createSceneListeners(room: any) {
                     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error: Claim Response\n" + info.reason, animate:{enabled:true, return:true, time:5}})
                 }
             }, 1000 * 2)
+        })
+
+        room.onMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, (info: any) => {
+            log(SERVER_MESSAGE_TYPES.VERIFY_ACCESS + ' received', info)
+            findEntitiesWithTrigger(info.sceneId, info.access ? Triggers.ON_ACCESS_VERIFIED : Triggers.ON_ACCESS_DENIED)
         })
 }
 

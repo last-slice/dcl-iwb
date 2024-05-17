@@ -37,7 +37,6 @@ import {
     disableDelayedActionTimers,
     disableEntityForPlayMode,
     disablePlayUI,
-    findSceneEntryTrigger,
     getSceneItem,
 } from "../modes/play"
 import {displaySceneAssetInfoPanel} from "../../ui/Panels/sceneInfoPanel"
@@ -47,6 +46,7 @@ import { sendServerMessage } from "../messaging"
 import { refreshMap } from "../../ui/map"
 import { getSceneInformation } from '~system/Runtime'
 import { getCenterOfParcels } from "../../helpers/build"
+import { findSceneEntryTrigger } from "../modes/play/triggers"
 
 
 export let realm: string = ""

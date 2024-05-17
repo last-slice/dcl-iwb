@@ -3,7 +3,7 @@ import {setButtonState} from "../listeners/inputListeners"
 import {log} from "../../helpers/functions"
 import {EDIT_MODES, ENTITY_TRIGGER_SLUGS, SCENE_MODES, Triggers} from "../../helpers/types"
 import {displayHover, updateContextEvents} from "../../ui/contextMenu"
-import { findTriggerActionForEntity } from "../modes/play"
+import { findTriggerActionForEntity } from "../modes/play/triggers"
 
 export let added = false
 

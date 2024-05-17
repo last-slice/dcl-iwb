@@ -2,15 +2,11 @@ import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContaine
 import { Actions, COLLISION_LAYERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS, IWBScene, SceneItem, Triggers } from "../../../helpers/types";
 import { entitiesFromItemIds, itemIdsFromEntities, sceneBuilds } from "../../scenes";
 import { getRandomIntInclusive, log } from "../../../helpers/functions";
-import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions";
+import { movePlayerTo } from "~system/RestrictedActions";
 import { items } from "../../catalog";
 import { displaySettingsPanel } from "../../../ui/Panels/settings/settingsIndex";
-import { localPlayer } from "../../player/player";
 import { utils } from "../../../helpers/libraries";
-import { Color3, Quaternion } from "@dcl/sdk/math";
-import { handleTriggerAction } from "./actions";
 import { clearShowTexts } from "../../../ui/showTextComponent";
-import { sceneParent } from "../../iwb";
 import { resetTweenPositions } from "../build";
 
 export let delayedActionTimers:any[] = []
@@ -65,57 +61,6 @@ export function disableEntityForPlayMode(sceneId:string, entity:Entity){
             }
         }
     }
-}
-
-export function findSceneEntryTrigger(scene:IWBScene){
-    let triggerAssets = scene.ass.filter((asset:SceneItem)=> asset.trigComp)
-    triggerAssets.forEach((tasset:SceneItem)=>{
-        let triggers = tasset.trigComp.triggers.filter((trig:any)=> trig.type === Triggers.ON_ENTER)
-        triggers.forEach((trigger:any)=>{
-            runTrigger(tasset, trigger.actions)
-        })
-    })
-}
-
-export function findTriggerActionForEntity(entity:Entity, type:Triggers, pointer:InputAction){
-    log('finding trigger action for entity', entity, type, pointer)
-    sceneBuilds.forEach((scene,key)=>{
-        let ent = scene.entities.find((e:any)=>e === entity)
-        if(ent){
-            try{
-                let assetId = itemIdsFromEntities.get(entity)
-                if(assetId){
-                    let triggerAsset = scene.ass.find((a:any)=> a.aid === assetId)
-                    if(triggerAsset){
-                        log('found an asset with a trigger component', triggerAsset, type)
-                        let triggers = triggerAsset.trigComp.triggers.filter((trig:any)=> trig.type === type && trig.pointer === pointer)
-                        log('found triggers', triggers)
-                        triggers.forEach((trigger:any)=>{
-                            runTrigger(triggerAsset, trigger.actions)
-                        })
-                    }
-                }
-            }
-            catch(e){
-                log('error with entiy trigger', e)
-            }
-        }
-    })
-}
-
-export function runTrigger(sceneItem:SceneItem, actions:any){
-    actions.forEach((data:any)=>{
-        let entity:any
-        let asset = localPlayer.activeScene?.ass.find((asset:any)=> asset.aid === data.aid)
-        if(asset && asset.actComp){
-            let action = asset.actComp.actions[data.id]
-
-            entity = entitiesFromItemIds.get(asset.aid)
-            if(entity){
-                handleTriggerAction(entity, asset, action, data.id)
-            }
-        }
-    })
 }
 
 export function check2DCollision(entity:Entity, sceneItem: SceneItem){
@@ -391,21 +336,4 @@ export function disableDelayedActionTimers(){
 
 export function disablePlayUI(){
     clearShowTexts()
-}
-
-export function findAndRunAction(id:string){
-    let scene = localPlayer.activeScene
-    if(scene){
-        let asset = scene.ass.find((asset:any)=> asset.actComp && asset.actComp.actions[id])
-        if(asset){
-            let action = asset.actComp.actions[id]
-            action.id = id
-            console.log('actions are ',[action])
-            runTrigger(asset, [action])
-        }else{
-            console.log('did not find scene asset with action')
-        }
-    }else{
-        console.log('no scene')
-    }
 }
