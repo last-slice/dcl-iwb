@@ -3,11 +3,8 @@ import {Animator, engine, Entity, Transform} from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { eth, utils } from "./libraries";
-import { localUserId, players } from "../components/player/player";
 import { openExternalUrl } from "~system/RestrictedActions";
 import resources from "./resources";
-
-export let HQParcels:any[] = ["0,0", "0,1", "1,0", "1,1"]
 
 export function paginateArray(array:any[], page:number, itemsPerPage:number){
   const startIndex = (page - 1) * itemsPerPage;
@@ -38,10 +35,6 @@ export function roundQuaternion(object:Quaternion, to:number){
   let y = eulers.y
   let z = eulers.z
   return Quaternion.fromEulerDegrees(parseFloat(x.toFixed(to)), parseFloat(y.toFixed(to)), parseFloat(z.toFixed(to)))
-}
-
-export function atHQ(){
-  return players.has(localUserId) ? HQParcels.find((p)=> p === players.get(localUserId)!.currentParcel) : true
 }
 
 export function formatDollarAmount(amount: number, decimal?:number): string {
@@ -178,35 +171,35 @@ export function setUVs(rows: number, cols: number) {
   ]
 }
 
-export async function getAssetUploadToken(){
-  let player = players.get(localUserId)
-  if(player && !player.dclData.isGuest || resources.allowNoWeb3){
-    log('web3 user, we can get token')
-    let response = await fetch((resources.DEBUG ? resources.endpoints.deploymentTest : resources.endpoints.deploymentProd) + resources.endpoints.assetSign +  "/" + localUserId)
-    let json = await response.json()
-    console.log('asset upload token is', json)
-    if(json.valid){
-      player!.uploadToken = json.token
-    }
-  }else{
-    log('non web3 user, we should not do anything')
-  }
-}
+// export async function getAssetUploadToken(){
+//   let player = players.get(localUserId)
+//   if(player && !player.dclData.isGuest || resources.allowNoWeb3){
+//     log('web3 user, we can get token')
+//     let response = await fetch((resources.DEBUG ? resources.endpoints.deploymentTest : resources.endpoints.deploymentProd) + resources.endpoints.assetSign +  "/" + localUserId)
+//     let json = await response.json()
+//     console.log('asset upload token is', json)
+//     if(json.valid){
+//       player!.uploadToken = json.token
+//     }
+//   }else{
+//     log('non web3 user, we should not do anything')
+//   }
+// }
 
-export function attemptAssetUploader(){
-  let player = players.get(localUserId)
-  if(!player) return
+// export function attemptAssetUploader(){
+//   let player = players.get(localUserId)
+//   if(!player) return
 
-  if((!player.dclData.isGuest && player.uploadToken) || resources.allowNoWeb3){
-    log('we have web3 and access token')
-    openExternalUrl({url:(resources.DEBUG ? resources.endpoints.toolsetTest : resources.endpoints.toolsetProd) + "/" + localUserId + "/" + player.uploadToken})
-  }else{
-    log('we dont have web3 or access token')
-    if(player.dclData.isGuest){
-      log('not web3')
-    }
-  }
-}
+//   if((!player.dclData.isGuest && player.uploadToken) || resources.allowNoWeb3){
+//     log('we have web3 and access token')
+//     openExternalUrl({url:(resources.DEBUG ? resources.endpoints.toolsetTest : resources.endpoints.toolsetProd) + "/" + localUserId + "/" + player.uploadToken})
+//   }else{
+//     log('we dont have web3 or access token')
+//     if(player.dclData.isGuest){
+//       log('not web3')
+//     }
+//   }
+// }
 
 export function getFrontOfPlayerPosition() {
   const playerPosition = Transform.get(engine.PlayerEntity)

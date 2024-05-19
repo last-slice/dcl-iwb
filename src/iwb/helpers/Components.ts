@@ -42,7 +42,6 @@ export const SmartItemLoadedComponent = engine.defineComponent("iwb::asset::smar
     sceneId:Schemas.String
 })
 
-
 export let AssetComponentList:any = {
     Animator: Animator,
     Visibility: VisibilityComponent,
