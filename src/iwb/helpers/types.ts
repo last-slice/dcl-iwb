@@ -60,6 +60,7 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_DELETE_SPAWN = "scene_delete_spawn",
     SCENE_CLEAR_ASSETS = 'scene_clear_assets',
     SCENE_DEPLOY_FINISHED = 'scene_deploy_finished',
+    SCENE_ACTION = 'scene_action',
     
     //World
     INIT_WORLD = "init_world",
@@ -376,9 +377,6 @@ export enum Actions {
 
 
 
-
-
-
     ADD_NUMBER = 'add_number',
     SET_NUMBER = 'set_number',
     SUBTRACT_NUMBER = 'subtract_number',
@@ -391,7 +389,7 @@ export enum Actions {
     SET_POSITION = 'set_position',
     SET_ROTATION = 'set_rotation',
     SET_SCALE = 'set_scale',
-    
+    SET_STATE = 'set_state',
 
 
 
@@ -418,8 +416,8 @@ export enum Triggers {
     // ON_GLOBAL_CLICK
     // ON_TICK
     // ON_HEAL
-    // ON_STATE_CHANGE
-    // ON_COUNTER_CHANGE
+    ON_STATE_CHANGE = "on_state_change",
+    ON_COUNTER_CHANGE = "on_counter_change",
 }
 
 export enum TriggerConditionType {
@@ -646,4 +644,9 @@ export enum ACCESS_CATEGORIES {
 export enum ACCESS_FILTERS {
     HAS_ALL = 'has_all',
     HAS_ANY = 'has_any'
+}
+
+export enum COUNTER_VALUE {
+    CURRENT,
+    PREVIOUS
 }

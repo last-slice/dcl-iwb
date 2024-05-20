@@ -1,8 +1,11 @@
 import { Entity } from "@dcl/sdk/ecs"
-import { Actions } from "../helpers/types"
+import { Actions, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
+import { sendServerMessage } from "./Colyseus"
+import { getCounterComponentByAssetId, updateCounter } from "./Counter"
+import { getStateComponentByAssetId, setState } from "./States"
+import { getTriggerEvents } from "./Triggers"
 
-// const actions = new Map<Entity,Emitter<Record<string, ActionPayload<ActionType>>>>()
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
 export function getActionEvents(entity: Entity) {
@@ -23,6 +26,14 @@ export function addActionComponent(scene:any){
                         case Actions.SHOW_TEXT:
                             handleShowText(info.entity, action)
                             break;
+
+                        case Actions.ADD_NUMBER:
+                            handleAddNumber(scene, info, action)
+                            break;
+
+                        case Actions.SET_STATE:
+                            handleSetState(scene, info.entity, info, action)
+                            break;
                     }
                 })
             })
@@ -32,4 +43,27 @@ export function addActionComponent(scene:any){
 
 function handleShowText(entity:Entity, action:any){
     console.log('handling show text action for', entity, action)
+}
+
+function handleSetState(scene:any, entity:Entity, info:any, action:any){
+    let state = getStateComponentByAssetId(scene, info.aid)
+    if(state){
+        setState(state, action.state)
+
+        const triggerEvents = getTriggerEvents(entity)
+        triggerEvents.emit(Triggers.ON_STATE_CHANGE)
+    }
+}
+
+function handleAddNumber(scene:any, info:any, action:any){
+    let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
+    if(counter){
+        updateCounter(counter, action.value)
+    }
+
+    //todo
+    //handle local vs multiplayer counter//
+
+    //if multiplayer, send to server
+    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
 }

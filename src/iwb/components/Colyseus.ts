@@ -4,6 +4,7 @@ import { connect } from '../helpers/connection'
 import { log } from '../helpers/functions'
 import { createSceneListeners } from './Listeners'
 import { localPlayer } from './Player'
+import { SERVER_MESSAGE_TYPES } from '../helpers/types'
 
 export let data:any
 export let colyseusRoom:Room

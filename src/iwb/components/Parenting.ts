@@ -11,9 +11,6 @@ export async function  addParenting(scene:any){
             let ent = engine.addEntity()
             item.entity = ent
 
-            MeshRenderer.setBox(ent)
-            MeshCollider.setBox(ent)
-
             // pointerEventsSystem.onPointerDown({entity:ent, opts:{button:InputAction.IA_POINTER, maxDistance:10, hoverText:"Click Here"}}, ()=>{
 
             //     //TESTING SERVER LISTENERS
