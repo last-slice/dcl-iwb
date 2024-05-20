@@ -3,6 +3,9 @@ import { addParenting } from "./Parenting";
 import { addTransformComponent, transformListener } from "./Transform";
 import { addVisibilityComponent, visibilityListener } from "./Visibility";
 import { addTextShapeComponent, textShapeListener } from "./TextShape";
+import { counterListener } from "./Counter";
+import { addTriggerComponent } from "./Triggers";
+import { addActionComponent } from "./Actions";
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
 
@@ -23,6 +26,12 @@ export function addSceneStateListeners(room:Room){
 
         await addTextShapeComponent(scene)
         textShapeListener(scene)
+
+        await addTriggerComponent(scene)
+
+        await addActionComponent(scene)
+
+        counterListener(scene)
 
         // await addIWBComponent(scene)
         // await addIWBCatalogComponent(scene)

@@ -408,6 +408,7 @@ export enum Triggers {
     //new triggers
     ON_ACCESS_VERIFIED ='on_access_verified',
     ON_ACCESS_DENIED ='on_access_denied',
+    ON_INPUT_ACTION = 'on_input_action',
     // ON_TWEEN_END,
     // ON_DELAY,
     // ON_LOOP
@@ -421,12 +422,21 @@ export enum Triggers {
     // ON_COUNTER_CHANGE
 }
 
-export enum TriggerConditions {
-    // VARIABLE_IS
-    // VARIABLE_IS_NOT
-    // COUNTER_IS
-    // COUNTER_IS_LESS
-    // COUNTER_IS_GREATER
+export enum TriggerConditionType {
+    WHEN_STATE_IS = 'when_state_is',
+    WHEN_STATE_IS_NOT = 'when_state_is_not',
+    WHEN_COUNTER_EQUALS = 'when_counter_equals',
+    WHEN_COUNTER_IS_GREATER_THAN = 'when_counter_is_greater_than',
+    WHEN_COUNTER_IS_LESS_THAN = 'when_counter_is_less_than',
+    WHEN_DISTANCE_TO_PLAYER_LESS_THAN = 'when_distance_to_player_less_than',
+    WHEN_DISTANCE_TO_PLAYER_GREATER_THAN = 'when_distance_to_player_greater_than',
+    WHEN_PREVIOUS_STATE_IS = 'when_previous_state_is',
+    WHEN_PREVIOUS_STATE_IS_NOT = 'when_previous_state_is_not',
+  }
+
+export enum TriggerConditionOperation {
+  AND = 'and',
+  OR = 'or',
 }
 
 export enum Materials {

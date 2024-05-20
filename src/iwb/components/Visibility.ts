@@ -13,7 +13,6 @@ export function addVisibilityComponent(scene:any){
 export function visibilityListener(scene:any){
     scene.visibilities.onAdd((visibility:any, aid:any)=>{
         visibility.listen("visible", (c:any, p:any)=>{
-            console.log('visiblity changed',aid, visibility, p, c)
             if(p !== undefined){
                 let info = getEntity(scene, aid)
                 if(info){

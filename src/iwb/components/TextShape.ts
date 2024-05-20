@@ -37,7 +37,6 @@ export function textShapeListener(scene:any){
         }
 
         textShape.listen("text", (c:any, p:any)=>{
-            console.log('text shape changed', p, c)
             if(p !== undefined){
                 addTextShape(info.entity, textShape)
             }
