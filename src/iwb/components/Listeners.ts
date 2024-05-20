@@ -10,6 +10,7 @@ import { addPointerComponent } from "./Pointers";
 import { addInputSystem } from "../systems/InputSystem";
 import { addGltfComponent, gltfListener } from "./Gltf";
 import { addStateComponent, stateListener } from "./States";
+import { addSoundComponent } from "./Sounds";
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
 
@@ -35,6 +36,8 @@ export function addSceneStateListeners(room:Room){
         await addTextShapeComponent(scene)
         textShapeListener(scene)
 
+        await addSoundComponent(scene)
+
         await addPointerComponent(scene)
 
         await addTriggerComponent(scene)
@@ -55,3 +58,5 @@ export function addSceneStateListeners(room:Room){
 
     })
 }
+
+//

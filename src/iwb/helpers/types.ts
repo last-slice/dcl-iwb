@@ -337,12 +337,12 @@ export enum Actions {
     START_TWEEN = "start_tween",
     PLAY_SOUND = "play_sound",
     STOP_SOUND = "stop_sound",
-    SET_VISIBILITY = "set_vis",
+    SET_VISIBILITY = "set_visibility",
     ATTACH_PLAYER = "attach_player",
     DETACH_PLAYER = "detach_player",
     PLAY_VIDEO = 'play_video',
     TOGGLE_VIDEO = 'toggle_video',
-    PLAYER_VIDEO_STREAM = 'play_video_stream',
+    PLAY_VIDEO_STREAM = 'play_video_stream',
     STOP_VIDEO = 'stop_video',
     STOP_VIDEO_STREAM = 'stop_video_stream',
     PLAY_AUDIO = 'play_audio',
@@ -376,7 +376,6 @@ export enum Actions {
 
 
 
-
     ADD_NUMBER = 'add_number',
     SET_NUMBER = 'set_number',
     SUBTRACT_NUMBER = 'subtract_number',
@@ -390,9 +389,9 @@ export enum Actions {
     SET_ROTATION = 'set_rotation',
     SET_SCALE = 'set_scale',
     SET_STATE = 'set_state',
-
-
-
+    MOVE_PLAYER = 'move_player',
+    SHOW_NOTIFICATION = 'show_notification',
+    PLACE_PLAYER_POSITION = 'place_player_position',
 
 }
 

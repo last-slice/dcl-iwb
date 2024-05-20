@@ -70,6 +70,13 @@ export function updateCounter(counter:any, value:any){
     console.log('counter component is now', counter)
 }
 
+export function setCounter(counter:any, value:any){
+    counter.previousValue = counter.currentValue
+    counter.currentValue = value
+    console.log('counter component is now', counter)
+}
+
+
 export function counterListener(scene:any){
     scene.counters.onAdd((counters:any, aid:any)=>{
         let info = getEntity(scene, aid)
