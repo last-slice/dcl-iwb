@@ -12,12 +12,13 @@ import { checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, 
 import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel } from "../modes/Create";
 import { getEntity } from "./IWB";
+import { refreshMap } from "../ui/Objects/Map";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
 
 export async function createColyseusListeners(room:Room){
-    createConfigurationListeners(room)
+    await createConfigurationListeners(room)
     await createColyseusRoomStateListeners(room)
     await createSceneListeners(room)
     await createPlayerListeners(room)
@@ -144,7 +145,7 @@ function createConfigurationListeners(room:Room){
         // }
 
         utils.timers.setTimeout(()=>{
-            // refreshMap()
+            refreshMap()
         }, 1000 * 5)
     })
 

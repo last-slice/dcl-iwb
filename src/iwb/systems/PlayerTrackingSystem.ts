@@ -2,6 +2,7 @@ import {engine, Transform} from "@dcl/sdk/ecs"
 import { Quaternion } from "@dcl/sdk/math"
 import { localPlayer } from "../components/Player"
 import { checkScenePermissions } from "../components/Scene"
+import { refreshMap } from "../ui/Objects/Map"
 
 export function PlayerTrackingSystem(dt: number) {
     let playerPos = Transform.get(engine.PlayerEntity).position
@@ -11,6 +12,6 @@ export function PlayerTrackingSystem(dt: number) {
     checkScenePermissions(localPlayer)
 
     if(localPlayer.previousParcel && localPlayer.previousParcel !== localPlayer.currentParcel){
-        // refreshMap()
+        refreshMap()
     }
 }
