@@ -5,7 +5,7 @@ import { sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
 import { getStateComponentByAssetId, setState } from "./States"
 import { getTriggerEvents } from "./Triggers"
-import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions"
+import { movePlayerTo, openExternalUrl, openNftDialog, triggerEmote } from "~system/RestrictedActions"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 

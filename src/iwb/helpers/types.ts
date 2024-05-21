@@ -141,28 +141,29 @@ export type NOTIFICATION_DETAIL = {
 }
 
 export interface Player {
-    dclData:any,
-    mode:SCENE_MODES,
-    viewMode:VIEW_MODES,
-    scenes:IWBScene[],
-    worlds:any[],
-    buildingAllowed:boolean,
-    previousParcel:string,
-    currentParcel:string,
-    uploadToken:string,
-    version: number
-    activeScene: IWBScene | null,
-    activeSceneId:string,
+    dclData?:any,
+    mode?:SCENE_MODES,
+    viewMode?:VIEW_MODES,
+    scenes?:IWBScene[],
+    worlds?:any[],
+    buildingAllowed?:boolean,
+    previousParcel?:string,
+    currentParcel?:string,
+    uploadToken?:string,
+    version?:number
+    activeScene?: IWBScene | null,
+    activeSceneId?:string,
     canBuild:boolean,
-    objects:any[],
-    selectedEntity:Entity | null
-    homeWorld:boolean
-    cameraParent:Entity
-    uploads:any
-    landsAvailable:any[]
-    worldsAvailable:any[]
-    deploymentLink:string
-    rotation:number
+    objects?:any[],
+    selectedEntity?:Entity | null
+    homeWorld?:boolean
+    cameraParent?:Entity
+    uploads?:any
+    landsAvailable?:any[]
+    worldsAvailable?:any[]
+    deploymentLink?:string
+    rotation?:number
+    parent?:Entity
 }
 
 export interface IWBScene {

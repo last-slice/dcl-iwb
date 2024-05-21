@@ -1,10 +1,9 @@
+import {getPlayer} from "@dcl/sdk/players";
 import { Room } from 'colyseus.js'
 import mitt from 'mitt'
 import { connect } from '../helpers/connection'
 import { log } from '../helpers/functions'
-import { createSceneListeners } from './Listeners'
-import { localPlayer } from './Player'
-import { SERVER_MESSAGE_TYPES } from '../helpers/types'
+import { createColyseusListeners } from "./Listeners";
 
 export let data:any
 export let colyseusRoom:Room
@@ -24,7 +23,7 @@ export async function colyseusConnect(data:any, token:string, world?:any) {
             log('left room with code', code)
             connected = false
         })
-        createSceneListeners(room)
+        createColyseusListeners(room)
         
     }).catch((err) => {
         console.error('colyseus connection error', err)
@@ -39,7 +38,8 @@ export async function joinWorld(world?: any) {
     }
     console.log('colyseusRoom is', colyseusRoom, world)
     try{
-        await colyseusConnect(localPlayer.dclData, "", world)
+        const playerData = getPlayer()
+        await colyseusConnect(playerData, "", world)
     }
     catch(e){
         console.log('error connecting to colyseus')

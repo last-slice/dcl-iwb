@@ -1,5 +1,4 @@
 import { GltfContainer, Transform } from "@dcl/sdk/ecs"
-import { Quaternion } from "@dcl/sdk/math"
 import { getEntity } from "./IWB"
 
 export function addGltfComponent(scene:any){

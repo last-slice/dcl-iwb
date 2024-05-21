@@ -1,107 +1,119 @@
+import {getPlayer} from "@dcl/sdk/players";
 import {Player, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
 // import {iwbEvents, sendServerMessage} from "../messaging";
 import {AvatarAnchorPointType, AvatarAttach, engine, Entity, Material, MeshRenderer, Transform, VideoPlayer} from "@dcl/sdk/ecs";
-// import {displayRealmTravelPanel} from "../../ui/Panels/realmTravelPanel";
-// import {displaySettingsPanel} from "../../ui/Panels/settings/settingsIndex";
-import {changeRealm} from "~system/RestrictedActions";
-import {log} from "../helpers/functions";
 import resources from "../helpers/resources";
 import {Color4, Vector3} from "@dcl/sdk/math";
-// import { refreshVisibleItems } from "../../ui/Panels/settings/uploadsPanel";//
-// import { displayTutorialVideoControls } from "../../ui/tutorialVideoControlPanel";
+import { Room } from "colyseus.js";
+import { colyseusRoom } from "./Colyseus";
+import { utils } from "../helpers/libraries";
+import { realm } from "./Config";
+import { log } from "../helpers/functions";
+import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
+
 export let localUserId: string
-export let localPlayer: Player
-export let players: Map<string, Player> = new Map<string, Player>()
-export let iwbConfig: any = {}
+export let localPlayer:any
 export let tutorialVideo:Entity
 export let settings:any
 
-export async function addPlayer(userId: string, local: boolean, data?: any[]) {
-    if (local) {
-        localUserId = userId
-    }
+export function setLocalPlayer(player:any){
+    localPlayer = player
+}
 
-    let pData: any = {
-        dclData: null,
-        mode: SCENE_MODES.PLAYMODE,
-        viewMode: VIEW_MODES.AVATAR,
-        scenes: [],
-        objects: [],
-        buildingAllowed: false,
-        selectedEntity: null,
-        canBuild: false,
-        homeWorld: false,
-        worlds: [],
-        uploads: [],
-        activeSceneId:"",
-        worldsAvailable:[],
-        landsAvailable:[
-            {name:"Test Land", size:2, type:"own"},
-            {name:"Test Land2", size:2, type:"own"},
-            {name:"Test Land3", size:2, type:"deploy"},
-            {name:"Test Land4", size:2, type:"deploy"},
-            {name:"Test Land5", size:2, type:"own"},
-            {name:"Test Land6", size:2, type:"own"},
-        ],
+export function setPlayerSelectedAsset(player:any, current:any, previous:any){
+    log('player selected asset', previous, current)
+    if(player.address !== localUserId){
+        if(current === null){
+            otherUserRemovedSeletedItem(player.address)
+        }else{
+            current.user = player.address
+            if(current.grabbed){
+                otherUserSelectedItem(current)
+            }
+        }
     }
+}
 
-    if (!local) {
-        log('non local user')
-        let parent = engine.addEntity()
-        AvatarAttach.create(parent, {
-            avatarId: userId,
-            anchorPointId: AvatarAnchorPointType.AAPT_POSITION
+export function setPlayerVersion(version:any){
+    let player = colyseusRoom.state.players.get(localUserId)
+    if(player){
+        player.version = version
+    }
+}
+
+export async function createPlayer(userId:string, player:any){
+    await setPlayerDefaults(player)
+
+    if(userId == localUserId){
+        player.cameraParent = engine.addEntity()
+        Transform.createOrReplace( player.cameraParent, {position: Vector3.create(0, 0, 6), parent: engine.CameraEntity})
+    
+        await getPlayerNames(player)
+        await checkPlayerHomeWorld(player)
+    }else{
+        player.parentEntity = engine.addEntity()
+        AvatarAttach.create(player.parentEntity,{
+            avatarId:userId,
+            anchorPointId:AvatarAnchorPointType.AAPT_SPINE
         })
-        pData.parent = parent
-    } else {
-
-        let cameraParent = engine.addEntity()
-        Transform.createOrReplace(cameraParent, {position: Vector3.create(0, 0, 6), parent: engine.CameraEntity})
-        //MeshRenderer.setBox(cameraParent)
-
-        pData.cameraParent = cameraParent
-
-        localPlayer = pData
     }
+}
 
-    if (data) {
-        data.forEach((item: any) => {
-            for (let key in item) {
-                pData[key] = item[key]
+function checkPlayerHomeWorld(player:any){
+    if (realm !== "BuilderWorld") {
+        player.worlds.forEach(async (world:any) => {
+            if ((world.ens === realm)) {
+                player!.homeWorld = true
+                // await getPlayerLand()
+                return
             }
         })
     }
-
-    players.set(userId, pData)
-    return localPlayer
 }
 
-// export async function getPlayerNames() {
-//     let res = await fetch(resources.endpoints.dclNamesGraph, {
-//         headers: {"content-type": "application/json"},
-//         method: "POST",
-//         body: JSON.stringify({
-//             variables: {offset: 0, owner: localUserId},
-//             query: "query getUserNames($owner: String, $offset: Int) {\n  nfts(first: 1000, skip: $offset, where: {owner: $owner, category: ens}) {\n    ens {\n      subdomain\n    }\n  }\n}\n"
-//         })
-//     })
+function setPlayerDefaults(player:any){
+    player.dclData = null
+    player.viewMode = VIEW_MODES.AVATAR
+    player.scenes = []
+    player.worlds = []
+    player.objects = []
+    player.uploads = []
+    player.worldsAvailable =  []
+    player.landsAvailable = []
+    player.buildingAllowed = false
+    player.canBuild = false
+    player.homeWorld = true
+    player.selectedEntity = null
+    player.activeSceneId = ""
+}
 
-//     let json = await res.json()
-//     console.log('player names are ', json)
-//     if (json.data) {
-//         json.data.nfts.forEach((nft: any) => {
-//             localPlayer.worlds.push({
-//                 name: nft.ens.subdomain,
-//                 owner: localUserId,
-//                 ens: nft.ens.subdomain + ".dcl.eth",
-//                 builds: 0,
-//                 updated: 0,
-//                 init: false,
-//                 version: 0
-//             })
-//         })
-//     }
-// }
+export async function getPlayerNames(player:any) {
+    let res = await fetch(resources.endpoints.dclNamesGraph, {
+        headers: {"content-type": "application/json"},
+        method: "POST",
+        body: JSON.stringify({
+            variables: {offset: 0, owner: localUserId},
+            query: "query getUserNames($owner: String, $offset: Int) {\n  nfts(first: 1000, skip: $offset, where: {owner: $owner, category: ens}) {\n    ens {\n      subdomain\n    }\n  }\n}\n"
+        })
+    })
+
+    let json = await res.json()
+    if (json.data) {
+        json.data.nfts.forEach((nft: any) => {
+            player.worlds.push({
+                name: nft.ens.subdomain,
+                owner: localUserId,
+                ens: nft.ens.subdomain + ".dcl.eth",
+                builds: 0,
+                updated: 0,
+                init: false,
+                version: 0
+            })
+        })
+    }
+
+    // console.log('player worlds are ', player.worlds)
+}
 
 // export async function getPlayerLand(){
 //     let res = await fetch(resources.endpoints.dclLandGraph, {

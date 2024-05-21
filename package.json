@@ -11,8 +11,8 @@
     "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.4.2",
-    "@dcl/sdk": "7.4.2"
+    "@dcl/js-runtime": "7.5.0",
+    "@dcl/sdk": "latest"
   },
   "engines": {
     "node": ">=16.0.0",
@@ -25,7 +25,7 @@
     "trailingComma": "none"
   },
   "dependencies": {
-    "@dcl-sdk/utils": "^1.1.2",
+    "@dcl-sdk/utils": "latest",
     "colyseus.js": "^0.15.10",
     "core-js": "^3.31.0",
     "dcl-crypto-toolkit": "^1.0.0-20231102170834.commit-63c4be6",
