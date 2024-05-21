@@ -1,6 +1,7 @@
 import { getRealm } from "~system/Runtime"
 import { colyseusRoom } from "./Colyseus"
 import { localPlayer, localUserId } from "./Player"
+import { SCENE_MODES, VIEW_MODES } from "../helpers/types"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -11,6 +12,9 @@ export let iwbConfig: any = {}
 export let buildModeCheckedAssets: any[] = []
 export let playModeCheckedAssets: any[] = []
 export let lastScene: any
+
+export let playerMode:SCENE_MODES = SCENE_MODES.PLAYMODE
+export let playerViewMode:VIEW_MODES = VIEW_MODES.AVATAR
 
 export let playModeReset: boolean = true
 export let disabledEntities: boolean = false

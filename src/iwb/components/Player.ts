@@ -5,19 +5,35 @@ import {AvatarAnchorPointType, AvatarAttach, engine, Entity, Material, MeshRende
 import resources from "../helpers/resources";
 import {Color4, Vector3} from "@dcl/sdk/math";
 import { Room } from "colyseus.js";
-import { colyseusRoom } from "./Colyseus";
+import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
 import { realm } from "./Config";
 import { log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
+import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
+import { FlyModeSystem } from "../systems/FlyModeSystem";
+import { createInputListeners } from "../systems/InputSystem";
+import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem";
+import { SelectedItemSystem } from "../systems/SelectedItemSystem";
 
 export let localUserId: string
 export let localPlayer:any
 export let tutorialVideo:Entity
 export let settings:any
 
+export function setLocalUserId(userData:any){
+    localUserId = userData.userId
+    return userData
+}
+
 export function setLocalPlayer(player:any){
     localPlayer = player
+
+    createInputListeners()
+    engine.addSystem(BuildModeVisibiltyComponents)
+    engine.addSystem(PlayerTrackingSystem)
+    engine.addSystem(FlyModeSystem)
+    engine.addSystem(SelectedItemSystem)
 }
 
 export function setPlayerSelectedAsset(player:any, current:any, previous:any){
@@ -44,10 +60,13 @@ export function setPlayerVersion(version:any){
 export async function createPlayer(userId:string, player:any){
     await setPlayerDefaults(player)
 
-    if(userId == localUserId){
+    console.log('player mode is', player.mode)
+
+    if(userId === localUserId){
         player.cameraParent = engine.addEntity()
         Transform.createOrReplace( player.cameraParent, {position: Vector3.create(0, 0, 6), parent: engine.CameraEntity})
     
+        await setLocalPlayer(player)
         await getPlayerNames(player)
         await checkPlayerHomeWorld(player)
     }else{
@@ -73,7 +92,6 @@ function checkPlayerHomeWorld(player:any){
 
 function setPlayerDefaults(player:any){
     player.dclData = null
-    player.viewMode = VIEW_MODES.AVATAR
     player.scenes = []
     player.worlds = []
     player.objects = []
@@ -150,62 +168,51 @@ export async function getPlayerNames(player:any) {
 // }
 
 
-// export function removePlayer(user: string) {
-//     /**
-//      * todo
-//      * add other garbage collection and entity clean up here
-//      */
+export function removePlayer(player:any) {
+    /**
+     * todo
+     * add other garbage collection and entity clean up here
+     */
+    if (player.mode === SCENE_MODES.CREATE_SCENE_MODE) {
+        // deleteCreationEntities(player.userId)
+    }
+}
 
-//     let player = players.get(user)
-//     if (player) {
+export function addPlayerScenes(userId:string, scenes:any[]) {
+    let player = colyseusRoom.state.players.get(userId)
+    if (player) {
+        scenes.forEach((scene) => {
+            player!.scenes.push(scene)
+        })
+    }
+}
 
-//         /**
-//          * maybe move to its own file and function
-//          */
-//         if (player.mode === SCENE_MODES.CREATE_SCENE_MODE) {
-//             deleteCreationEntities(user)
-//         }
+export function setPlayMode(userId:string, mode:SCENE_MODES) {
+    let player = colyseusRoom.state.players.get(userId)
+    if (player) {
+        player.mode = mode
+        // iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})
+        sendServerMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})
+    }
+}
 
+export function worldTravel(world: any) {
+    log('traveling to world', world)
 
-//         players.delete(user)
-//     }
-// }
-
-// export function addPlayerScenes(user: string, scenes: any[]) {
-//     let player = players.get(user)
-//     if (player) {
-//         scenes.forEach((scene) => {
-//             player!.scenes.push(scene)
-//         })
-//     }
-// }
-
-// export function setPlayMode(user: string, mode: SCENE_MODES) {
-//     let player = players.get(user)
-//     if (player) {
-//         player.mode = mode
-//         iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})
-//         sendServerMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})
-//     }
-// }
-
-// export function worldTravel(world: any) {
-//     log('traveling to world', world)
-
-//     displaySettingsPanel(false)
-//     displayRealmTravelPanel(false, {})
+    // displaySettingsPanel(false)
+    // displayRealmTravelPanel(false, {})
 //     changeRealm({realm: "https://worlds.dcl-iwb.co/world/" + world.ens})
 //     sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_TRAVEL, {from: realm, to:world.ens})
-// }
+}
 
-// export function hasBuildPermissions() {
-//     return players.get(localUserId)!.canBuild || players.get(localUserId)!.homeWorld
-// }
+export function hasBuildPermissions() {
+    return localPlayer.canBuild || localPlayer.homeWorld
+}
 
-// export function addPendingAsset(info:any){
-//     localPlayer.uploads.push({type:info.ty, name: info.n, status:"READY"})
-//     refreshVisibleItems()
-// }
+export function addPendingAsset(info:any){
+    localPlayer.uploads.push({type:info.ty, name: info.n, status:"READY"})
+    // refreshVisibleItems()
+}
 
 // export function createTutorialVideo(video:any){
 //     engine.removeEntity(tutorialVideo)
@@ -249,7 +256,7 @@ export async function getPlayerNames(player:any) {
 //     }
 // }
 
-// export function setSettings(sets:any){
-//     settings = sets
-//     settings.sceneCheck = true
-// }
+export function setSettings(sets:any){
+    settings = sets
+    settings.sceneCheck = true
+}
