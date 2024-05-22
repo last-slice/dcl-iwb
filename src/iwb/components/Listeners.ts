@@ -13,6 +13,8 @@ import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel } from "../modes/Create";
 import { getEntity } from "./IWB";
 import { refreshMap } from "../ui/Objects/Map";
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
+import { getView } from "../ui/uiViews";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -25,6 +27,8 @@ export async function createColyseusListeners(room:Room){
 }
 
 function createPlayerListeners(room:Room){
+
+    // displaySkinnyVerticalPanel(true, getView("Welcome"))
 
     // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED + ' received', info)

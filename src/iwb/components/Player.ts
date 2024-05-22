@@ -21,6 +21,10 @@ export let localPlayer:any
 export let tutorialVideo:Entity
 export let settings:any
 
+export function isLocalPlayer(userId:string){
+    return userId === localUserId
+}
+
 export function setLocalUserId(userData:any){
     localUserId = userData.userId
     return userData

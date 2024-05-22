@@ -1,592 +1,605 @@
-// export let uiModes: any = {
-//     0://playmode
-//         {
-//             atlas: "assets/atlas1.png",
-//             uvs: {
-//                 atlasHeight: 1024,
-//                 atlasWidth: 1024,
-//                 sourceTop: 128 * 6,
-//                 sourceLeft: 128 * 6,
-//                 sourceWidth: 128,
-//                 sourceHeight: 128
-//             },
-//         },
+import players from "@dcl/sdk/players"
+import { isLocalPlayer, localPlayer, localUserId } from "../components/Player"
+import resources from "../helpers/resources"
+import { VIEW_MODES } from "../helpers/types"
+import { toggleFlyMode } from "../modes/Flying"
+import { toggleSnapMode } from "../systems/SelectedItemSystem"
+import { getImageAtlasMapping } from "./helpers"
+import { playerViewMode } from "../components/Config"
+import { displayMainView } from "./Objects/IWBView"
 
-//     1://create scene mode
-//         {
-//             atlas: "assets/atlas1.png",
-//             uvs: {
-//                 atlasHeight: 1024,
-//                 atlasWidth: 1024,
-//                 sourceTop: 128 * 0,
-//                 sourceLeft: 128 * 1,
-//                 sourceWidth: 128,
-//                 sourceHeight: 128
-//             },
-//         },
+export let uiModes: any = {
+    0://playmode
+        {
+            atlas: "assets/atlas1.png",
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 128 * 6,
+                sourceLeft: 128 * 6,
+                sourceWidth: 128,
+                sourceHeight: 128
+            },
+        },
 
-//     2://build mode
-//         {
-//             atlas: "assets/atlas1.png",
-//             uvs: {
-//                 atlasHeight: 1024,
-//                 atlasWidth: 1024,
-//                 sourceTop: 128 * 6,
-//                 sourceLeft: 128 * 7,
-//                 sourceWidth: 128,
-//                 sourceHeight: 128
-//             },
-//         },
-// }
+    1://create scene mode
+        {
+            atlas: "assets/atlas1.png",
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 128 * 0,
+                sourceLeft: 128 * 1,
+                sourceWidth: 128,
+                sourceHeight: 128
+            },
+        },
 
-// export let topTools: any[] = [
-//     {
-//         name: "GodMode",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 2,
-//             sourceLeft: 128 * 3,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 3,
-//             sourceLeft: 128 * 3,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             toggleFlyMode()
-//         },
-//         uvOverride: () => {
-//             return players.has(localUserId) ? players.get(localUserId)!.viewMode === VIEW_MODES.GOD ? getImageAtlasMapping(uiSizes.godModeButton) : getImageAtlasMapping(uiSizes.carpenterButton) : getImageAtlasMapping()
-//         }
-//     },
-//     {
-//         name: "Box",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 0,
-//             sourceLeft: 128 * 2,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 0,
-//             sourceLeft: 128 * 2,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showCatalogPanel) {
-//                 displayCatalogPanel(false)
-//             } else {
-//                 hideAllPanels()
-//                 displayCatalogPanel(true)
-//             }
-//         }
-//     },
-//     {
-//         name: "Snap",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 2,
-//             sourceLeft: 128 * 4,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 3,
-//             sourceLeft: 128 * 4,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: false,
-//         visible: true,
-//         toggle: true,
-//         fn: () => {
-//             toggleSnapMode()
-//         }
-//     },
-//     {
-//         name: "Upload",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 4,
-//             sourceLeft: 128 * 7,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 5,
-//             sourceLeft: 128 * 7,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (players.has(localUserId) && (!players.get(localUserId)!.dclData.isGuest || resources.allowNoWeb3) && players.get(localUserId)!.homeWorld) {
-//                 displayAssetUploadUI(true)
-//             } else {
-//                 displayNoWeb3(true)
-//             }
-//         }
-//     },
-//     {
-//         name: "SceneInfo",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 0,
-//             sourceLeft: 128 * 1,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 1,
-//             sourceLeft: 128 * 1,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showSceneInfoPanel) {
-//                 displaySceneAssetInfoPanel(false)
-//             } else {
-//                 hideAllPanels()
-//                 displaySceneAssetInfoPanel(true)
-//             }
-//         },
-//     },
-//     // {
-//     //     name: "Image",
-//     //     atlas: "assets/atlas1.png",
-//     //     enabledUV: {
-//     //         atlasHeight: 1024,
-//     //         atlasWidth: 1024,
-//     //         sourceTop: 128 * 0,
-//     //         sourceLeft: 128 * 3,
-//     //         sourceWidth: 128,
-//     //         sourceHeight: 128
-//     //     },
-//     //     disabledUV: {
-//     //         atlasHeight: 1024,
-//     //         atlasWidth: 1024,
-//     //         sourceTop: 128 * 0,
-//     //         sourceLeft: 128 * 3,
-//     //         sourceWidth: 128,
-//     //         sourceHeight: 128
-//     //     },
-//     //     enabled: true,
-//     //     visible: true,
-//     //     fn: () => {
-//     //         displayRectanglePanel(!showRectanglePanel)
-//     //     }
-//     // },
-//     // {
-//     //     name:"Position",
-//     //     atlas:"assets/atlas1.png",
-//     //     enabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 4,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     disabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 4,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     enabled:true,
-//     //     visible:true,
-//     //     fn:()=>{
-//     //         displayBlockPanel(!showBlockPanel)
-//     //     }
-//     // },
-//     // {
-//     //     name:"Rotation",
-//     //     atlas:"assets/atlas1.png",
-//     //     enabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 5,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     disabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 5,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     enabled:true,
-//     //     visible:true
-//     // },
-//     // {
-//     //     name:"Scale",
-//     //     atlas:"assets/atlas1.png",
-//     //     enabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 6,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     disabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 6,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     enabled:true,
-//     //     visible:true
-//     // },
-//     // {
-//     //     name:"Orbit",
-//     //     atlas:"assets/atlas1.png",
-//     //     enabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 7,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     disabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 0,
-//     //         sourceLeft:128 * 7,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     enabled:true,
-//     //     visible:true
-//     // },
-//     // {
-//     //     name:"Duplicate",
-//     //     atlas:"assets/atlas1.png",
-//     //     enabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 2,
-//     //         sourceLeft:128 * 0,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     disabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 2,
-//     //         sourceLeft:128 * 0,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     enabled:true,
-//     //     visible:true
-//     // },
-//     // {
-//     //     name:"Undo",
-//     //     atlas:"assets/atlas1.png",
-//     //     enabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 2,
-//     //         sourceLeft:128 * 1,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     disabledUV:{
-//     //         atlasHeight:1024,
-//     //         atlasWidth:1024,
-//     //         sourceTop:128 * 2,
-//     //         sourceLeft:128 * 1,
-//     //         sourceWidth:128,
-//     //         sourceHeight:128
-//     //     },
-//     //     enabled:true,
-//     //     visible:true
-//     // },
-// ]
+    2://build mode
+        {
+            atlas: "assets/atlas1.png",
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 128 * 6,
+                sourceLeft: 128 * 7,
+                sourceWidth: 128,
+                sourceHeight: 128
+            },
+        },
+}
 
-// export let bottomTools: any[] = [
-//     {
-//         name: "Upload",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 4,
-//             sourceLeft: 128 * 7,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 5,
-//             sourceLeft: 128 * 7,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (players.has(localUserId) && !players.get(localUserId)!.dclData.isGuest || resources.allowNoWeb3) {
-//                 displayAssetUploadUI(true)
-//             } else {
-//                 displayNoWeb3(true)
-//             }
-//         }
-//     },
-//     {
-//         name: "Save",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 2,
-//             sourceLeft: 128 * 5,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 3,
-//             sourceLeft: 128 * 5,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showSaveBuildPanel) {
-//                 displaySaveBuildPanel(false)
-//             } else {
-//                 displaySaveBuildPanel(true)
-//             }
+export let topTools: any[] = [
+    {
+        name: "GodMode",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 3,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 3,
+            sourceLeft: 128 * 3,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            toggleFlyMode()
+        },
+        uvOverride: () => {
+            return isLocalPlayer(localUserId) ? 
+                playerViewMode === VIEW_MODES.GOD ? 
+                getImageAtlasMapping(uiSizes.godModeButton) : 
+                getImageAtlasMapping(uiSizes.carpenterButton) : 
+            getImageAtlasMapping()
+        }
+    },
+    {
+        name: "Box",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 2,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 2,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            // if (showCatalogPanel) {
+            //     displayCatalogPanel(false)
+            // } else {
+            //     hideAllPanels()
+            //     displayCatalogPanel(true)
+            // }
+        }
+    },
+    {
+        name: "Snap",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 4,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 3,
+            sourceLeft: 128 * 4,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: false,
+        visible: true,
+        toggle: true,
+        fn: () => {
+            toggleSnapMode()
+        }
+    },
+    {
+        name: "Upload",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            // if (isLocalPlayer(localUserId) && (!localPlayer.dclData.isGuest || resources.allowNoWeb3) && localPlayer.homeWorld) {
+            //     displayAssetUploadUI(true)
+            // } else {
+            //     displayNoWeb3(true)
+            // }
+        }
+    },
+    {
+        name: "SceneInfo",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 1,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            // if (showSceneInfoPanel) {
+            //     displaySceneAssetInfoPanel(false)
+            // } else {
+            //     hideAllPanels()
+            //     displaySceneAssetInfoPanel(true)
+            // }
+        },
+    },
+    // {
+    //     name: "Image",
+    //     atlas: "assets/atlas1.png",
+    //     enabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 0,
+    //         sourceLeft: 128 * 3,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     disabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 0,
+    //         sourceLeft: 128 * 3,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     enabled: true,
+    //     visible: true,
+    //     fn: () => {
+    //         displayRectanglePanel(!showRectanglePanel)
+    //     }
+    // },
+    // {
+    //     name:"Position",
+    //     atlas:"assets/atlas1.png",
+    //     enabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 4,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     disabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 4,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     enabled:true,
+    //     visible:true,
+    //     fn:()=>{
+    //         displayBlockPanel(!showBlockPanel)
+    //     }
+    // },
+    // {
+    //     name:"Rotation",
+    //     atlas:"assets/atlas1.png",
+    //     enabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 5,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     disabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 5,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     enabled:true,
+    //     visible:true
+    // },
+    // {
+    //     name:"Scale",
+    //     atlas:"assets/atlas1.png",
+    //     enabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 6,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     disabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 6,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     enabled:true,
+    //     visible:true
+    // },
+    // {
+    //     name:"Orbit",
+    //     atlas:"assets/atlas1.png",
+    //     enabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 7,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     disabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 0,
+    //         sourceLeft:128 * 7,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     enabled:true,
+    //     visible:true
+    // },
+    // {
+    //     name:"Duplicate",
+    //     atlas:"assets/atlas1.png",
+    //     enabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 2,
+    //         sourceLeft:128 * 0,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     disabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 2,
+    //         sourceLeft:128 * 0,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     enabled:true,
+    //     visible:true
+    // },
+    // {
+    //     name:"Undo",
+    //     atlas:"assets/atlas1.png",
+    //     enabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 2,
+    //         sourceLeft:128 * 1,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     disabledUV:{
+    //         atlasHeight:1024,
+    //         atlasWidth:1024,
+    //         sourceTop:128 * 2,
+    //         sourceLeft:128 * 1,
+    //         sourceWidth:128,
+    //         sourceHeight:128
+    //     },
+    //     enabled:true,
+    //     visible:true
+    // },
+]
 
-//         }
-//     },
-//     {
-//         name: "Refresh",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 2,
-//             sourceLeft: 128 * 6,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 3,
-//             sourceLeft: 128 * 6,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showLoadBuildPanel) {
-//                 displayLoadBuildPanel(false)
-//             } else {
-//                 displayLoadBuildPanel(true)
-//             }
+export let bottomTools: any[] = [
+    {
+        name: "Upload",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 7,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            // if (isLocalPlayer(localUserId) && !localPlayer.dclData.isGuest || resources.allowNoWeb3) {
+            //     displayAssetUploadUI(true)
+            // } else {
+            //     displayNoWeb3(true)
+            // }
+        }
+    },
+    {
+        name: "Save",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 2,
+            sourceLeft: 128 * 5,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 3,
+            sourceLeft: 128 * 5,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            // if (showSaveBuildPanel) {
+            //     displaySaveBuildPanel(false)
+            // } else {
+            //     displaySaveBuildPanel(true)
+            // }
+        }
+    },
+    // {
+    //     name: "Refresh",
+    //     atlas: "assets/atlas1.png",
+    //     enabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 2,
+    //         sourceLeft: 128 * 6,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     disabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 3,
+    //         sourceLeft: 128 * 6,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     enabled: true,
+    //     visible: true,
+    //     fn: () => {
+    //         if (showLoadBuildPanel) {
+    //             displayLoadBuildPanel(false)
+    //         } else {
+    //             displayLoadBuildPanel(true)
+    //         }
 
-//         }
-//     },
-//     {
-//         name: "Trash",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 2,
-//             sourceLeft: 128 * 7,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 3,
-//             sourceLeft: 128 * 7,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showDeleteBuildPanel) {
-//                 displayDeleteBuildPanel(false)
-//             } else {
-//                 displayDeleteBuildPanel(true)
-//             }
+    //     }
+    // },
+    // {
+    //     name: "Trash",
+    //     atlas: "assets/atlas1.png",
+    //     enabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 2,
+    //         sourceLeft: 128 * 7,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     disabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 3,
+    //         sourceLeft: 128 * 7,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     enabled: true,
+    //     visible: true,
+    //     fn: () => {
+    //         if (showDeleteBuildPanel) {
+    //             displayDeleteBuildPanel(false)
+    //         } else {
+    //             displayDeleteBuildPanel(true)
+    //         }
 
-//         }
-//     },
-//     {
-//         name: "Magnify",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 4,
-//             sourceLeft: 128 * 0,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 5,
-//             sourceLeft: 128 * 0,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showNotificationPanel) {
-//                 displayNotificationPanel(false)
-//             } else {
-//                 displayNotificationPanel(true)
-//             }
+    //     }
+    // },
+    // {
+    //     name: "Magnify",
+    //     atlas: "assets/atlas1.png",
+    //     enabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 4,
+    //         sourceLeft: 128 * 0,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     disabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 5,
+    //         sourceLeft: 128 * 0,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     enabled: true,
+    //     visible: true,
+    //     fn: () => {
+    //         if (showNotificationPanel) {
+    //             displayNotificationPanel(false)
+    //         } else {
+    //             displayNotificationPanel(true)
+    //         }
 
-//         }
-//     },
-//     {
-//         name: "Share",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 4,
-//             sourceLeft: 128 * 1,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 5,
-//             sourceLeft: 128 * 1,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showPBuildConfirmPanel) {
-//                 displayPBuildConfirmPanel(false)
-//             } else {
-//                 displayPBuildConfirmPanel(true)
-//             }
+    //     }
+    // },
+    // {
+    //     name: "Share",
+    //     atlas: "assets/atlas1.png",
+    //     enabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 4,
+    //         sourceLeft: 128 * 1,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     disabledUV: {
+    //         atlasHeight: 1024,
+    //         atlasWidth: 1024,
+    //         sourceTop: 128 * 5,
+    //         sourceLeft: 128 * 1,
+    //         sourceWidth: 128,
+    //         sourceHeight: 128
+    //     },
+    //     enabled: true,
+    //     visible: true,
+    //     fn: () => {
+    //         if (showPBuildConfirmPanel) {
+    //             displayPBuildConfirmPanel(false)
+    //         } else {
+    //             displayPBuildConfirmPanel(true)
+    //         }
 
-//         }
-//     },
-//     {
-//         name: "Info",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 0,
-//             sourceLeft: 128 * 1,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 1,
-//             sourceLeft: 128 * 1,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showInfoPanel) {
-//                 displayInfoPanel(false)
-//             } else {
-//                 displayInfoPanel(true)
-//             }
+    //     }
+    // },
+    {
+        name: "Info",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 0,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 1,
+            sourceLeft: 128 * 1,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            // if (showInfoPanel) {
+            //     displayInfoPanel(false)
+            // } else {
+            //     displayInfoPanel(true)
+            // }
+        }
+    },
+]
 
-//         }
-//     },
-// ]
-
-// export let settingsIconData: any =
-//     {
-//         name: "Settings",
-//         atlas: "assets/atlas1.png",
-//         enabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 4,
-//             sourceLeft: 128 * 6,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         disabledUV: {
-//             atlasHeight: 1024,
-//             atlasWidth: 1024,
-//             sourceTop: 128 * 5,
-//             sourceLeft: 128 * 6,
-//             sourceWidth: 128,
-//             sourceHeight: 128
-//         },
-//         enabled: true,
-//         visible: true,
-//         fn: () => {
-//             if (showSettingsPanel) {
-//                 displaySettingsPanel(false)
-//             } else {
-//                 displaySettingsPanel(true)
-//             }
-//         }
-//     }
+export let settingsIconData: any =
+    {
+        name: "Settings",
+        atlas: "assets/atlas1.png",
+        enabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 4,
+            sourceLeft: 128 * 6,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        disabledUV: {
+            atlasHeight: 1024,
+            atlasWidth: 1024,
+            sourceTop: 128 * 5,
+            sourceLeft: 128 * 6,
+            sourceWidth: 128,
+            sourceHeight: 128
+        },
+        enabled: true,
+        visible: true,
+        fn: () => {
+            // if (showSettingsPanel) {
+            //     displaySettingsPanel(false)
+            // } else {
+            //     displaySettingsPanel(true)
+            // }
+            displayMainView(true, true)
+        }
+    }
 
 export let uiSizes: any = {
     heartIconRed: {
@@ -1809,4 +1822,10 @@ export let uiSizes: any = {
     },
 
 
+}
+
+
+export enum UI_VIEW_TYPES {
+    MAIN_VIEW = 'Main',
+    SKINNY_VERTICAL_PANEL = 'Skinny'
 }

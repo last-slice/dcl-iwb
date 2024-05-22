@@ -1,12 +1,10 @@
-import { InputAction, MeshCollider, MeshRenderer, engine, pointerEventsSystem } from "@dcl/sdk/ecs"
-import { sendServerMessage } from "./Colyseus"
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from "../helpers/types"
-import { getAssetName } from "./Name"
-import { getCounterValue } from "./Counter"
+import { engine } from "@dcl/sdk/ecs"
+import { isLocalPlayer } from "./Player"
 
-export async function  addParenting(scene:any){
+export async function addParenting(scene:any){
     scene.parenting.forEach((item:any, i:number)=>{
         if(i > 2){
+
             console.log('adding real entities', item)
             let ent = engine.addEntity()
             item.entity = ent

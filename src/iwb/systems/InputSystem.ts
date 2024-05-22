@@ -1,11 +1,11 @@
 import { Entity, InputAction, PointerEventType, engine, inputSystem } from "@dcl/sdk/ecs"
 import { handleInputTriggerForEntity } from "../components/Triggers"
+import { uiInput } from "../ui/ui"
 
 
 export let added = false
 
 export let buttonsPressed: Map<number, { id: number | null }> = new Map()
-export let pressed: any[] = []
 
 export function setButtonState(button: number, state: number) {
     let b = buttonsPressed.get(button)
@@ -48,9 +48,9 @@ export function InputListenSystem(dt:number){
     //POINTER
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)) {
         // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-        // selectedItem && !selectedItem.enabled ? displayHover(false) : null
+        // selectedItem && !selectedItem.enabled ? displayHover(false) : null//
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-        if (result) {
+        if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
                 handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER)
             }
