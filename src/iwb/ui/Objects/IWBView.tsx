@@ -7,6 +7,8 @@ import { Color4 } from '@dcl/sdk/math'
 import { HoriztonalButtons } from '../Reuse/HoriztonalButtons'
 import { realm } from '../../components/Config'
 import { IWBTable, setTableConfig, updateIWBTable } from '../Reuse/IWBTable'
+import { testData } from '../../tests/testData'
+import { formatDollarAmount, formatSize } from '../../helpers/functions'
 
 let show = false
 
@@ -50,8 +52,8 @@ let buttons:any[] = [
 let horiztonalButtons:any[] = [
     {label:"Current World", pressed:false, func:()=>{
         updateSubView("Current World")
-        setTableConfig(tableConfig)
-        updateIWBTable(testData)
+        setTableConfig(currentWorldTableConfig)
+        updateIWBTable(testData.scenes)
         // playSound(SOUND_TYPES.SELECT_3)
         // showYourBuilds()
         // updateExploreView("Current World")
@@ -63,8 +65,8 @@ let horiztonalButtons:any[] = [
     },
     {label:"My Worlds", pressed:false, func:()=>{
         updateSubView("My Worlds")
-        setTableConfig(tableConfig2)
-        updateIWBTable(testData2)
+        setTableConfig(myWorldConfig)
+        updateIWBTable(testData.myworlds)
         // playSound(SOUND_TYPES.SELECT_3)
         // showWorlds()
         // updateExploreView("My Worlds")
@@ -76,8 +78,8 @@ let horiztonalButtons:any[] = [
     },
     {label:"All Worlds", pressed:false, func:()=>{
         updateSubView("All Worlds")
-        setTableConfig(tableConfig2)
-        updateIWBTable(testData3)
+        setTableConfig(allWorldsConfig)
+        updateIWBTable(testData.allworlds)
         // playSound(SOUND_TYPES.SELECT_3)
         // // displayStatusView("All Worlds")
         // showAllWorlds()
@@ -93,13 +95,164 @@ let horiztonalButtons:any[] = [
 export let mainView = ""
 export let subView = ""
 
-let tableConfig:any = {
+let currentWorldTableConfig:any = {
+    height:'10%', width:'100%', rowCount:6,
+    headerData:[
+        {name:"Name", pcnt:"Parcel Count", si:"Size", pc:"Poly Count", go:"Visit"},
+    ],
+    tableSortFn:(a:any, b:any)=>{
+        // Check if either of the names is "Realm Lobby"
+        if (a.name === "Realm Lobby" && b.name !== "Realm Lobby") {
+          return -1; // "Realm Lobby" comes first
+        } else if (a.name !== "Realm Lobby" && b.name === "Realm Lobby") {
+          return 1; // "Realm Lobby" comes first
+        } else {
+          // Both names are not "Realm Lobby", sort by parcel size (high to low)
+        //   return b.pcnt - a.pcnt;
+        return a.name.localeCompare(b.name)
+        }
+    },
+
+    rowConfig:[
+    { 
+        key:"name",
+        width:'30%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-left',
+        color:Color4.White()
+    },
+    {
+        key:"pcnt",
+        width:'20%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        func:(data:any)=>{
+            return "" + formatSize(data) + "MB"
+        }
+    },
+    {
+        key:"si",
+        width:'10%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"Builds",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        func:(data:any)=>{
+            return "" + formatDollarAmount(data)
+        }
+    },
+    {
+        key:"pc",
+        width:'20%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"Builds",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White()
+    },
+    {
+        key:"go",
+        width:'20%',
+        height:'80%',
+        margin:{left:"1%"},
+        value:"Go",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        image:true
+    },
+    ]
+}
+
+let myWorldConfig:any = {
     height:'10%', width:'100%',
     headerData:[
-        {world:"Scenes", update:"Last Update", builds:"Builds", go:"Go"},
+        {name:"Name", init:"Created", updated:"Last Update", builds:"Builds", go:"Go"},
     ],
+    tableSortFn:(a:any, b:any) => a.name.localeCompare(b.name),
     rowConfig:[
-    {   key:"world",
+    {   key:"name",
+        width:'30%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"World",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-left',
+        color:Color4.White()
+    },
+    {
+        key:"init",
+        width:'13%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"Last Update",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        func:(data:any)=>{
+            return "" + (data ? "Yes" : "No")
+        }
+    },
+    {
+        key:"updated",
+        width:'30%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"Go",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        func:(data:any)=>{
+            return "" + (data > 0 ? Math.floor((Math.floor(Date.now()/1000) - data) / 86400) + " days ago" : "Never" )
+        }
+    },
+    {
+        key:"builds",
+        width:'13%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"Builds",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White()
+    },
+    {
+        key:"go",
+        width:'13%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"Go",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        image:true
+    },
+    ]
+}
+
+let allWorldsConfig:any = {
+    height:'10%', width:'100%',
+    headerData:[
+        {worldName:"World", updated:"Last Update", builds:"Builds", go:"Go"},
+    ],
+    tableSortFn:(a:any, b:any) => {
+        if (a.worldName === "BuilderWorld") return -1;
+        if (b.worldName === "BuilderWorld") return 1;
+
+        return a.worldName.localeCompare(b.worldName);
+    },
+    rowConfig:[
+    {   key:"worldName",
         width:'40%',
         height:'100%',
         margin:{left:"1%"},
@@ -109,14 +262,17 @@ let tableConfig:any = {
         color:Color4.White()
     },
     {
-        key:"update",
+        key:"updated",
         width:'30%',
         height:'100%',
         margin:{left:"1%"},
         value:"Last Update",
         fontSize:sizeFont(25,15),
         textAlign: 'middle-center',
-        color:Color4.White()
+        color:Color4.White(),
+        func:(data:any)=>{
+            return "" + Math.floor((Math.floor(Date.now() / 1000) - data) / 86400) + " days ago"
+        }
     },
     {
         key:"builds",
@@ -136,81 +292,22 @@ let tableConfig:any = {
         value:"Go",
         fontSize:sizeFont(25,15),
         textAlign: 'middle-center',
-        color:Color4.White()
+        color:Color4.White(),
+        image:true
     },
     ]
 }
-
-let tableConfig2:any = {
-    height:'10%', width:'100%',
-    headerData:[
-        {world:"World", update:"Last Update", builds:"Builds", go:"Go"},
-    ],
-    rowConfig:[
-    {   key:"world",
-        width:'40%',
-        height:'100%',
-        margin:{left:"1%"},
-        value:"World",
-        fontSize:sizeFont(25,15),
-        textAlign: 'middle-left',
-        color:Color4.White()
-    },
-    {
-        key:"update",
-        width:'30%',
-        height:'100%',
-        margin:{left:"1%"},
-        value:"Last Update",
-        fontSize:sizeFont(25,15),
-        textAlign: 'middle-center',
-        color:Color4.White()
-    },
-    {
-        key:"builds",
-        width:'10%',
-        height:'100%',
-        margin:{left:"1%"},
-        value:"Builds",
-        fontSize:sizeFont(25,15),
-        textAlign: 'middle-center',
-        color:Color4.White()
-    },
-    {
-        key:"go",
-        width:'20%',
-        height:'100%',
-        margin:{left:"1%"},
-        value:"Go",
-        fontSize:sizeFont(25,15),
-        textAlign: 'middle-center',
-        color:Color4.White()
-    },
-    ]
-}
-
-let testData:any[] = [
-    {world:"scene name", update:1, builds:1, go:"Go"}
-]
-
-let testData2:any[] = [
-    {world:"my world name", update:2, builds:2, go:"Go2"}
-]
-
-let testData3:any[] = [
-    {world:"all world name", update:3, builds:3, go:"Go3"}
-]
 
 export function displayMainView(value:boolean, toggle?:boolean){
     show = toggle ? !show : value
     resetViews()
 
-    setTableConfig(tableConfig)
+    setTableConfig(currentWorldTableConfig)
     updateMainView("Worlds")
     updateSubView("Current World")
 
     if(show && subView === "Current World"){
-        updateIWBTable(testData)
+        updateIWBTable(testData.scenes)
     }
 }
 
@@ -315,57 +412,7 @@ export function createMainView() {
 
                     </UiEntity>
 
-                {/* right column container */}
-                <UiEntity
-                      uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '75%',
-                        height: '100%',
-                        margin:{left:'2%'}
-                    }}
-                    // uiBackground={{color:Color4.Blue()}}
-                    >
-                        <HoriztonalButtons buttons={horiztonalButtons} slug={"main-view"} />
-
-                        {/* realm button row */}
-            <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
-
-                {/* current realm text */}
-                <UiEntity
-                    uiTransform={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '100%',
-                    }}
-                    uiText={{
-                        value: "Current World: " + realm,
-                        textAlign: 'middle-left',
-                        color: Color4.White(),
-                        fontSize: sizeFont(25, 15)
-                    }}
-                />
-
-            </UiEntity>
-
-            <IWBTable />
-
-                        
-                    </UiEntity>
+                    <MainRightView />
 
                 </UiEntity>
 
@@ -373,5 +420,61 @@ export function createMainView() {
 
 
         </UiEntity>
+    )
+}
+
+function MainRightView(){
+    return(
+        <UiEntity
+        key={resources.slug + "-main-view-right-container"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '75%',
+            height: '100%',
+            margin:{left:'2%'}
+        }}
+        // uiBackground={{color:Color4.Blue()}}
+        >
+            <HoriztonalButtons buttons={horiztonalButtons} slug={"main-view"} />
+
+            {/* realm button row */}
+    <UiEntity
+    uiTransform={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+    // uiBackground={{color:Color4.Blue()}}
+    >
+
+    {/* current realm text */}
+    <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+        }}
+        uiText={{
+            value: "Current World: " + realm,
+            textAlign: 'middle-left',
+            color: Color4.White(),
+            fontSize: sizeFont(25, 15)
+        }}
+    />
+
+    </UiEntity>
+
+    <IWBTable />
+
+        </UiEntity>
+  
     )
 }

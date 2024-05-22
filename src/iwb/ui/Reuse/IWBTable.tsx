@@ -1,9 +1,11 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { getImageAtlasMapping, sizeFont } from '../helpers'
+import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { paginateArray } from '../../helpers/functions'
 import resources from '../../helpers/resources'
+import { localPlayer, localUserId } from '../../components/Player'
+import { SOUND_TYPES } from '../../helpers/types'
 
 let rowCount = 6
 let columnCount = 4
@@ -11,7 +13,6 @@ let columnCount = 4
 let visibleIndex = 1
 let visibleItems: any[] = []
 
-let tableHeader:any[] = []
 let tableArray:any[] = []
 let tableSortFn:any
 
@@ -24,20 +25,26 @@ export function setTableConfig(config:any){
 export function refreshVisibleItems(){
     visibleItems.length = 0
 
-    if(tableSortFn && tableSortFn !== undefined){
-        tableArray.sort(tableSortFn)
+    if(tableConfig.tableSortFn){
+
+        console.log('table array is', tableArray)
+
+        tableArray.sort(tableConfig.tableSortFn)
+
+        console.log('table array is', tableArray)
     }
 
-    visibleItems = paginateArray([...tableArray], visibleIndex, rowCount)
+    visibleItems = paginateArray([...tableArray], visibleIndex, tableConfig && tableConfig.rowCount ? tableConfig.rowCount : 6)
 }
 
 export function updateIWBTable(data:any){
-    tableArray = data
+    tableArray = [...data]
+    visibleIndex = 1
+
     refreshVisibleItems()
 }
 
 export function IWBTable(data:any){
-    data.rowCount ? rowCount = data.rowCount : 6
     let transform = data.transform ? data.transform : {}
     return(
         <UiEntity
@@ -51,14 +58,16 @@ export function IWBTable(data:any){
                 // uiBackground={{color:Color4.Gray()}}
             >
 
-                {tableConfig && tableConfig.headerData && tableRows(tableConfig.headerData)}
+                {tableConfig && tableRows(tableConfig.headerData, true)}
                 {tableRows(visibleItems)}
+
+                <Buttons />
 
             </UiEntity>
     )
 }
 
-function tableRows(data:any){
+function tableRows(data:any, header?:boolean){
     let arr:any[] = []
     data.forEach((rowData:any, i:number)=>{
         arr.push(
@@ -86,7 +95,7 @@ function tableRows(data:any){
                     }}
                 >
 
-                    {generateRow(rowData)}
+                    {generateRow(rowData, header)}
 
                 </UiEntity>
         )
@@ -94,7 +103,7 @@ function tableRows(data:any){
     return arr
 }
 
-function generateRow(data:any){
+function generateRow(data:any, header?:boolean){
     let arr:any[] = []
     let count = 0
     if(count === 0){
@@ -116,7 +125,7 @@ function generateRow(data:any){
                 }}
                 // uiBackground={{color:Color4.Green()}}
                 uiText={{
-                    value: "" + (data[rowConfig.key]),
+                    value: "" + (header ? data[rowConfig.key] : tableConfig.rowConfig[i].func ? tableConfig.rowConfig[i].func(data[rowConfig.key]) : data[rowConfig.key]),
                     fontSize: tableConfig.rowConfig[i].fontSize ? tableConfig.rowConfig[i].fontSize : sizeFont(25, 15),
                     textAlign: tableConfig.rowConfig[i].textAlign ? tableConfig.rowConfig[i].textAlign : 'middle-center',
                     color: tableConfig.rowConfig[i].color ? tableConfig.rowConfig[i].color : Color4.White()
@@ -124,34 +133,101 @@ function generateRow(data:any){
             />
         )
     })
-
-    // data.forEach((rowData:any, i:number)=>{
-    //     for(let rowKey in rowData){
-    //         if(tableConfig && tableConfig.rowConfig[i].key === rowKey)
-    //     }
-    //     if(tableConfig && tableConfig.rowConfig[i]){
-    //         arr.push(
-    //             <UiEntity
-    //                 key={resources.slug + "-table-row-column-" + i}
-    //                 uiTransform={{
-    //                     display: 'flex',
-    //                     flexDirection: 'row',
-    //                     alignItems: 'center',
-    //                     justifyContent: 'center',
-    //                     width: data.even ? `${100/count}%` : tableConfig && tableConfig.rowConfig[i].width ? tableConfig.rowConfig[i].width : '40%',
-    //                     height: tableConfig && tableConfig.rowConfig[i].height ? tableConfig.rowConfig[i].height : '100%',
-    //                     margin: tableConfig && tableConfig.rowConfig[i].margin ? tableConfig.rowConfig[i].margin : undefined
-    //                 }}
-    //                 // uiBackground={{color:Color4.Green()}}
-    //                 uiText={{
-    //                     value: "" + (rowData.value),
-    //                     fontSize: tableConfig && tableConfig.rowConfig[i].fontSize ? tableConfig.rowConfig[i].fontSize : sizeFont(25, 15),
-    //                     textAlign: tableConfig && tableConfig.rowConfig[i].textAlign ? tableConfig.rowConfig[i].textAlign : 'middle-center',
-    //                     color: tableConfig && tableConfig.rowConfig[i].color ? tableConfig.rowConfig[i].color : Color4.White()
-    //                 }}
-    //             />
-    //         )
-    //     }
-    // })
     return arr
+}
+
+function Buttons(){
+    return(
+        <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+        }}
+        // uiBackground={{color:Color4.White()}}
+    >
+         <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            width: '85%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.White()}}
+    >
+    </UiEntity>
+
+
+    <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '15%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.White()}}
+    >
+
+             <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(3).width,
+            height: calculateSquareImageDimensions(4).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
+        }}
+        onMouseDown={()=>{
+            // playSound(SOUND_TYPES.SELECT_3)
+            if(visibleIndex - 1 > 0){
+                visibleIndex--
+                refreshVisibleItems()
+            }
+        }}
+        />
+
+        <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(3).width,
+            height: calculateSquareImageDimensions(4).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
+        }}
+        onMouseDown={()=>{
+            // playSound(SOUND_TYPES.SELECT_3)
+
+            if (tableArray && (visibleIndex + 1 <= Math.floor([...tableArray].length / 6) + 1)){
+                visibleIndex++
+                refreshVisibleItems()
+            }
+        }}
+        />
+
+        </UiEntity>
+
+    </UiEntity>
+    )
 }
