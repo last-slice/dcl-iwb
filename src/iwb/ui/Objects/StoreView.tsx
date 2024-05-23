@@ -6,95 +6,61 @@ import { generateButtons } from '../ui'
 import { IWBTable, setTableConfig, updateIWBTable } from '../Reuse/IWBTable'
 import { testData } from '../../tests/testData'
 import { InfoView, updateInfoView } from './IWBViews/InfoView'
-import { SettingsView, updateSettingsView } from './IWBViews/SettingsView'
+import { SettingsView } from './IWBViews/SettingsView'
 import { currentWorldTableConfig, horiztonalButtons, updateWorldView, WorldsView, worldView } from './IWBViews/WorldView'
-import { displayStoreView } from './StoreView'
 
 let show = false
 
 let buttons:any[] = [
-    {label:"Worlds", pressed:false, func:()=>{
-        updateMainView("Worlds")
-        updateWorldView("Current World")
-        // showYourBuilds()
-        // updateExploreView("Current World")
-        // displaySetting(button.label)
-        }
-    },
-    {label:"Store", pressed:false, func:()=>{
-        displayMainView(false)
-        displayStoreView(true)
-        //showstore view
-        }
-    },
-    {label:"Settings", pressed:false, func:()=>{
-        updateMainView("Settings")
-        updateSettingsView("Visual")
-        }
-    },
-    {label:"Info", pressed:false, func:()=>{
+    // {label:"Worlds", pressed:false, func:()=>{
+    //     updateWorldView("Current World")
+    //     // showYourBuilds()
+    //     // updateExploreView("Current World")
+    //     // displaySetting(button.label)
+    //     }
+    // },
+    // {label:"Store", pressed:false, func:()=>{
+    //     displayMainView(false)
+    //     //showstore view
+    //     }
+    // },
+    // {label:"Settings", pressed:false, func:()=>{
+    //     updateMainView("Settings")
+    //     // displayStatusView("Visual")
+    //     // displaySetting(button.label)
+    //     }
+    // },
+    // {label:"Info", pressed:false, func:()=>{
 
-        updateMainView("Info")
-        updateInfoView("Version")
-        // updateTutorialsView("list")
-        // updateHelpView("main")
-        // displayStatusView("Version")
-        // displaySetting(button.label)
-        }
-    },
-    {label:"Close", pressed:false, func:()=>{
-        // displaySettingsPanel(false)
-        // displaySetting('Builds')
-        displayMainView(false)
-        // updateMainView("main")
-        },
-        position:{bottom:0},
-        positionType:'absolute'
-    },
+    //     updateMainView("Info")
+    //     updateInfoView("Version")
+    //     // updateTutorialsView("list")
+    //     // updateHelpView("main")
+    //     // displayStatusView("Version")
+    //     // displaySetting(button.label)
+    //     }
+    // },
+    // {label:"Close", pressed:false, func:()=>{
+    //     // displaySettingsPanel(false)
+    //     // displaySetting('Builds')
+    //     displayMainView(false)
+    //     // updateMainView("main")
+    //     },
+    //     position:{bottom:0},
+    //     positionType:'absolute'
+    // },
 ]
 
 export let mainView = ""
 
-export function displayMainView(value:boolean, toggle?:boolean){
-    show = toggle ? !show : value
-    resetViews()
-
-    setTableConfig(currentWorldTableConfig)
-    updateMainView("Worlds")
-    updateWorldView("Current World")
-
-    if(show && worldView === "Current World"){
-        updateIWBTable(testData.scenes)
-    }
+export function displayStoreView(value:boolean){
+    show = value
 }
 
-function resetViews(){
-    mainView = "Worlds"
-    updateWorldView("Current World")
-    buttons.forEach(($:any)=>{
-        $.pressed = false
-    })
-}
-
-export function updateMainView(view:string){
-    let button = buttons.find($=> $.label === mainView)
-    if(button){
-        button.pressed = false
-    }
-
-    mainView = view
-    button = buttons.find($=> $.label === view)
-    if(button){
-        button.pressed = true
-    }
-}
-
-
-
-export function createMainView() {
+export function createStoreview() {
     return (
         <UiEntity
-        key={"" + resources.slug + "main-panel-ui"}
+        key={"" + resources.slug + "main-store-ui"}
             uiTransform={{
                 display: show? 'flex' : 'none',
                 flexDirection: 'column',
@@ -154,7 +120,9 @@ export function createMainView() {
 }
 
 function MainLeftView(){
-   return(<UiEntity
+   return(
+   <UiEntity
+    key={resources.slug + "-store-view-left-container"}
     uiTransform={{
         flexDirection: 'column',
         alignItems: 'center',
@@ -174,7 +142,7 @@ function MainLeftView(){
 function MainRightView(){
     return(
         <UiEntity
-        key={resources.slug + "-main-view-right-container"}
+        key={resources.slug + "-store-view-right-container"}
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -186,9 +154,16 @@ function MainRightView(){
         // uiBackground={{color:Color4.Blue()}}
         >
 
-            <WorldsView/>
-            <SettingsView/>
-            <InfoView/>
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '75%',
+            height: '10%',
+        }}
+        uiText={{value:"COMING SOON", fontSize:sizeFont(25,20)}}
+        />
 
         </UiEntity>
   

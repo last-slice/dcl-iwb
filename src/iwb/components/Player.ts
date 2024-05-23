@@ -107,6 +107,9 @@ function setPlayerDefaults(player:any){
     player.homeWorld = true
     player.selectedEntity = null
     player.activeSceneId = ""
+
+    let playerData = getPlayer()
+    player.dclData = playerData
 }
 
 export async function getPlayerNames(player:any) {

@@ -30,7 +30,6 @@ export function calculateImageDimensions(width:number, aspectRatio: number): any
 export function calculateSquareImageDimensions(percentage: number): any {
   const minDimension = Math.min(dimensions.width, dimensions.height);
   const squareSize = (minDimension * percentage) / 100;
-
   return { width: squareSize, height: squareSize };
 }
 

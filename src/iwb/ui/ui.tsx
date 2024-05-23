@@ -11,6 +11,7 @@ import { createToolsPanel } from './Objects/ToolIcons'
 import { createSkinnyVerticalPanel } from './Reuse/SkinnyVerticalPanel'
 import { createMainView } from './Objects/IWBView'
 import { IWBButton } from './Reuse/IWBButton'
+import { createStoreview } from './Objects/StoreView'
 
 export function setupUI() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -26,7 +27,8 @@ const uiComponent:any = () => [
   createIWBMap(),
   createToolsPanel(),
   createSkinnyVerticalPanel(),
-  createMainView()
+  createMainView(),
+  createStoreview()
 ]
 
 export function generateButtons(data:any){

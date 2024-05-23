@@ -1,11 +1,12 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { paginateArray } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import { localPlayer, localUserId } from '../../components/Player'
 import { SOUND_TYPES } from '../../helpers/types'
+import { setUIClicked, setupUI } from '../ui'
 
 let rowCount = 6
 let columnCount = 4
@@ -48,6 +49,7 @@ export function IWBTable(data:any){
     let transform = data.transform ? data.transform : {}
     return(
         <UiEntity
+        key={resources.slug + "iwb-table-item"}
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -123,18 +125,87 @@ function generateRow(data:any, header?:boolean){
                     height: tableConfig.rowConfig[i].height ? tableConfig.rowConfig[i].height : '100%',
                     margin: tableConfig.rowConfig[i].margin ? tableConfig.rowConfig[i].margin : undefined
                 }}
-                // uiBackground={{color:Color4.Green()}}
-                uiText={{
-                    value: "" + (header ? data[rowConfig.key] : tableConfig.rowConfig[i].func ? tableConfig.rowConfig[i].func(data[rowConfig.key]) : data[rowConfig.key]),
+                uiText={
+                    {
+                    value: "" + (header ? data[rowConfig.key] : tableConfig.rowConfig[i].image ? "" : tableConfig.rowConfig[i].func ? tableConfig.rowConfig[i].func(data[rowConfig.key]) : data[rowConfig.key]),
                     fontSize: tableConfig.rowConfig[i].fontSize ? tableConfig.rowConfig[i].fontSize : sizeFont(25, 15),
                     textAlign: tableConfig.rowConfig[i].textAlign ? tableConfig.rowConfig[i].textAlign : 'middle-center',
                     color: tableConfig.rowConfig[i].color ? tableConfig.rowConfig[i].color : Color4.White()
+                    }
+                }
+                onMouseDown={
+                    tableConfig.rowConfig[i].image ? undefined :
+
+                    tableConfig.rowConfig[i].onClick ?
+                    ()=>{
+                        setUIClicked(true)
+                        if(tableConfig.rowConfig[i].onClick){
+                            tableConfig.rowConfig[i].onClick()
+                        }
+                    }
+                    : undefined
+                }
+                onMouseUp={()=>{
+                    setUIClicked(false)
                 }}
-            />
+            >
+                {tableConfig.rowConfig[i].image && !header && <TableImage count={i} rowConfig={tableConfig.rowConfig[i]} data={ data[rowConfig.key]} />}
+
+            </UiEntity>
         )
     })
     return arr
 }
+
+function TableImage(info:any){
+    let rowConfig = info.rowConfig
+    return(
+        <UiEntity
+        key={resources.slug + "-table-row-image-" + info.count}
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: rowConfig.image.size && rowConfig.image.aspect ? 
+            calculateImageDimensions(rowConfig.image.size, rowConfig.image.aspect).width :
+            rowConfig.image.size ?
+            calculateSquareImageDimensions(rowConfig.image.size).width : rowConfig.image.width,
+
+            height: rowConfig.image.size && rowConfig.image.aspect ? 
+            calculateImageDimensions(rowConfig.image.size, rowConfig.image.aspect).height :
+            rowConfig.image.size ?
+            calculateSquareImageDimensions(rowConfig.image.size).height : rowConfig.image.height,
+        }}
+        uiBackground={rowConfig.image ? getImageBackground(rowConfig.image) : undefined}
+
+        onMouseDown={
+            rowConfig.onClick ?
+            ()=>{
+                setUIClicked(true)
+                if(rowConfig.onClick){
+                    rowConfig.onClick()
+                }
+            }
+            : undefined
+        }
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        />
+    )
+}
+
+function getImageBackground(image:any){
+    return {
+        textureMode: image.textureMode,
+        texture: {
+            src: image.texture.src
+        },
+        uvs: image.uvs ? typeof image.uvs === 'function' ? image.uvs() : getImageAtlasMapping(image.uvs) : undefined
+    }
+}
+
 
 function Buttons(){
     return(
