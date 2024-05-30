@@ -650,3 +650,8 @@ export enum COUNTER_VALUE {
     CURRENT,
     PREVIOUS
 }
+
+export enum AUDIO_TYPES {
+    SOUND,
+    STREAM
+}

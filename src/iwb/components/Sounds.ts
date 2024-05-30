@@ -1,34 +1,92 @@
 import { AudioSource, AudioStream, ColliderLayer, Entity, Material, MeshCollider, MeshRenderer, PBTextShape, TextShape, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import { Color4 } from "@dcl/sdk/math"
-import { SOUND_TYPES } from "../helpers/types"
+import { AUDIO_TYPES, SOUND_TYPES } from "../helpers/types"
 import { log, getRandomIntInclusive } from "../helpers/functions"
 import { utils } from "../helpers/libraries"
 import resources from "../helpers/resources"
 import { items } from "./Catalog"
+import { AudioLoadedComponent } from "../helpers/Components"
 
-export function addSoundComponent(scene:any){
-    scene.sounds.forEach((sound:any, aid:string)=>{
-        let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-        if(info.entity){
-            MeshRenderer.setBox(info.entity)
-            MeshCollider.setBox(info.entity, ColliderLayer.CL_POINTER)
-            
-            Material.setPbrMaterial(info.entity,{
-                albedoColor: Color4.create(0,0,1,.5)
-            })
 
-            AudioSource.create(info.entity,{
-                audioClipUrl: "assets/" + sound.url + ".mp3",
+export function checkSoundComponent(scene:any, entityInfo:any){
+    let itemInfo = scene.sounds.get(entityInfo.aid)
+    if(itemInfo){
+        if(itemInfo.type === AUDIO_TYPES.SOUND){
+            console.log('setting sound component')
+            AudioSource.create(entityInfo.entity, {
+                audioClipUrl: "assets/" + itemInfo.url + ".mp3",
                 playing: false,
-                volume: sound.volume,
-                loop: sound.loop,
+                volume: itemInfo.volume,
+                loop: itemInfo.loop
             })
-
-            updateSoundAttachView(aid, sound.attach, info.entity)
+        }else{
+            AudioStream.create(entityInfo.entity, {
+                url: itemInfo.url,
+                playing: false,
+                volume: itemInfo.volume,
+            })
         }
-    })
+        AudioLoadedComponent.create(entityInfo.entity, {init:false, sceneId:scene.id})
+    }
 }
+
+export function setAudioBuildMode(scene:any, entityInfo:any) {
+    let itemInfo = scene.sounds.get(entityInfo.aid)
+    if(itemInfo){
+        MeshRenderer.setBox(entityInfo.entity)
+        MeshCollider.setBox(entityInfo.entity, ColliderLayer.CL_POINTER)
+
+        let audio: any
+
+        if (itemInfo.type === AUDIO_TYPES.SOUND) {
+            audio = AudioSource.getMutable(entityInfo.entity)
+        }else {
+            audio = AudioStream.getMutable(entityInfo.entity)
+        }
+
+        // Transform.createOrReplace(entityInfo.entity, {
+        //     parent: scene.parentEntity,
+        //     position: sceneItem.p,
+        //     rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
+        //     scale: sceneItem.s
+        // })
+
+        Material.setPbrMaterial(entityInfo.entity, {
+            albedoColor: Color4.create(0, 0, 1, .5)
+        })
+
+        let name = scene.names.get(entityInfo.aid)
+        if(name){
+            TextShape.createOrReplace(entityInfo.entity, {text: "" + name.value, fontSize: 3})
+        }
+
+        audio.playing = false
+    }
+}
+
+// export function addSoundComponent(scene:any){
+//     scene.sounds.forEach((sound:any, aid:string)=>{
+//         let info = scene.parenting.find((entity:any)=> entity.aid === aid)
+//         if(info.entity){
+//             MeshRenderer.setBox(info.entity)
+//             MeshCollider.setBox(info.entity, ColliderLayer.CL_POINTER)
+            
+//             Material.setPbrMaterial(info.entity,{
+//                 albedoColor: Color4.create(0,0,1,.5)
+//             })
+
+//             AudioSource.create(info.entity,{
+//                 audioClipUrl: "assets/" + sound.url + ".mp3",
+//                 playing: false,
+//                 volume: sound.volume,
+//                 loop: sound.loop,
+//             })
+
+//             updateSoundAttachView(aid, sound.attach, info.entity)
+//         }
+//     })
+// }
 
 export function updateSoundAttachView(aid:string, attach:boolean, entity?:Entity){
     let ent:any = entity
@@ -162,7 +220,7 @@ export async function createSounds(){
             //         position: sound.pos,    
             //     })
             //     MeshRenderer.setBox(sEntity)
-            // }//
+            // }
         }
         sounds.set(sound.key, data)
     })

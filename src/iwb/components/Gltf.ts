@@ -1,5 +1,6 @@
 import { GltfContainer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
+import { GLTFLoadedComponent } from "../helpers/Components"
 
 // export function addGltfComponent(scene:any){
 //     // scene.gltfs.forEach((gltf:any, aid:string)=>{
@@ -7,15 +8,11 @@ import { getEntity } from "./IWB"
 //     // })
 // }
 
-export function checkGLTFComponent(scene:any, aid:string){
-    let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-    console.log('gltf info is', info )
-    if(info){
-        let gltf = scene.gltfs.get(aid)
-        if(gltf){
-            console.log('found asset')
-            GltfContainer.create(info.entity, {src:"assets/" + gltf.src + ".glb", visibleMeshesCollisionMask: gltf.visibleCollision, invisibleMeshesCollisionMask:gltf.invisibleCollision})
-        }
+export function checkGLTFComponent(scene:any, entityInfo:any){
+    let gltf = scene.gltfs.get(entityInfo.aid)
+    if(gltf){
+        GltfContainer.create(entityInfo.entity, {src:"assets/" + gltf.src + ".glb", visibleMeshesCollisionMask: gltf.visibleCollision, invisibleMeshesCollisionMask:gltf.invisibleCollision})
+        GLTFLoadedComponent.create(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
@@ -39,4 +36,15 @@ export function gltfListener(scene:any){
             }
         })
     })
+}
+
+export function checkGLTFCollision(scene:any, entityInfo:any) {
+    let gltf = scene.gltfs.get(entityInfo.aid)
+    if(gltf){
+        let object = GltfContainer.getMutableOrNull(entityInfo.entity)
+        if (object) {
+            object.invisibleMeshesCollisionMask = gltf.invisibleCollision
+            object.visibleMeshesCollisionMask = gltf.visibleCollision
+        }
+    }
 }

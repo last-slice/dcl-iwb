@@ -1,5 +1,6 @@
 import { ColliderLayer, GltfContainer, MeshCollider, MeshRenderer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
+import { MeshLoadedComponent } from "../helpers/Components"
 
 // export function addGltfComponent(scene:any){
 //     // scene.gltfs.forEach((gltf:any, aid:string)=>{
@@ -7,14 +8,12 @@ import { getEntity } from "./IWB"
 //     // })
 // }
 
-export function checkMeshComponent(scene:any, aid:string){
-    let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-    if(info){
-        let mesh = scene.meshes.get(aid)
-        if(mesh){
-            MeshRenderer.setPlane(info.entity)
-            MeshCollider.setPlane(info.entity, mesh.collision === -500 ? ColliderLayer.CL_POINTER || ColliderLayer.CL_PHYSICS : mesh.collision)
-        }
+export function checkMeshComponent(scene:any, entityInfo:any){
+    let mesh = scene.meshes.get(entityInfo.aid)
+    if(mesh){
+        MeshRenderer.setPlane(entityInfo.entity)
+        MeshCollider.setPlane(entityInfo.entity, mesh.collision === -500 ? ColliderLayer.CL_POINTER || ColliderLayer.CL_PHYSICS : mesh.collision)
+        MeshLoadedComponent.create(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
@@ -29,4 +28,11 @@ export function meshListener(scene:any){
             }
         })
     })
+}
+
+export function setMeshBuildMode(scene:any, entityInfo:any){
+    let mesh = scene.meshes.get(entityInfo.aid)
+    if(mesh){
+        MeshCollider.setPlane(entityInfo.entity, mesh.collision === -500 ? ColliderLayer.CL_POINTER || ColliderLayer.CL_PHYSICS : mesh.collision)
+    }
 }

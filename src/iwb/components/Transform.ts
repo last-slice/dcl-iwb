@@ -11,14 +11,10 @@ import { getEntity } from "./IWB"
 //     })
 // }
 
-export function checkTransformComponent(scene:any, aid:string){
-    let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-    console.log('transform info is', info )
-    if(info){
-        let transform = scene.transforms.get(aid)
-        if(transform){
-            Transform.create(info.entity, {parent:scene.parentEntity, position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
-        }
+export function checkTransformComponent(scene:any, entityInfo:any){
+    let transform = scene.transforms.get(entityInfo.aid)
+    if(transform){
+        Transform.create(entityInfo.entity, {parent:scene.parentEntity, position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
     }
 }
 

@@ -8,41 +8,38 @@ import { Color4 } from "@dcl/sdk/math"
 //     // })
 // }//
 
-export function checkMaterialComponent(scene:any, aid:string){
-    let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-    if(info){
-        let material = scene.materials.get(aid)
-        if(material){
-            switch(material.type){
-                case 'pbr':
-                    Material.setPbrMaterial(info.entity, {
-                        texture: material.texture ?
-                        Material.Texture.Common({
-                            src: material.texture.src
-                        })
-                        : undefined
-                        ,
-
-                        emissiveTexture: material.emissive && material.emissive.src?
-                        Material.Texture.Common({
-                            src: material.emissive.src
-                        })
-                        : undefined,
-
-                        emissiveColor: material.emissive ? 
-                        Color4.create(material.emissive.color.r, material.emissive.color.g, material.emissive.color.b, material.emissive.color.a)
-                        : undefined,
-
-                        emissiveIntensity: material.emissive ? 
-                        material.emissiveIntensity
-                        : undefined,
-
-                        albedoColor: material.albedoColor ? 
-                        Color4.create(material.albedoColor.r, material.albedoColor.g, material.albedoColor.b, material.albedoColor.a)
-                        : undefined
+export function checkMaterialComponent(scene:any, entityInfo:any){
+    let material = scene.materials.get(entityInfo.aid)
+    if(material){
+        switch(material.type){
+            case 'pbr':
+                Material.setPbrMaterial(entityInfo.entity, {
+                    texture: material.texture ?
+                    Material.Texture.Common({
+                        src: material.texture.src
                     })
-                    break;
-            }
+                    : undefined
+                    ,
+
+                    emissiveTexture: material.emissive && material.emissive.src?
+                    Material.Texture.Common({
+                        src: material.emissive.src
+                    })
+                    : undefined,
+
+                    emissiveColor: material.emissive ? 
+                    Color4.create(material.emissive.color.r, material.emissive.color.g, material.emissive.color.b, material.emissive.color.a)
+                    : undefined,
+
+                    emissiveIntensity: material.emissive ? 
+                    material.emissiveIntensity
+                    : undefined,
+
+                    albedoColor: material.albedoColor ? 
+                    Color4.create(material.albedoColor.r, material.albedoColor.g, material.albedoColor.b, material.albedoColor.a)
+                    : undefined
+                })
+                break;
         }
     }
 }

@@ -9,6 +9,7 @@ import { addBuildModePointers, resetEntityForBuildMode } from "../modes/Build"
 import { afterLoadActions } from "./Scene"
 import { checkMeshComponent } from "./Meshes"
 import { checkMaterialComponent } from "./Materials"
+import { checkSoundComponent } from "./Sounds"
 
 export async function addParenting(scene:any){
     scene.parenting.forEach((item:any, i:number)=>{
@@ -56,12 +57,11 @@ export function parentingListener(scene:any){
 
 
             //addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)
-            await checkTransformComponent(scene, item.aid)            
-            await checkGLTFComponent(scene, item.aid)
-            await checkMeshComponent(scene, item.aid)
-            await checkMaterialComponent(scene, item.aid)
-
-            //await cehckAudioComponent()
+            await checkTransformComponent(scene, item)            
+            await checkGLTFComponent(scene, item)
+            await checkMeshComponent(scene, item)
+            await checkMaterialComponent(scene, item)
+            await checkSoundComponent(scene, item)
 
             // await checkSmartItemComponent()//
 

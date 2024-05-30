@@ -11,12 +11,15 @@ import { realm } from "../components/Config"
 import { checkBuildPermissionsForScene, afterLoadActions } from "../components/Scene"
 import { utils } from "../helpers/libraries"
 import { displayCatalogPanel } from "../ui/Objects/CatalogPanel"
-import { playSound } from "../components/Sounds"
+import { playSound, setAudioBuildMode } from "../components/Sounds"
 import { displayHover, updateContextEvents } from "../ui/Objects/ContextMenu"
 import { bbE, findSceneByParcel, getCenterOfParcels, isEntityInScene } from "../helpers/build"
 import { isSnapEnabled } from "../systems/SelectedItemSystem"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { displayCatalogInfoPanel } from "../ui/Objects/CatalogInfoPanel"
+import { checkGLTFCollision } from "../components/Gltf"
+import { setMeshBuildMode } from "../components/Meshes"
+import { getEntity } from "../components/IWB"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -1292,11 +1295,14 @@ export function removeItem(sceneId: string, info: any) {
 }
 
 export function hideAllOtherPointers() {
-    // sceneBuilds.forEach((scene, key) => {
-    //     scene.entities.forEach((entity: Entity) => {
-    //         PointerEvents.deleteFrom(entity)
-    //     })
-    // })
+    colyseusRoom.state.scenes.forEach((scene:any)=>{
+        scene.pointers.forEach((pointer:any, aid:string)=>{
+            let entityInfo = getEntity(scene, aid)
+            if(entityInfo){
+                PointerEvents.deleteFrom(entityInfo.entity)
+            }
+        })
+    })
 }
 
 export function addAllBuildModePointers() {
@@ -1308,18 +1314,20 @@ export function addAllBuildModePointers() {
     // })
 }
 
-
 export function resetEntityForBuildMode(scene:any, entityInfo:any) {
+    console.log('resetting entity for build mode', entityInfo)
     let itemInfo = scene.itemInfo.get(entityInfo.aid)
     if(itemInfo){
+        console.log('we found item info')
         VisibilityComponent.createOrReplace(entityInfo.entity, {
             visible: itemInfo.buildVis
         })
-    }
 
-    //         check3DCollision(entity, sceneItem)
-    //         check2DCollision(entity, sceneItem)
-    //         checkAudio(entity, sceneItem, scene.parentEntity)
+        checkGLTFCollision(scene, entityInfo)
+        setMeshBuildMode(scene, entityInfo)
+        setAudioBuildMode(scene, entityInfo)
+        
+    }
     //         checkVideo(entity, sceneItem)
     //         checkSmartItems(entity, sceneItem)
     //         disableAnimations(entity, sceneItem)
@@ -1369,64 +1377,6 @@ export function removeEditSelectionPointer(aid: string) {
     //     engine.removeEntity(ent)
     // }
     // editAssets.delete(aid)
-}
-
-
-function check2DCollision(entity: Entity, sceneItem: SceneItem) {
-    // if (sceneItem.type === "2D" && !sceneItem.textComp) {
-    //     MeshRenderer.setPlane(entity)
-
-    //     if (sceneItem.colComp.iMask === 2 || sceneItem.colComp.vMask === 2) {
-    //         MeshCollider.setPlane(entity)
-    //     } else {
-    //         MeshCollider.setPlane(entity, ColliderLayer.CL_POINTER)
-    //     }
-    // }
-}
-
-function check3DCollision(entity: Entity, sceneItem: SceneItem){
-//     if (sceneItem.type === "3D") {
-//         let gltf = GltfContainer.getMutableOrNull(entity)
-//         if (gltf) {
-//             gltf.invisibleMeshesCollisionMask = sceneItem.colComp.iMask
-//             gltf.visibleMeshesCollisionMask = sceneItem.colComp.vMask
-//         }
-//     }
-}
-
-function checkAudio(entity: Entity, sceneItem: SceneItem, parent: Entity) {
-    // if (sceneItem.audComp) {
-    //     MeshRenderer.setBox(entity)
-    //     MeshCollider.setBox(entity, ColliderLayer.CL_POINTER)
-
-    //     let audio: any
-
-    //     if (sceneItem.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124") {
-    //         audio = AudioSource.getMutable(entity)
-    //     } else {
-    //         audio = AudioStream.getMutable(entity)
-    //     }
-
-    //     Transform.createOrReplace(entity, {
-    //         parent: parent,
-    //         position: sceneItem.p,
-    //         rotation: Quaternion.fromEulerDegrees(sceneItem.r.x, sceneItem.r.y, sceneItem.r.z),
-    //         scale: sceneItem.s
-    //     })
-
-    //     Material.setPbrMaterial(entity, {
-    //         albedoColor: Color4.create(0, 0, 1, .5)
-    //     })
-
-    //     if (sceneItem.audComp.attachedPlayer) {
-    //         TextShape.createOrReplace(entity, {text: "Audio\nAttached", fontSize: 3})
-
-    //     } else {
-    //         TextShape.createOrReplace(entity, {text: "Audio\nPlaced", fontSize: 3})
-    //     }
-
-    //     audio.playing = false
-    // }
 }
 
 function checkVideo(entity: Entity, sceneItem: SceneItem) {

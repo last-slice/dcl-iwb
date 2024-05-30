@@ -3,26 +3,17 @@ import { getSceneInformation } from '~system/Runtime'
 import {IWBScene, NOTIFICATION_TYPES, Player, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
 import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
-import players from "@dcl/sdk/players"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
 import { log } from "../helpers/functions"
-import { addActionComponent } from "./Actions"
-import { items } from "./Catalog"
-import { colyseusRoom, sendServerMessage } from "./Colyseus"
-import { addCounterComponent, counterListener } from "./Counter"
+import { colyseusRoom } from "./Colyseus"
 import { gltfListener } from "./Gltf"
-import { addParenting, parentingListener } from "./Parenting"
+import { parentingListener } from "./Parenting"
 import { localUserId, localPlayer } from "./Player"
-import { addPointerComponent } from "./Pointers"
-import { addSoundComponent } from "./Sounds"
-import { addStateComponent, stateListener } from "./States"
-import { addTextShapeComponent, textShapeListener } from "./TextShape"
 import { transformListener } from "./Transform"
-import { addTriggerComponent } from "./Triggers"
-import { addVisibilityComponent, visibilityListener } from "./Visibility"
-import { getEntity } from "./IWB"
 import { getCenterOfParcels } from "../helpers/build"
 import { meshListener } from "./Meshes"
+import { disableSceneEntities, enableSceneEntities } from "../modes/Play"
+import { playModeReset } from "../modes/Play"
 
 export let realmActions: any[] = []
 
@@ -30,8 +21,6 @@ export let buildModeCheckedAssets: any[] = []
 export let playModeCheckedAssets: any[] = []
 export let lastScene: any
 
-export let playModeReset: boolean = true
-export let disabledEntities: boolean = false
 
 export let scenesLoaded: boolean = false
 export let sceneCount: number = 0
@@ -45,10 +34,6 @@ export function enablePrivateModeForScene(scene:any){
             engine.removeEntity(item.entity)
         }
     })
-}
-
-export function updatePlayModeReset(value: boolean) {
-    playModeReset = value
 }
 
 export async function loadScene(scene:any) {
@@ -349,21 +334,21 @@ export async function checkScenePermissions(player: Player) {
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
         playModeCheckedAssets.length = 0
     } else {
-        // if (playModeReset) {
-        //     if (activeScene) {
-        //         if (lastScene) {
-        //             if (lastScene !== activeScene.id) {
-        //                 await disableSceneEntities(lastScene)
-        //                 enableSceneEntities(activeScene.id)
-        //             }
-        //         } else {
-        //             enableSceneEntities(activeScene.id)
-        //         }
-        //     } else {
-        //         disableSceneEntities(lastScene)
-        //     }
-        //     lastScene = activeScene ? activeScene.id : undefined
-        // }
+        if (playModeReset) {
+            if (activeScene) {
+                if (lastScene) {
+                    if (lastScene !== activeScene.id) {
+                        await disableSceneEntities(lastScene)
+                        enableSceneEntities(activeScene)
+                    }
+                } else {
+                    enableSceneEntities(activeScene)
+                }
+            } else {
+                disableSceneEntities(lastScene)
+            }
+            lastScene = activeScene ? activeScene : undefined
+        }
     }
 }
 
