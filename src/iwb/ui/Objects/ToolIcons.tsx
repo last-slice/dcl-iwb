@@ -33,7 +33,7 @@ export function createToolsPanel() {
                 positionType: 'absolute',
                 position: { right: 0, bottom: '3%' }
             }}
-            // uiBackground={{ color: Color4.Red() }}
+            // uiBackground={{ color: Color4.Red() }}//
         >
 
         {/* settings icon */}
@@ -102,6 +102,8 @@ export function createToolsPanel() {
         >
             {/* {createBottomToolIcons(bottomTools)} */}
         </UiEntity>
+
+
         </UiEntity>
     )
 }
@@ -212,22 +214,3 @@ function getDisplay(config:any){
             return isLocalPlayer(localUserId) && playerMode === SCENE_MODES.BUILD_MODE && config.visible ? 'flex' : 'none'
     }
 }
-
-// function checkModeAndPermissions(){
-//     let player = players.get(localUserId)
-//     if(!atHQ() && localUserId && player!.mode !== SCENE_MODES.CREATE_SCENE_MODE){
-//          if(player!.buildingAllowed.length > 0){
-//             // console.log('player building parcels allowed', player.buildingAllowed)
-//             if(player!.buildingAllowed.find((b:any)=> b.parcel === player!.currentParcel)){
-//                 return "flex"
-//             }else{
-//                 return "none"
-//             }
-//          }else{
-//             return "none"
-//          }
-//     }
-//     else{
-//         return "none"
-//     }
-// }

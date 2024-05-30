@@ -12,6 +12,10 @@ import { createSkinnyVerticalPanel } from './Reuse/SkinnyVerticalPanel'
 import { createMainView } from './Objects/IWBView'
 import { IWBButton } from './Reuse/IWBButton'
 import { createStoreview } from './Objects/StoreView'
+import { createCatalogPanel, displayCatalogPanel } from './Objects/CatalogPanel'
+import { createCatalogInfoPanel, displayCatalogInfoPanel } from './Objects/CatalogInfoPanel'
+import { createCustomContextMenu } from './Objects/ContextMenu'
+import { createNotificationUI } from './Objects/NotificationPanel'
 
 export function setupUI() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -28,7 +32,11 @@ const uiComponent:any = () => [
   createToolsPanel(),
   createSkinnyVerticalPanel(),
   createMainView(),
-  createStoreview()
+  createStoreview(),
+  createCatalogPanel(),
+  createCatalogInfoPanel(),
+  createCustomContextMenu(),
+  createNotificationUI(),
 ]
 
 export function generateButtons(data:any){
@@ -37,4 +45,13 @@ export function generateButtons(data:any){
       arr.push(<IWBButton button={button} buttons={data.buttons} />)
   })
   return arr
+}
+
+export function hideAllPanels(){
+  // displaySceneInfoPanel(false, null)
+  displayCatalogInfoPanel(false)
+  // displaySettingsPanel(false)
+  // displayAssetUploadUI(false)
+  // displaySceneAssetInfoPanel(false)
+  displayCatalogPanel(false)
 }

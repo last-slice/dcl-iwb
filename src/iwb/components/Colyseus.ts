@@ -47,7 +47,7 @@ export async function joinWorld(world?: any) {
 }
 
 export function sendServerMessage(type: string, data: any) {
-    log('sending server message', type, data)
+    // log('sending server message', type, data)
     try{
         connected && colyseusRoom.send(type, data)
     }

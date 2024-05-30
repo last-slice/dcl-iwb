@@ -7,7 +7,7 @@ import {Color4, Vector3} from "@dcl/sdk/math";
 import { Room } from "colyseus.js";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
-import { realm } from "./Config";
+import { playerMode, realm, setPlayerMode } from "./Config";
 import { log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
@@ -41,7 +41,6 @@ export function setLocalPlayer(player:any){
 }
 
 export function setPlayerSelectedAsset(player:any, current:any, previous:any){
-    log('player selected asset', previous, current)
     if(player.address !== localUserId){
         if(current === null){
             otherUserRemovedSeletedItem(player.address)
@@ -107,6 +106,7 @@ function setPlayerDefaults(player:any){
     player.homeWorld = true
     player.selectedEntity = null
     player.activeSceneId = ""
+    player.mode = SCENE_MODES.PLAYMODE
 
     let playerData = getPlayer()
     player.dclData = playerData
@@ -198,7 +198,8 @@ export function setPlayMode(userId:string, mode:SCENE_MODES) {
     let player = colyseusRoom.state.players.get(userId)
     if (player) {
         player.mode = mode
-        // iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})
+        setPlayerMode(mode)
+        // iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})//
         sendServerMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})
     }
 }

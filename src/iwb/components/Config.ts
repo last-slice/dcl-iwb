@@ -41,7 +41,6 @@ export function setConfig(version:any, updates:any, videos:any, tutorialCID:any)
 }
 
 export function setWorlds(config: any) {
-
     config.forEach((world: any) => {
         if (world.init) {
             worlds.push({
@@ -90,4 +89,8 @@ export function removeTutorial(info:any){
 
 export function updateTutorialCID(info:any){
     iwbConfig.CID = info
+}
+
+export function setPlayerMode(mode:SCENE_MODES){
+    playerMode = mode
 }

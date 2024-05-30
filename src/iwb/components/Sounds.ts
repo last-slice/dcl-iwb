@@ -1,4 +1,4 @@
-import { AudioSource, ColliderLayer, Entity, Material, MeshCollider, MeshRenderer, PBTextShape, TextShape, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { AudioSource, AudioStream, ColliderLayer, Entity, Material, MeshCollider, MeshRenderer, PBTextShape, TextShape, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import { Color4 } from "@dcl/sdk/math"
 import { SOUND_TYPES } from "../helpers/types"
@@ -294,4 +294,39 @@ function loopTrack(){
         utils.timers.clearTimeout(timeout)
         playNextSong(1)
     }
+}
+
+export function playAudioFile(catalogId?:string){
+    // let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
+
+    // if(itemData){
+    //     if(itemData.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+    //         AudioSource.createOrReplace(catalogSoundEntity, {
+    //             audioClipUrl:  "assets/" + itemData.id + ".mp3",
+    //             loop:false,
+    //             playing:true
+    //         })
+    //     }else{
+    //         console.log('trying to preview audio stream')
+    //         AudioStream.createOrReplace(catalogSoundEntity, {
+    //             url: selectedItem.itemData.audComp.url,
+    //             playing:true,
+    //         })
+    //     }
+    // }
+}
+
+export function stopAudioFile(catalogId?:string){
+    // let audio:any
+    // let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
+    // let entity = catalogId ? catalogSoundEntity : selectedItem.entity
+
+    // if(itemData){
+    //     if(itemData.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
+    //         audio = AudioSource.getMutable(entity)
+    //     }else{
+    //         audio = AudioStream.getMutable(entity)
+    //     }
+    //     audio.playing = false
+    // }
 }

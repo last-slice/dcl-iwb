@@ -7,6 +7,8 @@ import { toggleSnapMode } from "../systems/SelectedItemSystem"
 import { getImageAtlasMapping } from "./helpers"
 import { playerViewMode } from "../components/Config"
 import { displayMainView } from "./Objects/IWBView"
+import { displayCatalogPanel, showCatalogPanel } from "./Objects/CatalogPanel"
+import { hideAllPanels } from "./ui"
 
 export let uiModes: any = {
     0://playmode
@@ -104,12 +106,12 @@ export let topTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
-            // if (showCatalogPanel) {
-            //     displayCatalogPanel(false)
-            // } else {
-            //     hideAllPanels()
-            //     displayCatalogPanel(true)
-            // }
+            if (showCatalogPanel) {
+                displayCatalogPanel(false)
+            } else {
+                hideAllPanels()
+                displayCatalogPanel(true)
+            }
         }
     },
     {
@@ -163,7 +165,7 @@ export let topTools: any[] = [
             // if (isLocalPlayer(localUserId) && (!localPlayer.dclData.isGuest || resources.allowNoWeb3) && localPlayer.homeWorld) {
             //     displayAssetUploadUI(true)
             // } else {
-            //     displayNoWeb3(true)
+            //     displayNoWeb3(true)//
             // }
         }
     },

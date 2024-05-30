@@ -10,18 +10,19 @@ import { addActionComponent } from "./Actions"
 import { items } from "./Catalog"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { addCounterComponent, counterListener } from "./Counter"
-import { addGltfComponent, gltfListener } from "./Gltf"
-import { addParenting } from "./Parenting"
+import { gltfListener } from "./Gltf"
+import { addParenting, parentingListener } from "./Parenting"
 import { localUserId, localPlayer } from "./Player"
 import { addPointerComponent } from "./Pointers"
 import { addSoundComponent } from "./Sounds"
 import { addStateComponent, stateListener } from "./States"
 import { addTextShapeComponent, textShapeListener } from "./TextShape"
-import { addTransformComponent, transformListener } from "./Transform"
+import { transformListener } from "./Transform"
 import { addTriggerComponent } from "./Triggers"
 import { addVisibilityComponent, visibilityListener } from "./Visibility"
 import { getEntity } from "./IWB"
 import { getCenterOfParcels } from "../helpers/build"
+import { meshListener } from "./Meshes"
 
 export let realmActions: any[] = []
 
@@ -66,33 +67,36 @@ export async function loadScene(scene:any) {
 }
 
 async function loadSceneComponents(scene:any){
-    await addParenting(scene)
+    // await addParenting(scene)
+    parentingListener(scene)
 
-    await addGltfComponent(scene)
+    // await addGltfComponent(scene)
     gltfListener(scene)
 
-    await addVisibilityComponent(scene)
-    visibilityListener(scene)
+    // await addVisibilityComponent(scene)
+    // visibilityListener(scene)
 
-    await addTransformComponent(scene)
+    // await addTransformComponent(scene)
     transformListener(scene)
 
-    await addTextShapeComponent(scene)
-    textShapeListener(scene)
+    meshListener(scene)
 
-    await addSoundComponent(scene)
+    // await addTextShapeComponent(scene)
+    // textShapeListener(scene)
 
-    await addPointerComponent(scene)
+    // await addSoundComponent(scene)
 
-    await addTriggerComponent(scene)
+    // await addPointerComponent(scene)
 
-    await addActionComponent(scene)
+    // await addTriggerComponent(scene)
 
-    await addCounterComponent(scene)
-    counterListener(scene)
+    // await addActionComponent(scene)
 
-    await addStateComponent(scene)
-    stateListener(scene)
+    // await addCounterComponent(scene)
+    // counterListener(scene)
+
+    // await addStateComponent(scene)
+    // stateListener(scene)
 
     //todo
     //we might not need these since these are only metadata changes and can be pulled auto from colyseus room state
@@ -185,7 +189,7 @@ export function loadSceneAsset(sceneId: string, item: SceneItem) {
     //     let fn = afterLoadActions.pop()
     //     if (fn) fn(sceneId, entity)
 
-    // }
+    // }//
 }
 
 export function deleteAllRealmObjects() {
@@ -320,47 +324,47 @@ export function checkBuildPermissionsForScene(scene: IWBScene) {
 }
 
 export async function checkScenePermissions(player: Player) {
-    // let canbuild = false
-    // let activeScene: any
-    // colyseusRoom.state.scenes.forEach((scene: IWBScene, key: string) => {
-    //     if (scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
-    //         canbuild = true
-    //     }
+    let canbuild = false
+    let activeScene: any
+    colyseusRoom.state.scenes.forEach((scene: IWBScene, key: string) => {
+        if (scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
+            canbuild = true
+        }
 
-    //     if (scene.pcls.find((parcel) => parcel === player!.currentParcel)) {
-    //         activeScene = scene
-    //     }
-    // })
+        if (scene.pcls.find((parcel) => parcel === player!.currentParcel)) {
+            activeScene = scene
+        }
+    })
 
-    // player.activeScene = activeScene
+    player.activeScene = activeScene
 
-    // if (canbuild) {
-    //     player.canBuild = true
-    // } else {
-    //     player.canBuild = false
-    //     // player.activeScene = null//
-    //     displaySceneAssetInfoPanel(false)
-    // }
+    if (canbuild) {
+        player.canBuild = true
+    } else {
+        player.canBuild = false
+        // player.activeScene = null
+        // displaySceneAssetInfoPanel(false)
+    }
 
-    // if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
-    //     playModeCheckedAssets.length = 0
-    // } else {
-    //     if (playModeReset) {
-    //         if (activeScene) {
-    //             if (lastScene) {
-    //                 if (lastScene !== activeScene.id) {
-    //                     await disableSceneEntities(lastScene)
-    //                     enableSceneEntities(activeScene.id)
-    //                 }
-    //             } else {
-    //                 enableSceneEntities(activeScene.id)
-    //             }
-    //         } else {
-    //             disableSceneEntities(lastScene)
-    //         }
-    //         lastScene = activeScene ? activeScene.id : undefined
-    //     }
-    // }
+    if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
+        playModeCheckedAssets.length = 0
+    } else {
+        // if (playModeReset) {
+        //     if (activeScene) {
+        //         if (lastScene) {
+        //             if (lastScene !== activeScene.id) {
+        //                 await disableSceneEntities(lastScene)
+        //                 enableSceneEntities(activeScene.id)
+        //             }
+        //         } else {
+        //             enableSceneEntities(activeScene.id)
+        //         }
+        //     } else {
+        //         disableSceneEntities(lastScene)
+        //     }
+        //     lastScene = activeScene ? activeScene.id : undefined
+        // }
+    }
 }
 
 export function updateSceneCount(count: number) {

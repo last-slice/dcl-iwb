@@ -1,4 +1,5 @@
 import { SceneItem } from "../helpers/types";
+import { selectedSetting } from "../ui/Objects/CatalogPanel";
 import { realm, worlds } from "./Config";
 
 export let items: Map<string, SceneItem> = new Map();
@@ -45,13 +46,11 @@ export function refreshSortedItems() {
     original = [...items.values()].filter((it:any)=> !it.ugc)
     playerItemsOriginal = [...items.values()].filter((it:any)=> it.ugc)
 
-    // sortedAll = sortByType(selectedSetting === 0 ? original : playerItemsOriginal)
-    // Sorted3D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "3D")
-    // Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")
-    // SortedAudio = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Audio")
-    // SortedSmartItems = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "SM")
-
-
+    sortedAll = sortByType(selectedSetting === 0 ? original : playerItemsOriginal)
+    Sorted3D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "3D")
+    Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")
+    SortedAudio = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Audio")
+    SortedSmartItems = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "SM")
 }
 
 export function updateItem(id: string, update: SceneItem) {

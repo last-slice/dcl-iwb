@@ -44,7 +44,7 @@ function createPlayerListeners(room:Room){
     //         refreshSortedItems()
     //         displayPendingPanel(true, 'assetsready')
     //     }
-    // })
+    // })//
 
 
     // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG, (info: any) => {
@@ -128,7 +128,7 @@ function createPlayerListeners(room:Room){
 
 function createConfigurationListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
-        log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
+        // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
         setCatalog(info.catalog)
         setRealmAssets(info.realmAssets)
@@ -390,7 +390,7 @@ function createColyseusRoomStateListeners(room:Room){
         //                 cancelSelectedItem()
         //             }
         //         }
-        //         setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
+        //         setPlayMode(localUserId, SCENE_MODES.PLAYMODE)//
         //     }
         // })
     
