@@ -16,6 +16,7 @@ import { createCatalogPanel, displayCatalogPanel } from './Objects/CatalogPanel'
 import { createCatalogInfoPanel, displayCatalogInfoPanel } from './Objects/CatalogInfoPanel'
 import { createCustomContextMenu } from './Objects/ContextMenu'
 import { createNotificationUI } from './Objects/NotificationPanel'
+import { createSceneInfoPanel } from './Objects/SceneInfoPanel'
 
 export function setupUI() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -37,6 +38,7 @@ const uiComponent:any = () => [
   createCatalogInfoPanel(),
   createCustomContextMenu(),
   createNotificationUI(),
+  createSceneInfoPanel()
 ]
 
 export function generateButtons(data:any){

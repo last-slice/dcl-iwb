@@ -76,7 +76,7 @@ export function transformListener(scene:any){
     })
 }
 
-function updateTransform(scene:any, aid:string, transform:any){
+export function updateTransform(scene:any, aid:string, transform:any){
     let info = getEntity(scene, aid)
     if(info){
         Transform.createOrReplace(info.entity, 

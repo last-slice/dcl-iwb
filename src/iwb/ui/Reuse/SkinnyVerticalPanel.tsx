@@ -7,13 +7,15 @@ import { generateButtons, setUIClicked } from '../ui'
 
 let show = false
 let props:any
+let variableText:any
 
-export function displaySkinnyVerticalPanel(value:boolean, data?:any){
+export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any){
     console.log('display skinny is', data)
     if(value){
         props = data
     }
     show = value
+    variableText = extra
 }
 
 export function createSkinnyVerticalPanel(){
@@ -61,6 +63,19 @@ export function createSkinnyVerticalPanel(){
         uiText={{value:"" + (props && props.label), fontSize: sizeFont(45,30), color: Color4.White()}}
         />
 
+                {/* variabl text label */}
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                display: variableText !== undefined ? "flex" : "none",
+            }}
+        uiText={{value:"" + variableText, fontSize: sizeFont(30,25), color: Color4.Red()}}
+        />
+
         {/* text detail */}
         <UiEntity
             uiTransform={{
@@ -68,7 +83,7 @@ export function createSkinnyVerticalPanel(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '30%',
+                height: '25%',
             }}
             uiText={{fontSize:sizeFont(25,20), color:Color4.White(), value: addLineBreak("" + (props && props.text), true, 30)}}
         />

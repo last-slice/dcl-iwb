@@ -1,11 +1,11 @@
 import { Room } from "colyseus.js";
 import { addInputSystem } from "../systems/InputSystem";
-import { addPlayerScenes, createPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion } from './Player'
+import { addPlayerScenes, createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings } from './Player'
 import { EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { log } from "../helpers/functions";
 import { items, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addTutorial, removeTutorial, setConfig, setWorlds, updateTutorialCID } from "./Config";
+import { addTutorial, iwbConfig, realm, removeTutorial, setConfig, setWorlds, updateTutorialCID } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
@@ -15,6 +15,7 @@ import { getEntity } from "./IWB";
 import { refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { getView } from "../ui/uiViews";
+import { showNotification } from "../ui/Objects/NotificationPanel";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -89,40 +90,38 @@ function createPlayerListeners(room:Room){
     //     displayDownloadPendingPanel(true, info.link)
     // })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS + ' received', info)
-    //     switch(info.action){
-    //         case 'load':
-    //             console.log('load player settings')
-    //             setSettings(info.value)
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS + ' received', info)
+        switch(info.action){
+            case 'load':
+                console.log('load player settings')
+                setSettings(info.value)
 
-    //             if(!info.value.firstTime){
-    //                 displayWelcomeScreen(true)
-    //             }
+                if(!info.value.firstTime){
+                    // displayWelcomeScreen(true)
+                }
 
-    //             if (localPlayer!.homeWorld) {
-    //                 let config = localPlayer!.worlds.find((w) => w.ens === realm)
-    //                 console.log("home world config is", config)
-    //                 if (config) {
-    //                     if (config.v < iwbConfig.v) {
-    //                         log('world version behind deployed version, show notification to update')
-    //                         showNotification({
-    //                             type: NOTIFICATION_TYPES.MESSAGE,
-    //                             message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
-    //                             animate: {enabled: true, time: 10, return: true}
-    //                         })
-    //                     }
-    //                 }
-    //             }
+                if (localPlayer!.homeWorld) {
+                    let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
+                    if (config) {
+                        if (config.v < iwbConfig.v) {
+                            showNotification({
+                                type: NOTIFICATION_TYPES.MESSAGE,
+                                message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
+                                animate: {enabled: true, time: 10, return: true}
+                            })
+                        }
+                    }
+                }
 
-    //             //play music to start
+                //play music to start
 
-    //             //show notifications
+                //show notifications
 
-    //             //other settings
-    //             break;
-    //     }
-    // })
+                //other settings
+                break;
+        }
+    })
 
 }
 

@@ -1,5 +1,7 @@
 // import { IWBCatalogComponent, IWBComponent } from "./Components"
 
+import { VisibilityComponent } from "@dcl/sdk/ecs"
+
 export function getEntity(scene:any, aid:string){
   return scene.parenting.find((entity:any)=> entity.aid === aid)
 }
@@ -38,10 +40,15 @@ export function getEntity(scene:any, aid:string){
 //   })
 // }
 
-// export function iwbInfoListener(scene:any){
-//     scene.catalogInfo.onAdd((catalogInfo:any, aid:any)=>{
-//     })
-
-//     scene.itemInfo.onAdd((itemInfo:any, aid:any)=>{
-//     })
-// }
+export function iwbInfoListener(scene:any){
+  scene.itemInfo.onAdd((item:any, aid:any)=>{
+    item.listen("buildVis", (c:any, p:any)=>{
+          if(p !== undefined){
+              let entityInfo = getEntity(scene, aid)
+              if(entityInfo){
+                VisibilityComponent.createOrReplace(entityInfo.entity, {visible: c})
+              }
+          }
+      })
+  })
+}

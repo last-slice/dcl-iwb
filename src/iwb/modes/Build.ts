@@ -954,7 +954,7 @@ export function grabItem(entity: Entity) {
 //     // Transform.createOrReplace(selectedItem.entity, {position: {x: 0, y: -.88, z: 4}, parent: engine.PlayerEntity})//
 }
 
-export function deleteSelectedItem(entity: Entity) {
+export function deleteSelectedItem(aid:string) {
     // // console.log('entity to delete is ', entity)
     // let assetId = itemIdsFromEntities.get(entity)
     // console.log('found asset id', assetId)
@@ -1184,7 +1184,7 @@ function addUseItemPointers(ent: Entity) {
     //     ]
     // })
     // updateContextEvents([...PointerEvents.get(ent).pointerEvents])
-}//
+}
 
 export function addBuildModePointers(ent: Entity) {
     PointerEvents.createOrReplace(ent, {

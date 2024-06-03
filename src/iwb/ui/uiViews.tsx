@@ -1,5 +1,7 @@
 import { sendServerMessage } from "../components/Colyseus"
+import { localPlayer } from "../components/Player"
 import { SERVER_MESSAGE_TYPES } from "../helpers/types"
+import { deleteSelectedItem } from "../modes/Build"
 import { displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { UI_VIEW_TYPES } from "./uiConfig"
 
@@ -64,5 +66,55 @@ export let uiViews:any[] = [
                 }
             ]
         }
-    }
+    },
+    {
+        view:"Confirm Delete Entity",
+        props:{
+            label:"Delete Item",
+            text:"Are you sure you want to delete this item?",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Delete",
+                    func:(aid:string)=>{
+                        displaySkinnyVerticalPanel(false)
+                        // deleteSelectedItem(aid)
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Clear Scene",
+        props:{
+            label:"Clear Scene",
+            text:"Are you sure you want to clear this build? All assets will be removed from this scene.",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Delete",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_CLEAR_ASSETS, {sceneId: localPlayer.activeScene!.id})
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
 ]

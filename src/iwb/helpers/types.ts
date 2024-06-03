@@ -289,7 +289,16 @@ export enum COMPONENT_TYPES {
     NPC_COMPONENT = "NPC",
     DIALOG_COMPONENT = "Dialog",
     REWARD_COMPONENT = 'Reward',
-    ADVANCED_COMPONENT = 'Advanced'
+    ADVANCED_COMPONENT = 'Advanced',
+    PARENTING_COMPONENT = 'Parenting',
+    NAMES_COMPONENT ='Names',
+    POINTER_COMPONENT = 'Pointers',
+    COUNTER_COMPONENT = 'Counters',
+    GLTF_COMPONENT = 'Gltf',
+    STATE_COMPONENT ='States',
+    SOUND_COMPONENT = 'Sounds',
+    IWB_COMPONENT = 'IWB',
+    MESH_COMPONENT = 'Mesh'
 }
 
 export enum COLLISION_LAYERS {

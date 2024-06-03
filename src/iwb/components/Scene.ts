@@ -14,6 +14,7 @@ import { getCenterOfParcels } from "../helpers/build"
 import { meshListener } from "./Meshes"
 import { disableSceneEntities, enableSceneEntities } from "../modes/Play"
 import { playModeReset } from "../modes/Play"
+import { iwbInfoListener } from "./IWB"
 
 export let realmActions: any[] = []
 
@@ -64,8 +65,8 @@ async function loadSceneComponents(scene:any){
 
     // await addTransformComponent(scene)
     transformListener(scene)
-
     meshListener(scene)
+    iwbInfoListener(scene)
 
     // await addTextShapeComponent(scene)
     // textShapeListener(scene)

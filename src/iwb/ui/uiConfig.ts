@@ -9,6 +9,7 @@ import { playerViewMode } from "../components/Config"
 import { displayMainView } from "./Objects/IWBView"
 import { displayCatalogPanel, showCatalogPanel } from "./Objects/CatalogPanel"
 import { hideAllPanels } from "./ui"
+import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "./Objects/SceneInfoPanel"
 
 export let uiModes: any = {
     0://playmode
@@ -191,15 +192,15 @@ export let topTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
-            // if (showSceneInfoPanel) {
-            //     displaySceneAssetInfoPanel(false)
-            // } else {
-            //     hideAllPanels()
-            //     displaySceneAssetInfoPanel(true)
-            // }
+            if (showSceneInfoPanel) {
+                displaySceneAssetInfoPanel(false)
+            } else {
+                hideAllPanels()
+                displaySceneAssetInfoPanel(true)
+            }
         },
     },
-    // {
+    // {//
     //     name: "Image",
     //     atlas: "assets/atlas1.png",
     //     enabledUV: {

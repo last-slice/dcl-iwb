@@ -7,6 +7,7 @@ import { utils } from "../helpers/libraries"
 import resources from "../helpers/resources"
 import { items } from "./Catalog"
 import { AudioLoadedComponent } from "../helpers/Components"
+import { updateTransform } from "./Transform"
 
 
 export function checkSoundComponent(scene:any, entityInfo:any){
@@ -62,6 +63,8 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
         }
 
         audio.playing = false
+
+        updateTransform(scene, entityInfo.aid, scene.transforms.get(entityInfo.aid))
     }
 }
 
