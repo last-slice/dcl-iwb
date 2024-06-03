@@ -1,7 +1,7 @@
 import { sendServerMessage } from "../components/Colyseus"
 import { localPlayer } from "../components/Player"
 import { SERVER_MESSAGE_TYPES } from "../helpers/types"
-import { deleteSelectedItem } from "../modes/Build"
+import { deleteSelectedItem, selectedAssetId } from "../modes/Build"
 import { displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { UI_VIEW_TYPES } from "./uiConfig"
 
@@ -80,7 +80,7 @@ export let uiViews:any[] = [
                     label:"Delete",
                     func:(aid:string)=>{
                         displaySkinnyVerticalPanel(false)
-                        // deleteSelectedItem(aid)
+                        deleteSelectedItem(selectedAssetId)
                     }
                 },
                 {

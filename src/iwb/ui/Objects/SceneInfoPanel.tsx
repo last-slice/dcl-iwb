@@ -7,7 +7,7 @@ import { colyseusRoom, sendServerMessage } from '../../components/Colyseus'
 import { localPlayer, localUserId, settings } from '../../components/Player'
 import { formatDollarAmount, formatSize, log, paginateArray } from '../../helpers/functions'
 import { SceneItem, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, EDIT_MODES, COMPONENT_TYPES } from '../../helpers/types'
-import { duplicateItem, duplicateItemInPlace, editItem, deleteSelectedItem } from '../../modes/Build'
+import { duplicateItem, duplicateItemInPlace, editItem, deleteSelectedItem, updateSelectedAssetId, selectedAssetId } from '../../modes/Build'
 import { calculateImageDimensions, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions, getAspect } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { showNotification } from './NotificationPanel'
@@ -21,7 +21,7 @@ export let visibleIndex = 1
 export let visibleRows = 7
 export let visibleItems: any[] = []
 export let selectedRow = -1
-export let selectedAssetId:any
+// export let selectedAssetId:any
 export let localScene = false
 export let sceneAssetSearchFilter:string = ""
 export let showSceneInfoPanel = false
@@ -48,6 +48,8 @@ export function displaySceneAssetInfoPanel(value: boolean) {
                     }
                 }
             })
+
+            assets.sort((a, b) => a.name.localeCompare(b.name))
             visibleItems = paginateArray([...assets], visibleIndex, visibleRows)
     
             sceneInfoEntitySelector = engine.addEntity()
@@ -81,6 +83,7 @@ export function updateRows() {
         })
 
         if(sceneAssetSearchFilter !== ""){
+            assets.sort((a, b) => a.name.localeCompare(b.name))
             assets = assets.filter(item => item.name.toLowerCase().includes(sceneAssetSearchFilter.toLowerCase()))
         }
 
@@ -90,7 +93,8 @@ export function updateRows() {
 
 export function selectRow(row: number, pointer?: boolean) {
     selectedRow = row
-    selectedAssetId = visibleItems[selectedRow].aid
+    updateSelectedAssetId(visibleItems[selectedRow].aid)
+
     let item = items.get(visibleItems[selectedRow].id)
     if (item) {
         let transform = localPlayer.activeScene.transforms.get(selectedAssetId)
@@ -484,7 +488,8 @@ export function createSceneInfoPanel() {
                             displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene.names.get(selectedAssetId).value)
                         }else{
                             deleteSelectedItem(selectedAssetId)
-                            selectedAssetId = undefined
+
+                            updateSelectedAssetId(undefined)
                             
                             VisibilityComponent.getMutable(sceneInfoEntitySelector).visible = false
                             deselectRow()

@@ -41,9 +41,9 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
         let audio: any
 
         if (itemInfo.type === AUDIO_TYPES.SOUND) {
-            audio = AudioSource.getMutable(entityInfo.entity)
+            audio = AudioSource.getMutableOrNull(entityInfo.entity)
         }else {
-            audio = AudioStream.getMutable(entityInfo.entity)
+            audio = AudioStream.getMutableOrNull(entityInfo.entity)
         }
 
         // Transform.createOrReplace(entityInfo.entity, {
@@ -62,7 +62,9 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
             TextShape.createOrReplace(entityInfo.entity, {text: "" + name.value, fontSize: 3})
         }
 
-        audio.playing = false
+        if(audio){
+            audio.playing = false
+        }
 
         updateTransform(scene, entityInfo.aid, scene.transforms.get(entityInfo.aid))
     }

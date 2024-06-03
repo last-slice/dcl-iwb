@@ -40,11 +40,11 @@ export function isEntityInScene(entity: Entity, catalogId: string): boolean {
             itemData?.bb ?? {x: 1, y: 1, z: 1},
             curScene.pcls)
 
-        log('is inside', isInside)
+        // log('is inside', isInside)
         return isInside
 
     } else {
-        log('item is outside of scene')
+        // log('item is outside of scene')
         return false
     }
 }

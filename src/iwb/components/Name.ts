@@ -14,25 +14,11 @@ import { colyseusRoom } from "./Colyseus";
 //     })
 // }
 
-// export function nameListener(scene:any){
-//     scene.names.onAdd((name:any, aid:any)=>{
-//         name.p.listen("value", (c:any, p:any)=>{
-//             // console.log('name change', p, c)
-//             if(p !== undefined){
-//                 let entity = getEntity(scene, aid)
-//                 if(entity){
-//                     NameComponent.createOrReplace(entity.entity, 
-//                         {
-//                             position:transform.p, 
-//                             rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z),
-//                             scale:transform.s, 
-//                         }
-//                     )
-//                 }
-//             }
-//         })
-//     })
-// }//
+export function nameListener(scene:any){
+    scene.names.onAdd((name:any, aid:any)=>{
+        console.log('name added', aid, name)
+    })
+}
 
 export function getAssetName(sceneId:string, aid:string){
     let scene = colyseusRoom.state.scenes.get(sceneId)

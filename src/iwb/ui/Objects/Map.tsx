@@ -157,7 +157,7 @@ export function createIWBMap(){
                 width: '100%',
                 height: '50%',
             }}
-            uiText={{value:"" + (playerMode === SCENE_MODES.PLAYMODE ? "Play Mode" : "Build Mode"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+            uiText={{value:"" + (playerMode === SCENE_MODES.PLAYMODE ? "Play" : "Build"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
             />
 
     <UiEntity

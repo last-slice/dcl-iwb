@@ -5,7 +5,11 @@ import { displayHover, updateContextEvents } from "../ui/Objects/ContextMenu"
 import { playerMode } from "../components/Config"
 import { log } from "../helpers/functions"
 import { SCENE_MODES, EDIT_MODES } from "../helpers/types"
-import { selectedItem, cancelSelectedItem, dropSelectedItem } from "../modes/Build"
+import { selectedItem, cancelSelectedItem, dropSelectedItem, deleteSelectedItem, updateSelectedAssetId, editItem } from "../modes/Build"
+import { localPlayer, settings } from "../components/Player"
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
+import { getView } from "../ui/uiViews"
+import { getAssetIdByEntity } from "../components/Parenting"
 
 
 export let added = false
@@ -72,16 +76,16 @@ export function InputListenSystem(dt:number){
 
     //DOWN BUTTON ACTIONS
     //POINTER
-    if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)) {
-        // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-        // selectedItem && !selectedItem.enabled ? displayHover(false) : null//
-        const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-        if (result && !uiInput) {
-            if (result.hit && result.hit.entityId) {
-                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER)
-            }
-        }
-    }
+    // if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)) {
+    //     // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
+    //     // selectedItem && !selectedItem.enabled ? displayHover(false) : null//
+    //     const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
+    //     if (result && !uiInput) {
+    //         if (result.hit && result.hit.entityId) {
+    //             handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER)
+    //         }
+    //     }
+    // }
 
     //PRIMARY
     if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)) {
@@ -93,9 +97,38 @@ export function InputListenSystem(dt:number){
         }
         else{
             const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
-            if (result && !uiInput) {
-                if (result.hit && result.hit.entityId) {
-                    handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_PRIMARY)
+            // if (result && !uiInput) {
+            //     if (result.hit && result.hit.entityId) {
+            //         handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_PRIMARY)
+            //     }
+            // }
+        }
+    }
+
+    //SECONDARY
+    if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)) {
+        displayHover(false)
+        setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
+
+        const result = inputSystem.getInputCommand(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
+        if(!uiInput){
+            if (result) {
+                if (result.hit && result.hit.entityId){
+                    console.log('F press on entity', result)
+                    let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+                    console.log('aid is', aid)
+                    if(aid){
+                        if(settings.confirms){
+                            updateSelectedAssetId(aid)
+                            displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene.names.get(aid).value)
+                        }else{
+                            deleteSelectedItem(aid)
+                        }
+                    }
+                }
+                else{
+                    // log('player pressed #F on an object with no result in Build mode, need to delete', hoveredEntity)
+                    //not sure if we need this implementation anymore
                 }
             }
         }
@@ -105,6 +138,8 @@ export function InputListenSystem(dt:number){
     if (inputSystem.isTriggered(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)) {
         displayHover(false)
 
+        console.log('pressed 1 button')
+
         if(selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
             cancelSelectedItem()
         }
@@ -112,19 +147,22 @@ export function InputListenSystem(dt:number){
             // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
             // selectedItem && !selectedItem.enabled ? displayHover(false) : null
             const result = inputSystem.getInputCommand(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)
-            if (result && !uiInput) {
-                console.log('here we are')
-                if (result.hit && result.hit.entityId) {
-                    handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_3)
-                }
-                else {
-                    console.log('here i am')
+            if(!uiInput){
+                if (result) {
+                    if(result.hit && result.hit.entityId){
+                        editItem(result.hit?.entityId as Entity, EDIT_MODES.EDIT)
+                    }else{
+                        // console.log('hit 1 button without hitting object and not in grab mode')
+                        // if(hoveredEntity !== -500){
+
+                        // }
+                    }
                 }
             }
         }
     }
 
-    //HOVER ACTIONS
+    //HOVER ACTIONS//
     // const hoverResult = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)
     // if (hoverResult && hoverResult.hit && hoverResult.hit.entityId) {
     //     let hoverEvents = PointerEvents.get(hoverResult.hit.entityId as Entity)
