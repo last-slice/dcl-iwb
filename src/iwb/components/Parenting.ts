@@ -10,6 +10,8 @@ import { afterLoadActions } from "./Scene"
 import { checkMeshComponent } from "./Meshes"
 import { checkMaterialComponent } from "./Materials"
 import { checkSoundComponent } from "./Sounds"
+import { checkTextShapeComponent } from "./TextShape"
+import { checkVideoComponent } from "./Videos"
 
 export async function addParenting(scene:any){
     scene.parenting.forEach((item:any, i:number)=>{
@@ -62,8 +64,10 @@ export function parentingListener(scene:any){
             await checkMeshComponent(scene, item)
             await checkMaterialComponent(scene, item)
             await checkSoundComponent(scene, item)
+            await checkTextShapeComponent(scene, item)
+            await checkVideoComponent(scene, item)
 
-            // await checkSmartItemComponent()//
+            // await checkSmartItemComponent()
 
 
             if(playerMode === SCENE_MODES.BUILD_MODE){
@@ -72,8 +76,6 @@ export function parentingListener(scene:any){
 
             let fn = afterLoadActions.pop()
             if (fn) fn(scene.id, item.entity)
-
-
             
         }
     })

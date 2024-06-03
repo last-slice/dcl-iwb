@@ -12,6 +12,19 @@ export function checkMaterialComponent(scene:any, entityInfo:any){
     let material = scene.materials.get(entityInfo.aid)
     if(material){
         switch(material.type){
+            case 'video':
+                const videoTexture = Material.Texture.Video({ videoPlayerEntity: entityInfo.entity })
+                Material.setPbrMaterial(entityInfo.entity, {
+                    texture: videoTexture,
+                    roughness: 1.0,
+                    specularIntensity: 0,
+                    metallic: 0,
+                    emissiveColor:Color4.White(),
+                    emissiveIntensity: 1,
+                    emissiveTexture: videoTexture
+                })
+                break;
+
             case 'pbr':
                 Material.setPbrMaterial(entityInfo.entity, {
                     texture: material.texture ?
@@ -43,7 +56,7 @@ export function checkMaterialComponent(scene:any, entityInfo:any){
         }
     }
 }
-
+//
 export function materialListener(scene:any){
     scene.materials.onAdd((material:any, aid:any)=>{
         // material.listen("collision", (c:any, p:any)=>{

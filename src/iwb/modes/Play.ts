@@ -11,46 +11,48 @@ export function updatePlayModeReset(value: boolean) {
     playModeReset = value
 }
 
-export async function disableSceneEntities(scene:any) {
+export async function disableSceneEntities(sceneId:any) {
     if (!disabledEntities) {
-
-        scene.parenting.forEach((item:any, index:number)=>{
-            if(index > 2){
-                let entityInfo = getEntity(scene, item.aid)
-                if(entityInfo){
-                    //check 3d
-                if (GLTFLoadedComponent.has(entityInfo.entity)) {
-                    GLTFLoadedComponent.getMutable(entityInfo.entity).init = false
+        let scene = colyseusRoom.state.scenes.get(sceneId)
+        if(scene){
+            scene.parenting.forEach((item:any, index:number)=>{
+                if(index > 2){
+                    let entityInfo = getEntity(scene, item.aid)
+                    if(entityInfo){
+                        //check 3d//
+                    if (GLTFLoadedComponent.has(entityInfo.entity)) {
+                        GLTFLoadedComponent.getMutable(entityInfo.entity).init = false
+                    }
+    
+                    //check video
+                    if (VideoLoadedComponent.has(entityInfo.entity)) {
+                        VideoLoadedComponent.getMutable(entityInfo.entity).init = false
+                    }
+    
+                    //check audio
+                    if (AudioLoadedComponent.has(entityInfo.entity)) {
+                        AudioLoadedComponent.getMutable(entityInfo.entity).init = false
+                    }
+    
+                    if (VisibleLoadedComponent.has(entityInfo.entity)) {
+                        VisibleLoadedComponent.getMutable(entityInfo.entity).init = false
+                    }
+    
+                    // //check pointers
+                    // if (PointersLoadedComponent.has(entity)) {
+                    //     PointersLoadedComponent.getMutable(entity).init = false
+                    // }
+    
+                    // //check smart items
+                    // if (SmartItemLoadedComponent.has(entity)) {
+                    //     SmartItemLoadedComponent.getMutable(entity).init = false
+                    // }
+    
+                    disableEntityForPlayMode(scene, entityInfo)
+                    }
                 }
-
-                //check video
-                if (VideoLoadedComponent.has(entityInfo.entity)) {
-                    VideoLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                //check audio
-                if (AudioLoadedComponent.has(entityInfo.entity)) {
-                    AudioLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                if (VisibleLoadedComponent.has(entityInfo.entity)) {
-                    VisibleLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                // //check pointers
-                // if (PointersLoadedComponent.has(entity)) {
-                //     PointersLoadedComponent.getMutable(entity).init = false
-                // }
-
-                // //check smart items
-                // if (SmartItemLoadedComponent.has(entity)) {
-                //     SmartItemLoadedComponent.getMutable(entity).init = false
-                // }
-
-                disableEntityForPlayMode(scene, entityInfo.entity)
-                }
-            }
-        })
+            })
+        }
 
         disableDelayedActionTimers()
         disablePlayUI()
@@ -76,11 +78,9 @@ export function enableSceneEntities(sceneId: string) {
                 }
             }
         })
-
-        disabledEntities = false
-        
-
     }
+
+    disabledEntities = false
     // log('enable scene entities for play mode')
     // let scene = sceneBuilds.get(sceneId)
     // if (scene) {
@@ -124,7 +124,6 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableSmartItems(scene, entityInfo)
 
         PointerEvents.deleteFrom(entityInfo.entity)
-
     }
 
 
@@ -139,7 +138,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
     //             resetTweenPositions(entity, sceneItem, scene)
     //         }
     //     }
-    // }
+    // }//
 }
 
 function disableVisibility(scene:any, entityInfo:any){
@@ -263,6 +262,7 @@ function enableVideoComponent(scene:any, entityInfo:any){
     if (VideoLoadedComponent.has(entityInfo.entity) && !VideoLoadedComponent.get(entityInfo.entity).init){
         let videoInfo = scene.videos.get(entityInfo.aid)
         if(videoInfo && videoInfo.autostart){
+            console.log('need to start playing a video for play mode')
             let video = VideoPlayer.getMutableOrNull(entityInfo.entity)
             if(video){
                 video.playing = true

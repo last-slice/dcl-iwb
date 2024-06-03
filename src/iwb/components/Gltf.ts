@@ -38,7 +38,7 @@ export function gltfListener(scene:any){
     })
 }
 
-export function checkGLTFCollision(scene:any, entityInfo:any) {
+export function setGLTFCollision(scene:any, entityInfo:any) {
     let gltf = scene.gltfs.get(entityInfo.aid)
     if(gltf){
         let object = GltfContainer.getMutableOrNull(entityInfo.entity)

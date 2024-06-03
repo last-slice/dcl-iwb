@@ -17,9 +17,11 @@ import { bbE, findSceneByParcel, getCenterOfParcels, isEntityInScene } from "../
 import { isSnapEnabled } from "../systems/SelectedItemSystem"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { displayCatalogInfoPanel } from "../ui/Objects/CatalogInfoPanel"
-import { checkGLTFCollision } from "../components/Gltf"
+import { setGLTFCollision } from "../components/Gltf"
 import { setMeshBuildMode } from "../components/Meshes"
 import { getEntity } from "../components/IWB"
+import { setVisibilityBuildMode } from "../components/Visibility"
+import { setVideoBuildMode } from "../components/Videos"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -231,7 +233,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
             } else if (selectedItem.itemData.n === "Text") {
                 log('dropping text item')
-                TextShape.create(selectedItem.entity, {text: "Text", fontSize: 1})
+                TextShape.create(selectedItem.entity, {text: "Text", fontSize: 3})
                 itemPosition = {x: 0, y: .5, z: itemDepth}
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(2, 2, 1)
@@ -470,7 +472,6 @@ export function saveItem() {
     //     }
     // }
 }
-
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     VisibilityComponent.createOrReplace(bbE, {visible: false})
@@ -1104,7 +1105,6 @@ function addGrabbedComponent(entity: Entity, catalogId: string, itemData: any) {
     // }
 }
 
-
 export function removeSelectedItem() {
     console.log('removing selected item')
     if (selectedItem && selectedItem.entity) {
@@ -1184,7 +1184,7 @@ function addUseItemPointers(ent: Entity) {
     //     ]
     // })
     // updateContextEvents([...PointerEvents.get(ent).pointerEvents])
-}
+}//
 
 export function addBuildModePointers(ent: Entity) {
     PointerEvents.createOrReplace(ent, {
@@ -1315,20 +1315,14 @@ export function addAllBuildModePointers() {
 }
 
 export function resetEntityForBuildMode(scene:any, entityInfo:any) {
-    console.log('resetting entity for build mode', entityInfo)
     let itemInfo = scene.itemInfo.get(entityInfo.aid)
     if(itemInfo){
-        console.log('we found item info')
-        VisibilityComponent.createOrReplace(entityInfo.entity, {
-            visible: itemInfo.buildVis
-        })
-
-        checkGLTFCollision(scene, entityInfo)
+        setGLTFCollision(scene, entityInfo)
         setMeshBuildMode(scene, entityInfo)
         setAudioBuildMode(scene, entityInfo)
-        
+        setVisibilityBuildMode(scene, entityInfo)
+        setVideoBuildMode(scene, entityInfo)
     }
-    //         checkVideo(entity, sceneItem)
     //         checkSmartItems(entity, sceneItem)
     //         disableAnimations(entity, sceneItem)
     //         resetTweenPositions(entity, sceneItem, scene)

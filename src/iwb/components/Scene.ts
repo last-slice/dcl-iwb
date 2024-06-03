@@ -26,6 +26,7 @@ export let scenesLoaded: boolean = false
 export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
+export const afterLoadActions: Function[] = []
 
 export function enablePrivateModeForScene(scene:any){
     scene.parenting.forEach((item:any, i:number)=>{
@@ -135,8 +136,6 @@ function loadSceneBoundaries(scene:any) {
     }
     // loadSceneAssets(id)
 }
-
-export const afterLoadActions: Function[] = []
 
 export function loadSceneAsset(sceneId: string, item: SceneItem) {
     // log('loading new scene asset', sceneId, item)
@@ -334,20 +333,21 @@ export async function checkScenePermissions(player: Player) {
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
         playModeCheckedAssets.length = 0
     } else {
+
         if (playModeReset) {
             if (activeScene) {
                 if (lastScene) {
                     if (lastScene !== activeScene.id) {
                         await disableSceneEntities(lastScene)
-                        enableSceneEntities(activeScene)
+                        enableSceneEntities(activeScene.id)
                     }
                 } else {
-                    enableSceneEntities(activeScene)
+                    enableSceneEntities(activeScene.id)
                 }
             } else {
                 disableSceneEntities(lastScene)
             }
-            lastScene = activeScene ? activeScene : undefined
+            lastScene = activeScene ? activeScene.id : undefined
         }
     }
 }

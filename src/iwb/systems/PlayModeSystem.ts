@@ -6,7 +6,6 @@ export let added = false
 export function addPlayModeSystem(){
     if(!added){
         added = true
-        log('adding play mode input system')
         engine.addSystem(PlayModeInputSystem)
     }
 }
