@@ -67,12 +67,16 @@ export function InputListenSystem(dt:number){
     }
 
     const hover = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
-    if (hover && hover.hit && hover.hit.entityId) {
-        if(selectedItem && !selectedItem.enabled){
-            displayHover(false)
+    if(hover){
+        displayHover(false)
             hoveredEntity = -500 as Entity
-        }
     }
+    // if (hover && hover.hit && hover.hit.entityId) {
+    //     if(selectedItem && !selectedItem.enabled){
+    //         displayHover(false)
+    //         hoveredEntity = -500 as Entity
+    //     }
+    // }
 
     //DOWN BUTTON ACTIONS
     //POINTER
@@ -138,17 +142,19 @@ export function InputListenSystem(dt:number){
     if (inputSystem.isTriggered(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)) {
         displayHover(false)
 
-        console.log('pressed 1 button')
+        console.log('pressed 1 button', selectedItem)
 
         if(selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
             cancelSelectedItem()
         }
         else{
+            console.log('ui input is', uiInput)
             // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
             // selectedItem && !selectedItem.enabled ? displayHover(false) : null
             const result = inputSystem.getInputCommand(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)
             if(!uiInput){
                 if (result) {
+                    console.log('rsult is', result)
                     if(result.hit && result.hit.entityId){
                         editItem(result.hit?.entityId as Entity, EDIT_MODES.EDIT)
                     }else{

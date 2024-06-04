@@ -1,6 +1,7 @@
-import { Billboard, BillboardMode, Entity, PBTextShape, TextShape, VisibilityComponent } from "@dcl/sdk/ecs"
+import { Billboard, BillboardMode, ColliderLayer, Entity, MeshCollider, PBTextShape, TextAlignMode, TextShape, VisibilityComponent } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import { Color4 } from "@dcl/sdk/math"
+import { fontStyles } from "../ui/Objects/Edit/EditText"
 
 function addTextShape(entity:Entity, textShape:any){
     TextShape.createOrReplace(entity, 
@@ -15,9 +16,10 @@ function addTextShape(entity:Entity, textShape:any){
             paddingLeft: textShape.paddingLeft,
             paddingRight: textShape.paddingRight,
             lineSpacing: textShape.lineSpacing,
-            outlineColor: Color4.create(textShape.outlineColor[0],textShape.outlineColor[1],textShape.outlineColor[2]),
-            textColor: Color4.create(textShape.textColor[0],textShape.textColor[1],textShape.textColor[2], textShape.textColor[3]),
+            outlineColor: Color4.create(textShape.outlineColor.r, textShape.outlineColor.g, textShape.outlineColor.b, textShape.outlineColor.a),
+            textColor: Color4.create(textShape.color.r, textShape.color.g, textShape.color.b, textShape.color.a),
         })
+    MeshCollider.setPlane(entity, ColliderLayer.CL_POINTER)
 
     if(textShape.billboard){
         Billboard.create(entity, {billboardMode: BillboardMode.BM_Y})
@@ -40,7 +42,46 @@ export function textShapeListener(scene:any){
 
         textShape.listen("text", (c:any, p:any)=>{
             if(p !== undefined){
-                addTextShape(info.entity, textShape)
+                let text = TextShape.getMutable(info.entity)
+                if(text){
+                    text.text = c
+                }
+            }
+        })
+
+        textShape.listen("font", (c:any, p:any)=>{
+            if(p !== undefined){
+                let text = TextShape.getMutable(info.entity)
+                if(text){
+                    // text.font = fontStyles[c]
+                }
+            }
+        })
+
+        textShape.listen("fontSize", (c:any, p:any)=>{
+            if(p !== undefined){
+                let text = TextShape.getMutable(info.entity)
+                if(text){
+                    text.fontSize = c
+                }
+            }
+        })
+
+        textShape.listen("textAlign", (c:any, p:any)=>{
+            if(p !== undefined){
+                let text = TextShape.getMutable(info.entity)
+                if(text){
+                    text.textAlign = c
+                }
+            }
+        })
+
+        textShape.listen("color", (c:any, p:any)=>{
+            if(p !== undefined){
+                let text = TextShape.getMutable(info.entity)
+                if(text){
+                    text.textColor = Color4.create(textShape.color.r, textShape.color.g, textShape.color.b, textShape.color.a)
+                }
             }
         })
     })

@@ -81,11 +81,14 @@ export function getAudio(scene:any, aid:string){
     return scene.sounds.get(aid)
 }
 
-export function updateSoundAttachView(aid:string, attach:boolean, entity?:Entity){
-    let ent:any = entity
-    if(!ent){
-    }
-    TextShape.createOrReplace(ent,{text:"" + (attach ? "Audio\nAttached" : "Audio\nPlaced"), fontSize: 3})
+export function updateSoundAttachView(scene:any, aid:string, attach:boolean, entityInfo:any){
+
+    // if(attach){
+
+    // }else{
+    //     updateTransform(scene, entityInfo.aid, scene.transforms.get(entityInfo.aid))
+    // }
+    // TextShape.createOrReplace(entityInfo.entity,{text:"" + (attach ? "Audio\nAttached" : "Audio\nPlaced"), fontSize: 3})
 }
 
 export function updateSoundURL(entity:Entity, url:string){
@@ -131,30 +134,35 @@ export function soundsListener(scene:any){
         sound.listen("url", (c:any, p:any)=>{
             if(p !== undefined){
                 updateSoundURL(info.entity, c)
+                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
             }
         })
 
         sound.listen("attach", (c:any, p:any)=>{
             if(p !== undefined){
-                updateSoundAttachView(aid, c, info.entity)
+                updateSoundAttachView(scene, aid, c, info)
+                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
             }
         })
 
         sound.listen("volume", (c:any, p:any)=>{
             if(p !== undefined){
                 updateSoundVolume(info.entity, c)
+                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
             }
         })
 
         sound.listen("loop", (c:any, p:any)=>{
             if(p !== undefined){
                 updateSoundLoop(info.entity, c)
+                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
             }
         })
 
         sound.listen("autostart", (c:any, p:any)=>{
             if(p !== undefined){
                 updateSoundAutostart(info.entity, c)
+                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
             }
         })
     })

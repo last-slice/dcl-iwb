@@ -131,7 +131,6 @@ export function EditAudio() {
         >
 
                         <Dropdown
-                    key={"audio-loop-type-dropdown"}
                     options={['True', 'False']}
                     selectedIndex={getLoop()}
                     onChange={selectLoop}
@@ -181,7 +180,6 @@ export function EditAudio() {
         >
 
                         <Dropdown
-                    key={"audio-start-type-dropdown"}
                     options={['True', 'False']}
                     selectedIndex={getAutostart()}
                     onChange={selectStart}
@@ -281,7 +279,7 @@ export function EditAudio() {
                     width: '100%',
                     height: '20%',
                 }}
-                uiText={{value: "URL", fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
+                uiText={{value: "URL: ", fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
             />
 
 
@@ -304,15 +302,11 @@ export function EditAudio() {
                     }}
                     color={Color4.White()}
                     fontSize={sizeFont(25, 15)}
-                    placeholder={'new audio link'}
+                    placeholder={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getAudioUrl() : "")}
                     placeholderColor={Color4.White()}
                     uiTransform={{
                         width: '100%',
                         height: '120%',
-                    }}
-                    value={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getAudioUrl() : "")}
-                    onMouseDown={() => {
-                        // console.log('clicked')
                     }}
                 ></Input>
 
@@ -338,11 +332,7 @@ export function EditAudio() {
                         textAlign: 'middle-center'
                     }}
                     onMouseDown={() => {
-                        sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {
-                            component: COMPONENT_TYPES.AUDIO_COMPONENT,
-                            action: "update",
-                            data: {type:"url", aid: selectedItem.aid, sceneId: selectedItem.sceneId, value: url}
-                        })
+                        updateAudio("url", url)//
                     }}
                 />
             </UiEntity>
@@ -425,13 +415,33 @@ function hasAudio(){
 }
 
 function getAudioUrl() {
-    if (selectedItem && selectedItem.itemData.audComp) {
-        return selectedItem.itemData.audComp.url
+    if(selectedItem && selectedItem.enabled){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(scene){
+            let itemInfo = scene.sounds.get(selectedItem.aid)
+            if(itemInfo){
+                return itemInfo.url
+            }
+            return ""
+        }
+        return ""
     }
+    return ""
 }
 
 function getLoop(){
-    return selectedItem && selectedItem.enabled && selectedItem.itemData.audComp ? selectedItem.itemData.audComp.loop ? 0: 1 : 0
+    if(selectedItem && selectedItem.enabled){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(scene){
+            let itemInfo = scene.sounds.get(selectedItem.aid)
+            if(itemInfo){
+                return itemInfo.loop ? 0 : 1//
+            }
+            return 0
+        }
+        return 0
+    }
+    return 0
 }
 
 function selectLoop(index:number){
@@ -441,7 +451,18 @@ function selectLoop(index:number){
 }
 
 function getAutostart(){
-    return selectedItem && selectedItem.enabled && selectedItem.itemData.audComp ? selectedItem.itemData.audComp.autostart ? 0: 1 : 0
+    if(selectedItem && selectedItem.enabled){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(scene){
+            let itemInfo = scene.sounds.get(selectedItem.aid)
+            if(itemInfo){
+                return itemInfo.autostart ? 0 : 1
+            }
+            return 0
+        }
+        return 0
+    }
+    return 0
 }
 
 function selectStart(index:number){
@@ -451,11 +472,29 @@ function selectStart(index:number){
 }
 
 function updateAudio(type:string, value:any){
-    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.AUDIO_COMPONENT, action:"update", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+        {
+            component:COMPONENT_TYPES.AUDIO_COMPONENT, 
+            aid:selectedItem.aid, 
+            sceneId:selectedItem.sceneId,
+            [type]:value
+        }
+    )
 }
 
 function getVolume(){
-    return selectedItem && selectedItem.enabled && selectedItem.itemData.audComp ? selectedItem.itemData.audComp.volume : 1
+    if(selectedItem && selectedItem.enabled){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(scene){
+            let itemInfo = scene.sounds.get(selectedItem.aid)
+            if(itemInfo){
+                return itemInfo.volume
+            }
+            return 1
+        }
+        return 1
+    }
+    return 1
 }
 
 function updateVolume(type:string, value:any){

@@ -279,7 +279,7 @@ export enum COMPONENT_TYPES {
     MATERIAL_COMPONENT = "Material",
     COLLISION_COMPONENT = "Collision",
     TRANSFORM_COMPONENT = "Transform",
-    NFT_COMPONENT = "NFT",
+    NFT_COMPONENT = "NftShape",
     TEXT_COMPONENT = "Text",
     TRIGGER_COMPONENT = "Trigger",
     ACTION_COMPONENT = 'Action',
@@ -307,8 +307,8 @@ export enum COLLISION_LAYERS {
 }
 
 export enum BLOCKCHAINS {
-    ETH = "eth",
-    POLYGON = "polygon"
+    ETH = "ethereum",
+    POLYGON = "matic"
 }
 
 

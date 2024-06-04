@@ -17,6 +17,9 @@ import { playModeReset } from "../modes/Play"
 import { iwbInfoListener } from "./IWB"
 import { nameListener } from "./Name"
 import { soundsListener } from "./Sounds"
+import { textShapeListener } from "./TextShape"
+import { visibilityListener } from "./Visibility"
+import { nftShapeListener } from "./NftShape"
 
 export let realmActions: any[] = []
 
@@ -61,7 +64,7 @@ async function loadSceneComponents(scene:any){
     gltfListener(scene)
 
     // await addVisibilityComponent(scene)
-    // visibilityListener(scene)
+    visibilityListener(scene)
 
     // await addTransformComponent(scene)
     transformListener(scene)
@@ -69,9 +72,11 @@ async function loadSceneComponents(scene:any){
     iwbInfoListener(scene)
     nameListener(scene)
     soundsListener(scene)
+    textShapeListener(scene)
+    nftShapeListener(scene)
 
     // await addTextShapeComponent(scene)
-    // textShapeListener(scene)
+    
 
     // await addSoundComponent(scene)
 

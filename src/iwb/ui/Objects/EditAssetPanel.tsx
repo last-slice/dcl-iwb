@@ -15,6 +15,8 @@ import { EditTransform } from './Edit/EditTransform'
 import { EditVisibility } from './Edit/EditVisibility'
 import { EditName } from './Edit/EditName'
 import { EditAudio, updateAudioComponent } from './Edit/EditAudio'
+import { EditText } from './Edit/EditText'
+import { EditNftShape } from './Edit/EditNftShape'
 
 export let visibleComponent: string = ""
 
@@ -568,12 +570,12 @@ function EditObjectData(){
                     <EditVisibility/>
                     <EditName/>
                     <EditAudio/>
+                    <EditText/>
+                    <EditNftShape/>
 
                     {/* <ImageComponentPanel/>
                     <VideoComponentPanel/>
                     
-                    <NFTComponentPanel/>
-                    <TextComponentPanel/>
                     <ActionComponent/>
                     <MaterialComponentPanel/>
                     <TriggerComponent/>
@@ -636,5 +638,6 @@ function getBasicComponents(aid:string){
     localPlayer.activeScene.animators.has(aid) ? components.push(COMPONENT_TYPES.ANIMATION_COMPONENT) : null
     localPlayer.activeScene.sounds.has(aid) ? components.push(COMPONENT_TYPES.AUDIO_COMPONENT) : null
     localPlayer.activeScene.gltfs.has(aid) ? components.push(COMPONENT_TYPES.GLTF_COMPONENT) : null
+    localPlayer.activeScene.nftShapes.has(aid) ? components.push(COMPONENT_TYPES.NFT_COMPONENT) : null
     return components
 }

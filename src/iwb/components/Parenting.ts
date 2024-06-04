@@ -13,6 +13,7 @@ import { checkSoundComponent } from "./Sounds"
 import { checkTextShapeComponent } from "./TextShape"
 import { checkVideoComponent } from "./Videos"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../ui/Objects/SceneInfoPanel"
+import { checkNftShapeComponent } from "./NftShape"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
@@ -51,6 +52,7 @@ export function parentingListener(scene:any){
             await checkSoundComponent(scene, item)
             await checkTextShapeComponent(scene, item)
             await checkVideoComponent(scene, item)
+            await checkNftShapeComponent(scene, item)
 
             //// await checkSmartItemComponent()
 

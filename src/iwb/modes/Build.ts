@@ -22,7 +22,7 @@ import { setMeshBuildMode } from "../components/Meshes"
 import { getEntity } from "../components/IWB"
 import { setVisibilityBuildMode } from "../components/Visibility"
 import { setVideoBuildMode } from "../components/Videos"
-import { hideAllPanels } from "../ui/ui"
+import { hideAllPanels, setUIClicked } from "../ui/ui"
 import { getAssetIdByEntity } from "../components/Parenting"
 import { openEditComponent } from "../ui/Objects/EditAssetPanel"
 
@@ -386,7 +386,7 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
         }
 
         hideAllOtherPointers()
-        PointerEvents.deleteFrom(entity)
+        // PointerEvents.deleteFrom(entity)
 
         let transform = Transform.get(entity)
         let transPos = Vector3.clone(transform.position)
@@ -470,9 +470,7 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
 
     if (editing || canceled) {
         selectedItem.enabled = false;
-        PointerEvents.deleteFrom(selectedItem.entity);
-        addBuildModePointers(selectedItem.entity);
-        addAllBuildModePointers();
+
         if (selectedItem.pointer) engine.removeEntity(selectedItem.pointer);
 
         if (canceled && !selectedItem.isCatalogSelect) {
@@ -504,7 +502,6 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
 
         } else {
             console.log('item was catalog item, just remove it')
-
             engine.removeEntity(selectedItem.entity);
             grabbedAssets.delete(selectedItem.aid);
         }
@@ -986,8 +983,9 @@ export function cancelSelectedItem() {
 
 export function cancelEditingItem() {
     log('canceled editing item is', selectedItem)
-    // openEditComponent("")
+    openEditComponent("")
     dropSelectedItem(true, true)
+    setUIClicked(false)
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_CANCEL,
         {
             user: localUserId,
