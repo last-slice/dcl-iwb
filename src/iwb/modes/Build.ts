@@ -18,13 +18,13 @@ import { isSnapEnabled } from "../systems/SelectedItemSystem"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { displayCatalogInfoPanel } from "../ui/Objects/CatalogInfoPanel"
 import { setGLTFCollisionBuildMode } from "../components/Gltf"
-import { setMeshBuildMode } from "../components/Meshes"
 import { getEntity } from "../components/IWB"
 import { setVisibilityBuildMode } from "../components/Visibility"
 import { setVideoBuildMode } from "../components/Videos"
 import { hideAllPanels, setUIClicked } from "../ui/ui"
 import { getAssetIdByEntity } from "../components/Parenting"
 import { openEditComponent } from "../ui/Objects/EditAssetPanel"
+import { setMeshRenderBuildMode } from "../components/Meshes"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -374,25 +374,25 @@ export function updateGrabbedYAxis(info: any) {
     // }
 }
 
-export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
+export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
     hideAllPanels()
 
-    let aid = getAssetIdByEntity(localPlayer.activeScene, entity)
-    if(aid){
+    let entityInfo = getEntity(localPlayer.activeScene, aid)
+    if(entityInfo){
         let itemInfo = localPlayer.activeScene.itemInfo.get(aid)
         if(itemInfo && itemInfo.locked){
             playSound(SOUND_TYPES.ERROR_2)
             return
         }
-
+    
         hideAllOtherPointers()
         // PointerEvents.deleteFrom(entity)
-
-        let transform = Transform.get(entity)
+    
+        let transform = Transform.get(entityInfo.entity)
         let transPos = Vector3.clone(transform.position)
         let transScal = Vector3.clone(transform.scale)
         let transRot = Quaternion.toEulerAngles(transform.rotation)
-
+    
         selectedItem = {
             duplicate: false,
             mode: mode,
@@ -401,7 +401,7 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
             pFactor: 1,
             sFactor: 1,
             rFactor: 90,
-            entity: entity,
+            entity: entityInfo.entity,
             aid: aid,
             catalogId: itemInfo.id,
             sceneId: localPlayer.activeScene.id,
@@ -416,11 +416,11 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
             },
             ugc: itemInfo.ugc
         }
-
+    
         let itemdata = items.get(selectedItem.catalogId)
-
+    
         addSelectionPointer(itemdata)
-
+    
         sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {
             user: localUserId,
             component: COMPONENT_TYPES.IWB_COMPONENT,
@@ -429,7 +429,6 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
             editing:true,
             editor:localUserId
         })
-
     }
 }
 
@@ -443,12 +442,8 @@ export function saveItem() {
 
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_DONE,
         {
-            user: localUserId,
-            item: {
-                catalogId: selectedItem.catalogId,
-                aid: selectedItem.aid,
-                sceneId: selectedItem.sceneId
-            }
+            aid: selectedItem.aid,
+            sceneId: selectedItem.sceneId
         }
     )
 
@@ -954,7 +949,7 @@ export function deleteSelectedItem(aid:string) {
     let itemInfo = localPlayer.activeScene.itemInfo.get(aid)
     if(itemInfo){
         console.log('trying to delete item', itemInfo)
-        if(!itemInfo.locked && (!itemInfo.editing || itemInfo.editing && itemInfo.editor === localUserId)){
+        if(!itemInfo.locked && (!itemInfo.editing || (itemInfo.editing && itemInfo.editor === localUserId))){
             let entityInfo = getEntity(localPlayer.activeScene, aid)
             if(entityInfo){
                 let data: any = {
@@ -1264,7 +1259,7 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
     let itemInfo = scene.itemInfo.get(entityInfo.aid)
     if(itemInfo){
         setGLTFCollisionBuildMode(scene, entityInfo)
-        setMeshBuildMode(scene, entityInfo)
+        setMeshRenderBuildMode(scene, entityInfo)
         setAudioBuildMode(scene, entityInfo)
         setVisibilityBuildMode(scene, entityInfo)
         setVideoBuildMode(scene, entityInfo)

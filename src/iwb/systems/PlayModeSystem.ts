@@ -24,10 +24,10 @@ export function PlayModeInputSystem(dt: number) {
         // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
         // selectedItem && !selectedItem.enabled ? displayHover(false) : null//
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-        if (result && !uiInput) {
-            if (result.hit && result.hit.entityId) {
-                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER)
-            }
-        }
+        // if (result && !uiInput) {
+        //     if (result.hit && result.hit.entityId) {
+        //         handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER)
+        //     }
+        // }
     }
 }

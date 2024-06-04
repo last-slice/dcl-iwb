@@ -1,38 +1,60 @@
 import { ColliderLayer, GltfContainer, MeshCollider, MeshRenderer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
-import { MeshLoadedComponent } from "../helpers/Components"
+import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../helpers/Components"
 
-// export function addGltfComponent(scene:any){
-//     // scene.gltfs.forEach((gltf:any, aid:string)=>{
-//     //     createGLTF(scene, aid, gltf)
-//     // })
-// }//
-
-export function checkMeshComponent(scene:any, entityInfo:any){
-    let mesh = scene.meshes.get(entityInfo.aid)
+export function checkMeshRenderComponent(scene:any, entityInfo:any){
+    let mesh = scene.meshRenders.get(entityInfo.aid)
     if(mesh){
-        MeshRenderer.setPlane(entityInfo.entity)
-        MeshCollider.setPlane(entityInfo.entity, mesh.collision === -500 ? [ColliderLayer.CL_POINTER, ColliderLayer.CL_PHYSICS] : mesh.collision)
-        MeshLoadedComponent.create(entityInfo.entity, {init:false, sceneId:scene.id})
+        switch(mesh.shape){
+            case 0:
+                MeshRenderer.setPlane(entityInfo.entity)
+                break;
+            case 1:
+                MeshRenderer.setBox(entityInfo.entity)
+                break;
+        }
+        MeshRenderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+    }
+}
+
+export function checkMeshColliderComponent(scene:any, entityInfo:any){
+    let mesh = scene.meshColliders.get(entityInfo.aid)
+    if(mesh){
+        switch(mesh.shape){
+            case 0:
+                MeshCollider.setPlane(entityInfo.entity)
+                break;
+            case 1:
+                MeshCollider.setBox(entityInfo.entity)
+                break;
+            
+        }
+        MeshColliderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
 export function meshListener(scene:any){
-    scene.meshes.onAdd((mesh:any, aid:any)=>{
-        mesh.listen("collision", (c:any, p:any)=>{
+    scene.meshColliders.onAdd((mesh:any, aid:any)=>{
+        let entityInfo = getEntity(scene, aid)
+        if(!entityInfo){
+            return
+        }
+
+        mesh.listen("layer", (c:any, p:any)=>{
+            console.log('mesh collision changed', p, c)
             if(p !== undefined){
-                let info = getEntity(scene, aid)
-                if(info){
-                    MeshCollider.setPlane(info.entity, mesh.p === -500 ? ColliderLayer.CL_POINTER || ColliderLayer.CL_PHYSICS : mesh.p)
-                }
+                MeshCollider.setPlane(entityInfo.entity, c)
             }
         })
     })
 }
 
-export function setMeshBuildMode(scene:any, entityInfo:any){
-    let mesh = scene.meshes.get(entityInfo.aid)
-    if(mesh){
-        MeshCollider.setPlane(entityInfo.entity, mesh.collision === -500 ? ColliderLayer.CL_POINTER || ColliderLayer.CL_PHYSICS : mesh.collision)
-    }
+export function setMeshRenderBuildMode(scene:any, entityInfo:any){
+    checkMeshRenderComponent(scene, entityInfo)
+    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+}
+
+export function setMeshRenderPlayMode(scene:any, entityInfo:any){
+    checkMeshRenderComponent(scene, entityInfo)
+    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
 }

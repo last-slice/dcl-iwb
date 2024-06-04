@@ -1,8 +1,14 @@
 import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
-import { AudioLoadedComponent, GLTFLoadedComponent, MeshLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
+import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
 import { AUDIO_TYPES } from "../helpers/types"
+import { setMeshRenderPlayMode } from "../components/Meshes"
+import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
+import { setGLTFPlayMode } from "../components/Gltf"
+import { disableVisibilityPlayMode, setVisibilityPlayMode } from "../components/Visibility"
+import { disableAudioPlayMode, setAudioPlayMode } from "../components/Sounds"
+import { disableAnimationPlayMode } from "../components/Animator"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -63,18 +69,17 @@ export async function disableSceneEntities(sceneId:any) {
 export function enableSceneEntities(sceneId: string) {
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(scene){
-        // findSceneEntryTrigger(scene)
+        // findSceneEntryTrigger(scene)//
 
         scene.parenting.forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
-
-                    enableGLTFComponent(scene, entityInfo)
-                    enableVideoComponent(scene, entityInfo)
-                    enableMeshComponent(scene, entityInfo)
-                    enableVisibilityComponent(scene, entityInfo)
-                    enableAudioComponent(scene, entityInfo)
+                    setGLTFPlayMode(scene, entityInfo)
+                    setVideoPlayMode(scene, entityInfo)
+                    setMeshRenderPlayMode(scene, entityInfo)
+                    setVisibilityPlayMode(scene, entityInfo)
+                    setAudioPlayMode(scene, entityInfo)
                 }
             }
         })
@@ -115,13 +120,13 @@ export function enableSceneEntities(sceneId: string) {
 export function disableEntityForPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene.itemInfo.get(entityInfo.aid)
     if(itemInfo){
-        disableVisibility(scene, entityInfo)
-        disableAudio(scene, entityInfo)
-        disableVideo(scene, entityInfo)
-        disableAnimations(scene, entityInfo)
+        disableVisibilityPlayMode(scene, entityInfo)
+        disableAudioPlayMode(scene, entityInfo)
+        disableVideoPlayMode(scene, entityInfo)
+        disableAnimationPlayMode(scene, entityInfo)
 
         //need to deconstruct smart items into their separate components
-        disableSmartItems(scene, entityInfo)
+        // disableSmartItems(scene, entityInfo)
 
         PointerEvents.deleteFrom(entityInfo.entity)
     }
@@ -139,44 +144,6 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
     //         }
     //     }
     // }//
-}
-
-function disableVisibility(scene:any, entityInfo:any){
-    let itemInfo = scene.visibilities.get(entityInfo.aid)
-    if(itemInfo){
-        VisibilityComponent.createOrReplace(entityInfo.entity, {
-            visible: itemInfo.visible
-        })
-    }
-}
-
-function disableAudio(scene:any, entityInfo:any){
-    let itemInfo = scene.sounds.get(entityInfo.aid)
-    if(itemInfo){
-        MeshRenderer.deleteFrom(entityInfo.entity)
-        MeshCollider.deleteFrom(entityInfo.entity)
-        TextShape.deleteFrom(entityInfo.entity)
-
-        if(itemInfo.type === AUDIO_TYPES.SOUND){
-            AudioSource.getMutable(entityInfo.entity).playing = false
-        }else{
-            AudioStream.getMutable(entityInfo.entity).playing = false
-        }
-    }
-}
-
-function disableVideo(scene:any, entityInfo:any){
-    let itemInfo = scene.videos.get(entityInfo.aid)
-    if(itemInfo){
-        VideoPlayer.getMutable(entityInfo.entity).playing = false
-    }
-}
-
-export function disableAnimations(scene:any, entityInfo:any){
-    let itemInfo = scene.animators.get(entityInfo.aid)
-    if(itemInfo){
-        Animator.has(entityInfo.entity) ? Animator.stopAllAnimations(entityInfo.entity, true) : null
-    }
 }
 
 function disableSmartItems(scene:any, entityInfo:any){
@@ -221,106 +188,4 @@ function disableDelayedActionTimers(){
 
 function disablePlayUI(){
     // clearShowTexts()
-}
-
-
-////////////////////////////////////////////////////////////////////////
-//ENABLE FUNCTIONS
-
-function enableGLTFComponent(scene:any, entityInfo:any){
-    if (GLTFLoadedComponent.has(entityInfo.entity) && !GLTFLoadedComponent.get(entityInfo.entity).init){
-        let gltfInfo = scene.gltfs.get(entityInfo.aid)
-        if(gltfInfo){
-            let gltf = GltfContainer.getMutableOrNull(entityInfo.entity)
-            if(gltf){
-                gltf.invisibleMeshesCollisionMask = (gltfInfo.invisibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : gltfInfo.invisibleCollision)
-                gltf.visibleMeshesCollisionMask = (gltfInfo.visibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : gltfInfo.visibleCollision)
-            }
-            checkAnimation(scene, entityInfo)
-        }
-        GLTFLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
-}
-
-function checkAnimation(scene:any, entityInfo:any){
-    let animatorInfo = scene.animators.get(entityInfo.aid)
-    if(animatorInfo){
-        Animator.deleteFrom(entityInfo.entity)
-
-        let animations:any[] = []
-        animatorInfo.states.forEach((state:any)=>{
-            animations.push(state)
-        })
-
-        Animator.createOrReplace(entityInfo.entity, {
-            states:animations
-        })
-    }
-}
-
-function enableVideoComponent(scene:any, entityInfo:any){
-    if (VideoLoadedComponent.has(entityInfo.entity) && !VideoLoadedComponent.get(entityInfo.entity).init){
-        let videoInfo = scene.videos.get(entityInfo.aid)
-        if(videoInfo && videoInfo.autostart){
-            console.log('need to start playing a video for play mode')
-            let video = VideoPlayer.getMutableOrNull(entityInfo.entity)
-            if(video){
-                video.playing = true
-                video.position = 0
-            }
-            checkAnimation(scene, entityInfo)
-        }
-        VideoLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
-}
-
-function enableMeshComponent(scene:any, entityInfo:any){
-    if (MeshLoadedComponent.has(entityInfo.entity) && !MeshLoadedComponent.get(entityInfo.entity).init){
-        let meshInfo = scene.meshes.get(entityInfo.aid)
-        if(meshInfo){
-            MeshCollider.setPlane(entityInfo.entity)
-        }
-        MeshLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
-}
-
-function enableVisibilityComponent(scene:any, entityInfo:any){
-    if (VisibleLoadedComponent.has(entityInfo.entity) && !VisibleLoadedComponent.get(entityInfo.entity).init){
-        let visibilityInfo = scene.visibilities.get(entityInfo.aid)
-        if(visibilityInfo){
-            VisibilityComponent.has(entityInfo.entity) && VisibilityComponent.createOrReplace(entityInfo.entity, {
-                visible: visibilityInfo.visible
-            })
-        }
-        VisibleLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
-}
-
-function enableAudioComponent(scene:any, entityInfo:any){
-    if (AudioLoadedComponent.has(entityInfo.entity) && !AudioLoadedComponent.get(entityInfo.entity).init){
-        let audioInfo = scene.sounds.get(entityInfo.aid)
-        if(audioInfo){
-            MeshRenderer.deleteFrom(entityInfo.entity)
-            MeshCollider.deleteFrom(entityInfo.entity)
-            TextShape.deleteFrom(entityInfo.entity)
-
-            if(audioInfo.attach){
-                Transform.createOrReplace(entityInfo.entity, {parent:engine.PlayerEntity})
-            }
-    
-            let audio:any
-            if(audioInfo.type === AUDIO_TYPES.SOUND){
-                audio = AudioSource.getMutableOrNull(entityInfo.entity)
-            }else{
-                audio = AudioStream.getMutableOrNull(entityInfo.entity)
-            }
-    
-            if(audio){
-                audio.autostart = audioInfo.autostart
-                audio.loop = audioInfo.loop
-                audio.volume = audioInfo.volume
-            }
-        }
-        AudioLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
 }

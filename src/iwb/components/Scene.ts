@@ -20,6 +20,8 @@ import { soundsListener } from "./Sounds"
 import { textShapeListener } from "./TextShape"
 import { visibilityListener } from "./Visibility"
 import { nftShapeListener } from "./NftShape"
+import { videoListener } from "./Videos"
+import { textureListener } from "./Textures"
 
 export let realmActions: any[] = []
 
@@ -74,6 +76,8 @@ async function loadSceneComponents(scene:any){
     soundsListener(scene)
     textShapeListener(scene)
     nftShapeListener(scene)
+    videoListener(scene)
+    textureListener(scene)
 
     // await addTextShapeComponent(scene)
     

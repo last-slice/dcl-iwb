@@ -18,11 +18,22 @@ import { EditAudio, updateAudioComponent } from './Edit/EditAudio'
 import { EditText } from './Edit/EditText'
 import { EditNftShape } from './Edit/EditNftShape'
 import { EditGltf } from './Edit/EditGltf'
+import { EditVideo } from './Edit/EditVideo'
+import { EditMeshCollider } from './Edit/EditMeshCollider'
+import { EditMeshRender } from './Edit/EditMeshRender'
+import { EditMaterial } from './Edit/EditMaterial'
+import { EditTexture } from './Edit/EditTexture'
+import { displayEditAdvancedPanel } from './EditAdvanced'
 
 export let visibleComponent: string = ""
 
 export function openEditComponent(value: string, subMenu?:string) {
     switch(value){
+        case COMPONENT_TYPES.ADVANCED_COMPONENT:
+            displayEditAdvancedPanel(true)
+            openEditComponent("")
+            break;
+
         case COMPONENT_TYPES.AUDIO_COMPONENT:
             let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
             if(scene && scene.sounds.has(selectedItem.aid)){
@@ -62,7 +73,7 @@ export function createEditAssetPanel() {
         <UiEntity
             key={resources.slug + "editobjectpanel"}
             uiTransform={{
-                display: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT /*&& visibleComponent !== COMPONENT_TYPES.ADVANCED_COMPONENT*/ ? 'flex' : 'none',
+                display: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && visibleComponent !== COMPONENT_TYPES.ADVANCED_COMPONENT ? 'flex' : 'none',
                 // display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -574,6 +585,11 @@ function EditObjectData(){
                     <EditText/>
                     <EditNftShape/>
                     <EditGltf/>
+                    <EditVideo/>
+                    <EditMeshCollider/>
+                    <EditMeshRender/>
+                    <EditMaterial/>
+                    <EditTexture/>
 
                     {/* <ImageComponentPanel/>
                     <VideoComponentPanel/>
@@ -634,7 +650,9 @@ function getBasicComponents(aid:string){
 
     localPlayer.activeScene.names.has(aid) ? components.push(COMPONENT_TYPES.NAMES_COMPONENT) : null
     localPlayer.activeScene.textShapes.has(aid) ? components.push(COMPONENT_TYPES.TEXT_COMPONENT) : null
-    localPlayer.activeScene.meshes.has(aid) ? components.push(COMPONENT_TYPES.MESH_COMPONENT) : null
+    localPlayer.activeScene.meshRenders.has(aid) ? components.push(COMPONENT_TYPES.MESH_RENDER_COMPONENT) : null
+    localPlayer.activeScene.meshColliders.has(aid) ? components.push(COMPONENT_TYPES.MESH_COLLIDER_COMPONENT) : null
+    localPlayer.activeScene.textures.has(aid) ? components.push(COMPONENT_TYPES.TEXTURE_COMPONENT) : null
     localPlayer.activeScene.materials.has(aid) ? components.push(COMPONENT_TYPES.MATERIAL_COMPONENT) : null
     localPlayer.activeScene.videos.has(aid) ? components.push(COMPONENT_TYPES.VIDEO_COMPONENT) : null
     localPlayer.activeScene.animators.has(aid) ? components.push(COMPONENT_TYPES.ANIMATION_COMPONENT) : null

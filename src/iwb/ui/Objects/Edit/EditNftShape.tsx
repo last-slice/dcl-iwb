@@ -105,7 +105,6 @@ export function EditNftShape() {
         >
 
                         <Dropdown
-                    key={"nft-frame-dropdown"}
                     options={Object.values(NFT_FRAMES)}
                     selectedIndex={getFrameIndex()}
                     onChange={selectFrame}

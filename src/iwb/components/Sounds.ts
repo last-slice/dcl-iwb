@@ -68,6 +68,50 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
     }
 }
 
+export function setAudioPlayMode(scene:any, entityInfo:any){
+    if (AudioLoadedComponent.has(entityInfo.entity) && !AudioLoadedComponent.get(entityInfo.entity).init){
+        let audioInfo = scene.sounds.get(entityInfo.aid)
+        if(audioInfo){
+            MeshRenderer.deleteFrom(entityInfo.entity)
+            MeshCollider.deleteFrom(entityInfo.entity)
+            TextShape.deleteFrom(entityInfo.entity)
+
+            if(audioInfo.attach){
+                Transform.createOrReplace(entityInfo.entity, {parent:engine.PlayerEntity})
+            }
+    
+            let audio:any
+            if(audioInfo.type === AUDIO_TYPES.SOUND){
+                audio = AudioSource.getMutableOrNull(entityInfo.entity)
+            }else{
+                audio = AudioStream.getMutableOrNull(entityInfo.entity)
+            }
+    
+            if(audio){
+                audio.autostart = audioInfo.autostart
+                audio.loop = audioInfo.loop
+                audio.volume = audioInfo.volume
+            }
+        }
+        AudioLoadedComponent.getMutable(entityInfo.entity).init = true
+    }
+}
+
+export function disableAudioPlayMode(scene:any, entityInfo:any){
+    let itemInfo = scene.sounds.get(entityInfo.aid)
+    if(itemInfo){
+        MeshRenderer.deleteFrom(entityInfo.entity)
+        MeshCollider.deleteFrom(entityInfo.entity)
+        TextShape.deleteFrom(entityInfo.entity)
+
+        if(itemInfo.type === AUDIO_TYPES.SOUND){
+            AudioSource.getMutable(entityInfo.entity).playing = false
+        }else{
+            AudioStream.getMutable(entityInfo.entity).playing = false
+        }
+    }//
+}
+
 export function updateAudioTextLabel(scene:any, aid:string, value:string){
     if(scene.sounds.has(aid)){
         let entityInfo = getEntity(scene, aid)

@@ -16,8 +16,9 @@ import { createCatalogPanel, displayCatalogPanel } from './Objects/CatalogPanel'
 import { createCatalogInfoPanel, displayCatalogInfoPanel } from './Objects/CatalogInfoPanel'
 import { createCustomContextMenu } from './Objects/ContextMenu'
 import { createNotificationUI } from './Objects/NotificationPanel'
-import { createSceneInfoPanel } from './Objects/SceneInfoPanel'
+import { createSceneInfoPanel, displaySceneAssetInfoPanel } from './Objects/SceneInfoPanel'
 import { createEditAssetPanel } from './Objects/EditAssetPanel'
+import { createAdvancedEditPanel } from './Objects/EditAdvanced'
 
 export function setupUI() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -40,7 +41,8 @@ const uiComponent:any = () => [
   createCustomContextMenu(),
   createNotificationUI(),
   createSceneInfoPanel(),
-  createEditAssetPanel()
+  createEditAssetPanel(),
+  createAdvancedEditPanel(),
 ]
 
 export function generateButtons(data:any){
@@ -56,6 +58,6 @@ export function hideAllPanels(){
   displayCatalogInfoPanel(false)
   // displaySettingsPanel(false)
   // displayAssetUploadUI(false)
-  // displaySceneAssetInfoPanel(false)
+  displaySceneAssetInfoPanel(false)
   displayCatalogPanel(false)
 }

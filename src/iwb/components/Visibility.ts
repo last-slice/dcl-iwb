@@ -1,5 +1,6 @@
 import { VisibilityComponent } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
+import { VisibleLoadedComponent } from "../helpers/Components"
 
 export function addVisibilityComponent(scene:any){
     scene.visibilities.forEach((visibility:any, aid:string)=>{
@@ -29,6 +30,27 @@ export function setVisibilityBuildMode(scene:any, entityInfo:any){
     if(itemInfo){
         VisibilityComponent.createOrReplace(entityInfo.entity, {
             visible: itemInfo.buildVis
+        })
+    }
+}
+
+export function setVisibilityPlayMode(scene:any, entityInfo:any){
+    if (VisibleLoadedComponent.has(entityInfo.entity) && !VisibleLoadedComponent.get(entityInfo.entity).init){
+        let visibilityInfo = scene.visibilities.get(entityInfo.aid)
+        if(visibilityInfo){
+            VisibilityComponent.has(entityInfo.entity) && VisibilityComponent.createOrReplace(entityInfo.entity, {
+                visible: visibilityInfo.visible
+            })
+        }
+        VisibleLoadedComponent.getMutable(entityInfo.entity).init = true
+    }
+}
+
+export function disableVisibilityPlayMode(scene:any, entityInfo:any){
+    let itemInfo = scene.visibilities.get(entityInfo.aid)
+    if(itemInfo){
+        VisibilityComponent.createOrReplace(entityInfo.entity, {
+            visible: itemInfo.visible
         })
     }
 }

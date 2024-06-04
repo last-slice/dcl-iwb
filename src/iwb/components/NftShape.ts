@@ -12,7 +12,6 @@ export function checkNftShapeComponent(scene:any, entityInfo:any){
             Color4.create(itemInfo.color.r, itemInfo.color.g, itemInfo.color.b, itemInfo.color.a)
             : undefined
         })
-        MeshCollider.setPlane(entityInfo.entity, ColliderLayer.CL_POINTER)
     }
 }
 

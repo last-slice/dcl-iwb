@@ -102,7 +102,7 @@ export function updateTutorialCID(info:any){
 export function setPlayerMode(mode:SCENE_MODES){
     playerMode = mode
 
-    console.log('setting player mode', playerMode)
+    console.log('setting player mode', playerMode)//
 
     for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
         if(playerMode === SCENE_MODES.CREATE_SCENE_MODE){
@@ -133,6 +133,7 @@ export function setPlayerMode(mode:SCENE_MODES){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
                     if(playerMode === SCENE_MODES.BUILD_MODE){
+                        console.log('entity is', entityInfo)
                         addBuildModePointers(entityInfo.entity)
                         resetEntityForBuildMode(scene, entityInfo)
                     }else{

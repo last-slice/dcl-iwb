@@ -156,7 +156,10 @@ export function InputListenSystem(dt:number){
                 if (result) {
                     console.log('rsult is', result)
                     if(result.hit && result.hit.entityId){
-                        editItem(result.hit?.entityId as Entity, EDIT_MODES.EDIT)
+                        let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+                        if(aid){
+                            editItem(aid, EDIT_MODES.EDIT)
+                        }
                     }else{
                         // console.log('hit 1 button without hitting object and not in grab mode')
                         // if(hoveredEntity !== -500){

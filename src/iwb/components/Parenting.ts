@@ -7,13 +7,14 @@ import { playerMode } from "./Config"
 import { SCENE_MODES } from "../helpers/types"
 import { addBuildModePointers, resetEntityForBuildMode } from "../modes/Build"
 import { afterLoadActions } from "./Scene"
-import { checkMeshComponent } from "./Meshes"
 import { checkMaterialComponent } from "./Materials"
 import { checkSoundComponent } from "./Sounds"
 import { checkTextShapeComponent } from "./TextShape"
 import { checkVideoComponent } from "./Videos"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../ui/Objects/SceneInfoPanel"
 import { checkNftShapeComponent } from "./NftShape"
+import { checkMeshColliderComponent, checkMeshRenderComponent } from "./Meshes"
+import { checkTextureComponent } from "./Textures"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
@@ -29,7 +30,7 @@ function createEntity(item:any){
 export function getAssetIdByEntity(scene:any, entity:Entity){
     for(let i = 0; i < scene.parenting.length; i++){
         let entityInfo = scene.parenting[i]
-        if(entityInfo.entity === entity){
+        if(entityInfo && entityInfo.entity && entityInfo.entity === entity){
             return entityInfo.aid
         }
     }
@@ -47,7 +48,9 @@ export function parentingListener(scene:any){
             ////addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)
             await checkTransformComponent(scene, item)        
             await checkGLTFComponent(scene, item)
-            await checkMeshComponent(scene, item)
+            await checkTextureComponent(scene, item)
+            await checkMeshRenderComponent(scene, item)
+            await checkMeshColliderComponent(scene, item)
             await checkMaterialComponent(scene, item)
             await checkSoundComponent(scene, item)
             await checkTextShapeComponent(scene, item)

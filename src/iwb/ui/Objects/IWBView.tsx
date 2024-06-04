@@ -155,6 +155,7 @@ export function createMainView() {
 
 function MainLeftView(){
    return(<UiEntity
+    key={resources.slug + "-main-view-left-container"}
     uiTransform={{
         flexDirection: 'column',
         alignItems: 'center',

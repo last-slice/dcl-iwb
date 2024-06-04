@@ -70,6 +70,7 @@ export function createToolsPanel() {
                 uvs: isLocalPlayer(localUserId) ? getImageAtlasMapping(uiModes[playerMode].uvs) : getImageAtlasMapping()
             }}
             onMouseDown={()=>{
+                setUIClicked(true)
                 if(selectedItem && selectedItem.enabled){
                     return
                 }
@@ -81,6 +82,9 @@ export function createToolsPanel() {
                     setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
                    }
                 }
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
             }}
             />  
 

@@ -22,7 +22,12 @@ export const VisibleLoadedComponent = engine.defineComponent("iwb::asset::visibl
     sceneId:Schemas.String
 })
 
-export const MeshLoadedComponent = engine.defineComponent("iwb::asset::mesh::loaded::component", {
+export const MeshRenderLoadedComponent = engine.defineComponent("iwb::asset::mesh::render::loaded::component", {
+    init:Schemas.Boolean,
+    sceneId:Schemas.String
+})
+
+export const MeshColliderLoadedComponent = engine.defineComponent("iwb::asset::mesh::collider::loaded::component", {
     init:Schemas.Boolean,
     sceneId:Schemas.String
 })
