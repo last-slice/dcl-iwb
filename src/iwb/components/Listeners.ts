@@ -1,5 +1,5 @@
 import { Room } from "colyseus.js";
-import { addInputSystem } from "../systems/InputSystem";
+import { addInputSystem, createInputListeners } from "../systems/InputSystem";
 import { addPlayerScenes, createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings } from './Player'
 import { EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { log } from "../helpers/functions";
@@ -16,20 +16,100 @@ import { refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { getView } from "../ui/uiViews";
 import { showNotification } from "../ui/Objects/NotificationPanel";
+import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
+import { FlyModeSystem } from "../systems/FlyModeSystem";
+import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem";
+import { SelectedItemSystem } from "../systems/SelectedItemSystem";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
 
 export async function createColyseusListeners(room:Room){
-    await createConfigurationListeners(room)
-    await createColyseusRoomStateListeners(room)
-    await createSceneListeners(room)
-    await createPlayerListeners(room)
-}
+    room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
+        // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
-function createPlayerListeners(room:Room){
+        setCatalog(info.catalog)
+        setRealmAssets(info.realmAssets)
 
-    // displaySkinnyVerticalPanel(true, getView("Welcome"))
+        refreshSortedItems()
+
+        updateStyles(info.styles)
+
+        setPlayerVersion(info.iwb.v)
+        setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
+        setWorlds(info.worlds)
+        setNewItems()
+
+        //set occupied parcels
+        // for (const p of info.occupiedParcels) {
+        //     //log('occupied parcel', p)
+        //     addBoundariesForParcel(p, false)
+        // }
+
+        utils.timers.setTimeout(()=>{
+            refreshMap()
+        }, 1000 * 5)
+    })
+
+    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD + ' received', info)
+    //     if (info) {
+    //         // updateWorld(info)
+    //     }
+    // })
+
+    // room.onMessage(SERVER_MESSAGE_TYPES.CATALOG_UPDATED, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.CATALOG_UPDATED + ' received', info)
+    // })
+
+    // room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
+    //     if (info.owner.toLowerCase() === localUserId) {
+    //         if(info.init){
+    //             displayWorldReadyPanel(true, info)
+    //             displayPendingPanel(false, "ready")
+    //         }
+    //         else{
+    //             displayPendingPanel(true, "ready")
+    //         }
+    //     } else {
+    //         log('should display something else')
+    //         showNotification({
+    //             type: NOTIFICATION_TYPES.MESSAGE,
+    //             message: (info.init? "New world deployed!\n" : "World Updated!\n") + info.ens + "!",
+    //             animate: {enabled: true, return: true, time: 5}
+    //         })
+    //     }
+    //     setWorlds([info])
+    // })
+
+    // room.onMessage(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL + ' received', info)
+    //     addTutorial(info)
+    // })
+
+    // room.onMessage(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL + ' received', info)
+    //     removeTutorial(info)
+    // })
+
+    // room.onMessage(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID + ' received', info)
+    //     updateTutorialCID(info)
+    // })
+
+    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED + ' received', info)
+    //     displayPendingPanel(false, "")
+
+    //     if(info.valid){
+    //         displayDCLWorldPopup(true, info.world)
+    //         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
+    //     }
+    //     else{
+    //         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error deploying to your DCL World", animate:{enabled:true, return:true, time:10}})
+    //     }
+    // })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED + ' received', info)
@@ -123,97 +203,6 @@ function createPlayerListeners(room:Room){
         }
     })
 
-}
-
-function createConfigurationListeners(room:Room){
-    room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
-        // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
-
-        setCatalog(info.catalog)
-        setRealmAssets(info.realmAssets)
-
-        refreshSortedItems()
-
-        updateStyles(info.styles)
-
-        setPlayerVersion(info.iwb.v)
-        setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
-        setWorlds(info.worlds)
-        setNewItems()
-
-        //set occupied parcels
-        // for (const p of info.occupiedParcels) {
-        //     //log('occupied parcel', p)
-        //     addBoundariesForParcel(p, false)
-        // }
-
-        utils.timers.setTimeout(()=>{
-            refreshMap()
-        }, 1000 * 5)
-    })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD + ' received', info)
-    //     if (info) {
-    //         // updateWorld(info)
-    //     }
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.CATALOG_UPDATED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.CATALOG_UPDATED + ' received', info)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
-    //     if (info.owner.toLowerCase() === localUserId) {
-    //         if(info.init){
-    //             displayWorldReadyPanel(true, info)
-    //             displayPendingPanel(false, "ready")
-    //         }
-    //         else{
-    //             displayPendingPanel(true, "ready")
-    //         }
-    //     } else {
-    //         log('should display something else')
-    //         showNotification({
-    //             type: NOTIFICATION_TYPES.MESSAGE,
-    //             message: (info.init? "New world deployed!\n" : "World Updated!\n") + info.ens + "!",
-    //             animate: {enabled: true, return: true, time: 5}
-    //         })
-    //     }
-    //     setWorlds([info])
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL + ' received', info)
-    //     addTutorial(info)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL + ' received', info)
-    //     removeTutorial(info)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID + ' received', info)
-    //     updateTutorialCID(info)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED + ' received', info)
-    //     displayPendingPanel(false, "")
-
-    //     if(info.valid){
-    //         displayDCLWorldPopup(true, info.world)
-    //         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
-    //     }
-    //     else{
-    //         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error deploying to your DCL World", animate:{enabled:true, return:true, time:10}})
-    //     }
-    // })
-}
-
-function createSceneListeners(room:Room){
     // room.onMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SELECT_PARCEL + ' received', info)
     //     selectParcel(info)
@@ -350,20 +339,16 @@ function createSceneListeners(room:Room){
     //     log(SERVER_MESSAGE_TYPES.VERIFY_ACCESS + ' received', info)
     //     findEntitiesWithTrigger(info.sceneId, info.access ? Triggers.ON_ACCESS_VERIFIED : Triggers.ON_ACCESS_DENIED)
     // })
-}
 
-function createColyseusRoomStateListeners(room:Room){
     room.state.listen("sceneCount", (c:any, p:any)=>{
         checkSceneCount(c)
     })
 
     room.state.temporaryParcels.onAdd(async(parcel:any, key:string)=>{
-        log('temp parcel added', key, parcel)
         selectParcel(parcel)
     })
 
     room.state.temporaryParcels.onRemove(async(parcel:any, key:string)=>{
-        log('temp parcel removed', key, parcel)
         if(!isParcelInScene(parcel)){
             deleteParcelEntities(parcel)
         }
@@ -374,9 +359,9 @@ function createColyseusRoomStateListeners(room:Room){
         await removeEmptyParcels(scene.pcls)
         await loadScene(scene)
 
-        scene.bps.onAdd((permission:string, permissionKey:any)=>{
-            log('adding new build permissions', permissionKey, permission)
-        })
+        // scene.bps.onAdd((permission:string, permissionKey:any)=>{
+        //     log('adding new build permissions', permissionKey, permission)
+        // })
     
         // scene.bps.onRemove((permission:string, permissionKey:any)=>{
         //     log('removing build permissions', permissionKey, permission)
@@ -389,7 +374,7 @@ function createColyseusRoomStateListeners(room:Room){
         //                 cancelSelectedItem()
         //             }
         //         }
-        //         setPlayMode(localUserId, SCENE_MODES.PLAYMODE)//
+        //         setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
         //     }
         // })
     
@@ -410,6 +395,7 @@ function createColyseusRoomStateListeners(room:Room){
         })
     
         scene.listen("pc",(current:any, previous:any)=>{
+            console.log('pc changed', previous, current)
             scene.pc = current
         })
     
@@ -455,9 +441,9 @@ function createColyseusRoomStateListeners(room:Room){
     })
 
     room.state.players.onAdd(async(player:any, userId:any)=>{
-        console.log('player added', userId, player)
-        createPlayer(userId, player)
-
+        if(userId === localUserId){
+            createPlayer(player)
+        }
         player.listen("selectedAsset", (current:any, previous:any)=>{
             setPlayerSelectedAsset(player, current, previous)
         })
@@ -467,4 +453,3 @@ function createColyseusRoomStateListeners(room:Room){
         removePlayer(userId)
     })
 }
-

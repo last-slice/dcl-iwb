@@ -34,9 +34,9 @@ export function setVisibilityBuildMode(scene:any, entityInfo:any){
 }
 
 export function getAssetVisibility(scene:any, aid:string){
-    let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-    if(info.entity){
-        return VisibilityComponent.get(info.entity).visible
+    let itemInfo = scene.visibilities.get(aid)
+    if(itemInfo){
+        return itemInfo.visible
     }
     return false
 }

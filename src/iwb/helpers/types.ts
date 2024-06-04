@@ -141,11 +141,11 @@ export type NOTIFICATION_DETAIL = {
 }
 
 export interface Player {
-    dclData?:any,
-    mode?:SCENE_MODES,
+    dclData:any,
+    mode:SCENE_MODES,
     viewMode?:VIEW_MODES,
-    scenes?:IWBScene[],
-    worlds?:any[],
+    scenes:IWBScene[],
+    worlds:any[],
     buildingAllowed?:boolean,
     previousParcel?:string,
     currentParcel?:string,
@@ -154,7 +154,7 @@ export interface Player {
     activeScene?: IWBScene | null,
     activeSceneId?:string,
     canBuild:boolean,
-    objects?:any[],
+    objects:any[],
     selectedEntity?:Entity | null
     homeWorld?:boolean
     cameraParent?:Entity
@@ -291,7 +291,7 @@ export enum COMPONENT_TYPES {
     REWARD_COMPONENT = 'Reward',
     ADVANCED_COMPONENT = 'Advanced',
     PARENTING_COMPONENT = 'Parenting',
-    NAMES_COMPONENT ='Names',
+    NAMES_COMPONENT ='Name',
     POINTER_COMPONENT = 'Pointers',
     COUNTER_COMPONENT = 'Counters',
     GLTF_COMPONENT = 'Gltf',

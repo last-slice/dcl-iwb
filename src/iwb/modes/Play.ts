@@ -300,6 +300,10 @@ function enableAudioComponent(scene:any, entityInfo:any){
     if (AudioLoadedComponent.has(entityInfo.entity) && !AudioLoadedComponent.get(entityInfo.entity).init){
         let audioInfo = scene.sounds.get(entityInfo.aid)
         if(audioInfo){
+            MeshRenderer.deleteFrom(entityInfo.entity)
+            MeshCollider.deleteFrom(entityInfo.entity)
+            TextShape.deleteFrom(entityInfo.entity)
+
             if(audioInfo.attach){
                 Transform.createOrReplace(entityInfo.entity, {parent:engine.PlayerEntity})
             }

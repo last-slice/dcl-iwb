@@ -60,25 +60,15 @@ export function setPlayerVersion(version:any){
     }
 }
 
-export async function createPlayer(userId:string, player:any){
+export async function createPlayer(player:any){
     await setPlayerDefaults(player)
 
-    console.log('player mode is', player.mode)
+    player.cameraParent = engine.addEntity()
+    Transform.createOrReplace( player.cameraParent, {position: Vector3.create(0, 0, 6), parent: engine.CameraEntity})
 
-    if(userId === localUserId){
-        player.cameraParent = engine.addEntity()
-        Transform.createOrReplace( player.cameraParent, {position: Vector3.create(0, 0, 6), parent: engine.CameraEntity})
-    
-        await setLocalPlayer(player)
-        await getPlayerNames(player)
-        await checkPlayerHomeWorld(player)
-    }else{
-        player.parentEntity = engine.addEntity()
-        AvatarAttach.create(player.parentEntity,{
-            avatarId:userId,
-            anchorPointId:AvatarAnchorPointType.AAPT_SPINE
-        })
-    }
+    await setLocalPlayer(player)
+    await getPlayerNames(player)
+    await checkPlayerHomeWorld(player)
 }
 
 function checkPlayerHomeWorld(player:any){

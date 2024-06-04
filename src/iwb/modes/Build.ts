@@ -24,6 +24,7 @@ import { setVisibilityBuildMode } from "../components/Visibility"
 import { setVideoBuildMode } from "../components/Videos"
 import { hideAllPanels } from "../ui/ui"
 import { getAssetIdByEntity } from "../components/Parenting"
+import { openEditComponent } from "../ui/Objects/EditAssetPanel"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -177,7 +178,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
     let itemData = items.get(id)
     if (itemData) {
-        console.log('we have item data')
+        console.log('we have item data', localPlayer)
+
         selectedItem = {
             n: itemData.n,
             mode: mode,
@@ -432,34 +434,26 @@ export function editItem(entity: Entity, mode: EDIT_MODES, already?: boolean) {
 }
 
 export function saveItem() {
-    // PointerEvents.deleteFrom(selectedItem.entity)
-    // addBuildModePointers(selectedItem.entity)
-    // addAllBuildModePointers()//
+    PointerEvents.deleteFrom(selectedItem.entity)
+    addBuildModePointers(selectedItem.entity)
+    addAllBuildModePointers()
 
-    // selectedItem.enabled = false
-    // selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
+    selectedItem.enabled = false
+    selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
 
-    // // let scene = sceneBuilds.get(selectedItem.sceneId)
-    // // let t = Transform.get(selectedItem.entity)
-    // // if(scene){
-    // //     PointerEvents.deleteFrom(selectedItem.entity)
-    // //     addBuildModePointers(selectedItem.entity)
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_DONE,
+        {
+            user: localUserId,
+            item: {
+                catalogId: selectedItem.catalogId,
+                aid: selectedItem.aid,
+                sceneId: selectedItem.sceneId
+            }
+        }
+    )
 
-    // sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET_DONE,
-    //     {
-    //         user: localUserId,
-    //         item: {
-    //             catalogId: selectedItem.catalogId,
-    //             aid: selectedItem.aid,
-    //             sceneId: selectedItem.sceneId
-    //         }
-    //     })
-
-    // //     selectedItem.enabled = false
-    // // }
-
-    // hideAllPanels()
-    // openEditComponent("")
+    hideAllPanels()
+    openEditComponent("")
 
     // //check Trigger Area Items
     // if (selectedItem.itemData.trigArComp) {
@@ -533,56 +527,56 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
 
     // if scene found and permissions allowed, add item to scene
     if (curScene && bpsCurScene && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
-        // PointerEvents.deleteFrom(selectedItem.entity);
-        // VisibilityComponent.createOrReplace(bbE, {visible: false});//
-        // addAllBuildModePointers();
-        // localPlayer.activeScene = curScene;
+        PointerEvents.deleteFrom(selectedItem.entity);
+        VisibilityComponent.createOrReplace(bbE, {visible: false});//
+        addAllBuildModePointers();
+        localPlayer.activeScene = curScene;
         
-        // let t = Transform.getMutable(selectedItem.entity);
+        let t = Transform.getMutable(selectedItem.entity);
 
-        // // set rotation to current rotation
-        // if(isSnapEnabled) {
-        //     t.rotation = getWorldRotation(selectedItem.entity)
-        // } else {
-        //     let eulRot = Quaternion.toEulerAngles(t.rotation);
-        //     let playerRot = Quaternion.toEulerAngles(Transform.get(engine.PlayerEntity).rotation);
-        //     t.rotation =  Quaternion.fromEulerDegrees(eulRot.x + playerRot.x, eulRot.y + playerRot.y, eulRot.z + playerRot.z);
-        // }
+        // set rotation to current rotation
+        if(isSnapEnabled) {
+            t.rotation = getWorldRotation(selectedItem.entity)
+        } else {
+            let eulRot = Quaternion.toEulerAngles(t.rotation);
+            let playerRot = Quaternion.toEulerAngles(Transform.get(engine.PlayerEntity).rotation);
+            t.rotation =  Quaternion.fromEulerDegrees(eulRot.x + playerRot.x, eulRot.y + playerRot.y, eulRot.z + playerRot.z);
+        }
 
-        // // find position relative to scene parent
-        // const curSceneParent = curScene.parentEntity;
-        // const curSceneParentPosition = Transform.get(curSceneParent).position;
-        // finalPosition.x = finalPosition.x - curSceneParentPosition.x;
-        // finalPosition.z = finalPosition.z - curSceneParentPosition.z;
-        // t.position = finalPosition
+        // find position relative to scene parent
+        const curSceneParent = curScene.parentEntity;
+        const curSceneParentPosition = Transform.get(curSceneParent).position;
+        finalPosition.x = finalPosition.x - curSceneParentPosition.x;
+        finalPosition.z = finalPosition.z - curSceneParentPosition.z;
+        t.position = finalPosition
 
-        // // set parent to scene parent
-        // t.parent = curSceneParent;
+        // set parent to scene parent
+        t.parent = curSceneParent;
 
-        // // send message to server to add item to scene//
-        // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
-        //     baseParcel: curScene.bpcl,
-        //     item: {
-        //         entity: selectedItem.entity,
-        //         sceneId: curScene.id,
-        //         aid: selectedItem.aid,
-        //         id: selectedItem.catalogId,
-        //         position: roundVector(t.position, 2),
-        //         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-        //         scale: roundVector(t.scale, 2),
-        //         duplicate: selectedItem.duplicate,
-        //         ugc: selectedItem.ugc
-        //     }
-        // });
+        // send message to server to add item to scene//
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
+            baseParcel: curScene.bpcl,
+            item: {
+                entity: selectedItem.entity,
+                sceneId: curScene.id,
+                aid: selectedItem.aid,
+                id: selectedItem.catalogId,
+                position: roundVector(t.position, 2),
+                rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+                scale: roundVector(t.scale, 2),
+                duplicate: selectedItem.duplicate,
+                ugc: selectedItem.ugc
+            }
+        });
 
-        // // clean up grabbed entity
-        // engine.removeEntity(selectedItem.entity);
-        // grabbedAssets.delete(selectedItem.aid);
+        // clean up grabbed entity//
+        engine.removeEntity(selectedItem.entity);
+        grabbedAssets.delete(selectedItem.aid);
 
-        // selectedItem.enabled = false;
-        // selectedItem.sceneId = curScene.id;
+        selectedItem.enabled = false;
+        selectedItem.sceneId = curScene.id;
 
-        // console.log('selected item aid is', selectedItem.aid)
+        console.log('selected item aid is', selectedItem.aid)
 
         return;
     }

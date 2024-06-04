@@ -1,22 +1,15 @@
-// import { IWBCatalogComponent, IWBComponent, NameComponent } from "./Components"
-// import { getEntity } from "./IWB"
-
+import { TextShape } from "@dcl/sdk/ecs";
 import { colyseusRoom } from "./Colyseus";
-
-// export function addNameComponent(scene:any){
-//     scene.names.forEach((name:any, aid:string)=>{
-//         let entity = scene.parenting.find((entity:any)=> entity.aid === aid)
-//         if(entity){
-//           NameComponent.create(entity,{
-//             value:name
-//           })
-//         }
-//     })
-// }
+import { getEntity } from "./IWB";
+import { updateAudioTextLabel } from "./Sounds";
 
 export function nameListener(scene:any){
     scene.names.onAdd((name:any, aid:any)=>{
-        console.log('name added', aid, name)
+        name.listen("value", (current:any, previous:any)=>{
+
+            //update sound text display
+            updateAudioTextLabel(scene, aid, current)
+        })
     })
 }
 

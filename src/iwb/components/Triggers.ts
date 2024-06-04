@@ -1,9 +1,9 @@
 import { Entity, InputAction, PointerEvents, engine, pointerEventsSystem } from "@dcl/sdk/ecs";
 import { COUNTER_VALUE, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
 import mitt, { Emitter } from "mitt";
-import { getEntity } from "./IWB";
 import { getActionEvents } from "./Actions";
 import { getCounterComponentByAssetId, getCounterValue } from "./Counter";
+import { getEntity } from "./IWB";
 
 // const actionQueue: { entity: Entity; action: Action }[] = []
 const actionQueue:any[] = []

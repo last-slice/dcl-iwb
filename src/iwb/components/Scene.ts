@@ -1,6 +1,6 @@
 import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import { getSceneInformation } from '~system/Runtime'
-import {IWBScene, NOTIFICATION_TYPES, Player, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
+import {IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
 import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
@@ -15,6 +15,8 @@ import { meshListener } from "./Meshes"
 import { disableSceneEntities, enableSceneEntities } from "../modes/Play"
 import { playModeReset } from "../modes/Play"
 import { iwbInfoListener } from "./IWB"
+import { nameListener } from "./Name"
+import { soundsListener } from "./Sounds"
 
 export let realmActions: any[] = []
 
@@ -45,11 +47,9 @@ export async function loadScene(scene:any) {
     }
 
     loadSceneBoundaries(scene)
-
-    await loadSceneComponents(scene)
+    loadSceneComponents(scene)
 
     scenesLoadedCount++
-
     checkAllScenesLoaded()
 }
 
@@ -67,6 +67,8 @@ async function loadSceneComponents(scene:any){
     transformListener(scene)
     meshListener(scene)
     iwbInfoListener(scene)
+    nameListener(scene)
+    soundsListener(scene)
 
     // await addTextShapeComponent(scene)
     // textShapeListener(scene)
@@ -113,7 +115,6 @@ function loadSceneBoundaries(scene:any) {
     scene.entities = []
 
     scene.pcls.forEach((parcel: string) => {
-        console.log('scene parcels are', scene.pcls)
         addBoundariesForParcel(parcel, true, scene.n === "Realm Lobby", true)
     })
 
@@ -308,25 +309,25 @@ export function checkBuildPermissionsForScene(scene: IWBScene) {
     return scene &&  (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId))
 }
 
-export async function checkScenePermissions(player: Player) {
+export async function checkScenePermissions() {
     let canbuild = false
     let activeScene: any
     colyseusRoom.state.scenes.forEach((scene: IWBScene, key: string) => {
-        if (scene.pcls.find((parcel) => parcel === player!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
+        if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
             canbuild = true
         }
 
-        if (scene.pcls.find((parcel) => parcel === player!.currentParcel)) {
+        if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel)) {
             activeScene = scene
         }
     })
 
-    player.activeScene = activeScene
+    localPlayer.activeScene = activeScene
 
     if (canbuild) {
-        player.canBuild = true
+        localPlayer.canBuild = true
     } else {
-        player.canBuild = false
+        localPlayer.canBuild = false
         // player.activeScene = null
         // displaySceneAssetInfoPanel(false)
     }

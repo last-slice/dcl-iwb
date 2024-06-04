@@ -9,12 +9,10 @@ import { items } from "./Catalog"
 import { AudioLoadedComponent } from "../helpers/Components"
 import { updateTransform } from "./Transform"
 
-
 export function checkSoundComponent(scene:any, entityInfo:any){
     let itemInfo = scene.sounds.get(entityInfo.aid)
     if(itemInfo){
         if(itemInfo.type === AUDIO_TYPES.SOUND){
-            console.log('setting sound component')
             AudioSource.create(entityInfo.entity, {
                 audioClipUrl: "assets/" + itemInfo.url + ".mp3",
                 playing: false,
@@ -70,28 +68,18 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
     }
 }
 
-// export function addSoundComponent(scene:any){
-//     scene.sounds.forEach((sound:any, aid:string)=>{
-//         let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-//         if(info.entity){
-//             MeshRenderer.setBox(info.entity)
-//             MeshCollider.setBox(info.entity, ColliderLayer.CL_POINTER)
-            
-//             Material.setPbrMaterial(info.entity,{
-//                 albedoColor: Color4.create(0,0,1,.5)
-//             })
+export function updateAudioTextLabel(scene:any, aid:string, value:string){
+    if(scene.sounds.has(aid)){
+        let entityInfo = getEntity(scene, aid)
+        if(entityInfo){
+            TextShape.createOrReplace(entityInfo.entity, {text: "" + value, fontSize: 3})
+        }
+    }
+}
 
-//             AudioSource.create(info.entity,{
-//                 audioClipUrl: "assets/" + sound.url + ".mp3",
-//                 playing: false,
-//                 volume: sound.volume,
-//                 loop: sound.loop,
-//             })
-
-//             updateSoundAttachView(aid, sound.attach, info.entity)
-//         }
-//     })
-// }
+export function getAudio(scene:any, aid:string){
+    return scene.sounds.get(aid)
+}
 
 export function updateSoundAttachView(aid:string, attach:boolean, entity?:Entity){
     let ent:any = entity

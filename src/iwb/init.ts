@@ -2,9 +2,9 @@ import {getPlayer} from "@dcl/sdk/players";
 import { executeTask} from "@dcl/sdk/ecs";
 import { joinWorld } from "./components/Colyseus";
 import { realm, setRealm } from "./components/Config";
-import { setLocalUserId } from "./components/Player";
 import { setupUI } from "./ui/ui";
 import { getPreview } from "./helpers/functions";
+import { setLocalUserId } from "./components/Player";
 
 export function initIWB() {
     setupUI()
