@@ -17,7 +17,7 @@ import { bbE, findSceneByParcel, getCenterOfParcels, isEntityInScene } from "../
 import { isSnapEnabled } from "../systems/SelectedItemSystem"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { displayCatalogInfoPanel } from "../ui/Objects/CatalogInfoPanel"
-import { setGLTFCollision } from "../components/Gltf"
+import { setGLTFCollisionBuildMode } from "../components/Gltf"
 import { setMeshBuildMode } from "../components/Meshes"
 import { getEntity } from "../components/IWB"
 import { setVisibilityBuildMode } from "../components/Visibility"
@@ -1263,7 +1263,7 @@ export function addAllBuildModePointers() {
 export function resetEntityForBuildMode(scene:any, entityInfo:any) {
     let itemInfo = scene.itemInfo.get(entityInfo.aid)
     if(itemInfo){
-        setGLTFCollision(scene, entityInfo)
+        setGLTFCollisionBuildMode(scene, entityInfo)
         setMeshBuildMode(scene, entityInfo)
         setAudioBuildMode(scene, entityInfo)
         setVisibilityBuildMode(scene, entityInfo)

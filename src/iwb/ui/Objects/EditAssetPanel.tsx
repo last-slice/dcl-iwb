@@ -17,6 +17,7 @@ import { EditName } from './Edit/EditName'
 import { EditAudio, updateAudioComponent } from './Edit/EditAudio'
 import { EditText } from './Edit/EditText'
 import { EditNftShape } from './Edit/EditNftShape'
+import { EditGltf } from './Edit/EditGltf'
 
 export let visibleComponent: string = ""
 
@@ -572,6 +573,7 @@ function EditObjectData(){
                     <EditAudio/>
                     <EditText/>
                     <EditNftShape/>
+                    <EditGltf/>
 
                     {/* <ImageComponentPanel/>
                     <VideoComponentPanel/>
