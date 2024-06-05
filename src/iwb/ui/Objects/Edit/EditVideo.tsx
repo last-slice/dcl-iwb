@@ -90,7 +90,11 @@ export function EditVideo() {
                         textAlign: 'middle-center'
                     }}
                     onMouseDown={() => {
+                        setUIClicked(true)
                         updateVideo("url", value)
+                    }}
+                    onMouseUp={()=>{
+                        setUIClicked(false)
                     }}
                 />
             </UiEntity>

@@ -15,6 +15,7 @@ import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../ui/Objects/Sc
 import { checkNftShapeComponent } from "./NftShape"
 import { checkMeshColliderComponent, checkMeshRenderComponent } from "./Meshes"
 import { checkTextureComponent } from "./Textures"
+import { getEntity } from "./IWB"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
@@ -37,16 +38,45 @@ export function getAssetIdByEntity(scene:any, entity:Entity){
     return undefined
 }
 
+export function findAssetParent(scene:any, aid:string){
+    for(let i = 0; i < scene.parenting.length; i++){
+        let parent = scene.parenting[i]
+        for(let j = 0; parent.children.length; j++){
+            let child = parent.children[j]
+            if(child === aid){
+                console.log('parent aid is', parent)
+                switch(parent.aid){
+                    case '0':
+                        return scene.parentEntity
+                    case '1':
+                        return engine.PlayerEntity
+                    case '2':
+                        return engine.CameraEntity
+                    default:
+                        return parent.entity
+                }
+            }
+        }
+    }
+}
+
 export function parentingListener(scene:any){
     scene.parenting.onAdd(async(item:any, aid:any)=>{
         console.log('added item', item)
 
         if(item.aid){
-            await createEntity(item)
+            if(!["0","1","2"].includes(item.aid)){
+                await createEntity(item)
+            }
+          
+            item.children.onAdd((child:any, parentAid:any)=>{
+                let entityInfo = getEntity(scene, child)
+                checkTransformComponent(scene, entityInfo)      
+            })
             PointersLoadedComponent.createOrReplace(item.entity, {init: false, sceneId: scene.id})
 
             ////addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)
-            await checkTransformComponent(scene, item)        
+              
             await checkGLTFComponent(scene, item)
             await checkTextureComponent(scene, item)
             await checkMeshRenderComponent(scene, item)
@@ -57,7 +87,7 @@ export function parentingListener(scene:any){
             await checkVideoComponent(scene, item)
             await checkNftShapeComponent(scene, item)
 
-            //// await checkSmartItemComponent()
+            //// await checkSmartItemComponent()//
 
 
             if(playerMode === SCENE_MODES.BUILD_MODE){
