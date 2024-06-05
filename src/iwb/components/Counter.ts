@@ -2,6 +2,7 @@ import { Schemas, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "./Colyseus"
 import { getEntity } from "./IWB"
 import resources from "../helpers/resources"
+import { COMPONENT_TYPES } from "../helpers/types"
 
 export const Numbers = engine.defineComponent(resources.slug + "counter::component", {
     values:Schemas.Array(Schemas.Map({
@@ -32,26 +33,26 @@ export function getCounterValue(sceneId:string, aid:string, type:string, current
 }
 
 
-export function addCounterComponent(scene:any){
-    scene.counters.forEach((counter:any, aid:string)=>{
-        let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-        if(info){
-            let counterSchemas:any[] = []
-            counter.values.forEach((counter:any, name:string)=>{
-                console.log('counter is', name, counter)
-                counterSchemas.push({
-                    name:name,
-                    currentValue:counter.currentValue,
-                    previousValue:counter.previousValue
-                })
-            })
+// export function addCounterComponent(scene:any){
+//     scene.counters.forEach((counter:any, aid:string)=>{
+//         let info = scene.parenting.find((entity:any)=> entity.aid === aid)
+//         if(info){
+//             let counterSchemas:any[] = []
+//             counter.values.forEach((counter:any, name:string)=>{
+//                 console.log('counter is', name, counter)
+//                 counterSchemas.push({
+//                     name:name,
+//                     currentValue:counter.currentValue,
+//                     previousValue:counter.previousValue
+//                 })
+//             })
 
-            Numbers.create(info.entity, {
-                values:counterSchemas
-            })
-        }
-    })
-}
+//             Numbers.create(info.entity, {
+//                 values:counterSchemas
+//             })
+//         }
+//     })
+// }
 
 export function getCounterComponentByAssetId(scene:string, aid:string, counter:any){
     let entityInfo = getEntity(scene, aid)
@@ -78,25 +79,25 @@ export function setCounter(counter:any, value:any){
 
 
 export function counterListener(scene:any){
-    scene.counters.onAdd((counters:any, aid:any)=>{
+    scene.counters.onAdd((counter:any, aid:any)=>{
+        !scene.components.includes(COMPONENT_TYPES.COUNTER_COMPONENT) ? scene.components.push(COMPONENT_TYPES.COUNTER_COMPONENT) : null
+
         let info = getEntity(scene, aid)
         if(!info){
             return
         }
 
-        counters.values.onAdd((counter:any, key:any)=>{
-            counter.listen("currentValue", (c:any, p:any)=>{
-                // console.log('counter current value changed', key, p, c)
+        counter.listen("currentValue", (c:any, p:any)=>{
+            // console.log('counter current value changed', key, p, c)
 
-                // let counter = getCounterComponentByAssetId(scene, info.aid, action)
-                // if(counter){
-                //     updateCounter(counter, action.value)
-                // }
-            })
+            // let counter = getCounterComponentByAssetId(scene, info.aid, action)
+            // if(counter){
+            //     updateCounter(counter, action.value)
+            // }
+        })
 
-            counter.listen("previousValue", (c:any, p:any)=>{
-                // console.log('counter previous value changed', key, p, c)
-            })
+        counter.listen("previousValue", (c:any, p:any)=>{
+            // console.log('counter previous value changed', key, p, c)
         })
     })
 }

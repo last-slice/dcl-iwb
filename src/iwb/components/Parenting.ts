@@ -4,7 +4,7 @@ import { checkGLTFComponent } from "./Gltf"
 import { checkTransformComponent } from "./Transform"
 import { PointersLoadedComponent, RealmEntityComponent } from "../helpers/Components"
 import { playerMode } from "./Config"
-import { SCENE_MODES } from "../helpers/types"
+import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { addBuildModePointers, resetEntityForBuildMode } from "../modes/Build"
 import { afterLoadActions } from "./Scene"
 import { checkMaterialComponent } from "./Materials"
@@ -62,8 +62,8 @@ export function findAssetParent(scene:any, aid:string){
 
 export function parentingListener(scene:any){
     scene.parenting.onAdd(async(item:any, aid:any)=>{
-        console.log('added item', item)
-
+        !scene.components.includes(COMPONENT_TYPES.PARENTING_COMPONENT) ? scene.components.push(COMPONENT_TYPES.PARENTING_COMPONENT) : null
+        
         if(item.aid){
             if(!["0","1","2"].includes(item.aid)){
                 await createEntity(item)

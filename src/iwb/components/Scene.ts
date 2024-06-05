@@ -22,6 +22,7 @@ import { visibilityListener } from "./Visibility"
 import { nftShapeListener } from "./NftShape"
 import { videoListener } from "./Videos"
 import { textureListener } from "./Textures"
+import { counterListener } from "./Counter"
 
 export let realmActions: any[] = []
 
@@ -59,6 +60,8 @@ export async function loadScene(scene:any) {
 }
 
 async function loadSceneComponents(scene:any){
+    scene.components = []
+
     // await addParenting(scene)
     parentingListener(scene)
 
@@ -68,7 +71,7 @@ async function loadSceneComponents(scene:any){
     // await addVisibilityComponent(scene)
     visibilityListener(scene)
 
-    // await addTransformComponent(scene)
+    // await addTransformComponent(scene)//
     transformListener(scene)
     meshListener(scene)
     iwbInfoListener(scene)
@@ -78,6 +81,7 @@ async function loadSceneComponents(scene:any){
     nftShapeListener(scene)
     videoListener(scene)
     textureListener(scene)
+    counterListener(scene)
 
     // await addTextShapeComponent(scene)
     

@@ -281,26 +281,28 @@ export enum COMPONENT_TYPES {
     TRANSFORM_COMPONENT = "Transform",
     NFT_COMPONENT = "NftShape",
     TEXT_COMPONENT = "Text",
-    TRIGGER_COMPONENT = "Trigger",
-    ACTION_COMPONENT = 'Action',
-    TRIGGER_AREA_COMPONENT = "Trigger Area",
-    CLICK_AREA_COMPONENT = "Click Area",
     ANIMATION_COMPONENT = "Animation",
     NPC_COMPONENT = "NPC",
     DIALOG_COMPONENT = "Dialog",
     REWARD_COMPONENT = 'Reward',
     ADVANCED_COMPONENT = 'Advanced',
-    PARENTING_COMPONENT = 'Parenting',
     NAMES_COMPONENT ='Name',
-    POINTER_COMPONENT = 'Pointers',
-    COUNTER_COMPONENT = 'Counters',
     GLTF_COMPONENT = 'Gltf',
-    STATE_COMPONENT ='States',
     SOUND_COMPONENT = 'Sounds',
     IWB_COMPONENT = 'IWB',
     MESH_RENDER_COMPONENT = 'MeshRenderer',
     MESH_COLLIDER_COMPONENT = 'MeshCollider',
-    TEXTURE_COMPONENT = 'Texture'
+    TEXTURE_COMPONENT = 'Texture',
+
+    //advanced components
+    PARENTING_COMPONENT = 'Parenting',
+    STATE_COMPONENT ='States',
+    POINTER_COMPONENT = 'Pointers',
+    COUNTER_COMPONENT = 'Counters',
+    TRIGGER_COMPONENT = "Trigger",
+    ACTION_COMPONENT = 'Action',
+    TRIGGER_AREA_COMPONENT = "Trigger Area",
+    CLICK_AREA_COMPONENT = "Click Area",
 }
 
 export enum COLLISION_LAYERS {

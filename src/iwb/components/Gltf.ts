@@ -2,7 +2,7 @@ import { ColliderLayer, GltfContainer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import { GLTFLoadedComponent } from "../helpers/Components"
 import { playerMode } from "./Config"
-import { SCENE_MODES } from "../helpers/types"
+import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { setAnimationPlayMode } from "./Animator"
 
 export function checkGLTFComponent(scene:any, entityInfo:any){
@@ -23,6 +23,8 @@ export function checkGLTFComponent(scene:any, entityInfo:any){
 
 export function gltfListener(scene:any){
     scene.gltfs.onAdd((gltf:any, aid:any)=>{
+        !scene.components.includes(COMPONENT_TYPES.GLTF_COMPONENT) ? scene.components.push(COMPONENT_TYPES.GLTF_COMPONENT) : null
+
         let entityInfo = getEntity(scene, aid)
         if(!entityInfo){
             return
