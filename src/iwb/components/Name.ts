@@ -2,13 +2,22 @@ import { TextShape } from "@dcl/sdk/ecs";
 import { colyseusRoom } from "./Colyseus";
 import { getEntity } from "./IWB";
 import { updateAudioTextLabel } from "./Sounds";
+import { playerMode } from "./Config";
+import { SCENE_MODES } from "../helpers/types";
+import { updateClickAreaTextLabel } from "./SmartItems";
 
 export function nameListener(scene:any){
     scene.names.onAdd((name:any, aid:any)=>{
         name.listen("value", (current:any, previous:any)=>{
+            let entityInfo = getEntity(scene, aid)
+            if(!entityInfo){
+                return
+            }
 
-            //update sound text display
-            updateAudioTextLabel(scene, aid, current)
+            if(previous !== undefined && playerMode === SCENE_MODES.BUILD_MODE){
+                updateAudioTextLabel(scene, aid, current)
+                updateClickAreaTextLabel(scene, entityInfo, current)
+            }
         })
     })
 }

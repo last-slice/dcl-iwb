@@ -13,6 +13,7 @@ import { updatePlayModeReset } from "../modes/Play"
 import { getEntity } from "./IWB"
 import { removePlayModSystem, addPlayModeSystem } from "../systems/PlayModeSystem"
 import { disableEntityForPlayMode } from "../modes/Play"
+import { displayHover } from "../ui/Objects/ContextMenu"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -151,6 +152,8 @@ export function setPlayerMode(mode:SCENE_MODES){
         addInputSystem()
         updatePlayModeReset(false)
     }else if(playerMode === SCENE_MODES.PLAYMODE){
+        hideAllPanels()
+        displayHover(false)
         removeInputSystem()
         addPlayModeSystem()
         utils.triggers.enableDebugDraw(false)

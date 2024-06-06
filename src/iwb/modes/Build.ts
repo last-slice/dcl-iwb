@@ -25,6 +25,8 @@ import { hideAllPanels, setUIClicked } from "../ui/ui"
 import { getAssetIdByEntity } from "../components/Parenting"
 import { openEditComponent } from "../ui/Objects/EditAssetPanel"
 import { setMeshRenderBuildMode } from "../components/Meshes"
+import { setSmartItemBuildMode } from "../components/SmartItems"
+import { setAnimationBuildMode } from "../components/Animator"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -302,6 +304,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
     } else {
         console.log('item does not exist')
     }
+
+    setUIClicked(false)
 }
 
 export function otherUserPlaceditem(info: any) {
@@ -384,6 +388,8 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
             playSound(SOUND_TYPES.ERROR_2)
             return
         }
+
+        console.log('edity entity info is', entityInfo)
     
         hideAllOtherPointers()
         // PointerEvents.deleteFrom(entity)
@@ -448,7 +454,7 @@ export function saveItem() {
     )
 
     hideAllPanels()
-    openEditComponent("")
+    openEditComponent("", true)
 
     // //check Trigger Area Items
     // if (selectedItem.itemData.trigArComp) {
@@ -457,7 +463,7 @@ export function saveItem() {
     //     if (scene) {
     //         addTriggerArea(scene, selectedItem.entity, selectedItem.itemData, items.get(selectedItem.catalogId)!.n)
     //     }
-    // }
+    // }//
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
@@ -948,7 +954,6 @@ export function grabItem(entity: Entity) {
 export function deleteSelectedItem(aid:string) {
     let itemInfo = localPlayer.activeScene.itemInfo.get(aid)
     if(itemInfo){
-        console.log('trying to delete item', itemInfo)
         if(!itemInfo.locked && (!itemInfo.editing || (itemInfo.editing && itemInfo.editor === localUserId))){
             let entityInfo = getEntity(localPlayer.activeScene, aid)
             if(entityInfo){
@@ -959,6 +964,8 @@ export function deleteSelectedItem(aid:string) {
                 }
                 sendServerDelete(entityInfo.entity, data)
                 removeSelectedItem()
+
+                openEditComponent("", true)
             }
         }else{
             playSound(SOUND_TYPES.ERROR_2)
@@ -1263,9 +1270,9 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         setAudioBuildMode(scene, entityInfo)
         setVisibilityBuildMode(scene, entityInfo)
         setVideoBuildMode(scene, entityInfo)
+        setAnimationBuildMode(scene, entityInfo)
+        setSmartItemBuildMode(scene, entityInfo)
     }
-    //         checkSmartItems(entity, sceneItem)
-    //         disableAnimations(entity, sceneItem)
     //         resetTweenPositions(entity, sceneItem, scene)
 }
 

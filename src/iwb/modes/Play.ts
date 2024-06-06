@@ -9,6 +9,7 @@ import { setGLTFPlayMode } from "../components/Gltf"
 import { disableVisibilityPlayMode, setVisibilityPlayMode } from "../components/Visibility"
 import { disableAudioPlayMode, setAudioPlayMode } from "../components/Sounds"
 import { disableAnimationPlayMode } from "../components/Animator"
+import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/SmartItems"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -80,6 +81,7 @@ export function enableSceneEntities(sceneId: string) {
                     setMeshRenderPlayMode(scene, entityInfo)
                     setVisibilityPlayMode(scene, entityInfo)
                     setAudioPlayMode(scene, entityInfo)
+                    setSmartItemPlaydMode(scene, entityInfo)
                 }
             }
         })
@@ -124,9 +126,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableAudioPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
         disableAnimationPlayMode(scene, entityInfo)
-
-        //need to deconstruct smart items into their separate components
-        // disableSmartItems(scene, entityInfo)
+        disableSmartItemsPlayMode(scene, entityInfo)
 
         PointerEvents.deleteFrom(entityInfo.entity)
     }
@@ -144,40 +144,6 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
     //         }
     //     }
     // }//
-}
-
-function disableSmartItems(scene:any, entityInfo:any){
-    // let itemInfo = scene.videos.get(entityInfo.aid)
-    // if(itemInfo){
-    //     VideoPlayer.getMutable(entityInfo.entity).playing = false
-    // }
-
-    // switch(items.get(sceneItem.id)?.n){
-    //     case 'Trigger Area':
-    //         if(sceneItem.trigArComp){
-    //             MeshRenderer.deleteFrom(entity)
-
-    //             Material.deleteFrom(entity)
-    //             utils.triggers.enableTrigger(entity, false)
-    //         }
-    //         break;
-
-    //     case 'Click Area':
-    //         MeshRenderer.deleteFrom(entity)
-    //         MeshCollider.deleteFrom(entity)
-    //         Material.deleteFrom(entity)
-    //         PointerEvents.deleteFrom(entity)
-    //         break;
-
-    //     case 'Dialog':
-    //     case 'Reward':
-    //         MeshRenderer.deleteFrom(entity)
-    //         MeshCollider.deleteFrom(entity)
-    //         Material.deleteFrom(entity)
-    //         PointerEvents.deleteFrom(entity)
-    //         TextShape.deleteFrom(entity)
-    //         break;
-    // }
 }
 
 function disableDelayedActionTimers(){

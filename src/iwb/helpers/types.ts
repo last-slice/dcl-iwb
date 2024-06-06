@@ -290,8 +290,8 @@ export enum COMPONENT_TYPES {
     GLTF_COMPONENT = 'Gltf',
     SOUND_COMPONENT = 'Sounds',
     IWB_COMPONENT = 'IWB',
-    MESH_RENDER_COMPONENT = 'MeshRenderer',
-    MESH_COLLIDER_COMPONENT = 'MeshCollider',
+    MESH_RENDER_COMPONENT = 'Mesh Renderer',
+    MESH_COLLIDER_COMPONENT = 'Mesh Collider',
     TEXTURE_COMPONENT = 'Texture',
 
     //advanced components
@@ -300,9 +300,10 @@ export enum COMPONENT_TYPES {
     POINTER_COMPONENT = 'Pointers',
     COUNTER_COMPONENT = 'Counters',
     TRIGGER_COMPONENT = "Trigger",
-    ACTION_COMPONENT = 'Action',
+    ACTION_COMPONENT = 'Actions',
     TRIGGER_AREA_COMPONENT = "Trigger Area",
     CLICK_AREA_COMPONENT = "Click Area",
+    AVATAR_SHAPE_COMPONENT = 'Avatar Shape',
 }
 
 export enum COLLISION_LAYERS {
@@ -428,7 +429,7 @@ export enum Triggers {
     // ON_DAMAGE
     // ON_GLOBAL_CLICK
     // ON_TICK
-    // ON_HEAL
+    // ON_HEAL//
     ON_STATE_CHANGE = "on_state_change",
     ON_COUNTER_CHANGE = "on_counter_change",
 }
@@ -456,54 +457,6 @@ export enum Materials {
     TEXTURE = "Texture"
 }
 
-export let ENTITY_ACTIONS_LABELS:any[] = [
-    "Open Link",
-    "Play Audio",
-    "Stop Audio",
-    "Play Video",
-    "Toggle Video",
-    "Play Animation",
-    "Stop Animation",
-    "Teleport Player",
-    "Play Emote",
-    "Set Visibility",
-    "Show Text",
-    "Hide Text",
-    "Start Delay",
-    "Show Dialog",
-    "Start Tween",
-    "Enable Click Area",
-    "Disable Click Area",
-    "Enable Trigger Area",
-    "Disable Trigger Area",
-    "Give Reward",
-    "Verify Access"
-]
-
-export let ENTITY_ACTIONS_SLUGS:any[] = [
-    Actions.OPEN_LINK,
-    Actions.PLAY_AUDIO,
-    Actions.STOP_AUDIO,
-    Actions.PLAY_VIDEO,
-    Actions.TOGGLE_VIDEO,
-    Actions.PLAY_ANIMATION,
-    Actions.STOP_ANIMATION,
-    Actions.TELEPORT_PLAYER,
-    Actions.EMOTE,
-    Actions.SET_VISIBILITY,
-    Actions.SHOW_TEXT,
-    Actions.HIDE_TEXT,
-    Actions.START_DELAY,
-    Actions.SHOW_DIALOG,
-    Actions.START_TWEEN,
-    Actions.ENABLE_CLICK_AREA,
-    Actions.DISABLE_CLICK_AREA,
-    Actions.ENABLE_TRIGGER_AREA,
-    Actions.DISABLE_TRIGGER_AREA,
-    Actions.GIVE_REWARD,
-    Actions.VERIFY_ACCESS
-]
-
 export let ENTITY_TRIGGER_LABELS:any[] = [
     "On Click",
     "On Enter",
@@ -513,7 +466,7 @@ export let ENTITY_TRIGGER_LABELS:any[] = [
 ]
 
 export let ENTITY_POINTER_LABELS:any[] = [
-    "Mouse Click",
+    "Pointer",
     "E Press",
     "F Press",
     "ANY Press",
@@ -529,20 +482,11 @@ export let ENTITY_POINTER_LABELS:any[] = [
     "#4 Press",
 ]
 
-export let ENTITY_TRIGGER_SLUGS:any[] = [
-    Triggers.ON_CLICK,
-    Triggers.ON_ENTER,
-    Triggers.ON_LEAVE,
-    Triggers.ON_ACCESS_VERIFIED,
-    Triggers.ON_ACCESS_DENIED
-]
-
 export let MATERIAL_TYPES:Materials[] =[
     Materials.PBR, 
     Materials.BASIC,
     Materials.TEXTURE,
 ]
-
 
 export enum SOUND_TYPES {
     ATMOS_BLESSING = "atmos_blessing",

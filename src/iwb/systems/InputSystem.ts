@@ -162,7 +162,7 @@ export function InputListenSystem(dt:number){
                         }
                     }else{
                         // console.log('hit 1 button without hitting object and not in grab mode')
-                        // if(hoveredEntity !== -500){
+                        // if(hoveredEntity !== -500){//
 
                         // }
                     }

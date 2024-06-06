@@ -21,6 +21,8 @@ function createEntity(item:any){
     let ent = engine.addEntity()
     item.entity = ent
 
+    console.log('creating entity', ent)//
+
     RealmEntityComponent.create(ent)
 
     if (playerMode === SCENE_MODES.BUILD_MODE) {
@@ -44,7 +46,6 @@ export function findAssetParent(scene:any, aid:string){
         for(let j = 0; parent.children.length; j++){
             let child = parent.children[j]
             if(child === aid){
-                console.log('parent aid is', parent)
                 switch(parent.aid){
                     case '0':
                         return scene.parentEntity
@@ -63,20 +64,16 @@ export function findAssetParent(scene:any, aid:string){
 export function parentingListener(scene:any){
     scene.parenting.onAdd(async(item:any, aid:any)=>{
         !scene.components.includes(COMPONENT_TYPES.PARENTING_COMPONENT) ? scene.components.push(COMPONENT_TYPES.PARENTING_COMPONENT) : null
-        
+
         if(item.aid){
             if(!["0","1","2"].includes(item.aid)){
                 await createEntity(item)
             }
-          
-            item.children.onAdd((child:any, parentAid:any)=>{
-                let entityInfo = getEntity(scene, child)
-                checkTransformComponent(scene, entityInfo)      
-            })
+
             PointersLoadedComponent.createOrReplace(item.entity, {init: false, sceneId: scene.id})
 
-            ////addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)
-              
+            // addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)/////
+            await checkTransformComponent(scene, item)  
             await checkGLTFComponent(scene, item)
             await checkTextureComponent(scene, item)
             await checkMeshRenderComponent(scene, item)
@@ -87,7 +84,7 @@ export function parentingListener(scene:any){
             await checkVideoComponent(scene, item)
             await checkNftShapeComponent(scene, item)
 
-            //// await checkSmartItemComponent()//
+            //// await checkSmartItemComponent()
 
 
             if(playerMode === SCENE_MODES.BUILD_MODE){

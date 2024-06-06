@@ -21,8 +21,8 @@ import { createEditAssetPanel } from './Objects/EditAssetPanel'
 import { createAdvancedEditPanel } from './Objects/EditAdvanced'
 
 export function setupUI() {
-  ReactEcsRenderer.setUiRenderer(uiComponent)
-  engine.addSystem(uiSizer)
+    ReactEcsRenderer.setUiRenderer(uiComponent)
+    engine.addSystem(uiSizer)
 }
 
 export let uiInput:boolean = false
@@ -42,7 +42,7 @@ const uiComponent:any = () => [
   createNotificationUI(),
   createSceneInfoPanel(),
   createEditAssetPanel(),
-  createAdvancedEditPanel(),
+  // createAdvancedEditPanel(),
 ]
 
 export function generateButtons(data:any){

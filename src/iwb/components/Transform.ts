@@ -3,15 +3,6 @@ import { Quaternion } from "@dcl/sdk/math"
 import { getEntity } from "./IWB"
 import { findAssetParent } from "./Parenting"
 
-// export function addTransformComponent(scene:any){
-//     scene.transforms.forEach((transform:any, aid:string)=>{
-//         let entity = scene.parenting.find((entity:any)=> entity.aid === aid)
-//         if(entity){
-//             Transform.create(entity.entity, {position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
-//         }
-//     })
-// }//
-
 export function checkTransformComponent(scene:any, entityInfo:any){
     console.log('checking transform component', entityInfo)
     let transform = scene.transforms.get(entityInfo.aid)
@@ -23,6 +14,17 @@ export function checkTransformComponent(scene:any, entityInfo:any){
 
 export function transformListener(scene:any){
     scene.transforms.onAdd((transform:any, aid:any)=>{
+        let entityInfo = getEntity(scene, aid)
+        if(!entityInfo){
+            return
+        }
+
+        transform.listen("delta", (c:any, p:any)=>{
+            if(p !== undefined){
+                checkTransformComponent(scene, entityInfo)  
+            }
+        })
+
         transform.p.listen("x", (c:any, p:any)=>{
             if(p !== undefined){
                 updateTransform(scene, aid, transform)

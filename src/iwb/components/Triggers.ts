@@ -1,5 +1,5 @@
 import { Entity, InputAction, PointerEvents, engine, pointerEventsSystem } from "@dcl/sdk/ecs";
-import { COUNTER_VALUE, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
+import { COMPONENT_TYPES, COUNTER_VALUE, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
 import mitt, { Emitter } from "mitt";
 import { getActionEvents } from "./Actions";
 import { getCounterComponentByAssetId, getCounterValue } from "./Counter";
@@ -17,39 +17,69 @@ export function getTriggerEvents(entity: Entity) {
     return triggers.get(entity)!
 }
 
-export function addTriggerComponent(scene:any){
-    scene.triggers.forEach((triggers:any, aid:string)=>{
-        let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-        if(info.entity){
-            triggers.triggers.forEach((trigger:any)=>{
-                // switch(trigger.type){
-                //     case Triggers.ON_INPUT_ACTION:
-                //         initOnInputActionTrigger(info.entity, trigger)
-                //         break;
-                // }
+export function triggerListener(scene:any){
+  scene.triggers.onAdd((trigger:any, aid:any)=>{
+    !scene.components.includes(COMPONENT_TYPES.TRIGGER_COMPONENT) ? scene.components.push(COMPONENT_TYPES.TRIGGER_COMPONENT) : null
 
-                const triggerEvents = getTriggerEvents(info.entity)
-                triggerEvents.on(trigger.type, (pointerEvent:any)=>{
-                    if(checkInputAction(trigger.input, pointerEvent) && checkConditions(scene, trigger, aid, info.entity)){
-                        for(const triggerAction of trigger.actions){
-                            if(isValidAction(triggerAction)){
-                                let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
-                                if(aid){
-                                    actionQueue.push({aid:aid, action:action, entity:entity})
-                                }
-                            }
-                        }
-                    }else{
-                        // console.log('trigger condition not met')
+    let info = getEntity(scene, aid)
+    if(!info){
+        return
+    }
+
+    const triggerEvents = getTriggerEvents(info.entity)
+    triggerEvents.on(trigger.type, (pointerEvent:any)=>{
+        if(checkInputAction(trigger.input, pointerEvent) && checkConditions(scene, trigger, aid, info.entity)){
+            for(const triggerAction of trigger.actions){
+                if(isValidAction(triggerAction)){
+                    let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
+                    if(aid){
+                        actionQueue.push({aid:aid, action:action, entity:entity})
                     }
-                })
-            })
+                }
+            }
+        }else{
+            // console.log('trigger condition not met')
         }
     })
+})
 
 
-    engine.addSystem(PlayTriggerSystem)
+  engine.addSystem(PlayTriggerSystem)
 }
+
+// export function addTriggerComponent(scene:any){
+//     scene.triggers.forEach((triggers:any, aid:string)=>{
+//         let info = scene.parenting.find((entity:any)=> entity.aid === aid)
+//         if(info.entity){
+//             triggers.triggers.forEach((trigger:any)=>{
+//                 // switch(trigger.type){
+//                 //     case Triggers.ON_INPUT_ACTION:
+//                 //         initOnInputActionTrigger(info.entity, trigger)
+//                 //         break;
+//                 // }
+
+//                 const triggerEvents = getTriggerEvents(info.entity)
+//                 triggerEvents.on(trigger.type, (pointerEvent:any)=>{
+//                     if(checkInputAction(trigger.input, pointerEvent) && checkConditions(scene, trigger, aid, info.entity)){
+//                         for(const triggerAction of trigger.actions){
+//                             if(isValidAction(triggerAction)){
+//                                 let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
+//                                 if(aid){
+//                                     actionQueue.push({aid:aid, action:action, entity:entity})
+//                                 }
+//                             }
+//                         }
+//                     }else{
+//                         // console.log('trigger condition not met')
+//                     }
+//                 })
+//             })
+//         }
+//     })
+
+
+//     engine.addSystem(PlayTriggerSystem)
+// }
 
 function isValidAction(action: string /*TriggerAction*/) {
     // const { id, /*name*/ } = action

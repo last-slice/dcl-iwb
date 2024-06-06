@@ -21,6 +21,7 @@ export function updateStyles(updates: string[]) {
         styles.push(update)
     })
     styles = styles.sort((a, b) => a.localeCompare(b));
+    styles.unshift("Audio")
     styles.unshift("All")
 }
 

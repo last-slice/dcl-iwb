@@ -1,14 +1,14 @@
-import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps} from '@dcl/sdk/react-ecs'
+import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown} from '@dcl/sdk/react-ecs'
 import resources from '../../helpers/resources'
 import { localPlayer, settings } from '../../components/Player'
-import { EDIT_MODES, COMPONENT_TYPES } from '../../helpers/types'
+import { EDIT_MODES, COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
 import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity } from '../../modes/Build'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
 import { getView } from '../uiViews'
 import { items } from '../../components/Catalog'
-import { colyseusRoom } from '../../components/Colyseus'
+import { colyseusRoom, sendServerMessage } from '../../components/Colyseus'
 import { Color4 } from '@dcl/sdk/math'
 import { setUIClicked } from '../ui'
 import { EditTransform } from './Edit/EditTransform'
@@ -24,13 +24,22 @@ import { EditMeshRender } from './Edit/EditMeshRender'
 import { EditMaterial } from './Edit/EditMaterial'
 import { EditTexture } from './Edit/EditTexture'
 import { displayEditAdvancedPanel } from './EditAdvanced'
+import { EditParenting } from './Edit/EditParenting'
+import { EditCounter } from './Edit/EditCounter'
+import { EditTrigger } from './Edit/EditTrigger'
 
 export let visibleComponent: string = ""
+let componentViewType:string = "basic"
+let newAdvancedComponentIndex:number = 0
 
-export function openEditComponent(value: string, subMenu?:string) {
+export function openEditComponent(value: string, resetToBasic?:boolean) {
+    if(resetToBasic){
+        componentViewType = "basic"
+    }
+
     switch(value){
         case COMPONENT_TYPES.ADVANCED_COMPONENT:
-            displayEditAdvancedPanel(true)
+            componentViewType = "advanced"
             openEditComponent("")
             break;
 
@@ -73,7 +82,7 @@ export function createEditAssetPanel() {
         <UiEntity
             key={resources.slug + "editobjectpanel"}
             uiTransform={{
-                display: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && visibleComponent !== COMPONENT_TYPES.ADVANCED_COMPONENT ? 'flex' : 'none',
+                display: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT ? 'flex' : 'none',
                 // display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -100,6 +109,7 @@ export function createEditAssetPanel() {
                     uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
                 }}
             >
+                
                 <EditObjectDetails/>
                 <EditObjectData/> 
 
@@ -196,6 +206,8 @@ export function createEditAssetPanel() {
                         onMouseDown={() => {
                             setUIClicked(true)
                             cancelEditingItem()
+                                componentViewType = "basic"
+                                openEditComponent("")
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)
@@ -212,120 +224,52 @@ function EditObjectDetails() {
         <UiEntity
             key={resources.slug + "editobjectdetailsinfo"}
             uiTransform={{
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'flex-start',
+                justifyContent: 'center',
                 width: '95%',
-                height: '20%',
-                margin:{top:'5%'}
+                height: '15%',
+                margin:{top:'1%'}
             }}
         // uiBackground={{color:Color4.Teal()}}
         >
 
-
-            {/* top image row */}
+            {/* image column */}
             <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection:'row',
-                    justifyContent: 'center',
-                    width: '90%',
-                    height: '80%',
-                }}
-                // uiBackground={{color:Color4.Green()}}
-            >
+            uiTransform={{
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection:'column',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Blue()}}
+        >
 
-                {/* image column */}
                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection:'row',
-                    justifyContent: 'center',
-                    width: '40%',
-                    height: '100%',
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
-
-                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateSquareImageDimensions(10).width,
-                    height: calculateSquareImageDimensions(10).height,
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: "" + (selectedItem && selectedItem.enabled ? items.get(selectedItem.catalogId)!.im : "")
-                    },
-                    uvs: getImageAtlasMapping({
-                        atlasHeight: 256,
-                        atlasWidth: 256,
-                        sourceTop: 0,
-                        sourceLeft: 0,
-                        sourceWidth: 256,
-                        sourceHeight: 256
-                    })
-                }}
-                />
-
-                </UiEntity>
-
-                   
-                {/* buttons column */}
-                <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection:'column',
-                    justifyContent: 'center',
-                    width: '40%',
-                    height: '100%',
-                }}
-                // uiBackground={{color:Color4.Green()}}
-            >
-
-
-                </UiEntity>
-
-                 {/* back button column */}
-                 <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection:'column',
-                    justifyContent: 'flex-start',
-                    width: '20%',
-                    height: '100%',
-                    margin:{top:"5%"}
-                }}
-                // uiBackground={{color:Color4.Teal()}}
-            >
-                 {/* <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(2, getAspect(uiSizes.backButton)).width,
-                    height: calculateImageDimensions(2, getAspect(uiSizes.backButton)).height,
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.backButton)
-                }}
-                onMouseDown={() => {
-                    displayCatalogInfoPanel(false)
-                    displayCatalogPanel(true)
-                }}
-            /> */}
-                </UiEntity>
+            uiTransform={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(8).width,
+                height: calculateSquareImageDimensions(8).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: "" + (selectedItem && selectedItem.enabled ? items.get(selectedItem.catalogId)!.im : "")
+                },
+                uvs: getImageAtlasMapping({
+                    atlasHeight: 256,
+                    atlasWidth: 256,
+                    sourceTop: 0,
+                    sourceLeft: 0,
+                    sourceWidth: 256,
+                    sourceHeight: 256
+                })
+            }}
+            />
 
             </UiEntity>
 
@@ -336,8 +280,8 @@ function EditObjectDetails() {
                     alignItems: 'center',
                     flexDirection:'column',
                     justifyContent: 'center',
-                    width: '90%',
-                    height: '20%',
+                    width: '65%',
+                    height: '100%',
                     margin:{top:"1%"}
                 }}
                 // uiBackground={{color:Color4.Yellow()}}
@@ -352,130 +296,26 @@ function EditObjectDetails() {
                         height: '100%',
                         justifyContent:'center',
                     }}
-                    uiText={{ value: "" + (selectedItem && selectedItem.enabled ? getAssetName() : ""), fontSize: sizeFont(40, 30), textAlign:'middle-left'}}
+                    uiText={{ value: "" + (selectedItem && selectedItem.enabled ? getAssetName() : ""), fontSize: sizeFont(30, 25), textAlign:'middle-left'}}
                      />
                      
                      
             </UiEntity>
-            
-        </UiEntity>
-    )
-}
 
-function getAssetName(){
-    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-    if(scene){
-        let itemInfo = scene.names.get(selectedItem.aid)
-        if(itemInfo){
-            return itemInfo.value
-        }
-        return ""
-    }
-    return ""
-}
-
-function EditObjectData(){
-    return (
-        <UiEntity
-            key={resources.slug + "editobjectdatainfo"}
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '95%',
-                height: '65%',
-            }}
-            // uiBackground={{color:Color4.Blue()}}
-        >
-
-            {/* details label */}
-            {/* <UiEntity
+            <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '90%',
-                    height: '10%',
-                    margin: {top: "2%"},
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-                uiText={{
-                    value: "Asset Details",
-                    fontSize: sizeFont(25, 15),
-                    color: Color4.White(),
-                    textAlign: 'middle-left'
-                }}
-            /> */}
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    width: '90%',
-                    height: '90%',
-                    margin: {top: "2%"},
-                    display: visibleComponent === "" ? 'flex' : 'none'
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
-                {selectedItem && selectedItem.enabled && generateComponentViews()}
-
-            </UiEntity>
-
-
-            {/* specific component panel container */}
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    width: '100%',
+                    width: '15%',
                     height: '100%',
-                    display: visibleComponent !== "" ? 'flex' : 'none'
                 }}
-                // uiBackground={{color:Color4.Teal()}}
             >
 
-                {/* component details label */}
-                <UiEntity
+                {/* back button */}
+            <UiEntity
                     uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '90%',
-                        height: '10%',
-                        margin: {top: "2%"}
-                    }}
-                >
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '80%',
-                            height: '100%',
-                        }}
-                        uiText={{
-                            value: "" + visibleComponent + " Component Details",
-                            fontSize: sizeFont(25, 15),
-                            color: Color4.White(),
-                            textAlign: 'middle-left'
-                        }}
-                    />
-
-                    <UiEntity
-                        uiTransform={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '20%',
-                            height: '100%',
-                        }}
-                    >
-                    <UiEntity
-                    uiTransform={{
+                        display: visibleComponent !== "" ? "flex" : "none",
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -491,69 +331,7 @@ function EditObjectData(){
                     }}
                     onMouseDown={() => {
                         setUIClicked(true)
-                        switch(visibleComponent){
-                            // case COMPONENT_TYPES.NPC_COMPONENT:
-                            //     if(npcComponentView === "wAdd"){
-                            //         updateNPCView('wMain')
-                            //     }
-                        
-                            //     else if(npcComponentView === "wMain"){
-                            //         updateNPCView('main')
-                            //     }
-                            //     else{
-                            //         openEditComponent("")
-                            //     }
-                            //     break;
-
-                            // case COMPONENT_TYPES.TRIGGER_COMPONENT:
-                            //     if(triggerView === "actions" || triggerView == "add"){
-                            //         updateActionView("list")
-                            //     }
-
-                            //     else{
-                            //         openEditComponent("")
-                            //     }
-                                
-                            //     break;
-
-                            // case COMPONENT_TYPES.DIALOG_COMPONENT:
-                            //     if(dialogView === "addbutton"){
-                            //         updateDialogView("add")
-                            //     }else if(dialogView === "add"){
-                            //         updateDialogView("list")
-                            //     }else{
-                            //         openEditComponent("")
-                            //     }
-                            //     break;
-
-                            // case COMPONENT_TYPES.ACTION_COMPONENT:
-                            //     console.log("pressing back on action component", selectedActionIndex, actionTweenView, acionMainview)
-                            //     disableTweenPlacementEntity()
-                            //     if(acionMainview === "list"){
-                            //         openEditComponent("")
-                            //     }else{
-                            //         switch(selectedActionIndex){
-                            //             case 14:
-                            //                 switch(actionTweenView){
-                            //                     case 'main':
-                            //                         updateActionComponentView("list")
-                            //                         break;
-    
-                            //                     case 'end':
-                            //                         updateActionTweenView("main")
-                            //                 }
-                            //                 break;
-    
-                            //             default:
-                            //                 updateActionComponentView('list')
-                            //                 break;
-                            //         }
-                            //     }
-                            //     break;
-                            
-                                default:
-                                openEditComponent("")
-                        }
+                        getBackButtonLogic()
                         // updateActionView("list")
                     }}
                     onMouseUp={()=>{
@@ -561,59 +339,325 @@ function EditObjectData(){
                     }}
                 />
 
-                    </UiEntity>
+            </UiEntity>
+
+            
+        </UiEntity>
+    )
+}
+
+function getBackButtonLogic(){
+    switch(visibleComponent){
+        case COMPONENT_TYPES.ADVANCED_COMPONENT:
+            componentViewType = "basic"
+            openEditComponent("")
+            break;
+
+        case COMPONENT_TYPES.TRIGGER_COMPONENT:
+        case COMPONENT_TYPES.ACTION_COMPONENT:
+        case COMPONENT_TYPES.COUNTER_COMPONENT:
+        case COMPONENT_TYPES.PARENTING_COMPONENT:
+            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            break;
+
+        // case COMPONENT_TYPES.NPC_COMPONENT:
+        //     if(npcComponentView === "wAdd"){
+        //         updateNPCView('wMain')
+        //     }//
+    
+        //     else if(npcComponentView === "wMain"){
+        //         updateNPCView('main')
+        //     }
+        //     else{
+        //         openEditComponent("")
+        //     }
+        //     break;
+
+        // case COMPONENT_TYPES.TRIGGER_COMPONENT:
+        //     if(triggerView === "actions" || triggerView == "add"){
+        //         updateActionView("list")
+        //     }
+
+        //     else{
+        //         openEditComponent("")
+        //     }
+            
+        //     break;
+
+        // case COMPONENT_TYPES.DIALOG_COMPONENT:
+        //     if(dialogView === "addbutton"){
+        //         updateDialogView("add")
+        //     }else if(dialogView === "add"){
+        //         updateDialogView("list")
+        //     }else{
+        //         openEditComponent("")
+        //     }
+        //     break;
+
+        // case COMPONENT_TYPES.ACTION_COMPONENT:
+        //     console.log("pressing back on action component", selectedActionIndex, actionTweenView, acionMainview)
+        //     disableTweenPlacementEntity()
+        //     if(acionMainview === "list"){
+        //         openEditComponent("")
+        //     }else{
+        //         switch(selectedActionIndex){
+        //             case 14:
+        //                 switch(actionTweenView){
+        //                     case 'main':
+        //                         updateActionComponentView("list")
+        //                         break;
+
+        //                     case 'end':
+        //                         updateActionTweenView("main")
+        //                 }
+        //                 break;
+
+        //             default:
+        //                 updateActionComponentView('list')
+        //                 break;
+        //         }
+        //     }
+        //     break;
+        
+            default:
+            openEditComponent("")
+    }
+}
+
+function getAssetName(){
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(scene){
+        let itemInfo = scene.names.get(selectedItem.aid)
+        if(itemInfo){
+            return itemInfo.value.length > 20 ? itemInfo.value.substring(0,20) + "..." : itemInfo.value
+        }
+        return ""
+    }
+    return ""
+}
+
+function EditObjectData(){
+    return (
+        <UiEntity
+            key={resources.slug + "editobjectdatainfo"}
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '95%',
+                height: '75%',
+            }}
+            // uiBackground={{color:Color4.Blue()}}
+        >
+
+            {/* basic components container */}
+            <UiEntity
+                uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%',
+                display:componentViewType === "basic" ? "flex" : "none"
+                }}
+                // uiBackground={{color:Color4.Red()}}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '90%',
+                    height: '90%',
+                    margin: {top: "2%"},
+                    display: visibleComponent === "" ? 'flex' : 'none'
+                }}
+                // uiBackground={{color:Color4.Green()}}
+            >
+                {selectedItem && selectedItem.enabled && generateComponentViews()}
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '90%',
+                    height: '100%',
+                    margin: {top: "2%"},
+                    display: visibleComponent !== "" ? 'flex' : 'none'
+                }}
+                // uiBackground={{color:Color4.Blue()}}
+            >
+                <EditTransform/>
+                <EditVisibility/>
+                <EditName/>
+                <EditAudio/>
+                <EditText/>
+                <EditNftShape/>
+                <EditGltf/>
+                <EditVideo/>
+                <EditMeshCollider/>
+                <EditMeshRender/>
+                <EditMaterial/>
+                <EditTexture/>
+            </UiEntity>
 
                 </UiEntity>
 
+                {/* advanced components container */}
+                <UiEntity
+                uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%',
+                display:componentViewType !== "basic" ? "flex" : "none"
+                }}
+            >
 
-                {/* edit component panel */}
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '90%',
+                    height: '90%',
+                    margin: {top: "2%"},
+                    display: visibleComponent === "Advanced" ? 'flex' : 'none'
+                }}
+                // uiBackground={{color:Color4.Green()}}
+            >
+
+            {/* add component row */}
+            <UiEntity
+                uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: '100%',
+                height: '10%',
+                }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
+
+ 
+            <Dropdown
+                options={getComponents()}
+                selectedIndex={0}
+                onChange={selectNewAdvancedcComponentIndex}
+                uiTransform={{
+                    width: '100%',
+                    height: '120%',
+                }}
+                // uiBackground={{color:Color4.Purple()}}//
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
+
+                </UiEntity>
+
                 <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'flex-start',
-                        width: '95%',
-                        height: '90%',
-                        margin: {top: "2%"}
+                        justifyContent: 'center',
+                        width: '50%',
+                        height: '100%',
                     }}
                 >
 
-                    <EditTransform/>
-                    <EditVisibility/>
-                    <EditName/>
-                    <EditAudio/>
-                    <EditText/>
-                    <EditNftShape/>
-                    <EditGltf/>
-                    <EditVideo/>
-                    <EditMeshCollider/>
-                    <EditMeshRender/>
-                    <EditMaterial/>
-                    <EditTexture/>
 
-                    {/* <ImageComponentPanel/>
-                    <VideoComponentPanel/>
-                    
-                    <ActionComponent/>
-                    <MaterialComponentPanel/>
-                    <TriggerComponent/>
-                    <TriggerAreaComponent/>
-                    <AnimationComponent/>
-                    <NPCComponent/>
-                    <DialogComponent/>
-                    <RewardComponentPanel/> */}
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                    }}
+                    uiText={{
+                        value: "Add Component",
+                        fontSize: sizeFont(25, 15),
+                        color: Color4.White(),
+                        textAlign: 'middle-center'
+                    }}
+                    onMouseDown={() => {
+                        setUIClicked(true)
+                        if(newAdvancedComponentIndex !== 0){
+                            addComponent()
+                        }
+                    }}
+                    onMouseUp={()=>{
+                        setUIClicked(false)
+                    }}
+                />
+                </UiEntity>
+
+            </UiEntity>
+
+                {selectedItem && selectedItem.enabled && generateComponentViews()}
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '90%',
+                    height: '100%',
+                    margin: {top: "2%"},
+                    display: visibleComponent !== "Advanced" ? 'flex' : 'none'
+                }}
+                // uiBackground={{color:Color4.Blue()}}
+            >
+                <EditParenting/>
+                <EditCounter/>
+                <EditTrigger/>
+
+                {/* <ImageComponentPanel/>
+                <VideoComponentPanel/>
+
+                <ActionComponent/>
+                <MaterialComponentPanel/>
+                <TriggerComponent/>
+                <TriggerAreaComponent/>
+                <AnimationComponent/>
+                <NPCComponent/>
+                <DialogComponent/>
+                <RewardComponentPanel/> */}
+
+            </UiEntity>
 
                 </UiEntity>
-            </UiEntity>
+
+
+
+
         </UiEntity>
     )
 }
 
 function generateComponentViews() {
     let arr: any[] = []
-    // let components = getComponents()
-    let components:COMPONENT_TYPES[] = getBasicComponents(selectedItem.aid)
-    components.push(COMPONENT_TYPES.ADVANCED_COMPONENT)
+    let components:COMPONENT_TYPES[] = componentViewType === "basic" ? getBasicComponents() : getAdvancedComponents()
 
     components.forEach((component: any, i:number) => {
         arr.push(
@@ -642,7 +686,8 @@ function generateComponentViews() {
     return arr
 }
 
-function getBasicComponents(aid:string){
+function getBasicComponents(){
+    let aid = selectedItem.aid
     let components:COMPONENT_TYPES[] = [
         COMPONENT_TYPES.TRANSFORM_COMPONENT,
         COMPONENT_TYPES.VISBILITY_COMPONENT,
@@ -659,5 +704,56 @@ function getBasicComponents(aid:string){
     localPlayer.activeScene.sounds.has(aid) ? components.push(COMPONENT_TYPES.AUDIO_COMPONENT) : null
     localPlayer.activeScene.gltfs.has(aid) ? components.push(COMPONENT_TYPES.GLTF_COMPONENT) : null
     localPlayer.activeScene.nftShapes.has(aid) ? components.push(COMPONENT_TYPES.NFT_COMPONENT) : null
+    components.sort((a,b) => a.localeCompare(b))
+    components.push(COMPONENT_TYPES.ADVANCED_COMPONENT)
+
     return components
 }
+
+function getAdvancedComponents(){
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return []
+    }
+
+    let headers:any[] = [
+        COMPONENT_TYPES.ADVANCED_COMPONENT,
+        COMPONENT_TYPES.CLICK_AREA_COMPONENT
+    ]
+
+    let advancedComponents:any[] = []
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => scene.components.includes(item))
+    advancedComponents = advancedComponents.filter(item => !headers.includes(item))
+    return advancedComponents
+}
+
+function addComponent(){
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+        {
+            component:"Add",
+            aid:selectedItem.aid,
+            sceneId:selectedItem.sceneId,
+            type: getComponents()[newAdvancedComponentIndex],
+        }
+    )
+}
+
+function selectNewAdvancedcComponentIndex(index:number){
+    newAdvancedComponentIndex = index
+}
+
+function getComponents(){
+    if(selectedItem && selectedItem.enabled){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(!scene){
+            return []
+        }
+
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => !scene.components.includes(item))
+        array.unshift("Component List")
+
+        return array
+    }
+    return []
+}
+

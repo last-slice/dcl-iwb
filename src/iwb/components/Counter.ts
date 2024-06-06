@@ -93,7 +93,7 @@ export function counterListener(scene:any){
             // let counter = getCounterComponentByAssetId(scene, info.aid, action)
             // if(counter){
             //     updateCounter(counter, action.value)
-            // }
+            // }//
         })
 
         counter.listen("previousValue", (c:any, p:any)=>{

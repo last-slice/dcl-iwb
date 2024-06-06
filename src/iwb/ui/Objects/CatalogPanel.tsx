@@ -9,6 +9,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { playerMode } from '../../components/Config'
 import { displayCatalogInfoPanel, setSelectedInfoItem } from './CatalogInfoPanel'
 import { selectCatalogItem } from '../../modes/Build'
+import { setUIClicked } from '../ui'
 
 let alphabet = [
     "A", "B", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
@@ -30,7 +31,7 @@ export let filtered: CatalogItemType[] = []
 export let itemsToShow: CatalogItemType[] = []
 
 export let styleFilter = "All"
-export let typeFilter = "All"
+// export let typeFilter = "All"
 export let searchFilter = ""
 export let objName = ""
 
@@ -98,37 +99,19 @@ function filterByStyle(index: number) {
 export function filterCatalog() {
     currentPage = 0
 
-    let toFilter: CatalogItemType[]
-    switch (typeFilter) {
-        case '3D':
-            toFilter = Sorted3D;
-            break;
-        case '2D':
-            toFilter = Sorted2D;
-            break
-        case 'Audio':
-            toFilter = SortedAudio;
-            break;
-        case 'Smart Items':
-            toFilter = SortedSmartItems;
-            break;
-        default:
-            toFilter = sortedAll;
-    }
+    let filteredResult: CatalogItemType[] = []
 
-    let filteredResult: CatalogItemType[]
-
-    if (styleFilter === "All") {
-        filteredResult = toFilter
-    } else {
-        let result = toFilter.filter(item =>
+    if(styleFilter === "Audio"){
+        let result = sortedAll.filter(item => item.tag.includes("Audio"))
+        filteredResult = [...result]
+    }else{
+        let result = sortedAll.filter(item =>
             (item.sty && item.sty.toLowerCase().includes(styleFilter.toLowerCase()))
         );
         filteredResult = [...result]
     }
 
     if (searchFilter !== "") {
-        log('searching filter by', searchFilter)
         let result = filteredResult.filter(item =>
             item.n.toLowerCase().includes(searchFilter.toLowerCase()) ||
             (item.sty && item.sty.toLowerCase().includes(searchFilter.toLowerCase())) ||
@@ -137,7 +120,6 @@ export function filterCatalog() {
             (item.on && item.on.toLowerCase().includes(searchFilter.toLowerCase())) ||
             (item.tag && item.tag.includes(searchFilter.toLowerCase()))
         );
-        log('search filter result', result)
         filteredResult = [...result]
     }
 
@@ -145,43 +127,6 @@ export function filterCatalog() {
     totalPages = Math.ceil(filtered.length / (columns * rows));
 
     refreshView()
-}
-
-function getButtonState(button: string) {
-    if (settings.find((b: any) => b.label === button).enabled) {
-        return getImageAtlasMapping(uiSizes.toggleOnTrans)
-    } else {
-        return getImageAtlasMapping(uiSizes.toggleOffTrans)
-    }
-}
-
-function selectDimension(index: number) {
-    switch (index) {
-        case 0:
-            typeFilter = 'All';
-            totalPages = Math.ceil(sortedAll.length / (columns * rows));
-            break;
-        case 1:
-            typeFilter = '3D';
-            totalPages = Math.ceil(Sorted3D.length / (columns * rows));
-            break;
-        case 2:
-            typeFilter = '2D';
-            totalPages = Math.ceil(Sorted2D.length / (columns * rows));
-            break;
-        case 3:
-            typeFilter = 'Audio';
-            totalPages = Math.ceil(SortedAudio.length / (columns * rows));
-            break;
-        case 4:
-            typeFilter = 'Smart Items';
-            totalPages = Math.ceil(SortedSmartItems.length / (columns * rows));
-            break;
-    }
-
-    currentPage = 0;//
-
-    filterCatalog()
 }
 
 function generateAlphabet() {
@@ -211,13 +156,16 @@ function AlphabetItem(data: any) {
             // uiBackground={{color:Color4.Green()}}
             uiText={{value: "" + data.item.toUpperCase()}}
             onMouseDown={() => {
-                log('finding page for letter ', data.item)
+                setUIClicked(true)
                 let pageLetter = findPageForLetter(data.item)
                 log('page letter found is', pageLetter)
                 if (pageLetter !== null && pageLetter - 1 >= 0) {
                     currentPage = pageLetter - 1
                     refreshView()
                 }
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
             }}
         />
     )
@@ -301,9 +249,13 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                     })
                 }}
                 onMouseDown={() => {
+                    // setUIClicked(true)//
                     if (playerMode && playerMode === SCENE_MODES.BUILD_MODE) {
                         selectCatalogItem(item.id, EDIT_MODES.GRAB, false)
                     }
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
                 }}
             >
 
@@ -398,8 +350,12 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         uvs: getImageAtlasMapping(uiSizes.infoButtonOpaque)
                     }}
                     onMouseDown={() => {
+                        setUIClicked(true)
                         setSelectedInfoItem(item)
                         displayCatalogPanel(false)
+                    }}
+                    onMouseUp={()=>{
+                        setUIClicked(false)
                     }}
                 />
 
@@ -539,62 +495,6 @@ export function createCatalogPanel(){
                 // uiBackground={{color:Color4.Green()}}
             >
 
-            {/* type dropdown container */}
-                <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    width: '50%',
-                    height: '100%',
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
-
-                {/* dropdown label */}
-                <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    width: '100%',
-                    height: '50%',
-                }}
-                uiText={{value:"Asset Type", fontSize:sizeFont(20,15), color:Color4.White()}}
-                />
-
-
-                {/* dropdown container */}
-            <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    width: '100%',
-                    height: '50%',
-                }}
-                // uiBackground={{color:Color4.Green()}}
-            >
-
-                <Dropdown
-                    options={[`All`, `3D`, `2D`, `Audio`, `Smart Items`]}
-                    selectedIndex={assetTypeSelectedIndex}
-                    onChange={selectDimension}
-                    uiTransform={{
-                        width: '100%',
-                        height: '100%',
-                    }}
-                    // uiBackground={{color:Color4.Purple()}}
-                    color={Color4.White()}
-                    fontSize={sizeFont(20, 15)}
-                />
-            </UiEntity>
-            
-            </UiEntity>
-
               {/* style dropdown container */}
               <UiEntity
                 uiTransform={{
@@ -602,7 +502,7 @@ export function createCatalogPanel(){
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignContent: 'center',
-                    width: '50%',
+                    width: '100%',
                     height: '100%',
                 }}
                 // uiBackground={{color:Color4.Blue()}}
@@ -618,7 +518,7 @@ export function createCatalogPanel(){
                     width: '100%',
                     height: '50%',
                 }}
-                uiText={{value:"Asset Styles", fontSize:sizeFont(20,15), color:Color4.White()}}
+                uiText={{value:"Asset Styles", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
                 />
 
                 

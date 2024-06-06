@@ -8,6 +8,8 @@ import resources from "../helpers/resources"
 import { items } from "./Catalog"
 import { AudioLoadedComponent } from "../helpers/Components"
 import { updateTransform } from "./Transform"
+import { selectedItem } from "../modes/Build"
+import { colyseusRoom } from "./Colyseus"
 
 export function checkSoundComponent(scene:any, entityInfo:any){
     let itemInfo = scene.sounds.get(entityInfo.aid)
@@ -417,6 +419,27 @@ export function playAudioFile(catalogId?:string){
     //         })
     //     }
     // }
+
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(scene){
+        let itemInfo = scene.sounds.get(selectedItem.aid)
+        if(itemInfo){
+            if(AudioStream.has(catalogSoundEntity)){
+                AudioStream.getMutable(catalogSoundEntity).playing = false
+                AudioStream.deleteFrom(catalogSoundEntity)
+            }
+
+            AudioStream.createOrReplace(catalogSoundEntity, {
+                url: itemInfo.url,
+                playing:true,
+                volume:1
+            })
+        }
+    }
+}
+
+export function playAudioStream(){
+
 }
 
 export function stopAudioFile(catalogId?:string){
@@ -432,4 +455,5 @@ export function stopAudioFile(catalogId?:string){
     //     }
     //     audio.playing = false
     // }
+    AudioStream.getMutable(catalogSoundEntity).playing = false
 }

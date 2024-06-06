@@ -23,6 +23,9 @@ import { nftShapeListener } from "./NftShape"
 import { videoListener } from "./Videos"
 import { textureListener } from "./Textures"
 import { counterListener } from "./Counter"
+import { actionListener } from "./Actions"
+import { clickAreaListener } from "./SmartItems"
+import { triggerListener } from "./Triggers"
 
 export let realmActions: any[] = []
 
@@ -52,7 +55,7 @@ export async function loadScene(scene:any) {
         localPlayer.canBuild = true
     }
 
-    loadSceneBoundaries(scene)
+    await loadSceneBoundaries(scene)
     loadSceneComponents(scene)
 
     scenesLoadedCount++
@@ -62,7 +65,7 @@ export async function loadScene(scene:any) {
 async function loadSceneComponents(scene:any){
     scene.components = []
 
-    // await addParenting(scene)
+    // await addParenting(scene)//
     parentingListener(scene)
 
     // await addGltfComponent(scene)
@@ -71,7 +74,7 @@ async function loadSceneComponents(scene:any){
     // await addVisibilityComponent(scene)
     visibilityListener(scene)
 
-    // await addTransformComponent(scene)//
+    // await addTransformComponent(scene)
     transformListener(scene)
     meshListener(scene)
     iwbInfoListener(scene)
@@ -82,8 +85,11 @@ async function loadSceneComponents(scene:any){
     videoListener(scene)
     textureListener(scene)
     counterListener(scene)
+    actionListener(scene)
+    triggerListener(scene)
+    clickAreaListener(scene)
 
-    // await addTextShapeComponent(scene)
+    // await addTextShapeComponent(scene)//
     
 
     // await addSoundComponent(scene)
@@ -124,7 +130,7 @@ export function unloadScene(sceneId:any) {
     // }
 }
 
-function loadSceneBoundaries(scene:any) {
+async function loadSceneBoundaries(scene:any) {
     scene.entities = []
 
     scene.pcls.forEach((parcel: string) => {
