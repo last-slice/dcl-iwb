@@ -299,7 +299,7 @@ export enum COMPONENT_TYPES {
     STATE_COMPONENT ='States',
     POINTER_COMPONENT = 'Pointers',
     COUNTER_COMPONENT = 'Counters',
-    TRIGGER_COMPONENT = "Trigger",
+    TRIGGER_COMPONENT = "Triggers",
     ACTION_COMPONENT = 'Actions',
     TRIGGER_AREA_COMPONENT = "Trigger Area",
     CLICK_AREA_COMPONENT = "Click Area",

@@ -142,8 +142,6 @@ export function InputListenSystem(dt:number){
     if (inputSystem.isTriggered(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)) {
         displayHover(false)
 
-        console.log('pressed 1 button', selectedItem)
-
         if(selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
             cancelSelectedItem()
         }

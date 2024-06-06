@@ -50,7 +50,7 @@ export function generateButtons(data:any){
   data.buttons.forEach((button:any)=>{
       arr.push(<IWBButton button={button} buttons={data.buttons} />)
   })
-  return arr
+  return arr//
 }
 
 export function hideAllPanels(){

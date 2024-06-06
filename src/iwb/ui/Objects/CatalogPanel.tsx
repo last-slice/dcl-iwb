@@ -131,9 +131,6 @@ export function filterCatalog() {
 
 function generateAlphabet() {
     let arr: any[] = []
-
-    // let start = 0
-    // let end = 3
     for (let i = 0; i < alphabet.length; i++) {
         arr.push(<AlphabetItem row={i} item={alphabet[i]}/>)
     }

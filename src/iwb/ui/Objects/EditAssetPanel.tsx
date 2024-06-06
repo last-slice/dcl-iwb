@@ -26,7 +26,8 @@ import { EditTexture } from './Edit/EditTexture'
 import { displayEditAdvancedPanel } from './EditAdvanced'
 import { EditParenting } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
-import { EditTrigger } from './Edit/EditTrigger'
+import { EditTrigger, triggerView, updateEntitiesWithActionsList, updateTriggerView } from './Edit/EditTrigger'
+import { EditAction, actionView, updateActionView } from './Edit/EditAction'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -48,6 +49,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             if(scene && scene.sounds.has(selectedItem.aid)){
                 updateAudioComponent(scene.sounds.get(selectedItem.aid))
             }
+            break;
+
+        case COMPONENT_TYPES.TRIGGER_COMPONENT:
+            updateEntitiesWithActionsList()
             break;
         // case COMPONENT_TYPES.NPC_COMPONENT:
         //     updateNPCView('main')
@@ -108,6 +113,12 @@ export function createEditAssetPanel() {
                     },
                     uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
                 }}
+                onMouseDown={()=>{
+                    setUIClicked(true)
+                }}
+                onMouseUp={()=>[
+                    setUIClicked(false)
+                ]}
             >
                 
                 <EditObjectDetails/>
@@ -353,8 +364,24 @@ function getBackButtonLogic(){
             openEditComponent("")
             break;
 
-        case COMPONENT_TYPES.TRIGGER_COMPONENT:
         case COMPONENT_TYPES.ACTION_COMPONENT:
+            if(actionView === "add"){
+                updateActionView("main")
+            }else{
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }
+        break;
+
+        case COMPONENT_TYPES.TRIGGER_COMPONENT:
+            if(triggerView === "add"){
+                updateTriggerView("main")
+            }else if(triggerView === "info"){
+                updateTriggerView("main")
+            }else{
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }
+            break;
+
         case COMPONENT_TYPES.COUNTER_COMPONENT:
         case COMPONENT_TYPES.PARENTING_COMPONENT:
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -631,11 +658,11 @@ function EditObjectData(){
                 <EditParenting/>
                 <EditCounter/>
                 <EditTrigger/>
+                <EditAction/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
 
-                <ActionComponent/>
                 <MaterialComponentPanel/>
                 <TriggerComponent/>
                 <TriggerAreaComponent/>
