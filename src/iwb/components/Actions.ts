@@ -20,7 +20,7 @@ export function getActionEvents(entity: Entity) {
 }
 
 export function actionListener(scene:any){
-    scene.actions.onAdd((action:any, aid:any)=>{
+    scene.actions.onAdd((assetAction:any, aid:any)=>{
         !scene.components.includes(COMPONENT_TYPES.ACTION_COMPONENT) ? scene.components.push(COMPONENT_TYPES.ACTION_COMPONENT) : null
 
         let info = getEntity(scene, aid)
@@ -28,120 +28,130 @@ export function actionListener(scene:any){
             return
         }
 
-        const actionEvents = getActionEvents(info.entity)
-        action.actions.forEach((action:any)=>{
-            actionEvents.on(action.id, ()=>{
-                switch(action.type){
-                    case Actions.SHOW_TEXT:
-                        handleShowText(info.entity, action)
-                        break;
+        assetAction.actions.onAdd((newAction:any, index:any)=>{
+            updateActions(scene, info, assetAction)
+        })
 
-                    case Actions.ADD_NUMBER:
-                        handleAddNumber(scene, info, action)
-                        break;
+        assetAction.actions.onRemove((newAction:any, index:any)=>{
+            updateActions(scene, info, assetAction)
+        })
+    })
+}
 
-                    case Actions.SET_NUMBER:
-                        handleSetNumber(scene, info, action)
-                        break;
-
-                    case Actions.SUBTRACT_NUMBER:
-                        handleSubtractNumber(scene, info, action)
-                        break;
-
-                    case Actions.SET_STATE:
-                        handleSetState(scene, info, action)
-                        break;
-
-                    case Actions.PLAY_SOUND:
-                        handlePlaySound(info, action)
-                        break;
-
-                    case Actions.STOP_SOUND:
-                        handleStopSound(info)
-                        break;
-
-                    case Actions.PLAY_AUDIO_STREAM:
-                        handlePlayAudioStream(info)
-                        break;
-
-                    case Actions.STOP_AUDIO_STREAM:
-                        handleStopAudioStream(info)
-                        break;
-
-                    case Actions.SET_VISIBILITY:
-                        handleSetVisibility(info, action)
-                        break;
-
-                    case Actions.OPEN_LINK:
-                        handleOpenLink(action)
-                        break;
-
-                    case Actions.MOVE_PLAYER:
-                        handleMovePlayer(scene, action)
-                        break;
-
-                    case Actions.EMOTE:
-                        handleEmote(action)
-                        break;
-
-                    case Actions.PLAY_VIDEO:
-                        handlePlayVideo(scene, info, action)
-                        break;
-
-                    case Actions.STOP_VIDEO:
-                        handleStopVideo(scene, info, action)
-                        break;
-
-                    case Actions.SHOW_NOTIFICATION:
-                        break;
-
-                    case Actions.SET_POSITION:
-                        handleSetPosition(scene, info, action)
-                        break;
-
-                    case Actions.SET_ROTATION:
-                        handleSetRotation(scene, info, action)
-                        break;
-
-                    case Actions.SET_SCALE:
-                        handleSetScale(scene, info, action)
-                        break;
-
-                    case Actions.PLACE_PLAYER_POSITION:
-                        break;
-
-                    case Actions.ATTACH_PLAYER:
-                        handleAttachToPlayer(scene, info, action)
-                        break;
-
-                    case Actions.DETACH_PLAYER:
-                        handleDetachToPlayer(scene, info, action)
-                        break;
-
-                    case Actions.ENABLE_CLICK_AREA:
-                        handleEnableClickArea(scene, info, action)
-                        break;
-
-                    case Actions.DISABLE_CLICK_AREA:
-                        handleDisableClickArea(scene, info, action)
-                        break;
-
-                    case Actions.ENABLE_TRIGGER_AREA:
-                        handleEnableTriggerArea(info)
+function updateActions(scene:any, info:any, action:any){
+    const actionEvents = getActionEvents(info.entity)
+    action.actions.forEach((action:any)=>{
+        actionEvents.on(action.id, ()=>{
+            switch(action.type){
+                case Actions.SHOW_TEXT:
+                    handleShowText(info.entity, action)
                     break;
 
-                    case Actions.DISABLE_TRIGGER_AREA:
-                        handleDisableTriggerArea(info)
+                case Actions.ADD_NUMBER:
+                    handleAddNumber(scene, info, action)
                     break;
 
-                    case Actions.GIVE_REWARD:
-                        handleGiveReward(scene, info, action)
+                case Actions.SET_NUMBER:
+                    handleSetNumber(scene, info, action)
+                    break;
 
-                    case Actions.VERIFY_ACCESS:
-                        handleVerifyAccess(scene, info, action)
-                        break;
-                }
-            })
+                case Actions.SUBTRACT_NUMBER:
+                    handleSubtractNumber(scene, info, action)
+                    break;
+
+                case Actions.SET_STATE:
+                    handleSetState(scene, info, action)
+                    break;
+
+                case Actions.PLAY_SOUND:
+                    handlePlaySound(info, action)
+                    break;
+
+                case Actions.STOP_SOUND:
+                    handleStopSound(info)
+                    break;
+
+                case Actions.PLAY_AUDIO_STREAM:
+                    handlePlayAudioStream(info)
+                    break;
+
+                case Actions.STOP_AUDIO_STREAM:
+                    handleStopAudioStream(info)
+                    break;
+
+                case Actions.SET_VISIBILITY:
+                    handleSetVisibility(info, action)
+                    break;
+
+                case Actions.OPEN_LINK:
+                    handleOpenLink(action)
+                    break;
+
+                case Actions.MOVE_PLAYER:
+                    handleMovePlayer(scene, action)
+                    break;
+
+                case Actions.EMOTE:
+                    handleEmote(action)
+                    break;
+
+                case Actions.PLAY_VIDEO:
+                    handlePlayVideo(scene, info, action)
+                    break;
+
+                case Actions.STOP_VIDEO:
+                    handleStopVideo(scene, info, action)
+                    break;
+
+                case Actions.SHOW_NOTIFICATION:
+                    break;
+
+                case Actions.SET_POSITION:
+                    handleSetPosition(scene, info, action)
+                    break;
+
+                case Actions.SET_ROTATION:
+                    handleSetRotation(scene, info, action)
+                    break;
+
+                case Actions.SET_SCALE:
+                    handleSetScale(scene, info, action)
+                    break;
+
+                case Actions.PLACE_PLAYER_POSITION:
+                    break;
+
+                case Actions.ATTACH_PLAYER:
+                    handleAttachToPlayer(scene, info, action)
+                    break;
+
+                case Actions.DETACH_PLAYER:
+                    handleDetachToPlayer(scene, info, action)
+                    break;
+
+                case Actions.ENABLE_CLICK_AREA:
+                    handleEnableClickArea(scene, info, action)
+                    break;
+
+                case Actions.DISABLE_CLICK_AREA:
+                    handleDisableClickArea(scene, info, action)
+                    break;
+
+                case Actions.ENABLE_TRIGGER_AREA:
+                    handleEnableTriggerArea(info)
+                break;
+
+                case Actions.DISABLE_TRIGGER_AREA:
+                    handleDisableTriggerArea(info)
+                break;
+
+                case Actions.GIVE_REWARD:
+                    handleGiveReward(scene, info, action)
+
+                case Actions.VERIFY_ACCESS:
+                    handleVerifyAccess(scene, info, action)
+                    break;
+            }
         })
     })
 }

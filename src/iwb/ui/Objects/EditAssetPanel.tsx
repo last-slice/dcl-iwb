@@ -26,7 +26,7 @@ import { EditTexture } from './Edit/EditTexture'
 import { displayEditAdvancedPanel } from './EditAdvanced'
 import { EditParenting } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
-import { EditTrigger, triggerView, updateEntitiesWithActionsList, updateTriggerView } from './Edit/EditTrigger'
+import { EditTrigger, triggerInfoView, triggerView, updateEntitiesWithActionsList, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
 import { EditAction, actionView, updateActionView } from './Edit/EditAction'
 import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
 
@@ -161,7 +161,7 @@ export function createEditAssetPanel() {
                         }}
                         uiText={{value: "Save", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
-                            setUIClicked(false)
+                            setUIClicked(true)
                             saveItem()
                         }}
                         onMouseUp={()=>{
@@ -381,7 +381,11 @@ function getBackButtonLogic(){
             if(triggerView === "add"){
                 updateTriggerView("main")
             }else if(triggerView === "info"){
-                updateTriggerView("main")
+                if(triggerInfoView === "main"){
+                    updateTriggerView("main")
+                }else{
+                    updateTriggerInfoView("main")
+                }
             }else{
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             }
@@ -394,7 +398,7 @@ function getBackButtonLogic(){
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             }
         break;
-        
+
         case COMPONENT_TYPES.COUNTER_COMPONENT:
         case COMPONENT_TYPES.PARENTING_COMPONENT:
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)

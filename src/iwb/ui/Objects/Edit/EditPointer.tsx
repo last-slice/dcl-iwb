@@ -16,18 +16,21 @@ import { utils } from '../../../helpers/libraries'
 
 export let pointerView = "main"
 
-let newPointerTypeIndex:number = 0
-let newPointerButtonIndex:number = 0
 let newPointerData:any = {}
 
 export function updatePointerView(value:string, pointerId?:string){
     pointerView = value
     if(value === "info"){
-        if(pointerId){
-            console.log('have pointer info to popuplate')
-        }else{
-            let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-            if(scene){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(scene){
+            if(pointerId){
+                let pointers = scene.pointers.get(selectedItem.aid)
+                let pointer = pointers.events.find((event:any) => event.id === pointerId)
+                if(pointer){
+                    console.log('set pointer data to', pointer)
+                    newPointerData = {...pointer}
+                }
+            }else{
                 utils.timers.setTimeout(()=>{
                     let pointers = scene.pointers.get(selectedItem.aid)
                     if(pointers){
@@ -36,7 +39,7 @@ export function updatePointerView(value:string, pointerId?:string){
                     }
                 }, 500)
             }
-        }
+        }   
     }
 }
 
@@ -177,7 +180,7 @@ export function EditPointer(){
 
                     <Dropdown
                         options={getPointerList()}
-                        selectedIndex={newPointerTypeIndex}
+                        selectedIndex={newPointerData && newPointerData.eventType ? newPointerData.eventType : 0}
                         onChange={selectPointerType}
                         uiTransform={{
                             width: '100%',
@@ -203,8 +206,8 @@ export function EditPointer(){
                 >
 
                     <Dropdown
-                        options={getPointerButtonList()}
-                        selectedIndex={newPointerButtonIndex}
+                        options={[...ENTITY_POINTER_LABELS]}
+                        selectedIndex={newPointerData && newPointerData.button ? newPointerData.button : 0}
                         onChange={selectPointerButton}
                         uiTransform={{
                             width: '100%',
@@ -246,7 +249,8 @@ export function EditPointer(){
                     update('edit', newPointerData)
                 }}
                 fontSize={sizeFont(20,15)}
-                placeholder={'Hover Text'}
+                placeholder={'' + newPointerData.hoverText}
+                value={'' + newPointerData.hoverText}
                 placeholderColor={Color4.White()}
                 color={Color4.White()}
                 uiTransform={{
@@ -307,6 +311,7 @@ export function EditPointer(){
                     }}
                     fontSize={sizeFont(20,15)}
                     placeholder={'' + newPointerData.maxDistance}
+                    value={'' + newPointerData.maxDistance}
                     placeholderColor={Color4.White()}
                     color={Color4.White()}
                     uiTransform={{
@@ -354,7 +359,7 @@ export function EditPointer(){
 
                     <Dropdown
                         options={['True', 'False']}
-                        selectedIndex={0}
+                        selectedIndex={newPointerData && newPointerData.showFeedback ? 0 : 1}
                         onChange={(index:number)=>{
                             newPointerData.showFeedback = index === 0 ? true : false
                             update("edit", newPointerData)
@@ -380,15 +385,11 @@ export function EditPointer(){
 }
 
 function selectPointerType(index:number){
-    newPointerTypeIndex = index
     newPointerData.eventType = index
     update('edit', newPointerData)
 }
 
-PointerEventType.PET_DOWN
-
 function selectPointerButton(index:number){
-    newPointerButtonIndex = index
     newPointerData.button = index
     update('edit', newPointerData)
 }
@@ -396,10 +397,6 @@ function selectPointerButton(index:number){
 
 function getPointerList(){
     return [...Object.values(Pointers).map(str => str.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()))]
-}
-
-function getPointerButtonList(){
-    return [...ENTITY_POINTER_LABELS]
 }
 
 function getPointerEvents(){
@@ -505,10 +502,6 @@ function Row(info:any){
                 uvs: getImageAtlasMapping(uiSizes.pencilEditIcon)
             }}
             onMouseDown={() => {
-                // // updateTrigger('delete', 'remove', trigger.rowCount)
-                // selectedTrigger = data
-                // console.log('selected trigger is', selectedTrigger)
-                // updateActionView("actions")
                 updatePointerView("info", data.id)
             }}
         />

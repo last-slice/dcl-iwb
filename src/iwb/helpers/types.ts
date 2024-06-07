@@ -410,6 +410,8 @@ export enum Actions {
 
 }
 
+InputAction.IA_ACTION_3
+
 export enum Triggers {
     ON_CLICK = "on_click",
     ON_ENTER = "on_enter",

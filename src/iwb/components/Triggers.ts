@@ -18,7 +18,7 @@ export function getTriggerEvents(entity: Entity) {
 }
 
 export function triggerListener(scene:any){
-  scene.triggers.onAdd((trigger:any, aid:any)=>{
+  scene.triggers.onAdd((assetTrigger:any, aid:any)=>{
     !scene.components.includes(COMPONENT_TYPES.TRIGGER_COMPONENT) ? scene.components.push(COMPONENT_TYPES.TRIGGER_COMPONENT) : null
 
     let info = getEntity(scene, aid)
@@ -26,27 +26,45 @@ export function triggerListener(scene:any){
         return
     }
 
-    const triggerEvents = getTriggerEvents(info.entity)
-    trigger.triggers.forEach((trigger:any)=>{
-    triggerEvents.on(trigger.type, (pointerEvent:any)=>{
-        if(checkInputAction(trigger.input, pointerEvent) && checkConditions(scene, trigger, aid, info.entity)){
-            for(const triggerAction of trigger.actions){
-                if(isValidAction(triggerAction)){
-                    let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
-                    if(aid){
-                        actionQueue.push({aid:aid, action:action, entity:entity})
-                    }
-                }
-            }
-        }else{
-            console.log('trigger condition not met')
+    
+    assetTrigger.triggers.onAdd((trigger:any, index:any)=>{
+      updateTriggerEvents(scene, info, assetTrigger)
+
+      trigger.listen("tick", (c:any, p:any)=>{
+        if(c > 0){
+          updateTriggerEvents(scene, info, assetTrigger)
         }
+      })
     })
+
+    assetTrigger.triggers.onRemove((trigger:any, index:any)=>{
+      updateTriggerEvents(scene, info, assetTrigger)
     })
-})
 
-
+  })
   engine.addSystem(PlayTriggerSystem)
+}
+
+function updateTriggerEvents(scene:any, entityInfo:any, trigger:any){
+  console.log('updateing trigger events', entityInfo, trigger)
+
+  const triggerEvents = getTriggerEvents(entityInfo.entity)
+  trigger.triggers.forEach((trigger:any)=>{
+  triggerEvents.on(trigger.type, (pointerEvent:any)=>{
+      if(checkInputAction(trigger.input, pointerEvent) && checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
+          for(const triggerAction of trigger.actions){
+              if(isValidAction(triggerAction)){
+                  let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
+                  if(aid){
+                      actionQueue.push({aid:aid, action:action, entity:entity})
+                  }
+              }
+          }
+      }else{
+          console.log('trigger condition not met')
+      }
+  })
+  })
 }
 
 // export function addTriggerComponent(scene:any){

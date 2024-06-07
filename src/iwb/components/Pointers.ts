@@ -4,7 +4,7 @@ import { getEntitiesWithParent } from "@dcl-sdk/utils"
 import { getEntity } from "./IWB"
 import { COMPONENT_TYPES } from "../helpers/types"
 
-export function checkPointerComponent(scene:any, entityInfo:any){
+export function checkPointerComponent(scene:any, entityInfo:any, dontInit?:boolean){
     let itemInfo = scene.pointers.get(entityInfo.aid)
     if(itemInfo){
         let pointerEvents:any[] = []
@@ -21,8 +21,31 @@ export function checkPointerComponent(scene:any, entityInfo:any){
             pointerEvents.push(event)
         })
         PointerEvents.createOrReplace(itemInfo.entity, {pointerEvents:pointerEvents})
+
+        if(dontInit){
+            return
+        }
         PointersLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     }
+}
+
+function updatePointer(pointerInfo:any, pointer:any){
+    PointerEvents.deleteFrom(pointerInfo.entity)
+
+    let pointerEvents:any[] = []
+    pointer.events.forEach((info:any)=>{
+        let event:any = {
+            eventType: info.eventType,
+            eventInfo:{
+                button: info.button,
+                hoverText:"" + info.hoverText,
+                showFeedback: info.showFeedback,
+                maxDistance: info.maxDistance
+            }
+        }
+        pointerEvents.push(event)
+    })
+    PointerEvents.createOrReplace(pointerInfo.entity, {pointerEvents:pointerEvents})
 }
 
 export function pointerListener(scene:any){
@@ -33,6 +56,21 @@ export function pointerListener(scene:any){
         if(!pointerInfo){
             return
         }
+
+        pointer.events.onAdd((event:any, index:any)=>{
+            updatePointer(pointerInfo, pointer)
+
+            event.listen("tick", (c:any, p:any)=>{
+                console.log('pointer event updated')
+                if(c > 0){
+                    updatePointer(pointerInfo, pointer)
+                }
+              })
+        })
+
+        pointer.events.onRemove((event:any, index:any)=>{
+            updatePointer(pointerInfo, pointer)
+        })
     })
 }
 
