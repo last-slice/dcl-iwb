@@ -1,13 +1,17 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { sizeFont } from '../../../helpers'
+import { Actions } from '../../../../helpers/types'
+import { getImageAtlasMapping, sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
+import { saveItem } from '../../../../modes/Build'
+import { setUIClicked } from '../../../ui'
+import { uiSizes } from '../../../uiConfig'
 import resources from '../../../../helpers/resources'
 
-export function AddNumberActionPanel(){
+export function AddLinkActionPanel(){
     return(
         <UiEntity
-        key={resources.slug + "action::number::panel"}
+        key={resources.slug + "action::link::panel"}
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -26,7 +30,7 @@ export function AddNumberActionPanel(){
             height: '10%',
             margin:{bottom:'5%'}
         }}
-        uiText={{value:"Amount", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        uiText={{value:"URL Link", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
         />
 
         <UiEntity
@@ -40,10 +44,10 @@ export function AddNumberActionPanel(){
     >
         <Input
             onChange={(value) => {
-                updateActionData({value:  parseFloat(value.trim())}, true)
+                updateActionData({url: value.trim()}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'0'}
+            placeholder={''}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{

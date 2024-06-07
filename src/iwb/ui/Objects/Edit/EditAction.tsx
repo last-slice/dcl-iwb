@@ -11,6 +11,9 @@ import { visibleComponent } from '../EditAssetPanel'
 import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
 import { AddNumberActionPanel } from './ActionPanels/AddNumberPanel'
+import { AddLinkActionPanel } from './ActionPanels/AddLinkPanel'
+import { AddEmoteActionPanel } from './ActionPanels/AddEmotePanel'
+import { AddVisibilityActionPanel } from './ActionPanels/AddVisibilityPanel'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -19,6 +22,16 @@ let newActionIndex:number = 0
 
 export function updateActionView(value:string){
     actionView = value
+}
+
+export function updateActionData(value:any, clear?:boolean){
+    if(clear){
+        newActionData = {}
+    }
+
+    for(let key in value){
+        newActionData[key] = value[key]
+    }
 }
 
 export function EditAction(){
@@ -306,7 +319,7 @@ export function ActionRow(info:any){
                 width: '40%', 
                 height: '100%',
             }}
-            uiText={{value:"" + data.type.replace(/_/g, ' ').replace(/\b\w/g, (char:any) => char.toUpperCase()), fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{value:"" + (data.type && data.type.replace(/_/g, ' ').replace(/\b\w/g, (char:any) => char.toUpperCase())), fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
             {/* action edit buttons column */}
@@ -355,6 +368,11 @@ function selectNewActionIndex(index:number){
     newActionIndex = index
     if(index !== 0){
         newActionData.type = getActionList()[index].replace(" ", "_").toLowerCase()
+        newActionData.name = getActionList()[index].replace(" ", "_").toLowerCase()
+        let actionTemplate = ActionDefaults[getActionList()[index].replace(" ", "_").toLowerCase()]
+        for(let key in actionTemplate){
+            newActionData[key] = actionTemplate[key]
+        }
     }
 }
 
@@ -362,6 +380,25 @@ function getActionDataPanel(){
     switch(getActionList()[newActionIndex]){
         case Actions.ADD_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddNumberActionPanel/>
+
+        case Actions.OPEN_LINK.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddLinkActionPanel/>
+
+         case Actions.MOVE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddLinkActionPanel/>
+
+        case Actions.EMOTE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddEmoteActionPanel/>
+
+        case Actions.SET_VISIBILITY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddVisibilityActionPanel/>
+
+        //play sound - doesnt need any action metadata
+        //stop sound - doesnt need any action metadata
+        //play video - doesnt need any action metadata
+        //stop video - doesnt need any action metadata
+        //stop animations - doesnt need any action metadata
+
     }
 }
 
@@ -381,4 +418,22 @@ function buildAction(){
     update("add", newActionData)
     updateActionView("main")
     selectNewActionIndex(0)
+}
+
+
+
+const ActionDefaults:any = {
+    [Actions.ADD_NUMBER]:{
+        value:0
+    },
+    [Actions.OPEN_LINK]:{
+        url:""
+    },
+    [Actions.EMOTE]:{
+        emote:"wave"
+    },
+    [Actions.SET_VISIBILITY]:{
+        iMask:0,
+        vMask:0
+    }
 }

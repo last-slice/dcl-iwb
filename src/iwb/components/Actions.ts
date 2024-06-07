@@ -1,5 +1,5 @@
-import { AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, GltfContainer, MeshCollider, MeshRenderer, Transform, VideoPlayer, VisibilityComponent } from "@dcl/sdk/ecs"
-import { Actions, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
+import { AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, GltfContainer, MeshCollider, MeshRenderer, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
@@ -29,252 +29,124 @@ export function actionListener(scene:any){
         }
 
         assetAction.actions.onAdd((newAction:any, index:any)=>{
-            updateActions(scene, info, assetAction)
-        })
-
-        assetAction.actions.onRemove((newAction:any, index:any)=>{
-            updateActions(scene, info, assetAction)
-        })
+            updateActions(scene, info, newAction)
+        }, )
     })
 }
 
 function updateActions(scene:any, info:any, action:any){
     const actionEvents = getActionEvents(info.entity)
-    action.actions.forEach((action:any)=>{
-        actionEvents.on(action.id, ()=>{
-            switch(action.type){
-                case Actions.SHOW_TEXT:
-                    handleShowText(info.entity, action)
-                    break;
 
-                case Actions.ADD_NUMBER:
-                    handleAddNumber(scene, info, action)
-                    break;
-
-                case Actions.SET_NUMBER:
-                    handleSetNumber(scene, info, action)
-                    break;
-
-                case Actions.SUBTRACT_NUMBER:
-                    handleSubtractNumber(scene, info, action)
-                    break;
-
-                case Actions.SET_STATE:
-                    handleSetState(scene, info, action)
-                    break;
-
-                case Actions.PLAY_SOUND:
-                    handlePlaySound(info, action)
-                    break;
-
-                case Actions.STOP_SOUND:
-                    handleStopSound(info)
-                    break;
-
-                case Actions.PLAY_AUDIO_STREAM:
-                    handlePlayAudioStream(info)
-                    break;
-
-                case Actions.STOP_AUDIO_STREAM:
-                    handleStopAudioStream(info)
-                    break;
-
-                case Actions.SET_VISIBILITY:
-                    handleSetVisibility(info, action)
-                    break;
-
-                case Actions.OPEN_LINK:
-                    handleOpenLink(action)
-                    break;
-
-                case Actions.MOVE_PLAYER:
-                    handleMovePlayer(scene, action)
-                    break;
-
-                case Actions.EMOTE:
-                    handleEmote(action)
-                    break;
-
-                case Actions.PLAY_VIDEO:
-                    handlePlayVideo(scene, info, action)
-                    break;
-
-                case Actions.STOP_VIDEO:
-                    handleStopVideo(scene, info, action)
-                    break;
-
-                case Actions.SHOW_NOTIFICATION:
-                    break;
-
-                case Actions.SET_POSITION:
-                    handleSetPosition(scene, info, action)
-                    break;
-
-                case Actions.SET_ROTATION:
-                    handleSetRotation(scene, info, action)
-                    break;
-
-                case Actions.SET_SCALE:
-                    handleSetScale(scene, info, action)
-                    break;
-
-                case Actions.PLACE_PLAYER_POSITION:
-                    break;
-
-                case Actions.ATTACH_PLAYER:
-                    handleAttachToPlayer(scene, info, action)
-                    break;
-
-                case Actions.DETACH_PLAYER:
-                    handleDetachToPlayer(scene, info, action)
-                    break;
-
-                case Actions.ENABLE_CLICK_AREA:
-                    handleEnableClickArea(scene, info, action)
-                    break;
-
-                case Actions.DISABLE_CLICK_AREA:
-                    handleDisableClickArea(scene, info, action)
-                    break;
-
-                case Actions.ENABLE_TRIGGER_AREA:
-                    handleEnableTriggerArea(info)
+    actionEvents.on(action.id, ()=>{
+        switch(action.type){
+            case Actions.SHOW_TEXT:
+                handleShowText(info.entity, action)
                 break;
 
-                case Actions.DISABLE_TRIGGER_AREA:
-                    handleDisableTriggerArea(info)
+            case Actions.ADD_NUMBER:
+                handleAddNumber(scene, info, action)
                 break;
 
-                case Actions.GIVE_REWARD:
-                    handleGiveReward(scene, info, action)
+            case Actions.SET_NUMBER:
+                handleSetNumber(scene, info, action)
+                break;
 
-                case Actions.VERIFY_ACCESS:
-                    handleVerifyAccess(scene, info, action)
-                    break;
-            }
-        })
-    })
-}
+            case Actions.SUBTRACT_NUMBER:
+                handleSubtractNumber(scene, info, action)
+                break;
 
-export function addActionComponent(scene:any){
-    scene.actions.forEach((actions:any, aid:string)=>{
-        let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-        if(info.entity){
-            const actionEvents = getActionEvents(info.entity)
-            actions.actions.forEach((action:any)=>{
-                actionEvents.on(action.id, ()=>{
-                    switch(action.type){
-                        case Actions.SHOW_TEXT:
-                            handleShowText(info.entity, action)
-                            break;
+            case Actions.SET_STATE:
+                handleSetState(scene, info, action)
+                break;
 
-                        case Actions.ADD_NUMBER:
-                            handleAddNumber(scene, info, action)
-                            break;
+            case Actions.PLAY_SOUND:
+                handlePlaySound(info, action)
+                break;
 
-                        case Actions.SET_NUMBER:
-                            handleSetNumber(scene, info, action)
-                            break;
+            case Actions.STOP_SOUND:
+                handleStopSound(info)
+                break;
 
-                        case Actions.SUBTRACT_NUMBER:
-                            handleSubtractNumber(scene, info, action)
-                            break;
+            case Actions.PLAY_AUDIO_STREAM:
+                handlePlayAudioStream(info)
+                break;
 
-                        case Actions.SET_STATE:
-                            handleSetState(scene, info, action)
-                            break;
+            case Actions.STOP_AUDIO_STREAM:
+                handleStopAudioStream(info)
+                break;
 
-                        case Actions.PLAY_SOUND:
-                            handlePlaySound(info, action)
-                            break;
+            case Actions.SET_VISIBILITY:
+                handleSetVisibility(info, action)
+                break;
 
-                        case Actions.STOP_SOUND:
-                            handleStopSound(info)
-                            break;
+            case Actions.OPEN_LINK:
+                handleOpenLink(action)
+                break;
 
-                        case Actions.PLAY_AUDIO_STREAM:
-                            handlePlayAudioStream(info)
-                            break;
+            case Actions.MOVE_PLAYER:
+                handleMovePlayer(scene, action)
+                break;
 
-                        case Actions.STOP_AUDIO_STREAM:
-                            handleStopAudioStream(info)
-                            break;
+            case Actions.EMOTE:
+                handleEmote(action)
+                break;
 
-                        case Actions.SET_VISIBILITY:
-                            handleSetVisibility(info, action)
-                            break;
+            case Actions.PLAY_VIDEO:
+                handlePlayVideo(scene, info, action)
+                break;
 
-                        case Actions.OPEN_LINK:
-                            handleOpenLink(action)
-                            break;
+            case Actions.STOP_VIDEO:
+                handleStopVideo(scene, info, action)
+                break;
 
-                        case Actions.MOVE_PLAYER:
-                            handleMovePlayer(scene, action)
-                            break;
+            case Actions.SHOW_NOTIFICATION:
+                break;
 
-                        case Actions.EMOTE:
-                            handleEmote(action)
-                            break;
+            case Actions.SET_POSITION:
+                handleSetPosition(scene, info, action)
+                break;
 
-                        case Actions.PLAY_VIDEO:
-                            handlePlayVideo(scene, info, action)
-                            break;
+            case Actions.SET_ROTATION:
+                handleSetRotation(scene, info, action)
+                break;
 
-                        case Actions.STOP_VIDEO:
-                            handleStopVideo(scene, info, action)
-                            break;
+            case Actions.SET_SCALE:
+                handleSetScale(scene, info, action)
+                break;
 
-                        case Actions.SHOW_NOTIFICATION:
-                            break;
+            case Actions.PLACE_PLAYER_POSITION:
+                break;
 
-                        case Actions.SET_POSITION:
-                            handleSetPosition(scene, info, action)
-                            break;
+            case Actions.ATTACH_PLAYER:
+                handleAttachToPlayer(scene, info, action)
+                break;
 
-                        case Actions.SET_ROTATION:
-                            handleSetRotation(scene, info, action)
-                            break;
+            case Actions.DETACH_PLAYER:
+                handleDetachToPlayer(scene, info, action)
+                break;
 
-                        case Actions.SET_SCALE:
-                            handleSetScale(scene, info, action)
-                            break;
+            case Actions.ENABLE_CLICK_AREA:
+                handleEnableClickArea(scene, info, action)
+                break;
 
-                        case Actions.PLACE_PLAYER_POSITION:
-                            break;
+            case Actions.DISABLE_CLICK_AREA:
+                handleDisableClickArea(scene, info, action)
+                break;
 
-                        case Actions.ATTACH_PLAYER:
-                            handleAttachToPlayer(scene, info, action)
-                            break;
+            case Actions.ENABLE_TRIGGER_AREA:
+                handleEnableTriggerArea(info)
+            break;
 
-                        case Actions.DETACH_PLAYER:
-                            handleDetachToPlayer(scene, info, action)
-                            break;
+            case Actions.DISABLE_TRIGGER_AREA:
+                handleDisableTriggerArea(info)
+            break;
 
-                        case Actions.ENABLE_CLICK_AREA:
-                            handleEnableClickArea(scene, info, action)
-                            break;
+            case Actions.GIVE_REWARD:
+                handleGiveReward(scene, info, action)
 
-                        case Actions.DISABLE_CLICK_AREA:
-                            handleDisableClickArea(scene, info, action)
-                            break;
-
-                        case Actions.ENABLE_TRIGGER_AREA:
-                            handleEnableTriggerArea(info)
-                        break;
-
-                        case Actions.DISABLE_TRIGGER_AREA:
-                            handleDisableTriggerArea(info)
-                        break;
-
-                        case Actions.GIVE_REWARD:
-                            handleGiveReward(scene, info, action)
-    
-                        case Actions.VERIFY_ACCESS:
-                            handleVerifyAccess(scene, info, action)
-                            break;
-                    }
-                })
-            })
+            case Actions.VERIFY_ACCESS:
+                handleVerifyAccess(scene, info, action)
+                break;
         }
     })
 }
@@ -393,15 +265,17 @@ function handleSetVisibility(info:any, action:any){
 
     if (vMask !== undefined) {
       if (gltf) {
-        gltf.visibleMeshesCollisionMask = vMask
+        gltf.visibleMeshesCollisionMask = vMask === 3 ? ColliderLayer.CL_POINTER | ColliderLayer.CL_PHYSICS : parseInt(Object.values(COLLIDER_LAYERS)[vMask].toString())
       } else if (meshCollider) {
-        meshCollider.collisionMask = vMask
+        if(vMask !== 3){
+            meshCollider.collisionMask =  parseInt(Object.values(COLLIDER_LAYERS)[vMask].toString())
+        }
       }
     }
 
     if (iMask !== undefined) {
         if (gltf) {
-          gltf.invisibleMeshesCollisionMask = iMask
+          gltf.invisibleMeshesCollisionMask = iMask === 3 ? ColliderLayer.CL_POINTER | ColliderLayer.CL_PHYSICS : parseInt(Object.values(COLLIDER_LAYERS)[iMask].toString())
         }
     }
 }

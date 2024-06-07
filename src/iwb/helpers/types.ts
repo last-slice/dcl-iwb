@@ -306,11 +306,6 @@ export enum COMPONENT_TYPES {
     AVATAR_SHAPE_COMPONENT = 'Avatar Shape',
 }
 
-export enum COLLISION_LAYERS {
-    INVISIBLE = "invisible",
-    VISIBLE = "visible"
-}
-
 export enum BLOCKCHAINS {
     ETH = "ethereum",
     POLYGON = "matic"
@@ -482,6 +477,29 @@ export let ENTITY_POINTER_LABELS:any[] = [
     "#3 Press",
     "#4 Press",
 ]
+
+export enum COLLIDER_LAYERS {
+    /** CL_NONE - no collisions */
+    CL_NONE = 0,
+    /** CL_POINTER - collisions with the player's pointer ray (e.g. mouse cursor hovering) */
+    CL_POINTER = 1,
+    /** CL_PHYSICS - collision affecting your player's physics i.e. walls, floor, moving platfroms */
+    CL_PHYSICS = 2,
+    CL_RESERVED1 = 4,
+    CL_RESERVED2 = 8,
+    CL_RESERVED3 = 16,
+    CL_RESERVED4 = 32,
+    CL_RESERVED5 = 64,
+    CL_RESERVED6 = 128,
+    CL_CUSTOM1 = 256,
+    CL_CUSTOM2 = 512,
+    CL_CUSTOM3 = 1024,
+    CL_CUSTOM4 = 2048,
+    CL_CUSTOM5 = 4096,
+    CL_CUSTOM6 = 8192,
+    CL_CUSTOM7 = 16384,
+    CL_CUSTOM8 = 32768
+}
 
 export let MATERIAL_TYPES:Materials[] =[
     Materials.PBR, 
