@@ -5,7 +5,7 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { log } from '../../../helpers/functions'
 import resources, { colors, colorsLabels } from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
-import { Actions, COMPONENT_TYPES, ENTITY_POINTER_LABELS, SERVER_MESSAGE_TYPES, Triggers } from '../../../helpers/types'
+import { Actions, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
 import { setUIClicked } from '../../ui'

@@ -28,6 +28,7 @@ import { EditParenting } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
 import { EditTrigger, triggerView, updateEntitiesWithActionsList, updateTriggerView } from './Edit/EditTrigger'
 import { EditAction, actionView, updateActionView } from './Edit/EditAction'
+import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -53,6 +54,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.TRIGGER_COMPONENT:
             updateEntitiesWithActionsList()
+            break;
+
+        case COMPONENT_TYPES.POINTER_COMPONENT:
+            updatePointerView("main")
             break;
         // case COMPONENT_TYPES.NPC_COMPONENT:
         //     updateNPCView('main')
@@ -382,6 +387,14 @@ function getBackButtonLogic(){
             }
             break;
 
+        case COMPONENT_TYPES.POINTER_COMPONENT:
+            if(pointerView === "info"){
+                updatePointerView("main")
+            }else{
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }
+        break;
+        
         case COMPONENT_TYPES.COUNTER_COMPONENT:
         case COMPONENT_TYPES.PARENTING_COMPONENT:
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -553,7 +566,7 @@ function EditObjectData(){
                     margin: {top: "2%"},
                     display: visibleComponent === "Advanced" ? 'flex' : 'none'
                 }}
-                // uiBackground={{color:Color4.Green()}}
+                // uiBackground={{color:Color4.Green()}}//
             >
 
             {/* add component row */}
@@ -659,6 +672,7 @@ function EditObjectData(){
                 <EditCounter/>
                 <EditTrigger/>
                 <EditAction/>
+                <EditPointer/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>

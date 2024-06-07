@@ -16,6 +16,7 @@ import { checkNftShapeComponent } from "./NftShape"
 import { checkMeshColliderComponent, checkMeshRenderComponent } from "./Meshes"
 import { checkTextureComponent } from "./Textures"
 import { getEntity } from "./IWB"
+import { checkPointerComponent } from "./Pointers"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
@@ -83,6 +84,7 @@ export function parentingListener(scene:any){
             await checkTextShapeComponent(scene, item)
             await checkVideoComponent(scene, item)
             await checkNftShapeComponent(scene, item)
+            await checkPointerComponent(scene, item)
 
             //// await checkSmartItemComponent()
 

@@ -434,6 +434,13 @@ export enum Triggers {
     ON_COUNTER_CHANGE = "on_counter_change",
 }
 
+export enum Pointers {
+    POINTER_UP = "on_up",
+    POINTER_DOWN = "on_down",
+    HOVER_ENTER = "on_enter",
+    HOVER_LEAVE = "on_leave",
+}
+
 export enum TriggerConditionType {
     WHEN_STATE_IS = 'when_state_is',
     WHEN_STATE_IS_NOT = 'when_state_is_not',
@@ -456,14 +463,6 @@ export enum Materials {
     BASIC = "Basic",
     TEXTURE = "Texture"
 }
-
-export let ENTITY_TRIGGER_LABELS:any[] = [
-    "On Click",
-    "On Enter",
-    "On Leave",
-    "On Access Verified",
-    "On Access Denied",
-]
 
 export let ENTITY_POINTER_LABELS:any[] = [
     "Pointer",

@@ -152,6 +152,7 @@ export function setPlayerMode(mode:SCENE_MODES){
         addInputSystem()
         updatePlayModeReset(false)
     }else if(playerMode === SCENE_MODES.PLAYMODE){
+        console.log('trying to add play systems')
         hideAllPanels()
         displayHover(false)
         removeInputSystem()

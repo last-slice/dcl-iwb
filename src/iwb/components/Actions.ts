@@ -284,6 +284,7 @@ function handleSetState(scene:any, info:any, action:any){
 }
 
 function handleAddNumber(scene:any, info:any, action:any){
+    console.log('adding number action', action )
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         updateCounter(counter, action.value)

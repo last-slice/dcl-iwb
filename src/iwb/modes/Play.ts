@@ -1,7 +1,7 @@
 import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
-import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
+import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
 import { AUDIO_TYPES } from "../helpers/types"
 import { setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
@@ -10,6 +10,7 @@ import { disableVisibilityPlayMode, setVisibilityPlayMode } from "../components/
 import { disableAudioPlayMode, setAudioPlayMode } from "../components/Sounds"
 import { disableAnimationPlayMode } from "../components/Animator"
 import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/SmartItems"
+import { setPointersPlayMode } from "../components/Pointers"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -46,13 +47,13 @@ export async function disableSceneEntities(sceneId:any) {
                     }
     
                     // //check pointers
-                    // if (PointersLoadedComponent.has(entity)) {
-                    //     PointersLoadedComponent.getMutable(entity).init = false
-                    // }
+                    if (PointersLoadedComponent.has(entityInfo.entity)) {
+                        PointersLoadedComponent.getMutable(entityInfo.entity).init = false
+                    }
     
                     // //check smart items
                     // if (SmartItemLoadedComponent.has(entity)) {
-                    //     SmartItemLoadedComponent.getMutable(entity).init = false
+                    //     SmartItemLoadedComponent.getMutable(entity).init = false//
                     // }
     
                     disableEntityForPlayMode(scene, entityInfo)
@@ -82,6 +83,7 @@ export function enableSceneEntities(sceneId: string) {
                     setVisibilityPlayMode(scene, entityInfo)
                     setAudioPlayMode(scene, entityInfo)
                     setSmartItemPlaydMode(scene, entityInfo)
+                    setPointersPlayMode(scene, entityInfo)
                 }
             }
         })
@@ -106,11 +108,6 @@ export function enableSceneEntities(sceneId: string) {
     //                 console.log('need to check for smart item play mode')
     //                 checkSmartItem(entity, sceneItem, scene)
     //                 SmartItemLoadedComponent.getMutable(entity).init = true
-    //             }
-
-    //             if (PointersLoadedComponent.has(entity) && !PointersLoadedComponent.get(entity).init) {
-    //                 checkPointers(entity, sceneItem)
-    //                 PointersLoadedComponent.getMutable(entity).init = true
     //             }
 
     //         }

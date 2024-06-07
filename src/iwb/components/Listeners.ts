@@ -39,6 +39,7 @@ export async function createColyseusListeners(room:Room){
         setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
         setWorlds(info.worlds)
         setNewItems()
+        setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
 
         //set occupied parcels
         // for (const p of info.occupiedParcels) {

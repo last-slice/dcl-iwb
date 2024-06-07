@@ -27,6 +27,7 @@ export function triggerListener(scene:any){
     }
 
     const triggerEvents = getTriggerEvents(info.entity)
+    trigger.triggers.forEach((trigger:any)=>{
     triggerEvents.on(trigger.type, (pointerEvent:any)=>{
         if(checkInputAction(trigger.input, pointerEvent) && checkConditions(scene, trigger, aid, info.entity)){
             for(const triggerAction of trigger.actions){
@@ -38,8 +39,9 @@ export function triggerListener(scene:any){
                 }
             }
         }else{
-            // console.log('trigger condition not met')
+            console.log('trigger condition not met')
         }
+    })
     })
 })
 
@@ -255,6 +257,7 @@ function getActionsByActionId(scene:any, actionId:string) {
 }
 
 export function handleInputTriggerForEntity(entity:Entity, input:InputAction){
+    console.log('handle input trigger for entity', entity, input)
     const triggerEvents = getTriggerEvents(entity)
     triggerEvents.emit(Triggers.ON_INPUT_ACTION, input)
 }
