@@ -10,14 +10,10 @@ import { uiSizes } from '../../uiConfig'
 import { visibleComponent } from '../EditAssetPanel'
 import { getAssetVisibility } from '../../../components/Visibility'
 
-let settings:any[] = [
-    {label:"Enabled", enabled:true},
-]
-
 export function EditVisibility() {
     return (
         <UiEntity
-            key={resources.slug + "editvisibilitycomponentpanel"}
+            key={resources.slug + "edit::visibility::panel"}
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',

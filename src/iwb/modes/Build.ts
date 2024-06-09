@@ -27,6 +27,7 @@ import { openEditComponent } from "../ui/Objects/EditAssetPanel"
 import { setMeshRenderBuildMode } from "../components/Meshes"
 import { setSmartItemBuildMode } from "../components/SmartItems"
 import { setAnimationBuildMode } from "../components/Animator"
+import { checkTransformComponent } from "../components/Transform"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -56,6 +57,7 @@ export function getFactor(mod: EDIT_MODIFIERS) {
 }
 
 export function sendServerEdit(modifier: EDIT_MODIFIERS, axis: string, direction: number, manual: boolean, manualMod?: EDIT_MODIFIERS, value?: number) {
+    console.log('sending server endit')
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
         {
             component: COMPONENT_TYPES.TRANSFORM_COMPONENT,
@@ -1272,6 +1274,7 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         setVideoBuildMode(scene, entityInfo)
         setAnimationBuildMode(scene, entityInfo)
         setSmartItemBuildMode(scene, entityInfo)
+        checkTransformComponent(scene, entityInfo)
     }
     //         resetTweenPositions(entity, sceneItem, scene)
 }

@@ -402,6 +402,8 @@ export enum Actions {
     MOVE_PLAYER = 'move_player',
     SHOW_NOTIFICATION = 'show_notification',
     PLACE_PLAYER_POSITION = 'place_player_position',
+    BATCH_ACTIONS = 'batch_actions',
+    RANDOM_ACTION = 'random_action'
 
 }
 
@@ -418,15 +420,15 @@ export enum Triggers {
     ON_ACCESS_VERIFIED ='on_access_verified',
     ON_ACCESS_DENIED ='on_access_denied',
     ON_INPUT_ACTION = 'on_input_action',
-    // ON_TWEEN_END,
-    // ON_DELAY,
-    // ON_LOOP
-    // ON_CLONE
-    // ON_CLICK_IMAGE
-    // ON_DAMAGE
-    // ON_GLOBAL_CLICK
-    // ON_TICK
-    // ON_HEAL//
+    ON_TWEEN_END = 'on_tween_end',
+    ON_DELAY = 'on_delay',
+    ON_LOOP = 'on_loop',
+    ON_CLONE = 'on_clone',
+    ON_CLICK_IMAGE = 'on_click_image',
+    ON_DAMAGE = 'on_damage',
+    ON_GLOBAL_CLICK = 'on_global_click',
+    ON_TICK = 'on_tick',
+    ON_HEAL = 'on_heal',
     ON_STATE_CHANGE = "on_state_change",
     ON_COUNTER_CHANGE = "on_counter_change",
 }
@@ -555,28 +557,30 @@ export let ENTITY_EMOTES_SLUGS:any[] = [
 ]
 
 export let TEXT_ALIGN:string[] = [
-    "Middle Center",
-    "Middle Left",
-    "Middle Right",
-    "Top Center",
     "Top Left",
+    "Top Center",
     "Top Right",
-    "Bottom Center",
+    
+    "Middle Left",
+    "Middle Center",
+    "Middle Right",
+
     "Bottom Left",
+    "Bottom Center",
     "Bottom Right",
 ]
 
-export let TEXT_ALIGN_SLUGS:string[] = [
-    "middle-center",
-    "middle-left",
-    "middle-right",
-    "top-center",
-    "top-left",
-    "top-right",
-    "bottom-center",
-    "bottom-left",
-    "bottom-right"
-]
+export enum TEXT_ALIGN_MODES {
+    TAM_TOP_LEFT = 0,
+    TAM_TOP_CENTER = 1,
+    TAM_TOP_RIGHT = 2,
+    TAM_MIDDLE_LEFT = 3,
+    TAM_MIDDLE_CENTER = 4,
+    TAM_MIDDLE_RIGHT = 5,
+    TAM_BOTTOM_LEFT = 6,
+    TAM_BOTTOM_CENTER = 7,
+    TAM_BOTTOM_RIGHT = 8
+}
 
 export let TWEEN_TYPE_SLUGS:string[] = [
     "MOVE",
@@ -630,4 +634,33 @@ export enum COUNTER_VALUE {
 export enum AUDIO_TYPES {
     SOUND,
     STREAM
+}
+
+export enum AVATAR_ANCHOR_POINTS {
+    AAPT_POSITION = 0,
+    AAPT_NAME_TAG = 1,
+    AAPT_HEAD = 4,
+    AAPT_NECK = 5,
+    AAPT_SPINE = 6,
+    AAPT_SPINE1 = 7,
+    AAPT_SPINE2 = 8,
+    AAPT_HIP = 9,
+    AAPT_LEFT_SHOULDER = 10,
+    AAPT_LEFT_ARM = 11,
+    AAPT_LEFT_FOREARM = 12,
+    AAPT_LEFT_HAND = 2,
+    AAPT_LEFT_HAND_INDEX = 13,
+    AAPT_RIGHT_SHOULDER = 14,
+    AAPT_RIGHT_ARM = 15,
+    AAPT_RIGHT_FOREARM = 16,
+    AAPT_RIGHT_HAND = 3,
+    AAPT_RIGHT_HAND_INDEX = 17,
+    AAPT_LEFT_UP_LEG = 18,
+    AAPT_LEFT_LEG = 19,
+    AAPT_LEFT_FOOT = 20,
+    AAPT_LEFT_TOE_BASE = 21,
+    AAPT_RIGHT_UP_LEG = 22,
+    AAPT_RIGHT_LEG = 23,
+    AAPT_RIGHT_FOOT = 24,
+    AAPT_RIGHT_TOE_BASE = 25
 }

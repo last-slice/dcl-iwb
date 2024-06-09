@@ -11,6 +11,7 @@ import { disableAudioPlayMode, setAudioPlayMode } from "../components/Sounds"
 import { disableAnimationPlayMode } from "../components/Animator"
 import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/SmartItems"
 import { setPointersPlayMode } from "../components/Pointers"
+import { checkTransformComponent } from "../components/Transform"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -84,6 +85,7 @@ export function enableSceneEntities(sceneId: string) {
                     setAudioPlayMode(scene, entityInfo)
                     setSmartItemPlaydMode(scene, entityInfo)
                     setPointersPlayMode(scene, entityInfo)
+                    checkTransformComponent(scene, entityInfo)
                 }
             }
         })
@@ -124,7 +126,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableVideoPlayMode(scene, entityInfo)
         disableAnimationPlayMode(scene, entityInfo)
         disableSmartItemsPlayMode(scene, entityInfo)
-
+        checkTransformComponent(scene, entityInfo)
         PointerEvents.deleteFrom(entityInfo.entity)
     }
 

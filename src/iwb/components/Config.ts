@@ -14,6 +14,7 @@ import { getEntity } from "./IWB"
 import { removePlayModSystem, addPlayModeSystem } from "../systems/PlayModeSystem"
 import { disableEntityForPlayMode } from "../modes/Play"
 import { displayHover } from "../ui/Objects/ContextMenu"
+import { clearShowTexts } from "../ui/Objects/ShowText"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -134,7 +135,6 @@ export function setPlayerMode(mode:SCENE_MODES){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
                     if(playerMode === SCENE_MODES.BUILD_MODE){
-                        console.log('entity is', entityInfo)
                         addBuildModePointers(entityInfo.entity)
                         resetEntityForBuildMode(scene, entityInfo)
                     }else{
@@ -148,6 +148,7 @@ export function setPlayerMode(mode:SCENE_MODES){
     updatePlayModeReset(true)
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
+        clearShowTexts()
         removePlayModSystem()
         addInputSystem()
         updatePlayModeReset(false)

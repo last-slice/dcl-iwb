@@ -4,6 +4,8 @@ import mitt from 'mitt'
 import { connect } from '../helpers/connection'
 import { log } from '../helpers/functions'
 import { createColyseusListeners } from "./Listeners";
+import { createTimerSystem } from "./Timer";
+import { engine } from "@dcl/sdk/ecs";
 
 export let data:any
 export let colyseusRoom:Room
@@ -23,7 +25,10 @@ export async function colyseusConnect(data:any, token:string, world?:any) {
             log('left room with code', code)
             connected = false
         })
+
+        engine.addSystem(createTimerSystem())
         createColyseusListeners(room)
+        
         
     }).catch((err) => {
         console.error('colyseus connection error', err)

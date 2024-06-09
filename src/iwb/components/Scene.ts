@@ -27,6 +27,7 @@ import { actionListener } from "./Actions"
 import { clickAreaListener } from "./SmartItems"
 import { triggerListener } from "./Triggers"
 import { pointerListener } from "./Pointers"
+import { stateListener } from "./States"
 
 export let realmActions: any[] = []
 
@@ -90,6 +91,7 @@ async function loadSceneComponents(scene:any){
     triggerListener(scene)
     clickAreaListener(scene)
     pointerListener(scene)
+    stateListener(scene)
 
     // await addTextShapeComponent(scene)//
     

@@ -19,6 +19,7 @@ import { createNotificationUI } from './Objects/NotificationPanel'
 import { createSceneInfoPanel, displaySceneAssetInfoPanel } from './Objects/SceneInfoPanel'
 import { createEditAssetPanel } from './Objects/EditAssetPanel'
 import { createAdvancedEditPanel } from './Objects/EditAdvanced'
+import { createShowTextComponent } from './Objects/ShowText'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -42,6 +43,7 @@ const uiComponent:any = () => [
   createNotificationUI(),
   createSceneInfoPanel(),
   createEditAssetPanel(),
+  createShowTextComponent(),
   // createAdvancedEditPanel(),
 ]
 

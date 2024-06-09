@@ -1,7 +1,7 @@
-import { AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, GltfContainer, MeshCollider, MeshRenderer, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, TextAlignMode, Transform, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
-import { sendServerMessage } from "./Colyseus"
+import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
 import { getStateComponentByAssetId, setState } from "./States"
 import { getTriggerEvents } from "./Triggers"
@@ -9,6 +9,9 @@ import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedA
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { getEntity } from "./IWB"
+import { getUITransform } from "../ui/helpers"
+import { startTimeout } from "./Timer"
+import { addShowText, removeShowText } from "../ui/Objects/ShowText"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -17,6 +20,14 @@ export function getActionEvents(entity: Entity) {
       actions.set(entity, mitt())
     }
     return actions.get(entity)!
+}
+
+export function getActionById(scene:any, aid:string, actionId:string){
+    let actions = scene.actions.get(aid)
+    if(actions){
+        return actions.actions.find(($:any)=> $.id === actionId)
+    }
+    return {}
 }
 
 export function actionListener(scene:any){
@@ -115,6 +126,7 @@ function updateActions(scene:any, info:any, action:any){
                 break;
 
             case Actions.PLACE_PLAYER_POSITION:
+                handlePlacePlayerPosition(scene, info, action)
                 break;
 
             case Actions.ATTACH_PLAYER:
@@ -147,19 +159,49 @@ function updateActions(scene:any, info:any, action:any){
             case Actions.VERIFY_ACCESS:
                 handleVerifyAccess(scene, info, action)
                 break;
+
+            case Actions.BATCH_ACTIONS:
+                handleBatchAction(scene, info, action)
+                break;
         }
     })
 }
 
-function handleShowText(entity:Entity, action:any){
-    console.log('handling show text action for', entity, action)
+export function handleShowText(entity:Entity, action:any, forceDelay?:number){
+    addShowText(action)
+
+    if(forceDelay){
+        startTimeout(entity, Actions.HIDE_TEXT, forceDelay, () =>
+        handleHideText(entity, {}))
+    }
+
+    // const uiTransformComponent = getUITransform(UiTransform, entity)
+    // if (uiTransformComponent) {
+    //   UiText.createOrReplace(entity, {
+    //     value: text,
+    //     font: font as unknown as Font,
+    //     fontSize: size,
+    //     textAlign: textAlign as unknown as TextAlignMode,
+    //   })
+
+    // //   startTimeout(entity, Actions.HIDE_TEXT, hideAfterSeconds, () =>
+    // //     handleHideText(entity, {}),
+    // //   )//
+    // }
+}
+
+function handleHideText(entity:Entity, action:any){
+    removeShowText(action.id)
+    // const uiTextComponent = UiText.getOrNull(entity)
+    // if (uiTextComponent) {
+    //   UiText.deleteFrom(entity)
+    // }
 }
 
 function handleSetState(scene:any, info:any, action:any){
     let state = getStateComponentByAssetId(scene, info.aid)
     if(state){
         setState(state, action.state)
-
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.emit(Triggers.ON_STATE_CHANGE)
     }
@@ -312,17 +354,18 @@ function handleEmote(action:any){
 function handleSetPosition(scene:any, info:any, action:any){
     let transform = Transform.getMutableOrNull(info.entity)
     if (transform) {
-        let pos = action.movePos.split(",")
+        let position = Vector3.create(action.x, action.y, action.z)
         if (action.moveRel) {
           transform.position = Vector3.add(
             transform.position,
-            Vector3.create(parseFloat(pos[0]), parseFloat(pos[1]), parseFloat(pos[2])),
-          )
+            position)
         } else {
-          transform.position = Vector3.create(parseFloat(pos[0]), parseFloat(pos[1]), parseFloat(pos[2]))
+          transform.position = position
         }
       }
 }
+
+function handlePlacePlayerPosition(scene:any, info:any, action:any){}
 
 function handleSetRotation(scene:any, info:any, action:any){
     let transform = Transform.getMutableOrNull(info.entity)
@@ -342,14 +385,13 @@ function handleSetRotation(scene:any, info:any, action:any){
 function handleSetScale(scene:any, info:any, action:any){
     let transform = Transform.getMutableOrNull(info.entity)
     if (transform) {
-        let pos = action.movePos.split(",")
+        let scale = Vector3.create(action.x, action.y, action.z)
         if (action.moveRel) {
           transform.scale = Vector3.add(
             transform.scale,
-            Vector3.create(parseFloat(pos[0]), parseFloat(pos[1]), parseFloat(pos[2])),
-          )
+            scale)
         } else {
-          transform.scale = Vector3.create(parseFloat(pos[0]), parseFloat(pos[1]), parseFloat(pos[2]))
+          transform.scale = scale
         }
       }
 }
@@ -386,4 +428,11 @@ function handleGiveReward(scene:any, info:any, action:any){
 
 function handleVerifyAccess(scene:any, info:any, action:any){
     // sendServerMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
+}
+
+function handleBatchAction(scene:any, info:any, action:any){
+    const actionEvents = getActionEvents(info.entity)
+    action.actions.forEach((actionId:any)=>{
+        actionEvents.emit(actionId, getActionById(scene, info.aid, actionId))
+    })
 }

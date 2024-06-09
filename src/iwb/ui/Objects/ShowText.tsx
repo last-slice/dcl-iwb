@@ -4,25 +4,26 @@ import { utils } from '../../helpers/libraries'
 import resources from '../../helpers/resources'
 import { sizeFont } from '../helpers'
 
-let showHover = false
+let show = false
 let timers:Map<string, any> = new Map()
 export let showTexts:any[] = []
 
 export function displayShowText(value:boolean){
-  showHover = value
+  show = value
 }
 
 export function addShowText(text:any){
     showTexts.push(text)
 
-    if(!showHover){
+    if(!show){
         displayShowText(true)
     }
 
-    let timer = utils.timers.setTimeout(()=>{
-        removeShowText(text.id)
-    }, 1000 * text.showTimer)
-    timers.set(text.id, timer)
+    // let timer = utils.timers.setTimeout(()=>{
+    //     removeShowText(text.id)
+    // }, 1000 * text.showTimer)
+    // timers.set(text.id, timer)
+
 }
 
 export function removeShowText(id:string){
@@ -44,11 +45,11 @@ export function clearShowTexts(){
 export function createShowTextComponent(){
   return(
     <UiEntity
-    key={"iwbshowtextcomponent"}
+    key={resources.slug + "showtext::component::ui"}
     uiTransform={{
       width: '100%',
       height:'100%',
-      display: showHover ? 'flex' : 'none',
+      display: show ? 'flex' : 'none',
       justifyContent:'center',
       flexDirection:'column',
       alignContent:'center',
@@ -72,17 +73,17 @@ function generateShowTexts(){
         arr.push(<ShowText data={text} rowCount={count}/>)
         count++
     })
-    
     return arr
 }
 
 function ShowText(data:any){
+  let textData = data.data
     return(<UiEntity
     key={"" + resources.slug + "-show-text-id" + data.data.id}
     uiTransform={{
       width: '100%',
       height:'100%',
-      display: showHover ? 'flex' : 'none',
+      display: show ? 'flex' : 'none',
       justifyContent:'center',
       flexDirection:'column',
       alignContent:'center',
@@ -91,7 +92,7 @@ function ShowText(data:any){
       position:{top:0, right:0},
       margin: {}//getMargins(data.data.textAlign)
     }}
-    uiText={{value:"" + data.data.showText, fontSize:sizeFont(data.data.showSize,data.data.showSize * 0.6), textAlign:data.data.showPos}}
+    uiText={{value:"" + textData.text, fontSize:sizeFont(textData.size, textData.size * 0.6), textAlign:textData.textAlign}}
   />
     )
 }

@@ -1,4 +1,4 @@
-import { ColliderLayer, GltfContainer, Transform } from "@dcl/sdk/ecs"
+import { AvatarAttach, ColliderLayer, GltfContainer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import { GLTFLoadedComponent } from "../helpers/Components"
 import { playerMode } from "./Config"
@@ -52,6 +52,7 @@ export function setGLTFCollisionBuildMode(scene:any, entityInfo:any) {
             object.invisibleMeshesCollisionMask = gltf.invisibleCollision
             object.visibleMeshesCollisionMask = ColliderLayer.CL_POINTER
         }
+        AvatarAttach.deleteFrom(entityInfo.entity)
     }
 }
 
@@ -67,5 +68,6 @@ export function setGLTFPlayMode(scene:any, entityInfo:any){
             setAnimationPlayMode(scene, entityInfo)
         }
         GLTFLoadedComponent.getMutable(entityInfo.entity).init = true
+        AvatarAttach.deleteFrom(entityInfo.entity)
     }
 }

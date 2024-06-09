@@ -29,6 +29,9 @@ import { EditCounter } from './Edit/EditCounter'
 import { EditTrigger, triggerInfoView, triggerView, updateEntitiesWithActionsList, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
 import { EditAction, actionView, updateActionView } from './Edit/EditAction'
 import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
+import { engine } from '@dcl/sdk/ecs'
+import { resetSetPositionEntity } from './Edit/ActionPanels/AddSetPositionPanel'
+import { EditState } from './Edit/EditState'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -54,6 +57,7 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.TRIGGER_COMPONENT:
             updateEntitiesWithActionsList()
+            updateTriggerView("main")
             break;
 
         case COMPONENT_TYPES.POINTER_COMPONENT:
@@ -372,6 +376,7 @@ function getBackButtonLogic(){
         case COMPONENT_TYPES.ACTION_COMPONENT:
             if(actionView === "add"){
                 updateActionView("main")
+                resetSetPositionEntity()
             }else{
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             }
@@ -399,6 +404,7 @@ function getBackButtonLogic(){
             }
         break;
 
+        case COMPONENT_TYPES.STATE_COMPONENT:
         case COMPONENT_TYPES.COUNTER_COMPONENT:
         case COMPONENT_TYPES.PARENTING_COMPONENT:
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -677,6 +683,7 @@ function EditObjectData(){
                 <EditTrigger/>
                 <EditAction/>
                 <EditPointer/>
+                <EditState/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
@@ -704,7 +711,7 @@ function generateComponentViews() {
     let arr: any[] = []
     let components:COMPONENT_TYPES[] = componentViewType === "basic" ? getBasicComponents() : getAdvancedComponents()
 
-    components.forEach((component: any, i:number) => {
+    components.sort((a:any, b:any)=> a.localeCompare(b)).forEach((component: any, i:number) => {
         arr.push(
             <UiEntity
                 key={resources.slug + "asset-component-" + component+i}
@@ -795,6 +802,7 @@ function getComponents(){
         }
 
         let array:any = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => !scene.components.includes(item))
+        array.sort((a:any, b:any)=> a.localeCompare(b))
         array.unshift("Component List")
 
         return array

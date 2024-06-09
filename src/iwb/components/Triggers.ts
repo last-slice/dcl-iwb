@@ -4,6 +4,7 @@ import mitt, { Emitter } from "mitt";
 import { getActionEvents } from "./Actions";
 import { getCounterComponentByAssetId, getCounterValue } from "./Counter";
 import { getEntity } from "./IWB";
+import { States, getCurrentValue, getPreviousValue } from "./States";
 
 // const actionQueue: { entity: Entity; action: Action }[] = []
 const actionQueue:any[] = []
@@ -41,17 +42,25 @@ function updateTriggerEvents(scene:any, entityInfo:any, trigger:any){
   triggerEvents.off(trigger.type)
 
   triggerEvents.on(trigger.type, (pointerEvent:any)=>{
-      if(checkInputAction(trigger.input, pointerEvent) && checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
+    console.log('trigger action ', trigger)
+    if(trigger.type === Triggers.ON_INPUT_ACTION && !checkInputAction(trigger.input, pointerEvent)){
+      console.log('not the correct input action')
+      return
+    }
+      if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
+        console.log('passed check conditions')
           for(const triggerAction of trigger.actions){
               if(isValidAction(triggerAction)){
+                console.log('is valid action')
                   let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
                   if(aid){
+                    console.log('action id is', action)
                       actionQueue.push({aid:aid, action:action, entity:entity})
                   }
               }
           }
       }else{
-          console.log('trigger condition not met')
+          console.log('trigger condition not met')//
       }
   })
 }
@@ -67,7 +76,7 @@ function checkInputAction(triggerInput:any, input:InputAction){
 
 function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
     if (trigger.conditions && trigger.conditions.length > 0) {
-      const conditions = trigger.conditions.map((condition:any) => checkCondition(scene, aid, condition))
+      const conditions = trigger.conditions.map((condition:any) => checkCondition(scene, aid, entity, condition))
       const isTrue = (result?: boolean) => !!result
       const operation = trigger.operation || TriggerConditionOperation.AND
       switch (operation) {
@@ -78,48 +87,48 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
           return conditions.some(isTrue)
         }
       }
-    // return true//
+      return true
     }
     return true
   }
 
-  function checkCondition(scene:any, aid:string, condition:any) {
+  function checkCondition(scene:any, aid:string, entity:Entity, condition:any) {
     // const entity = getEntityByCondition(condition)
     // if (entity) {
       try {
         switch (condition.type) {
-        //   case TriggerConditionType.WHEN_STATE_IS: {
-        //     const states = States.getOrNull(entity)
-        //     if (states !== null) {
-        //       const currentValue = getCurrentValue(states)
-        //       return currentValue === condition.value
-        //     }
-        //     break
-        //   }
-        //   case TriggerConditionType.WHEN_STATE_IS_NOT: {
-        //     const states = States.getOrNull(entity)
-        //     if (states !== null) {
-        //       const currentValue = getCurrentValue(states)
-        //       return currentValue !== condition.value
-        //     }
-        //     break
-        //   }
-        //   case TriggerConditionType.WHEN_PREVIOUS_STATE_IS: {
-        //     const states = States.getOrNull(entity)
-        //     if (states !== null) {
-        //       const previousValue = getPreviousValue(states)
-        //       return previousValue === condition.value
-        //     }
-        //     break
-        //   }
-        //   case TriggerConditionType.WHEN_PREVIOUS_STATE_IS_NOT: {
-        //     const states = States.getOrNull(entity)
-        //     if (states !== null) {
-        //       const previousValue = getPreviousValue(states)
-        //       return previousValue !== condition.value
-        //     }
-        //     break
-        //   }
+          case TriggerConditionType.WHEN_STATE_IS: {
+            const states = States.getOrNull(entity)
+            if (states !== null) {
+              const currentValue = getCurrentValue(states)
+              return currentValue === condition.value
+            }
+            break
+          }
+          case TriggerConditionType.WHEN_STATE_IS_NOT: {
+            const states = States.getOrNull(entity)
+            if (states !== null) {
+              const currentValue = getCurrentValue(states)
+              return currentValue !== condition.value
+            }
+            break
+          }
+          case TriggerConditionType.WHEN_PREVIOUS_STATE_IS: {
+            const states = States.getOrNull(entity)
+            if (states !== null) {
+              const previousValue = getPreviousValue(states)
+              return previousValue === condition.value
+            }
+            break
+          }
+          case TriggerConditionType.WHEN_PREVIOUS_STATE_IS_NOT: {
+            const states = States.getOrNull(entity)
+            if (states !== null) {
+              const previousValue = getPreviousValue(states)
+              return previousValue !== condition.value
+            }
+            break
+          }
           case TriggerConditionType.WHEN_COUNTER_EQUALS: {
             let counter = getCounterComponentByAssetId(scene, aid, condition.counter)
             if(!counter){
@@ -262,6 +271,8 @@ export function PlayTriggerSystem(dt:number){
     while (actionQueue.length > 0) {
         const { entity, action, aid } = actionQueue.shift()!
         const actionEvents = getActionEvents(entity)
+
+        console.log('emitting action', action)
         actionEvents.emit(action.id, action)
       }
 }

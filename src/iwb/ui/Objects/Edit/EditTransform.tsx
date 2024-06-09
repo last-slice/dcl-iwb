@@ -8,9 +8,9 @@ import { sizeFont, calculateSquareImageDimensions, getImageAtlasMapping } from '
 import { uiSizes } from '../../uiConfig'
 import { visibleComponent } from '../EditAssetPanel'
 import resources from '../../../helpers/resources'
+import { setUIClicked } from '../../ui'
 
 let pressed: any = {}
-
 
 export function EditTransform() {
     return (
@@ -24,7 +24,7 @@ export function EditTransform() {
                 height: '95%',
                 display: visibleComponent === COMPONENT_TYPES.TRANSFORM_COMPONENT ? 'flex' : 'none',
             }}
-            // uiBackground={{color:Color4.Red()}}
+            // uiBackground={{color:Color4.Red()}}//
         >
 
             {/* PRS information container */}
@@ -58,7 +58,7 @@ export function EditTransform() {
     )
 }
 
-function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: number, valueFn: Function }) {
+export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: number, valueFn: Function, rowHeight?:any, override?:any }) {
 
     const modifierName =
         props.modifier === EDIT_MODIFIERS.POSITION ? "Position" :
@@ -72,7 +72,7 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '35%',
+                height: props.rowHeight ? `${props.rowHeight}` : '35%',
                 margin: {top: '1%', bottom: '1%'}
             }}
             // uiBackground={{color:Color4.Black()}}
@@ -217,6 +217,11 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                             // }}
 
                             onSubmit={(value) => {
+                                if(props.override){
+                                    props.override('x', parseFloat(value), true)
+                                    // updateSetPositionEntityPosition('x', parseFloat(value), true)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
                             }}
                             fontSize={sizeFont(20, 12)}
@@ -250,6 +255,11 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                             //     sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
                             // }}
                             onSubmit={(value) => {
+                                if(props.override){
+                                    props.override('x', parseFloat(value), true)
+                                    // updateSetPositionEntityPosition('y', parseFloat(value), true)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
                             }}
                             fontSize={sizeFont(20, 12)}
@@ -284,6 +294,11 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                             //     sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
                             // }}
                             onSubmit={(value) => {
+                                if(props.override){
+                                    props.override('x', parseFloat(value), true)
+                                    // updateSetPositionEntityPosition('z', parseFloat(value), true)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
                             }}
                             fontSize={sizeFont(20, 12)}
@@ -341,6 +356,11 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                                 uvs: getImageAtlasMapping(uiSizes.upArrow)
                             }}
                             onMouseDown={() => {
+                                if(props.override){
+                                    props.override('x', 1)
+                                    // updateSetPositionEntityPosition('x', 1)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'x', 1, false)
                             }}
                         />
@@ -364,6 +384,11 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                                 uvs: getImageAtlasMapping(uiSizes.downArrow)
                             }}
                             onMouseDown={() => {
+                                if(props.override){
+                                    props.override('x', -1)
+                                    // updateSetPositionEntityPosition('x', -1)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'x', -1, false)
 
                                 pressed.left = true
@@ -400,6 +425,11 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                                 uvs: getImageAtlasMapping(uiSizes.upArrow)
                             }}
                             onMouseDown={() => {
+                                if(props.override){
+                                    props.override('y', 1)
+                                    // updateSetPositionEntityPosition('y', 1)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'y', 1, false)
                             }}
                         />
@@ -422,9 +452,18 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                                 uvs: getImageAtlasMapping(uiSizes.downArrow)
                             }}
                             onMouseDown={() => {
+                                setUIClicked(true)
+                                if(props.override){
+                                    props.override('y', -1)
+                                    // updateSetPositionEntityPosition('y', -1)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'y', -1, false)
 
                                 pressed.left = true
+                            }}
+                            onMouseUp={()=>{
+                                setUIClicked(false)
                             }}
                         />
                     </UiEntity>
@@ -458,7 +497,16 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                                 uvs: getImageAtlasMapping(uiSizes.upArrow)
                             }}
                             onMouseDown={() => {
+                                setUIClicked(true)
+                                if(props.override){
+                                    props.override('z', 1)
+                                    // updateSetPositionEntityPosition('z', 1)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'z', 1, false)
+                            }}
+                            onMouseUp={()=>{
+                                setUIClicked(false)
                             }}
                         />
 
@@ -480,9 +528,18 @@ function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: numb
                                 uvs: getImageAtlasMapping(uiSizes.downArrow)
                             }}
                             onMouseDown={() => {
+                                setUIClicked(true)
+                                if(props.override){
+                                    props.override('z', -1)
+                                    // updateSetPositionEntityPosition('z', -1)
+                                    return
+                                }
                                 sendServerEdit(props.modifier, 'z', -1, false)
 
                                 pressed.left = true
+                            }}
+                            onMouseUp={()=>{
+                                setUIClicked(false)
                             }}
                         />
                     </UiEntity>

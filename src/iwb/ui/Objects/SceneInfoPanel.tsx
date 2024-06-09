@@ -185,6 +185,12 @@ export function createSceneInfoPanel() {
                 },
                 uvs: getImageAtlasMapping(uiSizes.vertRectangle)
             }}
+            onMouseDown={()=>{
+                setUIClicked(true)
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
         >
 
             {/* scene title row */}

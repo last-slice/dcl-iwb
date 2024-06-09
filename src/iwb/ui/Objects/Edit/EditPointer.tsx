@@ -119,7 +119,7 @@ export function EditPointer(){
             height: '10%',
         }}
             uiText={{value:"Current Pointers", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-        // uiBackground={{color:Color4.Blue()}}
+        // uiBackground={{color:Color4.Blue()}}//
         />
 
         {/* current list container */}

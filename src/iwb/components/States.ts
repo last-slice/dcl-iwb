@@ -2,6 +2,7 @@ import { Schemas, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "./Colyseus"
 import { getEntity } from "./IWB"
 import resources from "../helpers/resources"
+import { COMPONENT_TYPES } from "../helpers/types"
 
 export const States = engine.defineComponent(resources.slug + "state::component", {
     id: Schemas.Number,
@@ -38,17 +39,17 @@ export function getCurrentValue(states:any) {
     return null
   }
 
-export function addStateComponent(scene:any){
-    scene.states.forEach((state:any, aid:string)=>{
-        let info = scene.parenting.find((entity:any)=> entity.aid === aid)
-        if(info){
-            States.create(info.entity, {
-                defaultValue: state.defaultValue,
-                values:state.values
-            })
-        }
-    })
-}
+// export function addStateComponent(scene:any){
+//     scene.states.forEach((state:any, aid:string)=>{
+//         let info = scene.parenting.find((entity:any)=> entity.aid === aid)
+//         if(info){
+//             States.create(info.entity, {
+//                 defaultValue: state.defaultValue,
+//                 values:state.values
+//             })
+//         }
+//     })
+// }//
 
 export function getStateComponentByAssetId(scene:string, aid:string){
     let entityInfo = getEntity(scene, aid)
@@ -69,27 +70,46 @@ export function setState(state:any, value:any){
 }
 
 export function stateListener(scene:any){
-    scene.counters.onAdd((counters:any, aid:any)=>{
-        //todo
-        
-        // let info = getEntity(scene, aid)
-        // if(!info){
-        //     return
-        // }
+    scene.states.onAdd((state:any, aid:any)=>{
+      !scene.components.includes(COMPONENT_TYPES.STATE_COMPONENT) ? scene.components.push(COMPONENT_TYPES.STATE_COMPONENT) : null
 
-        // counters.values.onAdd((counter:any, key:any)=>{
-        //     counter.listen("currentValue", (c:any, p:any)=>{
-        //         // console.log('counter current value changed', key, p, c)
+      let itemInfo = getEntity(scene, aid)
+      if(!itemInfo){
+          return
+      }
 
-        //         // let counter = getCounterComponentByAssetId(scene, info.aid, action)
-        //         // if(counter){
-        //         //     updateCounter(counter, action.value)
-        //         // }
-        //     })
+      States.create(itemInfo.entity,{
+        defaultValue: state.defaultValue,
+        currentValue: state.defaultValue,
+        values: state.values ? state.values : []
+      })
 
-        //     counter.listen("previousValue", (c:any, p:any)=>{
-        //         // console.log('counter previous value changed', key, p, c)
-        //     })
-        // })
+      state.listen("defaultValue", (c:any, p:any)=>{
+        let component = States.getMutableOrNull(itemInfo.entity)
+        if(component){
+          component.defaultValue = c
+        } 
+      })
+
+      state.listen("currentValue", (c:any, p:any)=>{
+        let component = States.getMutableOrNull(itemInfo.entity)
+        if(component){
+          component.currentValue = c
+        } 
+      })
+
+      state.listen("previousValue", (c:any, p:any)=>{
+        let component = States.getMutableOrNull(itemInfo.entity)
+        if(component){
+          component.previousValue = c
+        } 
+      })
+
+      state.values.onAdd((state:any, index:any)=>{
+        let component = States.getMutableOrNull(itemInfo.entity)
+        if(component){
+          component.values.push(state)
+        }
+      })
     })
 }

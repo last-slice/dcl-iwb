@@ -4,10 +4,9 @@ import { getEntity } from "./IWB"
 import { findAssetParent } from "./Parenting"
 
 export function checkTransformComponent(scene:any, entityInfo:any){
-    console.log('checking transform component', entityInfo)
     let transform = scene.transforms.get(entityInfo.aid)
-    console.log('transform is', transform)
     if(transform){
+        console.log('transform is', transform)
         Transform.createOrReplace(entityInfo.entity, {parent:findAssetParent(scene,entityInfo.aid), position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
     }
 }

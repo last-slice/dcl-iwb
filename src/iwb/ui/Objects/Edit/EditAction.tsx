@@ -14,6 +14,15 @@ import { AddNumberActionPanel } from './ActionPanels/AddNumberPanel'
 import { AddLinkActionPanel } from './ActionPanels/AddLinkPanel'
 import { AddEmoteActionPanel } from './ActionPanels/AddEmotePanel'
 import { AddVisibilityActionPanel } from './ActionPanels/AddVisibilityPanel'
+import { AddAnimationActionPanel, updateAssetAnimations } from './ActionPanels/AddAnimationPanel'
+import { AddShowTextPanel } from './ActionPanels/AddShowTextPanel'
+import { AvatarAnchorPointType } from '@dcl/sdk/ecs'
+import { AddAttachPlayerPanel } from './ActionPanels/AddAttachPlayerPanel'
+import { AddBatchActionPanel, updateEntityActions } from './ActionPanels/AddBatchActionsPanel'
+import { AddSetPositionPanel, addSetPositionEntity, resetSetPositionEntity } from './ActionPanels/AddSetPositionPanel'
+import { AddSetScalePanel, addSetScaleEntity, resetSetScaleEntity } from './ActionPanels/AddSetScalePanel'
+import { AddSetRotationPanel, addsetRotationEntity } from './ActionPanels/AddSetRotationPanel'
+import { AddSetStatePanel, updateEntityStates } from './ActionPanels/AddStatePanel'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -84,6 +93,7 @@ export function EditAction(){
             }}
             onMouseDown={() => {
                 setUIClicked(true)
+                newActionData = {}
                 updateActionView("add")
             }}
             onMouseUp={()=>{
@@ -212,7 +222,7 @@ export function EditAction(){
             display: newActionIndex !== 0 ? "flex": "none"
             }}
         >
-            {getActionDataPanel()}
+            {actionView === "add" && getActionDataPanel()}
             </UiEntity>
 
 
@@ -366,14 +376,7 @@ function getActionList(){
 
 function selectNewActionIndex(index:number){
     newActionIndex = index
-    if(index !== 0){
-        newActionData.type = getActionList()[index].replace(" ", "_").toLowerCase()
-        newActionData.name = getActionList()[index].replace(" ", "_").toLowerCase()
-        let actionTemplate = ActionDefaults[getActionList()[index].replace(" ", "_").toLowerCase()]
-        for(let key in actionTemplate){
-            newActionData[key] = actionTemplate[key]
-        }
-    }
+    resetActionData()
 }
 
 function getActionDataPanel(){
@@ -393,7 +396,35 @@ function getActionDataPanel(){
         case Actions.SET_VISIBILITY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddVisibilityActionPanel/>
 
-        //play sound - doesnt need any action metadata
+        case Actions.SHOW_TEXT.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddShowTextPanel/>
+
+        case Actions.PLAY_ANIMATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateAssetAnimations()
+            return <AddAnimationActionPanel/>
+
+        case Actions.ATTACH_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddAttachPlayerPanel/>
+
+        case Actions.BATCH_ACTIONS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateEntityActions()
+            return <AddBatchActionPanel/>
+
+        case Actions.SET_POSITION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetPositionPanel/>
+
+        case Actions.SET_ROTATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetRotationPanel/>
+
+        case Actions.SET_SCALE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetScalePanel/>
+
+        case Actions.SET_STATE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateEntityStates()
+            return <AddSetStatePanel/>
+
+
+        //play sound - doesnt need any action metadata//
         //stop sound - doesnt need any action metadata
         //play video - doesnt need any action metadata
         //stop video - doesnt need any action metadata
@@ -418,9 +449,33 @@ function buildAction(){
     update("add", newActionData)
     updateActionView("main")
     selectNewActionIndex(0)
+
+    //clean up actions
+    resetSetPositionEntity()
+    resetSetScaleEntity()
 }
 
+function resetActionData(){
+    newActionData = {}
 
+    if(newActionIndex !== 0){
+        newActionData.type = getActionList()[newActionIndex].replace(" ", "_").toLowerCase()
+        newActionData.name = getActionList()[newActionIndex].replace(" ", "_").toLowerCase()
+        let actionTemplate:any = {...ActionDefaults[getActionList()[newActionIndex].replace(" ", "_").toLowerCase()]}//
+        for(let key in actionTemplate){
+            if(key === "actions"){
+                newActionData[key] = []
+            }
+            else if(key === "fn"){
+                actionTemplate[key]()
+            }
+            else{
+                newActionData[key] = actionTemplate[key]
+            }
+            
+        }
+    }
+}
 
 const ActionDefaults:any = {
     [Actions.ADD_NUMBER]:{
@@ -435,5 +490,33 @@ const ActionDefaults:any = {
     [Actions.SET_VISIBILITY]:{
         iMask:0,
         vMask:0
-    }
+    },
+    [Actions.PLAY_ANIMATION]:{
+        loop:0,
+        anim:""
+    },
+    [Actions.SHOW_TEXT]:{
+        text:"",
+        size:25,
+        font:0,
+        textAlign:4
+    },
+    [Actions.ATTACH_PLAYER]:{
+        anchor:AvatarAnchorPointType.AAPT_POSITION,
+    },
+    [Actions.BATCH_ACTIONS]:{
+        actions:[],
+    },
+    [Actions.SET_POSITION]:{
+        fn:()=>{addSetPositionEntity()},
+    },
+    [Actions.SET_ROTATION]:{
+        fn:()=>{addsetRotationEntity()},
+    },
+    [Actions.SET_SCALE]:{
+        fn:()=>{addSetScaleEntity()},
+    },
+    [Actions.SET_STATE]:{
+        state:"",
+    },
 }

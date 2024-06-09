@@ -1,4 +1,4 @@
-import { UiCanvasInformation, engine } from "@dcl/sdk/ecs"
+import { Entity, UiCanvasInformation, YGPositionType, YGUnit, engine } from "@dcl/sdk/ecs"
 import { uiSizes } from "./uiConfig"
 
 export let dimensions:any = {
@@ -89,4 +89,32 @@ export function getImageAtlasMapping(data?: ImageAtlasData): number[] {
 
   export function getAspect(panel:any){
       return panel.sourceWidth / panel.sourceHeight
+  }
+
+  export function getUITransform(
+    component: any,
+    entiy: Entity,
+    height = 100,
+    width = 100,
+    unit: YGUnit = YGUnit.YGU_PERCENT,
+  ) {
+    let uiTransformComponent = component.getMutableOrNull(entiy)
+  
+    if (!uiTransformComponent) {
+      uiTransformComponent = component.create(entiy)
+      uiTransformComponent.heightUnit = unit
+      uiTransformComponent.widthUnit = unit
+      uiTransformComponent.height = height
+      uiTransformComponent.width = width
+      uiTransformComponent.maxHeightUnit = unit
+      uiTransformComponent.maxWidthUnit = unit
+      uiTransformComponent.maxHeight = height
+      uiTransformComponent.maxWidth = width
+    }
+  
+    if (entiy === 0) {
+      uiTransformComponent.positionType = YGPositionType.YGPT_ABSOLUTE
+    }
+  
+    return uiTransformComponent
   }
