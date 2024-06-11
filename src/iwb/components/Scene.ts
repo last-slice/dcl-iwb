@@ -28,6 +28,7 @@ import { clickAreaListener } from "./SmartItems"
 import { triggerListener } from "./Triggers"
 import { pointerListener } from "./Pointers"
 import { stateListener } from "./States"
+import { realm, worlds } from "./Config"
 
 export let realmActions: any[] = []
 
@@ -339,6 +340,14 @@ export async function checkScenePermissions() {
         if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
             canbuild = true
         }
+
+        let world = worlds.find($=> $.ens === realm)
+        if(world){
+            if (world.bps.includes(localUserId)){
+                canbuild = true
+            }
+        }
+
 
         if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel)) {
             activeScene = scene

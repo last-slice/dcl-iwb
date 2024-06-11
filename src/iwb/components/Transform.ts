@@ -6,7 +6,6 @@ import { findAssetParent } from "./Parenting"
 export function checkTransformComponent(scene:any, entityInfo:any){
     let transform = scene.transforms.get(entityInfo.aid)
     if(transform){
-        console.log('transform is', transform)
         Transform.createOrReplace(entityInfo.entity, {parent:findAssetParent(scene,entityInfo.aid), position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
     }
 }

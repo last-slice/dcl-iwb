@@ -2,9 +2,10 @@ import {engine, Entity, GltfContainer, Material, MeshRenderer, Transform, Visibi
 import { Vector3, Quaternion, Color4 } from "@dcl/sdk/math"
 import { sendServerMessage, colyseusRoom } from "../components/Colyseus"
 import { localUserId, localPlayer, setPlayMode } from "../components/Player"
-import { log } from "../helpers/functions"
-import { SERVER_MESSAGE_TYPES, SCENE_MODES } from "../helpers/types"
+import { SCENE_MODES, SERVER_MESSAGE_TYPES } from "../helpers/types"
 import { playerMode } from "../components/Config"
+import { editCurrentSceneParcels } from "../ui/Objects/ExpandedMapView"
+import { scene } from "../ui/Objects/SceneMainDetailPanel"
 
 export let tempScene:any ={}
 export let tempParcels:Map<string, any> = new Map()
@@ -16,19 +17,14 @@ export const BuildModeVisibilty = engine.defineComponent("iwb::buildmode::visibi
 export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
-    // displayCreateScenePanel(false)
+    if(tempParcels.size > 0){
+        editCurrentSceneParcels ? 
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS, {sceneId: scene!.id})
 
-
-    // if(tempParcels.size > 0){
-    //     log('we have valid scene, send to server')
-    //     editCurrentSceneParcels ? 
-
-    //     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS, {sceneId: scene!.id})
-
-    //     : 
-        
-    //     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: tempScene.name, desc:tempScene.description, enabled:tempScene.enabled, private:tempScene.priv, image: tempScene.image})
-    // }    
+        : 
+        console.log('sending to server')
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: tempScene.name, desc:tempScene.description, enabled:tempScene.enabled, private:tempScene.priv, image: tempScene.image})
+    }    
 }
 
 export function editCurrentParcels(id:string){
@@ -50,13 +46,13 @@ export function createTempScene(name:string, desc:string, image:string, enabled:
 }
 
 export function selectParcel(parcel: any) {
-    if(!tempParcels.has(parcel)){
-        addBoundariesForParcel(parcel, true, false)
-    }
+    console.log('selecting parcel', parcel)
+    addBoundariesForParcel(parcel, true, false)
 }
 
 export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boolean, playMode?:boolean) {
     if(!tempParcels.has(parcel)){
+        console.log('adding boundaries for temp parcel')
         let entities: any[] = []
 
         let parent = engine.addEntity()
@@ -184,4 +180,8 @@ export function saveNewScene(userId:string) {
 
     // displaySceneSavedPanel(true)
     // displayCreateScenePanel(false)
+}
+
+export function getParcels() {
+    return editCurrentSceneParcels ? colyseusRoom.state.scenes.get(scene!.id).pcls.length : tempParcels.size
 }

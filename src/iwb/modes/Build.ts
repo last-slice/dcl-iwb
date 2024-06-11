@@ -311,16 +311,11 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 }
 
 export function otherUserPlaceditem(info: any) {
-    // let parent = playerParentEntities.get(info.user)
-    // if (parent) {
-    //     engine.removeEntity(parent)
-    // }
-    // playerParentEntities.delete(info.user)
-    // // let transform = Transform.getMutable(ent)//
-    // // transform.position = info.position
-    // // transform.scale = info.scale
-    // // transform.rotation = Quaternion.fromEulerDegrees(info.rotation.x, info.rotation.y, info.rotation.z)
-    // // player.selectedEntity = null
+    let parent = playerParentEntities.get(info.user)
+    if (parent) {
+        engine.removeEntity(parent)
+    }
+    playerParentEntities.delete(info.user)
 }
 
 export function otherUserSelectedItem(info: any, catalog?: boolean) {
@@ -457,6 +452,7 @@ export function saveItem() {
 
     hideAllPanels()
     openEditComponent("", true)
+    setUIClicked(false)
 
     // //check Trigger Area Items
     // if (selectedItem.itemData.trigArComp) {
@@ -1261,12 +1257,13 @@ export function addAllBuildModePointers() {
     //     scene.entities.forEach((entity: Entity) => {
     //         addBuildModePointers(entity)
     //     })
-    // })
+    // })//
 }
 
 export function resetEntityForBuildMode(scene:any, entityInfo:any) {
     let itemInfo = scene.itemInfo.get(entityInfo.aid)
     if(itemInfo){
+        console.log('we have item info', entityInfo, itemInfo)
         setGLTFCollisionBuildMode(scene, entityInfo)
         setMeshRenderBuildMode(scene, entityInfo)
         setAudioBuildMode(scene, entityInfo)
@@ -1407,12 +1404,12 @@ export function disableTweenPlacementEntity() {
     // MeshRenderer.deleteFrom(tweenPlacementEntity)
 }
 
-// export function checkPlayerBuildRights(){
-//     // let canBuild = false
-//     // colyseusRoom.state.scenes.forEach((scene: IWBScene, key: string) => {
-//     //     if (scene.pcls.find((parcel) => parcel === localPlayer!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
-//     //         canBuild = true
-//     //     }
-//     // })
-//     // localPlayer.canBuild = canBuild
-// }
+export function checkPlayerBuildRights(){
+    let canBuild = false
+    colyseusRoom.state.scenes.forEach((scene: IWBScene, key: string) => {
+        if (scene.pcls.find((parcel) => parcel === localPlayer!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
+            canBuild = true
+        }
+    })
+    localPlayer.canBuild = canBuild
+}

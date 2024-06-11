@@ -4,6 +4,8 @@ import { getEntity } from "./IWB"
 import { Color4 } from "@dcl/sdk/math"
 
 
+
+
 export function clickAreaListener(scene:any){
     scene.clickAreas.onAdd((counter:any, aid:any)=>{
         !scene.components.includes(COMPONENT_TYPES.CLICK_AREA_COMPONENT) ? scene.components.push(COMPONENT_TYPES.CLICK_AREA_COMPONENT) : null

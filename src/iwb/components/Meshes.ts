@@ -55,6 +55,41 @@ export function setMeshRenderBuildMode(scene:any, entityInfo:any){
 }
 
 export function setMeshRenderPlayMode(scene:any, entityInfo:any){
-    checkMeshRenderComponent(scene, entityInfo)
+    let meshInfo = scene.meshRenders.get(entityInfo.aid)
+    if(meshInfo){
+        if(!meshInfo.onPlay){
+            MeshRenderer.deleteFrom(entityInfo.entity)
+        }
+    }
+    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+}
+
+export function setMeshColliderPlayMode(scene:any, entityInfo:any){
+    let meshInfo = scene.meshColliders.get(entityInfo.aid)
+    if(meshInfo){
+        if(!meshInfo.onPlay){
+            MeshCollider.deleteFrom(entityInfo.entity)
+        }
+    }
+    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+}
+
+export function disableMeshRenderPlayMode(scene:any, entityInfo:any){
+    let meshInfo = scene.meshRenders.get(entityInfo.aid)
+    if(meshInfo){
+        if(!meshInfo.onPlay){
+            MeshRenderer.deleteFrom(entityInfo.entity)
+        }
+    }
+    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+}
+
+export function disableMeshColliderPlayMode(scene:any, entityInfo:any){
+    let meshInfo = scene.meshColliders.get(entityInfo.aid)
+    if(meshInfo){
+        if(!meshInfo.onPlay){
+            MeshCollider.deleteFrom(entityInfo.entity)
+        }
+    }
     MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
 }

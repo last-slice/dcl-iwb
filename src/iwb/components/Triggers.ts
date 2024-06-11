@@ -34,7 +34,6 @@ export function triggerListener(scene:any){
       })
     })
   })
-  engine.addSystem(PlayTriggerSystem)
 }
 
 function updateTriggerEvents(scene:any, entityInfo:any, trigger:any){

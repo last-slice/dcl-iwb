@@ -21,7 +21,7 @@ export function IWBButton(data:any){
           margin:{top:"1%", bottom:'1%'},
           positionType: button.positionType ? button.positionType : undefined,
           position: button.position ? button.position : undefined,
-        //   display: getButtonDisplay(button.label)
+          display: button.hasOwnProperty("displayCondition") ? button.displayCondition() ? 'flex':'none' : 'flex'
       }}
       uiBackground={{
           textureMode: 'stretch',

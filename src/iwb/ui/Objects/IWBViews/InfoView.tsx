@@ -12,10 +12,12 @@ import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping } f
 import { uiSizes } from '../../uiConfig'
 import { playSound } from '../../../components/Sounds'
 import { newItems } from '../../../components/Catalog'
+import { IWBTable, setTableConfig, updateIWBTable } from '../../Reuse/IWBTable'
 
 export let infoView = "Version"
 
 let feedback = ""
+let worldAccessUserId:string = ""
 
 export function updateInfoView(view:string){
     let button = horiztonalButtons.find($=> $.label === infoView)
@@ -38,7 +40,7 @@ export let horiztonalButtons:any[] = [
         // updateExploreView("Current World")
         },
         height:6,
-        width:8,
+        width:6,
         fontBigScreen:30,
         fontSmallScreen:12
     },
@@ -49,7 +51,7 @@ export let horiztonalButtons:any[] = [
         // updateExploreView("My Worlds")
         },
         height:6,
-        width:8,
+        width:6,
         fontBigScreen:30,
         fontSmallScreen:15
     },
@@ -61,12 +63,31 @@ export let horiztonalButtons:any[] = [
         // updateExploreView("All Worlds")
         },
         height:6,
-        width:8,
+        width:6,
         fontBigScreen:30,
-        fontSmallScreen:15
+        fontSmallScreen:15,
+        displayCondition:()=>{
+            return localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)
+        }
+        
+    },
+    {label:"Access", pressed:false, func:()=>{
+        updateInfoView("Access")
+        playSound(SOUND_TYPES.SELECT_3)
+        setTableConfig(worldAccessTableConfig)
+        console.log(worlds.find($=> $.ens === realm))
+        updateIWBTable(getWorldPermissions())
+
+        },
+        height:6,
+        width:6,
+        fontBigScreen:30,
+        fontSmallScreen:15,
+        displayCondition:()=>{
+            return localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)
+        }
     },
 ]
-
 let buttons:any[] = [
     {label:"Tutorials", pressed:false, func:()=>{
         infoView = 'Tutorials'
@@ -100,6 +121,7 @@ export function InfoView(){
         <AssetsView/>
         <FeedbackView/>
         <FeedbackSentView/>
+        <AccessView/>
 
             </UiEntity>
     )
@@ -398,6 +420,86 @@ function TutorialsView(){
     )
 }
 
+function AccessView(){
+    return(
+        <UiEntity
+        key={resources.slug + "-info-view-access"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            display:infoView === "Access" ? 'flex' : 'none'
+        }}
+        >
+
+        <IWBTable />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+        >
+                    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+        >
+
+        <Input
+            onChange={(value) => {
+                worldAccessUserId = value.trim()
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'enter wallet address'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100',
+            }}
+            ></Input>
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+        >
+
+            {generateButtons({slug:"add-world-access", buttons:[
+                {label:"Add Builder", pressed:false, width:12, height:8, func:()=>{
+                    if(worldAccessUserId !== ""){
+                        sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_ADD_BP, 
+                            {
+                                user:worldAccessUserId,
+                            }
+                        )
+                    }
+                    },
+                }
+            ]})}
+            </UiEntity>
+
+            </UiEntity>
+
+        </UiEntity>
+    )
+}
+
 function generateUpdateRows(){
     let arr:any[] = []
     if(iwbConfig && iwbConfig.updates){
@@ -458,4 +560,85 @@ function generateUpdateRows(){
         }
     }
     return arr
+}
+
+
+
+export let worldAccessTableConfig:any = {
+    height:'10%', width:'100%', rowCount:6,
+    headerData:[
+        {name:"Name", go:"Del"},
+    ],
+    // tableSortFn:(a:any, b:any)=>{
+    //     // Check if either of the names is "Realm Lobby"
+    //     if (a.name === "Realm Lobby" && b.name !== "Realm Lobby") {
+    //       return -1; // "Realm Lobby" comes first
+    //     } else if (a.name !== "Realm Lobby" && b.name === "Realm Lobby") {
+    //       return 1; // "Realm Lobby" comes first
+    //     } else {
+    //       // Both names are not "Realm Lobby", sort by parcel size (high to low)
+    //     //   return b.pcnt - a.pcnt;
+    //     return a.name.localeCompare(b.name)
+    //     }
+    // },
+
+    rowConfig:[
+    { 
+        key:"name",
+        overrideKey:true,
+        width:'90%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-left',
+        color:Color4.White(),
+    },
+    {
+        key:"go",
+        width:'10%',
+        height:'80%',
+        margin:{left:"1%"},
+        value:"Go",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        image:{
+            size:3,
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png',
+                uvs:()=>{getImageAtlasMapping(uiSizes.trashButtonTrans)}
+            },
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 258,
+                sourceLeft: 896,
+                sourceWidth: 128,
+                sourceHeight: 128
+            }
+        },
+        onClick:(user:any)=>{
+            // playSound(SOUND_TYPES.SELECT_3)
+            sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_DELETE_BP, 
+                {
+                    user:user,
+                }
+            )
+            // if(scene.init){
+            //     displaySettingsPanel(false)
+            //     displaySetting("Explore")
+            //     displayRealmTravelPanel(true, scene)
+            // }else{
+            //     displaySettingsPanel(false)
+            //     displayInitalizeWorldPanel(true, scene)
+            // }
+        }
+    },
+    ]
+}
+
+export function getWorldPermissions(){
+    return worlds.find($=> $.ens === realm) !== undefined ? [...worlds.find($=> $.ens === realm).bps] : []
 }

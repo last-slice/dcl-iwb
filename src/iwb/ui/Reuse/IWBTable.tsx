@@ -27,12 +27,7 @@ export function refreshVisibleItems(){
     visibleItems.length = 0
 
     if(tableConfig.tableSortFn){
-
-        console.log('table array is', tableArray)
-
         tableArray.sort(tableConfig.tableSortFn)
-
-        console.log('table array is', tableArray)
     }
 
     visibleItems = paginateArray([...tableArray], visibleIndex, tableConfig && tableConfig.rowCount ? tableConfig.rowCount : 6)
@@ -41,6 +36,8 @@ export function refreshVisibleItems(){
 export function updateIWBTable(data:any){
     tableArray = [...data]
     visibleIndex = 1
+
+    console.log('table array is', tableArray)
 
     refreshVisibleItems()
 }
@@ -127,20 +124,20 @@ function generateRow(data:any, header?:boolean){
                 }}
                 uiText={
                     {
-                    value: "" + (header ? data[rowConfig.key] : tableConfig.rowConfig[i].image ? "" : tableConfig.rowConfig[i].func ? tableConfig.rowConfig[i].func(data[rowConfig.key]) : data[rowConfig.key]),
+                    value: "" + (header ? data[rowConfig.key] : tableConfig.rowConfig[i].image ? "" : tableConfig.rowConfig[i].overrideKey ? "" + data : tableConfig.rowConfig[i].func ? tableConfig.rowConfig[i].func(data[rowConfig.key]) : data[rowConfig.key]),
                     fontSize: tableConfig.rowConfig[i].fontSize ? tableConfig.rowConfig[i].fontSize : sizeFont(25, 15),
                     textAlign: tableConfig.rowConfig[i].textAlign ? tableConfig.rowConfig[i].textAlign : 'middle-center',
                     color: tableConfig.rowConfig[i].color ? tableConfig.rowConfig[i].color : Color4.White()
                     }
                 }
                 onMouseDown={
-                    tableConfig.rowConfig[i].image ? undefined :
+                    // tableConfig.rowConfig[i].image ? undefined :
 
                     tableConfig.rowConfig[i].onClick ?
                     ()=>{
                         setUIClicked(true)
                         if(tableConfig.rowConfig[i].onClick){
-                            tableConfig.rowConfig[i].onClick()
+                            tableConfig.rowConfig[i].onClick(data)
                         }
                     }
                     : undefined

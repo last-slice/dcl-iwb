@@ -3,7 +3,7 @@ import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
 import { AUDIO_TYPES } from "../helpers/types"
-import { setMeshRenderPlayMode } from "../components/Meshes"
+import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
 import { disableVisibilityPlayMode, setVisibilityPlayMode } from "../components/Visibility"
@@ -12,6 +12,7 @@ import { disableAnimationPlayMode } from "../components/Animator"
 import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/SmartItems"
 import { setPointersPlayMode } from "../components/Pointers"
 import { checkTransformComponent } from "../components/Transform"
+import { disableTextShapePlayMode, setTextShapeForPlayMode } from "../components/TextShape"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -80,12 +81,14 @@ export function enableSceneEntities(sceneId: string) {
                 if(entityInfo){
                     setGLTFPlayMode(scene, entityInfo)
                     setVideoPlayMode(scene, entityInfo)
+                    setMeshColliderPlayMode(scene, entityInfo)
                     setMeshRenderPlayMode(scene, entityInfo)
                     setVisibilityPlayMode(scene, entityInfo)
                     setAudioPlayMode(scene, entityInfo)
                     setSmartItemPlaydMode(scene, entityInfo)
                     setPointersPlayMode(scene, entityInfo)
                     checkTransformComponent(scene, entityInfo)
+                    setTextShapeForPlayMode(scene, entityInfo)
                 }
             }
         })
@@ -125,6 +128,9 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableAudioPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
         disableAnimationPlayMode(scene, entityInfo)
+        disableMeshColliderPlayMode(scene, entityInfo)
+        disableMeshRenderPlayMode(scene, entityInfo)
+        disableTextShapePlayMode(scene, entityInfo)
         disableSmartItemsPlayMode(scene, entityInfo)
         checkTransformComponent(scene, entityInfo)
         PointerEvents.deleteFrom(entityInfo.entity)

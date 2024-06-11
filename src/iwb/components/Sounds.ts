@@ -102,16 +102,12 @@ export function setAudioPlayMode(scene:any, entityInfo:any){
 export function disableAudioPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene.sounds.get(entityInfo.aid)
     if(itemInfo){
-        MeshRenderer.deleteFrom(entityInfo.entity)
-        MeshCollider.deleteFrom(entityInfo.entity)
-        TextShape.deleteFrom(entityInfo.entity)
-
         if(itemInfo.type === AUDIO_TYPES.SOUND){
             AudioSource.getMutable(entityInfo.entity).playing = false
         }else{
             AudioStream.getMutable(entityInfo.entity).playing = false
         }
-    }//
+    }
 }
 
 export function updateAudioTextLabel(scene:any, aid:string, value:string){

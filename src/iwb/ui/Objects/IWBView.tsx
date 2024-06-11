@@ -2,13 +2,15 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import resources from '../../helpers/resources'
 import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
-import { generateButtons } from '../ui'
+import { generateButtons, setUIClicked } from '../ui'
 import { IWBTable, setTableConfig, updateIWBTable } from '../Reuse/IWBTable'
 import { testData } from '../../tests/testData'
 import { InfoView, updateInfoView } from './IWBViews/InfoView'
 import { SettingsView, updateSettingsView } from './IWBViews/SettingsView'
 import { currentWorldTableConfig, horiztonalButtons, updateWorldView, WorldsView, worldView } from './IWBViews/WorldView'
 import { displayStoreView } from './StoreView'
+import { CreateSceneView } from './IWBViews/CreateView'
+import { displayExpandedMap } from './ExpandedMapView'
 
 let show = false
 
@@ -16,15 +18,16 @@ let buttons:any[] = [
     {label:"Worlds", pressed:false, func:()=>{
         updateMainView("Worlds")
         updateWorldView("Current World")
-        // showYourBuilds()
-        // updateExploreView("Current World")
-        // displaySetting(button.label)
         }
     },
     {label:"Store", pressed:false, func:()=>{
         displayMainView(false)
-        displayStoreView(true)
-        //showstore view
+        // displayStoreView(true)
+        displayExpandedMap(true)
+        }
+    },
+    {label:"Create", pressed:false, func:()=>{
+        updateMainView("Create")
         }
     },
     {label:"Settings", pressed:false, func:()=>{
@@ -33,7 +36,6 @@ let buttons:any[] = [
         }
     },
     {label:"Info", pressed:false, func:()=>{
-
         updateMainView("Info")
         updateInfoView("Version")
         // updateTutorialsView("list")
@@ -125,6 +127,12 @@ export function createMainView() {
                     },
                     uvs: getImageAtlasMapping(uiSizes.horizRectangle)
                 }}
+                onMouseDown={()=>{
+                    setUIClicked(true)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
             >
 
                 {/* main content container */}
@@ -190,6 +198,7 @@ function MainRightView(){
             <WorldsView/>
             <SettingsView/>
             <InfoView/>
+            <CreateSceneView/>
 
         </UiEntity>
   

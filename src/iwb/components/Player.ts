@@ -72,15 +72,16 @@ export async function createPlayer(player:any){
 }
 
 function checkPlayerHomeWorld(player:any){
-    if (realm !== "BuilderWorld") {
+    // if (realm !== "BuilderWorld") {
         player.worlds.forEach(async (world:any) => {
             if ((world.ens === realm)) {
                 player!.homeWorld = true
+                player.worldPermissions = true
                 // await getPlayerLand()
                 return
             }
         })
-    }
+    // }
 }
 
 function setPlayerDefaults(player:any){
@@ -93,7 +94,8 @@ function setPlayerDefaults(player:any){
     player.landsAvailable = []
     player.buildingAllowed = false
     player.canBuild = false
-    player.homeWorld = true
+    player.homeWorld = false
+    player.worldPermissions = false
     player.selectedEntity = null
     player.activeSceneId = ""
     player.mode = SCENE_MODES.PLAYMODE

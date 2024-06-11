@@ -15,20 +15,20 @@ import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../ui/Objects/Sc
 import { checkNftShapeComponent } from "./NftShape"
 import { checkMeshColliderComponent, checkMeshRenderComponent } from "./Meshes"
 import { checkTextureComponent } from "./Textures"
-import { getEntity } from "./IWB"
 import { checkPointerComponent } from "./Pointers"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
     item.entity = ent
 
-    console.log('creating entity', ent)//
+    console.log('creating entity', ent)
 
     RealmEntityComponent.create(ent)
 
     if (playerMode === SCENE_MODES.BUILD_MODE) {
         addBuildModePointers(ent)
     }
+    console.log('finished creating entity')
 }
 
 export function getAssetIdByEntity(scene:any, entity:Entity){
@@ -42,11 +42,9 @@ export function getAssetIdByEntity(scene:any, entity:Entity){
 }
 
 export function findAssetParent(scene:any, aid:string){
-    for(let i = 0; i < scene.parenting.length; i++){
-        let parent = scene.parenting[i]
-        for(let j = 0; parent.children.length; j++){
-            let child = parent.children[j]
-            if(child === aid){
+    if(scene.parenting.length > 0){
+        for(const parent of scene.parenting){
+            if(parent.children.includes(aid)){
                 switch(parent.aid){
                     case '0':
                         return scene.parentEntity
@@ -59,6 +57,9 @@ export function findAssetParent(scene:any, aid:string){
                 }
             }
         }
+        return scene.parentEntity
+    }else{
+        return engine.RootEntity
     }
 }
 
@@ -86,7 +87,7 @@ export function parentingListener(scene:any){
             await checkNftShapeComponent(scene, item)
             await checkPointerComponent(scene, item)
 
-            //// await checkSmartItemComponent()
+            // await checkSmartItemComponent()
 
 
             if(playerMode === SCENE_MODES.BUILD_MODE){
@@ -111,4 +112,4 @@ export function parentingListener(scene:any){
             displaySceneAssetInfoPanel(true)
         }
     })
-}
+}//

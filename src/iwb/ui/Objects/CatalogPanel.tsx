@@ -111,7 +111,7 @@ export function filterCatalog() {
         filteredResult = [...result]
     }
 
-    if (searchFilter !== "") {
+    // if (searchFilter !== "") {
         let result = filteredResult.filter(item =>
             item.n.toLowerCase().includes(searchFilter.toLowerCase()) ||
             (item.sty && item.sty.toLowerCase().includes(searchFilter.toLowerCase())) ||
@@ -121,7 +121,7 @@ export function filterCatalog() {
             (item.tag && item.tag.includes(searchFilter.toLowerCase()))
         );
         filteredResult = [...result]
-    }
+    // }
 
     filtered = filteredResult
     totalPages = Math.ceil(filtered.length / (columns * rows));

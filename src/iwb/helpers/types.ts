@@ -71,6 +71,8 @@ export enum SERVER_MESSAGE_TYPES {
     REMOVED_TUTORIAL = 'removed_tutorial',
     UPDATED_TUTORIAL_CID = 'updated_tutorial_cid',
     WORLD_TRAVEL = 'world_travel',
+    WORLD_ADD_BP = 'world_add_build_permissions',
+    WORLD_DELETE_BP = 'world_delete_build_permissions',
     
     CUSTOM = "custom",
 
@@ -663,4 +665,18 @@ export enum AVATAR_ANCHOR_POINTS {
     AAPT_RIGHT_LEG = 23,
     AAPT_RIGHT_FOOT = 24,
     AAPT_RIGHT_TOE_BASE = 25
+}
+
+export enum SCENE_CATEGORIES {
+    ART = "art",
+    GAME = "game",
+    CASINO = 'casino',
+    SOCIAL = 'social',
+    MUSIC = 'music',
+    FASHION = 'fashion',
+    CRYPTO = 'crypto',
+    EDUCATION = 'education',
+    SHOP = 'shop',
+    BUSINESS = 'business',
+    SPORTS = 'sports',   
 }

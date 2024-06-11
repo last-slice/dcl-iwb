@@ -5,12 +5,12 @@ import { EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_T
 import { log } from "../helpers/functions";
 import { items, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addTutorial, iwbConfig, realm, removeTutorial, setConfig, setWorlds, updateTutorialCID } from "./Config";
+import { addLocalWorldPermissionsUser, addTutorial, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
-import { otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
+import { checkPlayerBuildRights, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
 import { engine } from "@dcl/sdk/ecs";
-import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel } from "../modes/Create";
+import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel, deleteCreationEntities } from "../modes/Create";
 import { getEntity } from "./IWB";
 import { refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
@@ -26,7 +26,7 @@ import { SelectedItemSystem } from "../systems/SelectedItemSystem";
 
 export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
-        // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
+        log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
         setCatalog(info.catalog)
         setRealmAssets(info.realmAssets)
@@ -39,29 +39,12 @@ export async function createColyseusListeners(room:Room){
         setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
         setWorlds(info.worlds)
         setNewItems()
-        setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
-
-        //set occupied parcels
-        // for (const p of info.occupiedParcels) {
-        //     //log('occupied parcel', p)
-        //     addBoundariesForParcel(p, false)
-        // }
+        setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
 
         utils.timers.setTimeout(()=>{
             refreshMap()
         }, 1000 * 5)
     })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_JOINED_USER_WORLD + ' received', info)
-    //     if (info) {
-    //         // updateWorld(info)
-    //     }
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.CATALOG_UPDATED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.CATALOG_UPDATED + ' received', info)
-    // })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
@@ -155,16 +138,15 @@ export async function createColyseusListeners(room:Room){
     //     displayPendingPanel(true, 'ready')
     // })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE + ' received', info)
-    //     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "" + info, animate:{enabled:true, return:true, time:5}})
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE + ' received', info)
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "" + info, animate:{enabled:true, return:true, time:5}})
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
-    //     localPlayer.mode = info.mode
-    //     iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: info.mode})
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
+        setPlayerMode(info.mode)
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
@@ -204,78 +186,83 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.SELECT_PARCEL + ' received', info)
-    //     selectParcel(info)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.REMOVE_PARCEL, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.REMOVE_PARCEL + ' received', info)
-    //     deleteParcelEntities(info)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, ({userId, scene}: { userId: string, scene: IWBScene }) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW + ' received', userId, scene)
-    //     saveNewScene(userId)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW + ' received', info)
-    //     // setScenes(info.info)
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, ({name, sceneName}: { name: string, sceneName: string }) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW + ' received', name, sceneName)
+        if(name === localPlayer.name){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You just created a new scene " + sceneName + "!", animate:{enabled:true, return:true, time: 5}})
+        }else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + name + " just created a new scene " + sceneName + "!", animate:{enabled:true, return:true, time: 5}})
+        }
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, (info:any) => {
     //     log(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET + ' received', info)
     // })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM + ' received', info)
-    //     if(info.user !== localUserId){
-    //         otherUserRemovedSeletedItem(info.user)
-    //     }
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM + ' received', info)
+        if(info.user !== localUserId){
+            otherUserRemovedSeletedItem(info.user)
+        }
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.ASSET_OVER_SCENE_LIMIT, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.ASSET_OVER_SCENE_LIMIT + ' received', info)
-    //     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "This asset puts your scene over the limits", animate:{enabled:true, return:true, time: 5}})
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.ASSET_OVER_SCENE_LIMIT, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.ASSET_OVER_SCENE_LIMIT + ' received', info)
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "This asset puts your scene over the limits", animate:{enabled:true, return:true, time: 5}})
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.USE_SELECTED_ASSET + ' received', info)
-    //     if(info.user !== localUserId){
-    //         log('need to show pickup asset for other user')
-    //             otherUserSelectedItem(info)
-    //     }
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET + ' received', info)
+        if(info.user !== localUserId){
+            otherUserPlaceditem(info)
+        }
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLACE_SELECTED_ASSET + ' received', info)
-    //     if(info.user !== localUserId){
-    //         otherUserPlaceditem(info)
-    //     }
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.WORLD_ADD_BP, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.WORLD_ADD_BP + ' received', info)
+        if(info.user === localUserId){
+            localPlayer.worldPermissions = true
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You were granted build permissions for this world!", animate:{enabled:true, return:true, time:5}})
+        }
+        else{
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Build Permissions Granted to user " + info.user + " on this world", animate:{enabled:true, return:true, time:5}})
+        }
+        addLocalWorldPermissionsUser(info.user)
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_BP, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_ADD_BP + ' received', info)
-    //     if(info.user === localUserId){
-    //         localPlayer.canBuild = true
-    //         showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You were granted build permissions for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
-    //     }
-    //     else{
-    //         showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Build Permissions Granted to user " + info.user + " for your scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
-    //     }
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.WORLD_DELETE_BP, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.WORLD_DELETE_BP + ' received', info)
+        if(info.user === localUserId){
+            localPlayer.worldPermissions = false
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builder permissions were removed for this world ", animate:{enabled:true, return:true, time:5}})
+        }
+        else{
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on this world", animate:{enabled:true, return:true, time:5}})
+        }
+        removeLocalWorldPermissionsUser(info.user)
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP + ' received', info)
-    //     if(info.user === localUserId){
-    //         checkPlayerBuildRights()
-    //         showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builder permissions were removed for scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
-    //     }
-    //     else{
-    //         showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on your scene " + (sceneBuilds.has(info.sceneId) ? sceneBuilds.get(info.sceneId).n : ""), animate:{enabled:true, return:true, time:5}})
-    //     }
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_BP, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_ADD_BP + ' received', info)
+        if(info.user === localUserId){
+            localPlayer.canBuild = true
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You were granted build permissions for scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
+        }
+        else{
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Build Permissions Granted to user " + info.user + " for your scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
+        }
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP + ' received', info)
+        if(info.user === localUserId){
+            checkPlayerBuildRights()
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builder permissions were removed for scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
+        }
+        else{
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on your scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
+        }
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS, (info:any) => {
     //     log(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS + ' received', info)
@@ -357,6 +344,8 @@ export async function createColyseusListeners(room:Room){
 
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         console.log('scene added', key, scene)
+        deleteCreationEntities(localUserId)
+
         await removeEmptyParcels(scene.pcls)
         await loadScene(scene)
 

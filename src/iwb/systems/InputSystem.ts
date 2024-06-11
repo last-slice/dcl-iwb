@@ -150,7 +150,7 @@ export function InputListenSystem(dt:number){
             // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
             // selectedItem && !selectedItem.enabled ? displayHover(false) : null
             const result = inputSystem.getInputCommand(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)
-            if(!uiInput){
+            // if(!uiInput){
                 if (result) {
                     console.log('rsult is', result)
                     if(result.hit && result.hit.entityId){
@@ -165,7 +165,7 @@ export function InputListenSystem(dt:number){
                         // }
                     }
                 }
-            }
+            // }
         }
     }
 

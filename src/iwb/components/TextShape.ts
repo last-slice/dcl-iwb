@@ -32,6 +32,24 @@ export function checkTextShapeComponent(scene:any, entityInfo:any){
     }
 }
 
+export function disableTextShapePlayMode(scene:any, entityInfo:any){
+    let itemInfo = scene.meshRenders.get(entityInfo.aid)
+    if(itemInfo){
+        if(!itemInfo.onPlay){
+            TextShape.deleteFrom(entityInfo.entity)
+        }
+    }
+}
+
+export function setTextShapeForPlayMode(scene:any, entityInfo:any){
+    let meshInfo = scene.meshRenders.get(entityInfo.aid)
+    if(meshInfo){
+        if(!meshInfo.onPlay){
+            TextShape.deleteFrom(entityInfo.entity)
+        }
+    }
+}
+
 export function textShapeListener(scene:any){
     scene.textShapes.onAdd((textShape:any, aid:any)=>{
         let info = getEntity(scene, aid)

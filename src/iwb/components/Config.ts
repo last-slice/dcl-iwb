@@ -15,6 +15,9 @@ import { removePlayModSystem, addPlayModeSystem } from "../systems/PlayModeSyste
 import { disableEntityForPlayMode } from "../modes/Play"
 import { displayHover } from "../ui/Objects/ContextMenu"
 import { clearShowTexts } from "../ui/Objects/ShowText"
+import { updateIWBTable } from "../ui/Reuse/IWBTable"
+import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
+import { PlayTriggerSystem } from "./Triggers"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -59,7 +62,8 @@ export function setWorlds(config: any) {
                 owner: world.owner,
                 ens: world.ens,
                 builds: world.builds,
-                updated: world.updated
+                updated: world.updated,
+                bps:world.bps 
             })
         } else {
             let w = worlds.find((wo: any) => wo.ens === world.ens)
@@ -73,7 +77,8 @@ export function setWorlds(config: any) {
                     owner: world.owner,
                     ens: world.ens,
                     builds: world.builds,
-                    updated: world.updated
+                    updated: world.updated,
+                    bps:world.bps 
                 })
             }
         }
@@ -87,6 +92,8 @@ export function setWorlds(config: any) {
             playerWorld.init = true
         }
     })
+
+    console.log('worlds are set', worlds)
 }
 
 export function addTutorial(info:any){
@@ -104,7 +111,7 @@ export function updateTutorialCID(info:any){
 export function setPlayerMode(mode:SCENE_MODES){
     playerMode = mode
 
-    console.log('setting player mode', playerMode)//
+    console.log('setting player mode', playerMode)
 
     for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
         if(playerMode === SCENE_MODES.CREATE_SCENE_MODE){
@@ -152,16 +159,37 @@ export function setPlayerMode(mode:SCENE_MODES){
         removePlayModSystem()
         addInputSystem()
         updatePlayModeReset(false)
+        engine.removeSystem(PlayTriggerSystem)
     }else if(playerMode === SCENE_MODES.PLAYMODE){
-        console.log('trying to add play systems')
         hideAllPanels()
         displayHover(false)
         removeInputSystem()
         addPlayModeSystem()
+        engine.addSystem(PlayTriggerSystem)
         utils.triggers.enableDebugDraw(false)
     }else{
         removeInputSystem()
         removePlayModSystem()
         utils.triggers.enableDebugDraw(false)
+    }
+}
+
+export function addLocalWorldPermissionsUser(user:string){
+    let world = worlds.find($=> $.ens === realm)
+    if(world){
+        world.bps.push(user)
+        updateIWBTable(getWorldPermissions())
+    }
+}
+
+export function removeLocalWorldPermissionsUser(user:string){
+    let world = worlds.find($=> $.ens === realm)
+    if(world){
+        let userIndex = world.bps.findIndex(($:any) => $ === user)
+        console.log('user index is', userIndex)
+        if(userIndex >= 0){
+            world.bps.splice(userIndex, 1)
+        }
+        updateIWBTable(getWorldPermissions())
     }
 }

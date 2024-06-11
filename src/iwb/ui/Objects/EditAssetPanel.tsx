@@ -24,7 +24,7 @@ import { EditMeshRender } from './Edit/EditMeshRender'
 import { EditMaterial } from './Edit/EditMaterial'
 import { EditTexture } from './Edit/EditTexture'
 import { displayEditAdvancedPanel } from './EditAdvanced'
-import { EditParenting } from './Edit/EditParenting'
+import { EditParenting, updateChildrenAssets } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
 import { EditTrigger, triggerInfoView, triggerView, updateEntitiesWithActionsList, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
 import { EditAction, actionView, updateActionView } from './Edit/EditAction'
@@ -62,6 +62,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.POINTER_COMPONENT:
             updatePointerView("main")
+            break;
+
+        case COMPONENT_TYPES.PARENTING_COMPONENT:
+            updateChildrenAssets()
             break;
         // case COMPONENT_TYPES.NPC_COMPONENT:
         //     updateNPCView('main')
