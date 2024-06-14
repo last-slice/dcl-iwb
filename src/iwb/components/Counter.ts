@@ -53,7 +53,7 @@ export function getCounterValue(sceneId:string, aid:string, type:string, current
 }
 
 
-// export function addCounterComponent(scene:any){
+// export function addCounterComponent(scene:any){//
 //     scene[COMPONENT_TYPES.COUNTER_COMPONENT].forEach((counter:any, aid:string)=>{
 //         let info = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
 //         if(info){
@@ -101,7 +101,7 @@ export function counterListener(scene:any){
         // if(!iwbInfo.components.includes(COMPONENT_TYPES.COUNTER_COMPONENT)){
         //   iwbInfo.components.push(COMPONENT_TYPES.COUNTER_COMPONENT)
         // }
-        
+
         let info = getEntity(scene, aid)
         if(!info){
             return

@@ -22,6 +22,7 @@ import { createAdvancedEditPanel } from './Objects/EditAdvanced'
 import { createShowTextComponent } from './Objects/ShowText'
 import { createExpandedMapView } from './Objects/ExpandedMapView'
 import { createSceneDetailsPanel } from './Objects/SceneMainDetailPanel'
+import { createPendingStatusPanel } from './Objects/PendingInfoPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -48,6 +49,7 @@ const uiComponent:any = () => [
   createShowTextComponent(),
   createExpandedMapView(),
   createSceneDetailsPanel(),
+  createPendingStatusPanel(),
   // createAdvancedEditPanel(),
 ]
 

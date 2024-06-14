@@ -853,15 +853,15 @@ function getAdvancedComponents(){
         COMPONENT_TYPES.CLICK_AREA_COMPONENT
     ]
 
-    let components:any[] = []
-        Object.values(COMPONENT_TYPES).forEach((component)=>{
-            if(scene.hasOwnProperty(component)){
-                components.push(component)
-            }
-        })
+    let assetComponents:any[] = []
+    Object.values(COMPONENT_TYPES).forEach((component)=>{
+        if(scene.hasOwnProperty(component) && scene[component][selectedItem.aid]){
+            assetComponents.push(component)
+        }
+    })
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => components.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -895,7 +895,7 @@ function getComponents(noUnderscore?:boolean){
 
         let components:any[] = []
         Object.values(COMPONENT_TYPES).forEach((component)=>{
-            if(scene.hasOwnProperty(component)){
+            if(scene.hasOwnProperty(component) && scene[component].hasOwnProperty(selectedItem.aid)){
                 components.push(component)
             }
         })

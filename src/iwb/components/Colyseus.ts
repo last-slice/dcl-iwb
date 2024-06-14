@@ -6,6 +6,7 @@ import { log } from '../helpers/functions'
 import { createColyseusListeners } from "./Listeners";
 import { createTimerSystem } from "./Timer";
 import { engine } from "@dcl/sdk/ecs";
+import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 
 export let data:any
 export let colyseusRoom:Room
@@ -24,10 +25,11 @@ export async function colyseusConnect(data:any, token:string, world?:any) {
         room.onLeave((code: number) => {
             log('left room with code', code)
             connected = false
+            displayPendingPanel(true, "disconnected")
         })
 
         engine.addSystem(createTimerSystem())
-        createColyseusListeners(room)
+        createColyseusListeners(room)//
         
         
     }).catch((err) => {

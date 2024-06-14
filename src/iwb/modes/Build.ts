@@ -954,10 +954,14 @@ export function grabItem(entity: Entity) {
 
 export function deleteSelectedItem(aid:string) {
     let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
+    console.log('found item info to delete', itemInfo)
     if(itemInfo){
         if(!itemInfo.locked && (!itemInfo.editing || (itemInfo.editing && itemInfo.editor === localUserId))){
+            console.log('item can be deleted')
             let entityInfo = getEntity(localPlayer.activeScene, aid)
+            console.log('found entity info to delte', entityInfo)
             if(entityInfo){
+               
                 let data: any = {
                     assetId: aid,
                     sceneId: localPlayer.activeScene.id,
@@ -969,6 +973,7 @@ export function deleteSelectedItem(aid:string) {
                 openEditComponent("", true)
             }
         }else{
+            console.log('error deleteing item')
             playSound(SOUND_TYPES.ERROR_2)
         }
     }

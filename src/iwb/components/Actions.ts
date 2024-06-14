@@ -134,6 +134,10 @@ function updateActions(scene:any, info:any, action:any){
                 handleSetScale(scene, info, action)
                 break;
 
+             case Actions.CLONE:
+                handleClone(scene, info, action)
+                break;
+
             case Actions.PLACE_PLAYER_POSITION:
                 handlePlacePlayerPosition(scene, info, action)
                 break;
@@ -408,6 +412,12 @@ function handleSetScale(scene:any, info:any, action:any){
       }
 }
 
+function handleClone(scene:any, info:any, action:any){
+    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION,
+        {sceneId:scene.id, aid:info.aid, actionId:action.id}
+    )
+}
+
 function handleAttachToPlayer(scene:any, info:any, action:any){
     AvatarAttach.createOrReplace(info.entity, { anchorPointId:action.anchor })
 }
@@ -433,7 +443,7 @@ function handleDisableTriggerArea(info:any){
 }
 
 function handleGiveReward(scene:any, info:any, action:any){
-    // console.log('give user reward', action, actionId)
+    // console.log('give user reward', action, actionId)//
     // showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Claiming Item...", animate:{enabled:true, return:false, time:7}})
     // sendServerMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
 }

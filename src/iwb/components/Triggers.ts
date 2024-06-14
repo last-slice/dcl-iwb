@@ -18,7 +18,7 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
     itemInfo.triggers.forEach((trigger:any)=>{
       switch(trigger.type){
         case Triggers.ON_TICK:
-          // initOnTick(entityInfo.entity)
+          initOnTick(entityInfo.entity)
           break
       }
     })

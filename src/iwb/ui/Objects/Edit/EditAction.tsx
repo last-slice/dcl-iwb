@@ -27,6 +27,7 @@ import { AddSetNumberActionPanel } from './ActionPanels/AddSetNumberPanel'
 import { AddSubtractNumberActionPanel } from './ActionPanels/AddSubtractNumberPanel'
 import { AddShowNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
 import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
+import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -429,6 +430,9 @@ function getActionDataPanel(){
         case Actions.MOVE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddMovePlayerPanel/>
 
+        case Actions.CLONE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddClonePanel/>
+
         case Actions.SET_STATE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             updateEntityStates()
             return <AddSetStatePanel/>
@@ -470,6 +474,7 @@ async function buildAction(){
     resetSetRotationEntity()
     resetSetScaleEntity()
     resetMovePlayerEntity()
+    resetCloneEntity()
 }
 
 function resetActionData(){
@@ -539,6 +544,9 @@ const ActionDefaults:any = {
     [Actions.MOVE_PLAYER]:{
         fn:()=>{addMovePlayerEntity()},
     },
+    [Actions.CLONE]:{
+        fn:()=>{addCloneEntity()},
+    },
     [Actions.SET_STATE]:{
         state:"",
     },
@@ -548,3 +556,5 @@ const ActionDefaults:any = {
         time:5
     },
 }
+
+///

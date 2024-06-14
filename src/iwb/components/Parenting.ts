@@ -46,7 +46,6 @@ export function getAssetIdByEntity(scene:any, entity:Entity){
 export function findAssetParent(scene:any, aid:string){
     if(scene[COMPONENT_TYPES.PARENTING_COMPONENT].length > 0){
         for(const parent of scene[COMPONENT_TYPES.PARENTING_COMPONENT]){
-            console.log('here we are', parent)
             if(parent.children.includes(aid)){
                 switch(parent.aid){
                     case '0':
