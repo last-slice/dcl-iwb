@@ -234,7 +234,7 @@ function getChainIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.nftShapes.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.NFT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return Object.values(BLOCKCHAINS).findIndex((c)=> c === itemInfo.urn.split(":")[1])
             }
@@ -249,7 +249,7 @@ function getFrameIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.nftShapes.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.NFT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.style
             }

@@ -170,7 +170,7 @@ function getShapeIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.meshColliders.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.shape
             }
@@ -185,7 +185,7 @@ function getCollisionIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.meshColliders.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.layer
             }

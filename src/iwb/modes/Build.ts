@@ -24,10 +24,12 @@ import { setVideoBuildMode } from "../components/Videos"
 import { hideAllPanels, setUIClicked } from "../ui/ui"
 import { getAssetIdByEntity } from "../components/Parenting"
 import { openEditComponent } from "../ui/Objects/EditAssetPanel"
-import { setMeshRenderBuildMode } from "../components/Meshes"
+import { setMeshColliderBuildMode, setMeshRenderBuildMode } from "../components/Meshes"
 import { setSmartItemBuildMode } from "../components/SmartItems"
 import { setAnimationBuildMode } from "../components/Animator"
 import { checkTransformComponent } from "../components/Transform"
+import { setTextShapeForBuildMode } from "../components/TextShape"
+import { disableTriggers } from "../components/Triggers"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -365,7 +367,7 @@ export function otherUserRemovedSeletedItem(player: any) {
         engine.removeEntityWithChildren(parent)
     }
 }
-
+//
 export function updateGrabbedYAxis(info: any) {
     // let ent = grabbedAssets.get(info.aid)
     // log('entity is', ent)
@@ -380,7 +382,7 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
 
     let entityInfo = getEntity(localPlayer.activeScene, aid)
     if(entityInfo){
-        let itemInfo = localPlayer.activeScene.itemInfo.get(aid)
+        let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
         if(itemInfo && itemInfo.locked){
             playSound(SOUND_TYPES.ERROR_2)
             return
@@ -437,7 +439,7 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
 
 export function saveItem() {
     PointerEvents.deleteFrom(selectedItem.entity)
-    addBuildModePointers(selectedItem.entity)
+    // addBuildModePointers(selectedItem.entity)
     addAllBuildModePointers()
 
     selectedItem.enabled = false
@@ -757,6 +759,7 @@ export function placeCenterCurrentScene(id?: string) {
 
     selectCatalogItem(id, EDIT_MODES.GRAB, false)
     displayCatalogInfoPanel(false)
+    displayHover(false)
 
     dropSelectedItem()
 
@@ -765,7 +768,7 @@ export function placeCenterCurrentScene(id?: string) {
 
     afterLoadActions.push((sceneId: string) => {
 
-        // get center of scene
+        // get center of scene//
         let scene = colyseusRoom.state.scenes.get(sceneId)
         const center = getCenterOfParcels(scene!.pcls)
         const parentT = Transform.get(scene!.parentEntity)
@@ -950,7 +953,7 @@ export function grabItem(entity: Entity) {
 }
 
 export function deleteSelectedItem(aid:string) {
-    let itemInfo = localPlayer.activeScene.itemInfo.get(aid)
+    let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
     if(itemInfo){
         if(!itemInfo.locked && (!itemInfo.editing || (itemInfo.editing && itemInfo.editor === localUserId))){
             let entityInfo = getEntity(localPlayer.activeScene, aid)
@@ -979,7 +982,7 @@ export function cancelSelectedItem() {
             sceneId: selectedItem.sceneId
         }
     )
-}
+}//
 
 export function cancelEditingItem() {
     log('canceled editing item is', selectedItem)
@@ -1156,6 +1159,7 @@ function addUseItemPointers(ent: Entity) {
 }
 
 export function addBuildModePointers(ent: Entity) {
+    PointerEvents.deleteFrom(ent)
     PointerEvents.createOrReplace(ent, {
         pointerEvents: [
             {
@@ -1242,9 +1246,10 @@ export function sendServerDelete(entity: Entity, data?: any) {
 
 export function hideAllOtherPointers() {
     colyseusRoom.state.scenes.forEach((scene:any)=>{
-        scene.pointers.forEach((pointer:any, aid:string)=>{
+        scene[COMPONENT_TYPES.IWB_COMPONENT].forEach((pointer:any, aid:string)=>{
             let entityInfo = getEntity(scene, aid)
             if(entityInfo){
+                console.log('deleting pointer events', aid)
                 PointerEvents.deleteFrom(entityInfo.entity)
             }
         })
@@ -1252,26 +1257,34 @@ export function hideAllOtherPointers() {
 }
 
 export function addAllBuildModePointers() {
-    // sceneBuilds.forEach((scene, key) => {
-    //     log('scene for poijnters is', scene)
-    //     scene.entities.forEach((entity: Entity) => {
-    //         addBuildModePointers(entity)
-    //     })
-    // })//
+    if(localPlayer.activeScene){
+        localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((parentInfo:any, i:number)=>{
+            if(i > 2){
+                let itemInfo = getEntity(localPlayer.activeScene, parentInfo.aid)
+                if(itemInfo && itemInfo.entity){
+                    console.log('adding build mode pointers for ', itemInfo)
+                    addBuildModePointers(itemInfo.entity)
+                }
+            }
+        })
+    }
 }
 
 export function resetEntityForBuildMode(scene:any, entityInfo:any) {
-    let itemInfo = scene.itemInfo.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
-        console.log('we have item info', entityInfo, itemInfo)
+        disableTriggers(scene, entityInfo)
         setGLTFCollisionBuildMode(scene, entityInfo)
         setMeshRenderBuildMode(scene, entityInfo)
+        setMeshColliderBuildMode(scene, entityInfo)
         setAudioBuildMode(scene, entityInfo)
         setVisibilityBuildMode(scene, entityInfo)
         setVideoBuildMode(scene, entityInfo)
         setAnimationBuildMode(scene, entityInfo)
         setSmartItemBuildMode(scene, entityInfo)
+        setTextShapeForBuildMode(scene, entityInfo)
         checkTransformComponent(scene, entityInfo)
+        addBuildModePointers(entityInfo.entity)
     }
     //         resetTweenPositions(entity, sceneItem, scene)
 }

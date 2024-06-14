@@ -23,13 +23,11 @@ import { EditMeshCollider } from './Edit/EditMeshCollider'
 import { EditMeshRender } from './Edit/EditMeshRender'
 import { EditMaterial } from './Edit/EditMaterial'
 import { EditTexture } from './Edit/EditTexture'
-import { displayEditAdvancedPanel } from './EditAdvanced'
 import { EditParenting, updateChildrenAssets } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
-import { EditTrigger, triggerInfoView, triggerView, updateEntitiesWithActionsList, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
+import { EditTrigger, enableTriggerEdit, resetTriggerPanels, triggerInfoView, triggerView, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
 import { EditAction, actionView, updateActionView } from './Edit/EditAction'
 import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
-import { engine } from '@dcl/sdk/ecs'
 import { resetSetPositionEntity } from './Edit/ActionPanels/AddSetPositionPanel'
 import { EditState } from './Edit/EditState'
 
@@ -48,19 +46,20 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             openEditComponent("")
             break;
 
-        case COMPONENT_TYPES.AUDIO_COMPONENT:
+        case COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT:
+        case COMPONENT_TYPES.AUDIO_STREAM_COMPONENT:
             let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-            if(scene && scene.sounds.has(selectedItem.aid)){
-                updateAudioComponent(scene.sounds.get(selectedItem.aid))
+            if(scene && scene[value].has(selectedItem.aid)){
+                updateAudioComponent(scene[value].get(selectedItem.aid))
             }
             break;
 
         case COMPONENT_TYPES.TRIGGER_COMPONENT:
-            updateEntitiesWithActionsList()
-            updateTriggerView("main")
+            enableTriggerEdit(true)
             break;
 
         case COMPONENT_TYPES.POINTER_COMPONENT:
+            updatePointerView("info")
             updatePointerView("main")
             break;
 
@@ -199,7 +198,7 @@ export function createEditAssetPanel() {
                             setUIClicked(true)
                             if(settings.confirms){
                                 updateSelectedAssetId(selectedItem.aid)
-                                displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene.names.get(selectedAssetId).value)
+                                displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(selectedAssetId).value)
                             }else{
                                 deleteSelectedItem(selectedItem.aid)
                             }
@@ -390,10 +389,23 @@ function getBackButtonLogic(){
             if(triggerView === "add"){
                 updateTriggerView("main")
             }else if(triggerView === "info"){
-                if(triggerInfoView === "main"){
-                    updateTriggerView("main")
-                }else{
-                    updateTriggerInfoView("main")
+                switch(triggerInfoView){
+                    case 'main':
+                        updateTriggerView("main")
+                        break
+
+                    case 'conditions':
+                        resetTriggerPanels()
+                        updateTriggerInfoView("main")
+                        break;
+
+                    case 'actions':
+                        updateTriggerInfoView("main")
+                        break;
+
+                    default:
+                        updateTriggerInfoView("main")
+                        break;
                 }
             }else{
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -481,7 +493,7 @@ function getBackButtonLogic(){
 function getAssetName(){
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let itemInfo = scene.names.get(selectedItem.aid)
+        let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(selectedItem.aid)
         if(itemInfo){
             return itemInfo.value.length > 20 ? itemInfo.value.substring(0,20) + "..." : itemInfo.value
         }
@@ -607,7 +619,7 @@ function EditObjectData(){
 
  
             <Dropdown
-                options={getComponents()}
+                options={getComponents(true)}
                 selectedIndex={0}
                 onChange={selectNewAdvancedcComponentIndex}
                 uiTransform={{
@@ -718,25 +730,85 @@ function generateComponentViews() {
     components.sort((a:any, b:any)=> a.localeCompare(b)).forEach((component: any, i:number) => {
         arr.push(
             <UiEntity
-                key={resources.slug + "asset-component-" + component+i}
+            key={resources.slug + "asset-component-" + component+i}
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin: {top: "2%"}
+            }}
+        >
+
+            <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                    margin: {top: "2%"}
+                    width: '90%',
+                    height: '100%',
                 }}
                 uiBackground={{color: Color4.Black()}}
-                uiText={{value: "" + component, fontSize: sizeFont(30, 20)}}
+                uiText={{value: "" + component.replace(/_/g, " "), fontSize: sizeFont(30, 20)}}
                 onMouseDown={() => {
                     setUIClicked(true)
+                    console.log('on clicked')
                     openEditComponent(component)
                 }}
                 onMouseUp={()=>{
                     setUIClicked(false)
                 }}
             />
+
+                <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '10%',
+                height: '100%',
+            }}
+            uiBackground={{color: Color4.Black()}}
+            >
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                    positionType:'absolute',
+                    position:{right: '2%'},
+                    display: getNoDeletes().includes(component) ? "none" : "flex"
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.trashButton)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    componentViewType = "advanced"
+                    openEditComponent("")
+
+                    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+                        {
+                            component:"Delete",
+                            aid:selectedItem.aid,
+                            sceneId:selectedItem.sceneId,
+                            type: component,
+                        })
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />  
+            </UiEntity>
+
+        </UiEntity>
         )
     });
     return arr
@@ -744,22 +816,21 @@ function generateComponentViews() {
 
 function getBasicComponents(){
     let aid = selectedItem.aid
-    let components:COMPONENT_TYPES[] = [
-        COMPONENT_TYPES.TRANSFORM_COMPONENT,
-        COMPONENT_TYPES.VISBILITY_COMPONENT,
+    let components:COMPONENT_TYPES[] = []
+    let omittedComponents:COMPONENT_TYPES[] = [
+        COMPONENT_TYPES.ACTION_COMPONENT,
+        COMPONENT_TYPES.IWB_COMPONENT,
+        COMPONENT_TYPES.POINTER_COMPONENT,
+        COMPONENT_TYPES.TRIGGER_COMPONENT,
+        COMPONENT_TYPES.COUNTER_COMPONENT,
+        COMPONENT_TYPES.STATE_COMPONENT
     ]
+    Object.values(COMPONENT_TYPES).forEach((component:any)=>{
+        if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
+            components.push(component)
+        }
+    })
 
-    localPlayer.activeScene.names.has(aid) ? components.push(COMPONENT_TYPES.NAMES_COMPONENT) : null
-    localPlayer.activeScene.textShapes.has(aid) ? components.push(COMPONENT_TYPES.TEXT_COMPONENT) : null
-    localPlayer.activeScene.meshRenders.has(aid) ? components.push(COMPONENT_TYPES.MESH_RENDER_COMPONENT) : null
-    localPlayer.activeScene.meshColliders.has(aid) ? components.push(COMPONENT_TYPES.MESH_COLLIDER_COMPONENT) : null
-    localPlayer.activeScene.textures.has(aid) ? components.push(COMPONENT_TYPES.TEXTURE_COMPONENT) : null
-    localPlayer.activeScene.materials.has(aid) ? components.push(COMPONENT_TYPES.MATERIAL_COMPONENT) : null
-    localPlayer.activeScene.videos.has(aid) ? components.push(COMPONENT_TYPES.VIDEO_COMPONENT) : null
-    localPlayer.activeScene.animators.has(aid) ? components.push(COMPONENT_TYPES.ANIMATION_COMPONENT) : null
-    localPlayer.activeScene.sounds.has(aid) ? components.push(COMPONENT_TYPES.AUDIO_COMPONENT) : null
-    localPlayer.activeScene.gltfs.has(aid) ? components.push(COMPONENT_TYPES.GLTF_COMPONENT) : null
-    localPlayer.activeScene.nftShapes.has(aid) ? components.push(COMPONENT_TYPES.NFT_COMPONENT) : null
     components.sort((a,b) => a.localeCompare(b))
     components.push(COMPONENT_TYPES.ADVANCED_COMPONENT)
 
@@ -772,13 +843,25 @@ function getAdvancedComponents(){
         return []
     }
 
+    let itemInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === selectedItem.aid)
+        if(!itemInfo){
+            return []
+        }
+
     let headers:any[] = [
         COMPONENT_TYPES.ADVANCED_COMPONENT,
         COMPONENT_TYPES.CLICK_AREA_COMPONENT
     ]
 
+    let components:any[] = []
+        Object.values(COMPONENT_TYPES).forEach((component)=>{
+            if(scene.hasOwnProperty(component)){
+                components.push(component)
+            }
+        })
+
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => scene.components.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => components.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -798,15 +881,28 @@ function selectNewAdvancedcComponentIndex(index:number){
     newAdvancedComponentIndex = index
 }
 
-function getComponents(){
+function getComponents(noUnderscore?:boolean){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(!scene){
             return []
         }
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => !scene.components.includes(item))
+        let itemInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === selectedItem.aid)
+        if(!itemInfo){
+            return []
+        }
+
+        let components:any[] = []
+        Object.values(COMPONENT_TYPES).forEach((component)=>{
+            if(scene.hasOwnProperty(component)){
+                components.push(component)
+            }
+        })
+
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => !components.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
+        noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")
 
         return array
@@ -814,3 +910,12 @@ function getComponents(){
     return []
 }
 
+function getNoDeletes(){
+    return [
+        COMPONENT_TYPES.NAMES_COMPONENT, 
+        COMPONENT_TYPES.PARENTING_COMPONENT, 
+        COMPONENT_TYPES.ADVANCED_COMPONENT,
+        COMPONENT_TYPES.TRANSFORM_COMPONENT,
+        COMPONENT_TYPES.VISBILITY_COMPONENT,
+    ]
+}

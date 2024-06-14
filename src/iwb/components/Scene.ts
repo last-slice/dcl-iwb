@@ -1,6 +1,6 @@
 import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import { getSceneInformation } from '~system/Runtime'
-import {IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
+import {COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
 import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
@@ -16,7 +16,6 @@ import { disableSceneEntities, enableSceneEntities } from "../modes/Play"
 import { playModeReset } from "../modes/Play"
 import { iwbInfoListener } from "./IWB"
 import { nameListener } from "./Name"
-import { soundsListener } from "./Sounds"
 import { textShapeListener } from "./TextShape"
 import { visibilityListener } from "./Visibility"
 import { nftShapeListener } from "./NftShape"
@@ -24,11 +23,11 @@ import { videoListener } from "./Videos"
 import { textureListener } from "./Textures"
 import { counterListener } from "./Counter"
 import { actionListener } from "./Actions"
-import { clickAreaListener } from "./SmartItems"
 import { triggerListener } from "./Triggers"
 import { pointerListener } from "./Pointers"
 import { stateListener } from "./States"
 import { realm, worlds } from "./Config"
+import { soundsListener } from "./Sounds"
 
 export let realmActions: any[] = []
 
@@ -44,9 +43,8 @@ export let emptyParcels:any[] = []
 export const afterLoadActions: Function[] = []
 
 export function enablePrivateModeForScene(scene:any){
-    scene.parenting.forEach((item:any, i:number)=>{
+    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
         if(i > 2){
-            console.log('removing real entities', item)
             engine.removeEntity(item.entity)
         }
     })
@@ -70,17 +68,11 @@ async function loadSceneComponents(scene:any){
 
     // await addParenting(scene)//
     parentingListener(scene)
-
-    // await addGltfComponent(scene)
+    iwbInfoListener(scene)
     gltfListener(scene)
-
-    // await addVisibilityComponent(scene)
     visibilityListener(scene)
-
-    // await addTransformComponent(scene)
     transformListener(scene)
     meshListener(scene)
-    iwbInfoListener(scene)
     nameListener(scene)
     soundsListener(scene)
     textShapeListener(scene)
@@ -90,26 +82,9 @@ async function loadSceneComponents(scene:any){
     counterListener(scene)
     actionListener(scene)
     triggerListener(scene)
-    clickAreaListener(scene)
     pointerListener(scene)
     stateListener(scene)
 
-    // await addTextShapeComponent(scene)//
-    
-
-    // await addSoundComponent(scene)
-
-    // await addPointerComponent(scene)
-
-    // await addTriggerComponent(scene)
-
-    // await addActionComponent(scene)
-
-    // await addCounterComponent(scene)
-    // counterListener(scene)
-
-    // await addStateComponent(scene)
-    // stateListener(scene)
 
     //todo
     //we might not need these since these are only metadata changes and can be pulled auto from colyseus room state
@@ -118,21 +93,13 @@ async function loadSceneComponents(scene:any){
     // await addNameComponent(scene)
 }
 
-export function unloadScene(sceneId:any) {
-    // let localScene = colyseusRoom.state.scenes.get(sceneId)
-    // if (localScene) {
-    //     engine.removeEntityWithChildren(localScene.parentEntity)
-    //     localScene.entities.forEach((entity: Entity) => {
-    //         let aid = itemIdsFromEntities.get(entity)
-    //         itemIdsFromEntities.delete(entity)
-    //         entitiesFromItemIds.delete(aid)
-    //     })
-    //     localScene.pcls.forEach((parcel: string) => {
-    //         deleteParcelEntities(parcel)
-    //     })
+export function unloadScene(scene:any) {
+    engine.removeEntityWithChildren(scene.parentEntity)
+    scene.pcls.forEach((parcel: string) => {
+        deleteParcelEntities(parcel)
+    })
 
-    //     addBlankParcels(localScene.pcls)
-    // }
+    addBlankParcels(scene.pcls)
 }
 
 async function loadSceneBoundaries(scene:any) {

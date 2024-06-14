@@ -1,10 +1,11 @@
 import { ColliderLayer, GltfContainer, MeshCollider, MeshRenderer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../helpers/Components"
+import { COMPONENT_TYPES } from "../helpers/types"
 
 export function checkMeshRenderComponent(scene:any, entityInfo:any){
-    let mesh = scene.meshRenders.get(entityInfo.aid)
-    if(mesh){
+    let mesh = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
+    if(mesh && entityInfo.entity){
         switch(mesh.shape){
             case 0:
                 MeshRenderer.setPlane(entityInfo.entity)
@@ -18,8 +19,8 @@ export function checkMeshRenderComponent(scene:any, entityInfo:any){
 }
 
 export function checkMeshColliderComponent(scene:any, entityInfo:any){
-    let mesh = scene.meshColliders.get(entityInfo.aid)
-    if(mesh){
+    let mesh = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
+    if(mesh && entityInfo.entity){
         switch(mesh.shape){
             case 0:
                 MeshCollider.setPlane(entityInfo.entity)
@@ -34,7 +35,12 @@ export function checkMeshColliderComponent(scene:any, entityInfo:any){
 }
 
 export function meshListener(scene:any){
-    scene.meshColliders.onAdd((mesh:any, aid:any)=>{
+    scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].onAdd((mesh:any, aid:any)=>{
+        let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+        if(!iwbInfo.components.includes(COMPONENT_TYPES.MESH_COLLIDER_COMPONENT)){
+          iwbInfo.components.push(COMPONENT_TYPES.MESH_COLLIDER_COMPONENT)
+        }
+
         let entityInfo = getEntity(scene, aid)
         if(!entityInfo){
             return
@@ -43,9 +49,29 @@ export function meshListener(scene:any){
         mesh.listen("layer", (c:any, p:any)=>{
             console.log('mesh collision changed', p, c)
             if(p !== undefined){
-                MeshCollider.setPlane(entityInfo.entity, c)
+                switch(mesh.shape){
+                    case 0:
+                        MeshCollider.setPlane(entityInfo.entity, c)
+                        break;
+
+                    case 1:
+                        MeshCollider.setBox(entityInfo.entity, c)
+                        break;
+                }
             }
         })
+    })
+
+    scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].onAdd((mesh:any, aid:any)=>{
+        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+        // if(!iwbInfo.components.includes(COMPONENT_TYPES.MESH_RENDER_COMPONENT)){
+        //   iwbInfo.components.push(COMPONENT_TYPES.MESH_RENDER_COMPONENT)
+        // }
+
+        let entityInfo = getEntity(scene, aid)
+        if(!entityInfo){
+            return
+        }
     })
 }
 
@@ -55,41 +81,49 @@ export function setMeshRenderBuildMode(scene:any, entityInfo:any){
 }
 
 export function setMeshRenderPlayMode(scene:any, entityInfo:any){
-    let meshInfo = scene.meshRenders.get(entityInfo.aid)
-    if(meshInfo){
+    let meshInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
+    if(meshInfo && entityInfo.entity){
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }
+        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
-    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+}
+
+export function setMeshColliderBuildMode(scene:any, entityInfo:any){
+    let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
+    if(meshInfo){
+        checkMeshColliderComponent(scene, entityInfo)
+        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+    }
 }
 
 export function setMeshColliderPlayMode(scene:any, entityInfo:any){
-    let meshInfo = scene.meshColliders.get(entityInfo.aid)
-    if(meshInfo){
+    let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
+    if(meshInfo && entityInfo.entity){
         if(!meshInfo.onPlay){
             MeshCollider.deleteFrom(entityInfo.entity)
         }
+        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
-    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
 }
 
 export function disableMeshRenderPlayMode(scene:any, entityInfo:any){
-    let meshInfo = scene.meshRenders.get(entityInfo.aid)
-    if(meshInfo){
+    let meshInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
+    if(meshInfo && entityInfo.entity){
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }
+        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
-    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
 }
 
 export function disableMeshColliderPlayMode(scene:any, entityInfo:any){
-    let meshInfo = scene.meshColliders.get(entityInfo.aid)
-    if(meshInfo){
+    let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
+    if(meshInfo && entityInfo.entity){
         if(!meshInfo.onPlay){
             MeshCollider.deleteFrom(entityInfo.entity)
         }
+        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
-    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
 }

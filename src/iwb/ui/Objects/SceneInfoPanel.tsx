@@ -16,6 +16,7 @@ import { getView } from '../uiViews'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
 import { getEntity } from '../../components/IWB'
 import { setUIClicked } from '../ui'
+import { displaySceneDetailsPanel } from './SceneMainDetailPanel'
 
 export let visibleIndex = 1
 export let visibleRows = 7
@@ -40,11 +41,11 @@ export function displaySceneAssetInfoPanel(value: boolean) {
 
         if(localPlayer.activeScene){
             let assets:any[] = []
-            localPlayer.activeScene.parenting.forEach((parentingInfo:any, i:number)=>{
+            localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((parentingInfo:any, i:number)=>{
                 if(i > 2){
-                    let itemInfo = localPlayer.activeScene.itemInfo.get(parentingInfo.aid)
+                    let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(parentingInfo.aid)
                     if(itemInfo){
-                        assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:localPlayer.activeScene.names.get(parentingInfo.aid).value})
+                        assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
                     }
                 }
             })
@@ -73,11 +74,11 @@ export function updateVisibleIndex(amt: number) {
 export function updateRows() {
     if(localPlayer.activeScene){
         let assets:any[] = []
-        localPlayer.activeScene.parenting.forEach((parentingInfo:any, i:number)=>{
+        localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((parentingInfo:any, i:number)=>{
             if(i > 2){
-                let itemInfo = localPlayer.activeScene.itemInfo.get(parentingInfo.aid)
+                let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(parentingInfo.aid)
                 if(itemInfo){
-                    assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:localPlayer.activeScene.names.get(parentingInfo.aid).value})
+                    assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
                 }
             }
         })
@@ -97,7 +98,7 @@ export function selectRow(row: number, pointer?: boolean) {
 
     let item = items.get(visibleItems[selectedRow].id)
     if (item) {
-        let transform = localPlayer.activeScene.transforms.get(selectedAssetId)
+        let transform = localPlayer.activeScene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(selectedAssetId)
         if(transform){
             if (pointer) {
                 GltfContainer.createOrReplace(sceneInfoEntitySelector, {
@@ -257,8 +258,8 @@ export function createSceneInfoPanel() {
                     onMouseDown={() => {
                         setUIClicked(true)
                         displaySceneAssetInfoPanel(false)
-                        // displaySceneSetting("Info")
-                        // displaySceneInfoPanel(true, sceneBuilds.get(localPlayer.activeScene!.id))
+                        displaySceneDetailsPanel(true, localPlayer.activeScene)
+
                     }}
                     onMouseUp={()=>{
                         setUIClicked(false)
@@ -491,7 +492,7 @@ export function createSceneInfoPanel() {
                     onMouseDown={() => {
                         setUIClicked(true)
                         if(settings.confirms){
-                            displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene.names.get(selectedAssetId).value)
+                            displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(selectedAssetId).value)
                         }else{
                             deleteSelectedItem(selectedAssetId)
 
@@ -752,7 +753,7 @@ const SceneAssetList = () => {
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
-                value: "Totals: " + (localScene ? localPlayer.activeScene?.parenting.length - 3 : ""),
+                value: "Totals: " + (localScene ? localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT].length - 3 : ""),
                 fontSize: sizeFont(25, 15),
                 textAlign: 'middle-left',
                 color: Color4.White()
@@ -930,7 +931,7 @@ function SceneAssetRow(data:any){
     }}
     onMouseDown={() => {
         setUIClicked(true)
-        let itemInfo = localPlayer.activeScene.itemInfo.get(aid)
+        let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
         if(itemInfo && !itemInfo.locked){
             if(selectedRow === i){
                 deselectRow()
@@ -956,7 +957,7 @@ function SceneAssetRow(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{
-            value: curItem ? name.length > 25 ?  name.substring(0,25) + "..." : name : "Name not found",
+            value: curItem ? name.length > 15 ?  name.substring(0,15) + "..." : name : "Name not found",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
             color: Color4.White()
@@ -973,7 +974,7 @@ function SceneAssetRow(data:any){
             width: '15%',
             height: '100%',
         }}
-        // uiBackground={{color:Color4.Green()}}
+        // uiBackground={{color:Color4.Green()}}//
         uiText={{
             value: curItem?.pc ? formatDollarAmount(curItem?.pc) : "0",
             fontSize: sizeFont(20, 15),
@@ -1028,7 +1029,7 @@ function SceneAssetRow(data:any){
         }}
         onMouseDown={()=>{
             setUIClicked(true)
-            sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {component:COMPONENT_TYPES.IWB_COMPONENT, sceneId:localPlayer.activeScene.id, aid:aid, buildVis: !localPlayer.activeScene.itemInfo.get(aid).buildVis})
+            sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {component:COMPONENT_TYPES.IWB_COMPONENT, sceneId:localPlayer.activeScene.id, aid:aid, buildVis: !localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid).buildVis})
         }}
         onMouseUp={()=>{
             setUIClicked(false)
@@ -1065,7 +1066,7 @@ function SceneAssetRow(data:any){
         }}
         onMouseDown={()=>{
             setUIClicked(true)
-            sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {component:COMPONENT_TYPES.IWB_COMPONENT, sceneId:localPlayer.activeScene.id, aid:selectedAssetId, locked: !localPlayer.activeScene.itemInfo.get(aid).locked})
+            sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {component:COMPONENT_TYPES.IWB_COMPONENT, sceneId:localPlayer.activeScene.id, aid:selectedAssetId, locked: !localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid).locked})
         }}
         onMouseUp={()=>{
             setUIClicked(false)
@@ -1122,7 +1123,7 @@ function getVis(aid:string){
     let scene = colyseusRoom.state.scenes.get(localPlayer.activeScene.id)
     let entityInfo = getEntity(scene, aid)
     if(entityInfo){
-        let itemInfo = scene.itemInfo.get(entityInfo.aid)
+        let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
         if(itemInfo && itemInfo.buildVis){ 
             return getImageAtlasMapping(uiSizes.eyeTrans)
         }
@@ -1135,7 +1136,7 @@ function getLocked(aid:string){
     let scene = colyseusRoom.state.scenes.get(localPlayer.activeScene.id)
     let entityInfo = getEntity(scene, aid)
     if(entityInfo){
-        let itemInfo = scene.itemInfo.get(entityInfo.aid)
+        let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
         if(itemInfo && itemInfo.locked){ 
             return  getImageAtlasMapping(uiSizes.lockedIcon)
         }

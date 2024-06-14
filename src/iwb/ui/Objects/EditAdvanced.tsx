@@ -17,20 +17,6 @@ export let advancedView:string = ""
 
 export function displayEditAdvancedPanel(value:boolean, toggle?:boolean){
     show = value
-
-    // if(show){
-    //     updateComponents()
-    // }
-    // show = toggle ? !show : value
-    // resetViews()
-
-    // setTableConfig(currentWorldTableConfig)
-    // updateMainView("Worlds")
-    // updateWorldView("Current World")
-
-    // if(show && worldView === "Current World"){
-    //     updateIWBTable(testData.scenes)
-    // }
 }
 
 function resetViews(){
@@ -283,7 +269,7 @@ function getName(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let name = scene.names.get(selectedItem.aid)
+            let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(selectedItem.aid)
             if(name){
                 return name.value
             }else{

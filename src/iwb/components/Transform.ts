@@ -2,16 +2,17 @@ import { Entity, Transform } from "@dcl/sdk/ecs"
 import { Quaternion } from "@dcl/sdk/math"
 import { getEntity } from "./IWB"
 import { findAssetParent } from "./Parenting"
+import { COMPONENT_TYPES } from "../helpers/types"
 
 export function checkTransformComponent(scene:any, entityInfo:any){
-    let transform = scene.transforms.get(entityInfo.aid)
+    let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
     if(transform){
         Transform.createOrReplace(entityInfo.entity, {parent:findAssetParent(scene,entityInfo.aid), position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
     }
 }
 
 export function transformListener(scene:any){
-    scene.transforms.onAdd((transform:any, aid:any)=>{
+    scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].onAdd((transform:any, aid:any)=>{
         let entityInfo = getEntity(scene, aid)
         if(!entityInfo){
             return

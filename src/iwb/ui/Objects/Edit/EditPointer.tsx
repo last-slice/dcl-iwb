@@ -24,7 +24,7 @@ export function updatePointerView(value:string, pointerId?:string){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
             if(pointerId){
-                let pointers = scene.pointers.get(selectedItem.aid)
+                let pointers = scene[COMPONENT_TYPES.POINTER_COMPONENT].get(selectedItem.aid)
                 let pointer = pointers.events.find((event:any) => event.id === pointerId)
                 if(pointer){
                     console.log('set pointer data to', pointer)
@@ -32,7 +32,7 @@ export function updatePointerView(value:string, pointerId?:string){
                 }
             }else{
                 utils.timers.setTimeout(()=>{
-                    let pointers = scene.pointers.get(selectedItem.aid)
+                    let pointers = scene[COMPONENT_TYPES.POINTER_COMPONENT].get(selectedItem.aid)
                     if(pointers){
                         console.log('pointers are', pointers.events)
                         newPointerData = {...pointers.events[pointers.events.length-1]}
@@ -67,6 +67,7 @@ export function EditPointer(){
             width: '100%',
             height: '100%',
             display: pointerView === "main" ? "flex" : "none"
+            // display:'flex'
         }}
         >
 
@@ -404,7 +405,7 @@ function getPointerEvents(){
     let count = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let pointers = scene.pointers.get(selectedItem.aid)
+        let pointers = scene[COMPONENT_TYPES.POINTER_COMPONENT].get(selectedItem.aid)
         if(pointers){
             pointers.events.forEach((data:any, i:number)=>{
                 arr.push(<Row data={data} rowCount={count} />)

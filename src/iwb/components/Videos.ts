@@ -2,9 +2,10 @@ import { VideoPlayer } from "@dcl/sdk/ecs"
 import { VideoLoadedComponent } from "../helpers/Components"
 import { selectedItem } from "../modes/Build"
 import { getEntity } from "./IWB"
+import { COMPONENT_TYPES } from "../helpers/types"
 
 export function checkVideoComponent(scene:any, entityInfo:any){
-    let itemInfo = scene.videos.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         console.log('entity info', entityInfo.entity)
         VideoPlayer.create(entityInfo.entity, {
@@ -18,7 +19,7 @@ export function checkVideoComponent(scene:any, entityInfo:any){
 }
 
 export function videoListener(scene:any){
-    scene.videos.onAdd((video:any, aid:any)=>{
+    scene[COMPONENT_TYPES.VIDEO_COMPONENT].onAdd((video:any, aid:any)=>{
         let entityInfo = getEntity(scene, aid)
         if(!entityInfo){
             return
@@ -58,7 +59,7 @@ export function videoListener(scene:any){
 }
 
 export function setVideoBuildMode(scene:any, entityInfo:any){
-    let itemInfo = scene.videos.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         VideoPlayer.getMutable(entityInfo.entity).playing = false
     }
@@ -66,7 +67,7 @@ export function setVideoBuildMode(scene:any, entityInfo:any){
 
 export function setVideoPlayMode(scene:any, entityInfo:any){
     if (VideoLoadedComponent.has(entityInfo.entity) && !VideoLoadedComponent.get(entityInfo.entity).init){
-        let videoInfo = scene.videos.get(entityInfo.aid)
+        let videoInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
         if(videoInfo && videoInfo.autostart){
             let video = VideoPlayer.getMutableOrNull(entityInfo.entity)
             if(video){
@@ -79,7 +80,7 @@ export function setVideoPlayMode(scene:any, entityInfo:any){
 }
 
 export function disableVideoPlayMode(scene:any, entityInfo:any){
-    let itemInfo = scene.videos.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         VideoPlayer.getMutable(entityInfo.entity).playing = false
     }

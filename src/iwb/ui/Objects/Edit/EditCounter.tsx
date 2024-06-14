@@ -130,7 +130,7 @@ function getDefaultCounterValue(){
         return ""
     }
 
-    let counter = scene.counters.get(selectedItem.aid)
+    let counter = scene[COMPONENT_TYPES.COUNTER_COMPONENT].get(selectedItem.aid)
     if(counter){
         return "" + counter.defaultValue
     }

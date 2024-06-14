@@ -6,23 +6,23 @@ import { Color4 } from "@dcl/sdk/math"
 
 
 
-export function clickAreaListener(scene:any){
-    scene.clickAreas.onAdd((counter:any, aid:any)=>{
-        !scene.components.includes(COMPONENT_TYPES.CLICK_AREA_COMPONENT) ? scene.components.push(COMPONENT_TYPES.CLICK_AREA_COMPONENT) : null
+// export function clickAreaListener(scene:any){
+//     scene[COMPONENT_TYPES.CLICK_AREA_COMPONENT].onAdd((counter:any, aid:any)=>{
+//         !scene.components.includes(COMPONENT_TYPES.CLICK_AREA_COMPONENT) ? scene.components.push(COMPONENT_TYPES.CLICK_AREA_COMPONENT) : null
 
-        let info = getEntity(scene, aid)
-        if(!info){
-            return
-        }
-    })
-}
+//         let info = getEntity(scene, aid)
+//         if(!info){
+//             return
+//         }
+//     })
+// }//
 
 export function setSmartItemBuildMode(scene:any, entityInfo:any) {
-    setClickAreaBuildMode(scene, entityInfo)
+    // setClickAreaBuildMode(scene, entityInfo)
 }
 
 function setClickAreaBuildMode(scene:any, entityInfo:any){
-    let itemInfo = scene.clickAreas.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.CLICK_AREA_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         MeshRenderer.setBox(entityInfo.entity)
         MeshCollider.setBox(entityInfo.entity, ColliderLayer.CL_POINTER)
@@ -30,12 +30,12 @@ function setClickAreaBuildMode(scene:any, entityInfo:any){
             albedoColor: Color4.create(54 / 255, 221 / 255, 192 / 255, .5)
         })
 
-        let name = scene.names.get(entityInfo.aid)
+        let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(entityInfo.aid)
         if(name){
             TextShape.createOrReplace(entityInfo.entity, {text: "" + name.value, fontSize: 3})
             Billboard.create(entityInfo.entity, {billboardMode: BillboardMode.BM_Y})
         }
-    }
+    }//
 }
 
 export function setSmartItemPlaydMode(scene:any, entityInfo:any) {
@@ -43,11 +43,11 @@ export function setSmartItemPlaydMode(scene:any, entityInfo:any) {
 }
 
 export function disableSmartItemsPlayMode(scene:any, entityInfo:any){
-    disableClickAreaPlayMode(scene, entityInfo)
+    // disableClickAreaPlayMode(scene, entityInfo)
 }
 
 function disableClickAreaPlayMode(scene:any, entityInfo:any){
-    let itemInfo = scene.clickAreas.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.CLICK_AREA_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         MeshRenderer.deleteFrom(entityInfo.entity)
         MeshCollider.deleteFrom(entityInfo.entity)
@@ -55,17 +55,17 @@ function disableClickAreaPlayMode(scene:any, entityInfo:any){
         PointerEvents.deleteFrom(entityInfo.entity)
         TextShape.deleteFrom(entityInfo.entity)
         Billboard.deleteFrom(entityInfo.entity)
-    }
+    }//
 }
 
 function setClickAreaPlayMode(scene:any, entityInfo:any){
 }
 
-export function updateClickAreaTextLabel(scene:any, entityInfo:any, value:string){
-    if(scene.clickAreas.has(entityInfo.aid)){
-        TextShape.createOrReplace(entityInfo.entity, {text: "" + value, fontSize: 3})
-    }
-}
+// export function updateClickAreaTextLabel(scene:any, entityInfo:any, value:string){
+//     if(scene[COMPONENT_TYPES.CLICK_AREA_COMPONENT].has(entityInfo.aid)){
+//         TextShape.createOrReplace(entityInfo.entity, {text: "" + value, fontSize: 3})
+//     }
+// }
 
 function disableSmartItems(scene:any, entityInfo:any){
     // let itemInfo = scene.videos.get(entityInfo.aid)
@@ -98,5 +98,5 @@ function disableSmartItems(scene:any, entityInfo:any){
     //         PointerEvents.deleteFrom(entity)
     //         TextShape.deleteFrom(entity)
     //         break;
-    // }
+    // }//
 }

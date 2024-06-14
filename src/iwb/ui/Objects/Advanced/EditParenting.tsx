@@ -133,8 +133,8 @@ function getEntities(){
             return []
         }
         let entities:any[] = []
-        scene.parenting.forEach((item:any)=>{
-            let assetName = scene.names.get(item.aid)
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
+            let assetName = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(item.aid)
             if(item.aid !== selectedItem.aid){
                 if(assetName){
                     let data:any = {...item}
@@ -154,8 +154,8 @@ function getParentIndex(){
         if(!scene){
             return 0
         }
-        for(let i = 0; i < scene.parenting.length; i++){
-            let parent = scene.parenting[i]
+        for(let i = 0; i < scene[COMPONENT_TYPES.PARENTING_COMPONENT].length; i++){
+            let parent = scene[COMPONENT_TYPES.PARENTING_COMPONENT][i]
             for(let j = 0; parent.children.length; j++){
                 let child = parent.children[j]
                 if(child === selectedItem.aid){

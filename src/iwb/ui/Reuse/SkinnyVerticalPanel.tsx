@@ -48,6 +48,12 @@ export function createSkinnyVerticalPanel(){
             },
             uvs: getImageAtlasMapping(uiSizes.vertRectangle)
         }}
+        onMouseDown={()=>{
+            setUIClicked(true)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
     >            
         {/* header label */}
         <UiEntity

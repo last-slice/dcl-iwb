@@ -2,6 +2,7 @@ import { sendServerMessage } from "../components/Colyseus"
 import { localPlayer } from "../components/Player"
 import { SERVER_MESSAGE_TYPES } from "../helpers/types"
 import { deleteSelectedItem, selectedAssetId } from "../modes/Build"
+import { displaySceneDetailsPanel, scene } from "./Objects/SceneMainDetailPanel"
 import { displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { UI_VIEW_TYPES } from "./uiConfig"
 
@@ -97,7 +98,7 @@ export let uiViews:any[] = [
         props:{
             label:"Clear Scene",
             text:"Are you sure you want to clear this build? All assets will be removed from this scene.",
-            // slug:"welcome-view",//
+            // slug:"welcome-view",
             // view:"welcome",
             display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
             buttons:[
@@ -112,6 +113,32 @@ export let uiViews:any[] = [
                     label:"Cancel",
                     func:()=>{
                         displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Confirm Delete Scene",
+        props:{
+            label:"Delete Scene",
+            text:"Are you sure you want to delete this build? Any builders who have not saved will lose ALL progress!",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Delete",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE, {sceneId: scene && scene.id})
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        displaySceneDetailsPanel(true, scene)
                     }
                 }
             ]

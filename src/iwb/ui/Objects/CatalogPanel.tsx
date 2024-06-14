@@ -104,6 +104,8 @@ export function filterCatalog() {
     if(styleFilter === "Audio"){
         let result = sortedAll.filter(item => item.tag.includes("Audio"))
         filteredResult = [...result]
+    }else if(styleFilter === "All"){
+        filteredResult = [...sortedAll]
     }else{
         let result = sortedAll.filter(item =>
             (item.sty && item.sty.toLowerCase().includes(styleFilter.toLowerCase()))
@@ -111,7 +113,7 @@ export function filterCatalog() {
         filteredResult = [...result]
     }
 
-    // if (searchFilter !== "") {
+    // if (searchFilter !== "") {//
         let result = filteredResult.filter(item =>
             item.n.toLowerCase().includes(searchFilter.toLowerCase()) ||
             (item.sty && item.sty.toLowerCase().includes(searchFilter.toLowerCase())) ||
@@ -384,6 +386,12 @@ export function createCatalogPanel(){
                     src: 'assets/atlas1.png',
                 },
                 uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
+            }}
+            onMouseDown={()=>{
+                setUIClicked(true)
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
             }}
         >
 

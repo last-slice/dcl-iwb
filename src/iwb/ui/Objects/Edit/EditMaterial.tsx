@@ -88,7 +88,7 @@ function getTypeIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.materials.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.MATERIAL_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.type
             }

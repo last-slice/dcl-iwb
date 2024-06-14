@@ -7,6 +7,7 @@ import { setUIClicked } from '../../../ui'
 import { uiSizes } from '../../../uiConfig'
 import { selectedItem } from '../../../../modes/Build'
 import { colyseusRoom } from '../../../../components/Colyseus'
+import { COMPONENT_TYPES } from '../../../../helpers/types'
 
 export let entityActions:any[] = []
 let selectedIndex = 0
@@ -15,7 +16,7 @@ export function updateEntityActions(){
     entityActions.length = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let actions = scene.actions.get(selectedItem.aid)
+        let actions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(selectedItem.aid)
         if(actions && actions.actions.length > 0){
             actions.actions.forEach((action:any)=>{
                 entityActions.push({name:action.name, actionId:action.id})

@@ -4,7 +4,7 @@ import { uiInput } from "../ui/ui"
 import { displayHover, updateContextEvents } from "../ui/Objects/ContextMenu"
 import { playerMode } from "../components/Config"
 import { log } from "../helpers/functions"
-import { SCENE_MODES, EDIT_MODES } from "../helpers/types"
+import { SCENE_MODES, EDIT_MODES, COMPONENT_TYPES } from "../helpers/types"
 import { selectedItem, cancelSelectedItem, dropSelectedItem, deleteSelectedItem, updateSelectedAssetId, editItem } from "../modes/Build"
 import { localPlayer, settings } from "../components/Player"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
@@ -124,7 +124,7 @@ export function InputListenSystem(dt:number){
                     if(aid){
                         if(settings.confirms){
                             updateSelectedAssetId(aid)
-                            displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene.names.get(aid).value)
+                            displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value)
                         }else{
                             deleteSelectedItem(aid)
                         }
@@ -132,7 +132,7 @@ export function InputListenSystem(dt:number){
                 }
                 else{
                     // log('player pressed #F on an object with no result in Build mode, need to delete', hoveredEntity)
-                    //not sure if we need this implementation anymore
+                    //not sure if we need this implementation anymore//
                 }
             }
         }

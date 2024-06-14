@@ -14,7 +14,7 @@ let audioComponent:any = {}
 
 export function updateAudioComponent(audio:any){
     audioComponent = audio
-}
+}//
 
 export function EditAudio() {
     return (
@@ -26,7 +26,7 @@ export function EditAudio() {
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
-                display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? 'flex' : 'none',
+                display: visibleComponent === COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT || visibleComponent === COMPONENT_TYPES.AUDIO_STREAM_COMPONENT ? 'flex' : 'none',
             }}
         >
 
@@ -85,7 +85,7 @@ export function EditAudio() {
         }}
         onMouseDown={() => {
             sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {
-                component: COMPONENT_TYPES.AUDIO_COMPONENT,
+                component: visibleComponent,
                 aid: selectedItem.aid, sceneId: selectedItem.sceneId,
                 attach: !audioComponent.attach
             })
@@ -302,7 +302,7 @@ export function EditAudio() {
                     }}
                     color={Color4.White()}
                     fontSize={sizeFont(25, 15)}
-                    placeholder={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT ? getAudioUrl() : "")}
+                    placeholder={"" + (visibleComponent === COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT || visibleComponent === COMPONENT_TYPES.AUDIO_STREAM_COMPONENT ? getAudioUrl() : "")}
                     placeholderColor={Color4.White()}
                     uiTransform={{
                         width: '100%',
@@ -404,8 +404,8 @@ export function EditAudio() {
 
 function hasAudio(){
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-    if(scene){
-        let itemInfo = scene.sounds.get(selectedItem.aid)
+    if(scene && visibleComponent === COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT || visibleComponent === COMPONENT_TYPES.AUDIO_STREAM_COMPONENT){
+        let itemInfo = scene[visibleComponent].get(selectedItem.aid)
         if(itemInfo){
             return itemInfo.attach
         }
@@ -417,8 +417,8 @@ function hasAudio(){
 function getAudioUrl() {
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-        if(scene){
-            let itemInfo = scene.sounds.get(selectedItem.aid)
+        if(scene && visibleComponent === COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT || visibleComponent === COMPONENT_TYPES.AUDIO_STREAM_COMPONENT){
+            let itemInfo = scene[visibleComponent].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.url
             }
@@ -432,10 +432,10 @@ function getAudioUrl() {
 function getLoop(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-        if(scene){
-            let itemInfo = scene.sounds.get(selectedItem.aid)
+        if(scene && visibleComponent === COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT || visibleComponent === COMPONENT_TYPES.AUDIO_STREAM_COMPONENT){
+            let itemInfo = scene[visibleComponent].get(selectedItem.aid)
             if(itemInfo){
-                return itemInfo.loop ? 0 : 1//
+                return itemInfo.loop ? 0 : 1
             }
             return 0
         }
@@ -453,8 +453,8 @@ function selectLoop(index:number){
 function getAutostart(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-        if(scene){
-            let itemInfo = scene.sounds.get(selectedItem.aid)
+        if(scene && visibleComponent === COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT || visibleComponent === COMPONENT_TYPES.AUDIO_STREAM_COMPONENT){
+            let itemInfo = scene[visibleComponent].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.autostart ? 0 : 1
             }
@@ -474,7 +474,7 @@ function selectStart(index:number){
 function updateAudio(type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
         {
-            component:COMPONENT_TYPES.AUDIO_COMPONENT, 
+            component:visibleComponent, 
             aid:selectedItem.aid, 
             sceneId:selectedItem.sceneId,
             [type]:value
@@ -485,8 +485,8 @@ function updateAudio(type:string, value:any){
 function getVolume(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-        if(scene){
-            let itemInfo = scene.sounds.get(selectedItem.aid)
+        if(scene && visibleComponent === COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT || visibleComponent === COMPONENT_TYPES.AUDIO_STREAM_COMPONENT){
+            let itemInfo = scene[visibleComponent].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.volume
             }
@@ -498,5 +498,5 @@ function getVolume(){
 }
 
 function updateVolume(type:string, value:any){
-    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:COMPONENT_TYPES.AUDIO_COMPONENT, action:"update", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
+    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:visibleComponent, action:"update", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
 }

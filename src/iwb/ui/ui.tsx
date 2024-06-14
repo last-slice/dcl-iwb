@@ -21,6 +21,7 @@ import { createEditAssetPanel } from './Objects/EditAssetPanel'
 import { createAdvancedEditPanel } from './Objects/EditAdvanced'
 import { createShowTextComponent } from './Objects/ShowText'
 import { createExpandedMapView } from './Objects/ExpandedMapView'
+import { createSceneDetailsPanel } from './Objects/SceneMainDetailPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -46,6 +47,7 @@ const uiComponent:any = () => [
   createEditAssetPanel(),
   createShowTextComponent(),
   createExpandedMapView(),
+  createSceneDetailsPanel(),
   // createAdvancedEditPanel(),
 ]
 

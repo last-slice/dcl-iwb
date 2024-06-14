@@ -334,7 +334,7 @@ function getText(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.textShapes.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.text
             }
@@ -349,7 +349,7 @@ function getFontSize(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.textShapes.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.fontSize
             }
@@ -364,7 +364,7 @@ function getFontStyle(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.textShapes.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                return fontStyles.findIndex((c)=> c === itemInfo.font)
             }
@@ -379,7 +379,7 @@ function getTextAlign(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.textShapes.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.textAlign
             }
@@ -394,7 +394,7 @@ function getTextColor(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.textShapes.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return colors.findIndex((ta)=> ta.r === itemInfo.color.r && ta.g === itemInfo.color.g && ta.b === itemInfo.color.b)
             }

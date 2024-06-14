@@ -193,7 +193,7 @@ function getInvisibleIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.gltfs.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.GLTF_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.invisibleCollision
             }
@@ -208,7 +208,7 @@ function getVisibleIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.gltfs.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.GLTF_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.visibleCollision
             }

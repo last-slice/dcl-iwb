@@ -19,7 +19,7 @@ function getAssetStates(){
         return []
     }
     
-    let states = scene.states.get(selectedItem.aid)
+    let states = scene[COMPONENT_TYPES.STATE_COMPONENT].get(selectedItem.aid)
     if(!states){
         return []
     }

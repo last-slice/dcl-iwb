@@ -2,7 +2,7 @@ import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContaine
 import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
-import { AUDIO_TYPES } from "../helpers/types"
+import { AUDIO_TYPES, COMPONENT_TYPES } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
@@ -13,6 +13,8 @@ import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/
 import { setPointersPlayMode } from "../components/Pointers"
 import { checkTransformComponent } from "../components/Transform"
 import { disableTextShapePlayMode, setTextShapeForPlayMode } from "../components/TextShape"
+import { disableTriggers, setTriggersForPlayMode } from "../components/Triggers"
+import { disableCounterForPlayMode } from "../components/Counter"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -25,7 +27,7 @@ export async function disableSceneEntities(sceneId:any) {
     if (!disabledEntities) {
         let scene = colyseusRoom.state.scenes.get(sceneId)
         if(scene){
-            scene.parenting.forEach((item:any, index:number)=>{
+            scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
                 if(index > 2){
                     let entityInfo = getEntity(scene, item.aid)
                     if(entityInfo){
@@ -75,7 +77,7 @@ export function enableSceneEntities(sceneId: string) {
     if(scene){
         // findSceneEntryTrigger(scene)//
 
-        scene.parenting.forEach((item:any, index:number)=>{
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
@@ -89,6 +91,7 @@ export function enableSceneEntities(sceneId: string) {
                     setPointersPlayMode(scene, entityInfo)
                     checkTransformComponent(scene, entityInfo)
                     setTextShapeForPlayMode(scene, entityInfo)
+                    setTriggersForPlayMode(scene, entityInfo)
                 }
             }
         })
@@ -122,7 +125,7 @@ export function enableSceneEntities(sceneId: string) {
 }
 
 export function disableEntityForPlayMode(scene:any, entityInfo:any){
-    let itemInfo = scene.itemInfo.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         disableVisibilityPlayMode(scene, entityInfo)
         disableAudioPlayMode(scene, entityInfo)
@@ -132,7 +135,14 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableMeshRenderPlayMode(scene, entityInfo)
         disableTextShapePlayMode(scene, entityInfo)
         disableSmartItemsPlayMode(scene, entityInfo)
+        disableTriggers(scene, entityInfo)
         checkTransformComponent(scene, entityInfo)
+        disableCounterForPlayMode(scene, entityInfo)
+
+
+        //reset states
+
+
         PointerEvents.deleteFrom(entityInfo.entity)
     }
 

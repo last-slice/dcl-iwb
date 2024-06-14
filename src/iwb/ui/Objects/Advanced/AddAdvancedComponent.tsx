@@ -132,7 +132,7 @@ function getComponents(){
             return []
         }
 
-        let array = [...Object.values(COMPONENT_TYPES)].splice(-8).filter(item => !scene.components.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-8).filter(item => !scene.components.includes(item))
         return array
     }
     return []

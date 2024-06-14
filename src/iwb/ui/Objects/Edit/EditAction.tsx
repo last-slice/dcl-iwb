@@ -21,26 +21,31 @@ import { AddAttachPlayerPanel } from './ActionPanels/AddAttachPlayerPanel'
 import { AddBatchActionPanel, updateEntityActions } from './ActionPanels/AddBatchActionsPanel'
 import { AddSetPositionPanel, addSetPositionEntity, resetSetPositionEntity } from './ActionPanels/AddSetPositionPanel'
 import { AddSetScalePanel, addSetScaleEntity, resetSetScaleEntity } from './ActionPanels/AddSetScalePanel'
-import { AddSetRotationPanel, addsetRotationEntity } from './ActionPanels/AddSetRotationPanel'
+import { AddSetRotationPanel, addsetRotationEntity, resetSetRotationEntity } from './ActionPanels/AddSetRotationPanel'
 import { AddSetStatePanel, updateEntityStates } from './ActionPanels/AddStatePanel'
+import { AddSetNumberActionPanel } from './ActionPanels/AddSetNumberPanel'
+import { AddSubtractNumberActionPanel } from './ActionPanels/AddSubtractNumberPanel'
+import { AddShowNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
+import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
 
 export let actionView = "main"
 export let newActionData:any = {}
 
-let newActionIndex:number = 0
+export let newActionIndex:number = 0
 
 export function updateActionView(value:string){
     actionView = value
+
+    if(actionView === "main"){
+        newActionData = {}
+    }
 }
 
 export function updateActionData(value:any, clear?:boolean){
-    if(clear){
-        newActionData = {}
-    }
-
     for(let key in value){
         newActionData[key] = value[key]
     }
+    console.log(newActionData)
 }
 
 export function EditAction(){
@@ -93,7 +98,6 @@ export function EditAction(){
             }}
             onMouseDown={() => {
                 setUIClicked(true)
-                newActionData = {}
                 updateActionView("add")
             }}
             onMouseUp={()=>{
@@ -276,7 +280,7 @@ function getActions(){
     let count = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let actions = scene.actions.get(selectedItem.aid)
+        let actions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(selectedItem.aid)
         if(actions){
             actions.actions.forEach((action:any, i:number)=>{
                 arr.push(<ActionRow data={action} rowCount={count} />)
@@ -370,7 +374,7 @@ export function ActionRow(info:any){
     )
 }
 
-function getActionList(){
+export function getActionList(){
     return [...["Select New Action"],...Object.values(Actions).map(str => str.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())).sort((a,b)=> a.localeCompare(b))]
 }
 
@@ -384,10 +388,13 @@ function getActionDataPanel(){
         case Actions.ADD_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddNumberActionPanel/>
 
-        case Actions.OPEN_LINK.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            return <AddLinkActionPanel/>
+        case Actions.SET_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetNumberActionPanel/>
 
-         case Actions.MOVE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+        case Actions.SUBTRACT_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSubtractNumberActionPanel/>
+
+        case Actions.OPEN_LINK.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddLinkActionPanel/>
 
         case Actions.EMOTE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -419,9 +426,15 @@ function getActionDataPanel(){
         case Actions.SET_SCALE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddSetScalePanel/>
 
+        case Actions.MOVE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddMovePlayerPanel/>
+
         case Actions.SET_STATE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             updateEntityStates()
             return <AddSetStatePanel/>
+
+        case Actions.SHOW_NOTIFICATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddShowNotificationPanel/>
 
 
         //play sound - doesnt need any action metadata//
@@ -433,7 +446,8 @@ function getActionDataPanel(){
     }
 }
 
-function update(action:string, actionData:any){
+async function update(action:string, actionData:any){
+    console.log('action daga is', actionData)
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
         {
             component:COMPONENT_TYPES.ACTION_COMPONENT,
@@ -445,19 +459,20 @@ function update(action:string, actionData:any){
     )
 }
 
-function buildAction(){
-    update("add", newActionData)
+async function buildAction(){
+    console.log('final action data is', newActionData)
+    await update("add", newActionData)
     updateActionView("main")
     selectNewActionIndex(0)
 
     //clean up actions
     resetSetPositionEntity()
+    resetSetRotationEntity()
     resetSetScaleEntity()
+    resetMovePlayerEntity()
 }
 
 function resetActionData(){
-    newActionData = {}
-
     if(newActionIndex !== 0){
         newActionData.type = getActionList()[newActionIndex].replace(" ", "_").toLowerCase()
         newActionData.name = getActionList()[newActionIndex].replace(" ", "_").toLowerCase()
@@ -472,13 +487,18 @@ function resetActionData(){
             else{
                 newActionData[key] = actionTemplate[key]
             }
-            
         }
     }
 }
 
 const ActionDefaults:any = {
     [Actions.ADD_NUMBER]:{
+        value:0
+    },
+    [Actions.SET_NUMBER]:{
+        value:0
+    },
+    [Actions.SUBTRACT_NUMBER]:{
         value:0
     },
     [Actions.OPEN_LINK]:{
@@ -516,7 +536,15 @@ const ActionDefaults:any = {
     [Actions.SET_SCALE]:{
         fn:()=>{addSetScaleEntity()},
     },
+    [Actions.MOVE_PLAYER]:{
+        fn:()=>{addMovePlayerEntity()},
+    },
     [Actions.SET_STATE]:{
         state:"",
+    },
+    [Actions.SHOW_NOTIFICATION]:{
+        message:"",
+        return:true,
+        time:5
     },
 }

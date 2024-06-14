@@ -5,6 +5,7 @@ import resources from '../../../../helpers/resources'
 import { sizeFont } from '../../../helpers'
 import { selectedItem } from '../../../../modes/Build'
 import { colyseusRoom } from '../../../../components/Colyseus'
+import { COMPONENT_TYPES } from '../../../../helpers/types'
 
 let selectedIndex:number = 0
 export let entityStates:any[] = []
@@ -13,7 +14,7 @@ export function updateEntityStates(){
     entityStates.length = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let states = scene.states.get(selectedItem.aid)
+        let states = scene[COMPONENT_TYPES.STATE_COMPONENT].get(selectedItem.aid)
         if(states && states.values.length > 0){
             entityStates = [...states.values]
         }
@@ -81,10 +82,8 @@ function selectState(index:number){
     selectedIndex = index
 
     let data = {...newActionData}
-    data.state = entityStates[index]
-
-    console.log(entityStates)
-    console.log('index is', index, data)
+    newActionData.state = [...entityStates][index]
     updateActionData(data, true)
+    // newActionData = {...}
 }
     

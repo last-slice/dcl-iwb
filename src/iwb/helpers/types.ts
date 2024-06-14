@@ -277,23 +277,22 @@ export enum COMPONENT_TYPES {
     VISBILITY_COMPONENT = "Visibility",
     IMAGE_COMPONENT = "Image",
     VIDEO_COMPONENT = 'Video',
-    AUDIO_COMPONENT = 'Audio',
     MATERIAL_COMPONENT = "Material",
-    COLLISION_COMPONENT = "Collision",
     TRANSFORM_COMPONENT = "Transform",
-    NFT_COMPONENT = "NftShape",
+    NFT_COMPONENT = "NFT_Shape",
     TEXT_COMPONENT = "Text",
-    ANIMATION_COMPONENT = "Animation",
+    ANIMATION_COMPONENT = "Animator",
     NPC_COMPONENT = "NPC",
     DIALOG_COMPONENT = "Dialog",
     REWARD_COMPONENT = 'Reward',
     ADVANCED_COMPONENT = 'Advanced',
     NAMES_COMPONENT ='Name',
     GLTF_COMPONENT = 'Gltf',
-    SOUND_COMPONENT = 'Sounds',
+    AUDIO_SOURCE_COMPONENT = 'Audio_Source',
+    AUDIO_STREAM_COMPONENT = 'Audio_Stream',
     IWB_COMPONENT = 'IWB',
-    MESH_RENDER_COMPONENT = 'Mesh Renderer',
-    MESH_COLLIDER_COMPONENT = 'Mesh Collider',
+    MESH_RENDER_COMPONENT = 'Mesh_Renderer',
+    MESH_COLLIDER_COMPONENT = 'Mesh_Collider',
     TEXTURE_COMPONENT = 'Texture',
 
     //advanced components
@@ -303,16 +302,15 @@ export enum COMPONENT_TYPES {
     COUNTER_COMPONENT = 'Counters',
     TRIGGER_COMPONENT = "Triggers",
     ACTION_COMPONENT = 'Actions',
-    TRIGGER_AREA_COMPONENT = "Trigger Area",
-    CLICK_AREA_COMPONENT = "Click Area",
-    AVATAR_SHAPE_COMPONENT = 'Avatar Shape',
+    TRIGGER_AREA_COMPONENT = "Trigger_Area",
+    CLICK_AREA_COMPONENT = "Click_Area",
+    AVATAR_SHAPE_COMPONENT = 'Avatar_Shape',
 }
 
 export enum BLOCKCHAINS {
     ETH = "ethereum",
     POLYGON = "matic"
 }
-
 
 export enum NFT_TYPES {
     ERC721 = "erc721",
@@ -366,14 +364,12 @@ export enum Actions {
     OPEN_LINK = 'open_link',
     SHOW_TEXT = 'show_text',
     HIDE_TEXT = 'hide_text',
-    SHOW_TOAST = 'show_toast',
-    HIDE_TOAST = 'hide_toast',
     START_DELAY = 'start_delay',
     STOP_DELAY = 'stop_delay',
     START_LOOP = 'start_loop',
     STOP_LOOP = 'stop_loop',
     CLONE = 'clone',
-    REMOVE = 'remove',
+    REMOVE = 'remove_entity',
     SHOW_IMAGE = 'show_image',
     HIDE_IMAGE = 'hide_image',
     PLAY_ANIMATION = 'play_animation',
@@ -391,8 +387,8 @@ export enum Actions {
     ADD_NUMBER = 'add_number',
     SET_NUMBER = 'set_number',
     SUBTRACT_NUMBER = 'subtract_number',
-    CHANGE_LEVEL = 'change_level',
-    END_LEVEL = 'end_level',
+    // CHANGE_LEVEL = 'change_level',
+    // END_LEVEL = 'end_level',
     START_TIMER = 'start_timer',
     STOP_TIMER = 'stop_timer',
     LOCK_PLAYER = 'lock_player',
@@ -403,6 +399,7 @@ export enum Actions {
     SET_STATE = 'set_state',
     MOVE_PLAYER = 'move_player',
     SHOW_NOTIFICATION = 'show_notification',
+    HIDE_NOTIFICATION = 'hide_notification',
     PLACE_PLAYER_POSITION = 'place_player_position',
     BATCH_ACTIONS = 'batch_actions',
     RANDOM_ACTION = 'random_action'
@@ -467,20 +464,27 @@ export enum Materials {
 
 export let ENTITY_POINTER_LABELS:any[] = [
     "Pointer",
-    "E Press",
-    "F Press",
-    "ANY Press",
-    "W Press",
-    "S Press",
-    "D Press",
-    "A Press",
-    "SPACE Press",
-    "SHIFT Press",
-    "#1 Press",
-    "#2 Press",
-    "#3 Press",
-    "#4 Press",
+    "E Button",
+    "F Button",
+    "ANY Button",
+    "W Button",
+    "S Button",
+    "D Button",
+    "A Button",
+    "SPACE Button",
+    "SHIFT Button",
+    "#1 Button",
+    "#2 Button",
+    "#3 Button",
+    "#4 Button",
 ]
+
+export enum POINTER_EVENTS {
+    PET_UP = "On Up",
+    PET_DOWN = "On Down",
+    PET_HOVER_ENTER = "On Hover Enter",
+    PET_HOVER_LEAVE = "ON Hover Leave"
+}
 
 export enum COLLIDER_LAYERS {
     /** CL_NONE - no collisions */

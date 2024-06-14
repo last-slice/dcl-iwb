@@ -11,6 +11,7 @@ import { openEditComponent, visibleComponent } from '../EditAssetPanel'
 import { generateButtons, setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
 import { utils } from '../../../helpers/libraries'
+import { engine } from '@dcl/sdk/ecs'
 
 ///parenting
 let parentIndex:number = 0
@@ -20,10 +21,10 @@ export function updateChildrenAssets(){
     children.length = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let parenting = scene.parenting.find(($:any) => $.aid === selectedItem.aid)
+        let parenting = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any) => $.aid === selectedItem.aid)
         if(parenting){
             parenting.children.forEach((childAid:string)=>{
-                let nameInfo = scene.names.get(childAid)
+                let nameInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(childAid)
                 if(nameInfo){
                     children.push({name:nameInfo.value, aid:childAid})
                 }
@@ -217,14 +218,15 @@ function getChildrenViews(){
 }
 
 function getEntities(){
-    if(selectedItem && selectedItem.enabled){
+    if(selectedItem && selectedItem.enabled && visibleComponent === COMPONENT_TYPES.PARENTING_COMPONENT){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(!scene){
             return []
         }
         let entities:any[] = []
-        scene.parenting.forEach((item:any)=>{
-            let assetName = scene.names.get(item.aid)
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
+            console.log('entity is', item)
+            let assetName = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(item.aid)
             if(item.aid !== selectedItem.aid){
                 if(assetName){
                     let data:any = {...item}
@@ -233,6 +235,9 @@ function getEntities(){
                 }
             }
         })
+        entities.unshift("Player Camera")
+        entities.unshift("Player")
+        entities.unshift("Scene")
         return entities
     }
     return []

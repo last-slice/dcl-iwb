@@ -1,6 +1,6 @@
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { Actions, EDIT_MODIFIERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS } from '../../../../helpers/types'
+import { Actions, COMPONENT_TYPES, EDIT_MODIFIERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS } from '../../../../helpers/types'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
 import { Entity, GltfContainer, Transform, engine } from '@dcl/sdk/ecs'
@@ -11,7 +11,7 @@ import { findAssetParent } from '../../../../components/Parenting'
 
 let setTransformEntity:Entity
 
-export function resetSetPositionEntity(){
+export function resetSetRotationEntity(){
     engine.removeEntity(setTransformEntity)
 }
 
@@ -25,26 +25,29 @@ export function addsetRotationEntity(){
 
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let transform = scene.transforms.get(selectedItem.aid)
+        let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(selectedItem.aid)
         if(transform){
             let newTransform:any = JSON.parse(JSON.stringify(transform))
                 Transform.createOrReplace(setTransformEntity, {parent:findAssetParent(scene,selectedItem.aid), position:newTransform.p, scale:newTransform.s, rotation:Quaternion.fromEulerDegrees(newTransform.r.x, newTransform.r.y, transform.r.z)})
 
-                newActionData.rx = newTransform.r.x
-                newActionData.ry = newTransform.r.y
-                newActionData.rz = newTransform.r.z
+                newActionData.x = newTransform.r.x
+                newActionData.y = newTransform.r.y
+                newActionData.z = newTransform.r.z
         }
     }
 }
 
 export function updateSetPositionEntityRotation(direction:string, factor:number, manual?:boolean){
-    let transform:any = Transform.getMutable(setTransformEntity).rotation
+    let transform:any = Transform.getMutable(setTransformEntity)
+    let eulerRotation:any = Quaternion.toEulerAngles(transform.rotation)
 
-    transform[direction] = manual ? factor : transform[direction] + (factor * selectedItem.pFactor)
+    eulerRotation[direction] = manual ? factor : transform[direction] + (factor * selectedItem.rFactor)
 
-    newActionData.rx = transform.x
-    newActionData.ry = transform.y
-    newActionData.rz = transform.z
+    transform.rotation = Quaternion.fromEulerDegrees(eulerRotation.x, eulerRotation.y, eulerRotation.z)
+
+    newActionData.x = transform.x
+    newActionData.y = transform.y
+    newActionData.z = transform.z
 }
 
 export function AddSetRotationPanel(){
@@ -64,19 +67,20 @@ export function AddSetRotationPanel(){
                {/* position row */}
 
                {Transform.has(setTransformEntity) &&
-               <TransformInputModifiers modifier={EDIT_MODIFIERS.POSITION}
+               <TransformInputModifiers modifier={EDIT_MODIFIERS.ROTATION}
                     override={true}
                     rowHeight={'50%'}
-                    factor={selectedItem && selectedItem.pFactor}
+                    factor={selectedItem && selectedItem.rFactor}
                     valueFn={(type:string)=>{
                         let transform = Transform.get(setTransformEntity)
+                        let eulerRotation = Quaternion.toEulerAngles(transform.rotation)
                         switch (type) {
                             case 'x':
-                                return transform.position.x.toFixed(3)
+                                return eulerRotation.x.toFixed(3)
                             case 'y':
-                                return transform.position.y.toFixed(3)
+                                return eulerRotation.y.toFixed(3)
                             case 'z':
-                                return (transform.position.z).toFixed(3)
+                                return eulerRotation.z.toFixed(3)
                         }
                     }}
                 />

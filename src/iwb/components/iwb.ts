@@ -1,14 +1,23 @@
 // import { IWBCatalogComponent, IWBComponent } from "./Components"
 
-import { VisibilityComponent } from "@dcl/sdk/ecs"
+import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
+import { playerMode } from "./Config"
+import { updateAssetBuildVisibility } from "./Visibility"
+
+// export function checkIWBComponent(scene:any, entityInfo:any){
+//   let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
+//   if(iwbInfo){
+//     iwbInfo.components = []
+//   }
+// }
 
 export function getEntity(scene:any, aid:string){
-  return scene.parenting.find((entity:any)=> entity.aid === aid)
+  return scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
 }
 
 // export function addIWBComponent(scene:any){
-//     scene.itemInfo.forEach((itemInfo:any, aid:string)=>{
-//         let entity = scene.parenting.find((entity:any)=> entity.aid === aid)
+//     scene[COMPONENT_TYPES.IWB_COMPONENT].forEach((itemInfo:any, aid:string)=>{
+//         let entity = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
 //         if(entity){
 //           IWBComponent.create(entity,{
 //             aid:aid,
@@ -22,7 +31,7 @@ export function getEntity(scene:any, aid:string){
 
 // export function addIWBCatalogComponent(scene:any){
 //   scene.catalogInfo.forEach((catalogInfo:any, aid:string)=>{
-//       let entity = scene.parenting.find((entity:any)=> entity.aid === aid)
+//       let entity = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
 //       if(entity){
 //         IWBCatalogComponent.create(entity,{
 //           id:catalogInfo.id,
@@ -41,12 +50,17 @@ export function getEntity(scene:any, aid:string){
 // }
 
 export function iwbInfoListener(scene:any){
-  scene.itemInfo.onAdd((item:any, aid:any)=>{
+  scene[COMPONENT_TYPES.IWB_COMPONENT].onAdd((item:any, aid:any)=>{
+    // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+    // if(!iwbInfo.components.includes(COMPONENT_TYPES.PARENTING_COMPONENT)){
+    //   iwbInfo.components.push(COMPONENT_TYPES.PARENTING_COMPONENT)
+    // }
+
     item.listen("buildVis", (c:any, p:any)=>{
           if(p !== undefined){
               let entityInfo = getEntity(scene, aid)
-              if(entityInfo){
-                VisibilityComponent.createOrReplace(entityInfo.entity, {visible: c})
+              if(entityInfo && playerMode === SCENE_MODES.BUILD_MODE){
+                updateAssetBuildVisibility(scene, c, entityInfo)
               }
           }
       })

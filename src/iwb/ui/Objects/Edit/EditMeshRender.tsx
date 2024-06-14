@@ -90,7 +90,7 @@ function getShapeIndex(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.meshColliders.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.shape
             }

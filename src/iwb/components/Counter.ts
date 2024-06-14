@@ -5,21 +5,41 @@ import resources from "../helpers/resources"
 import { COMPONENT_TYPES } from "../helpers/types"
 
 export const Numbers = engine.defineComponent(resources.slug + "counter::component", {
-    values:Schemas.Array(Schemas.Map({
-        name:Schemas.String,
-        currentValue:Schemas.Int,
-        previousValue:Schemas.Int
-        })
-    )
+    defaultValue:Schemas.Int,
+    currentValue:Schemas.Int,
+    previousValue:Schemas.Int
 })
+
+export function checkCounterComponent(scene:any, entityInfo:any){
+    let itemInfo = scene[COMPONENT_TYPES.COUNTER_COMPONENT].get(entityInfo.aid)
+    if(itemInfo){
+        Numbers.createOrReplace(entityInfo.entity, {
+            defaultValue: itemInfo.defaultValue,
+            currentValue: itemInfo.currentValue,
+            previousValue: itemInfo.previousValue
+        })
+    }
+}
+
+export function disableCounterForPlayMode(scene:any, entityInfo:any){
+    let itemInfo = scene[COMPONENT_TYPES.COUNTER_COMPONENT].get(entityInfo.aid)
+    if(itemInfo){
+        Numbers.createOrReplace(entityInfo.entity, {
+            defaultValue: itemInfo.defaultValue,
+            currentValue: itemInfo.currentValue,
+            previousValue: itemInfo.previousValue
+        })
+    }
+}
+
 
 export function getCounterValue(sceneId:string, aid:string, type:string, current:number){
     let scene = colyseusRoom.state.scenes.get(sceneId)
-    if(!scene){
+    if(!scene){ 
         return ""
     }
 
-    let counters = scene.counters.get(aid)
+    let counters = scene[COMPONENT_TYPES.COUNTER_COMPONENT].get(aid)
     if(!counters){
         return ""
     }
@@ -34,8 +54,8 @@ export function getCounterValue(sceneId:string, aid:string, type:string, current
 
 
 // export function addCounterComponent(scene:any){
-//     scene.counters.forEach((counter:any, aid:string)=>{
-//         let info = scene.parenting.find((entity:any)=> entity.aid === aid)
+//     scene[COMPONENT_TYPES.COUNTER_COMPONENT].forEach((counter:any, aid:string)=>{
+//         let info = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
 //         if(info){
 //             let counterSchemas:any[] = []
 //             counter.values.forEach((counter:any, name:string)=>{
@@ -57,12 +77,9 @@ export function getCounterValue(sceneId:string, aid:string, type:string, current
 export function getCounterComponentByAssetId(scene:string, aid:string, counter:any){
     let entityInfo = getEntity(scene, aid)
     if(entityInfo){
-        let counterComponent = Numbers.getMutable(entityInfo.entity)
-        if(counterComponent){
-            return counterComponent.values.find($=> $.name === counter)
-        }
+        return Numbers.getMutableOrNull(entityInfo.entity)
     }
-    return undefined
+    return null
 }
 
 export function updateCounter(counter:any, value:any){
@@ -79,9 +96,12 @@ export function setCounter(counter:any, value:any){
 
 
 export function counterListener(scene:any){
-    scene.counters.onAdd((counter:any, aid:any)=>{
-        !scene.components.includes(COMPONENT_TYPES.COUNTER_COMPONENT) ? scene.components.push(COMPONENT_TYPES.COUNTER_COMPONENT) : null
-
+    scene[COMPONENT_TYPES.COUNTER_COMPONENT].onAdd((counter:any, aid:any)=>{
+        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+        // if(!iwbInfo.components.includes(COMPONENT_TYPES.COUNTER_COMPONENT)){
+        //   iwbInfo.components.push(COMPONENT_TYPES.COUNTER_COMPONENT)
+        // }
+        
         let info = getEntity(scene, aid)
         if(!info){
             return

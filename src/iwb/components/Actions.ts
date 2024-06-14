@@ -1,5 +1,5 @@
 import { AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, TextAlignMode, Transform, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
-import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
+import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
@@ -12,6 +12,7 @@ import { getEntity } from "./IWB"
 import { getUITransform } from "../ui/helpers"
 import { startTimeout } from "./Timer"
 import { addShowText, removeShowText } from "../ui/Objects/ShowText"
+import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -23,7 +24,7 @@ export function getActionEvents(entity: Entity) {
 }
 
 export function getActionById(scene:any, aid:string, actionId:string){
-    let actions = scene.actions.get(aid)
+    let actions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(aid)
     if(actions){
         return actions.actions.find(($:any)=> $.id === actionId)
     }
@@ -31,8 +32,11 @@ export function getActionById(scene:any, aid:string, actionId:string){
 }
 
 export function actionListener(scene:any){
-    scene.actions.onAdd((assetAction:any, aid:any)=>{
-        !scene.components.includes(COMPONENT_TYPES.ACTION_COMPONENT) ? scene.components.push(COMPONENT_TYPES.ACTION_COMPONENT) : null
+    scene[COMPONENT_TYPES.ACTION_COMPONENT].onAdd((assetAction:any, aid:any)=>{
+        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+        // if(!iwbInfo.components.includes(COMPONENT_TYPES.ACTION_COMPONENT)){
+        //   iwbInfo.components.push(COMPONENT_TYPES.ACTION_COMPONENT)
+        // }
 
         let info = getEntity(scene, aid)
         if(!info){
@@ -111,6 +115,11 @@ function updateActions(scene:any, info:any, action:any){
                 break;
 
             case Actions.SHOW_NOTIFICATION:
+                handleShowNotification(scene, info, action)
+                break;
+
+            case Actions.HIDE_NOTIFICATION:
+                hideNotification()
                 break;
 
             case Actions.SET_POSITION:
@@ -199,6 +208,7 @@ function handleHideText(entity:Entity, action:any){
 }
 
 function handleSetState(scene:any, info:any, action:any){
+    console.log('handling set state action', action)
     let state = getStateComponentByAssetId(scene, info.aid)
     if(state){
         setState(state, action.state)
@@ -212,45 +222,53 @@ function handleAddNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         updateCounter(counter, action.value)
+        //single player
+        const triggerEvents = getTriggerEvents(info.entity)
+        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
+
+        //if multiplayer, send to server
+        // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
     }
-
-    //todo
-    //handle local vs multiplayer counter
-
-    //if multiplayer, send to server
-    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
 }
 
 function handleSetNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         setCounter(counter, action.value)
+        //single player
+        const triggerEvents = getTriggerEvents(info.entity)
+        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
+        //if multiplayer, send to server
+        // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
     }
-
-    //todo
-    //handle local vs multiplayer counter//
-
-    //if multiplayer, send to server
-    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
 }
 
 function handleSubtractNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         updateCounter(counter, (-1 * action.value))
+        //single player
+        const triggerEvents = getTriggerEvents(info.entity)
+        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
+
+        //if multiplayer, send to server
+        // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
     }
-
-    //todo
-    //handle local vs multiplayer counter//
-
-    //if multiplayer, send to server
-    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
 }
 
 function handlePlaySound(info:any, action:any){
-    let audio = AudioSource.getMutableOrNull(info.entity)
+    // let audio = AudioSource.getMutableOrNull(info.entity)
+    // if(audio){
+    //     audio.loop = action.loop
+    //     audio.volume = action.volume ? action.volume : 1
+    //     audio.playing = true
+    // }else{
+    //     console.log('no audio file')
+    // }
+
+    let audio = AudioStream.getMutableOrNull(info.entity)
     if(audio){
-        audio.loop = action.loop
+        // audio.loop = action.loop
         audio.volume = action.volume ? action.volume : 1
         audio.playing = true
     }else{
@@ -327,23 +345,17 @@ function handleOpenLink(action:any){
 }
 
 function handleMovePlayer(scene:any, action:any){
-    let pos = action.movePos.split(",")
-    let cam = action.moveCam ? action.moveCam.split(",") : "0,0,0"
-    // let scene = Transform.get(localPlayer.activeScene!.parentEntity).position
-    // movePlayerTo({newRelativePosition:{x: scene.x + parseFloat(pos[0]), y: scene.y + parseFloat(pos[1]), z:scene.z + parseFloat(pos[2])}, cameraTarget:{x: scene.x + parseFloat(cam[0]), y: scene.y + parseFloat(cam[1]), z:scene.z + parseFloat(cam[2])}})
-    // break;
-
     movePlayerTo({
         newRelativePosition:{
-            x:parseFloat(pos[0]), 
-            y:parseFloat(pos[1]), 
-            z:parseFloat(pos[2])
+            x:action.x, 
+            y:action.y, 
+            z:action.z
         }, 
-        cameraTarget:{
-            x:parseFloat(cam[0]), 
-            y:parseFloat(cam[1]), 
-            z:parseFloat(cam[2])
-        }
+        // cameraTarget:{
+        //     x:parseFloat(cam[0]), 
+        //     y:parseFloat(cam[1]), 
+        //     z:parseFloat(cam[2])
+        // }
     })
 }
 
@@ -435,4 +447,8 @@ function handleBatchAction(scene:any, info:any, action:any){
     action.actions.forEach((actionId:any)=>{
         actionEvents.emit(actionId, getActionById(scene, info.aid, actionId))
     })
+}
+
+function handleShowNotification(scene:any, info:any, action:any){
+    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:action.message, animate:{enabled:true, return: true, time:action.time}})
 }

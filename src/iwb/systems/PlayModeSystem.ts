@@ -1,4 +1,4 @@
-import { Entity, InputAction, PointerEventType, engine, inputSystem } from "@dcl/sdk/ecs"
+import { Entity, InputAction, PointerEventType, PointerEvents, engine, inputSystem } from "@dcl/sdk/ecs"
 import { log } from "../helpers/functions"
 import { handleInputTriggerForEntity } from "../components/Triggers"
 import { uiInput } from "../ui/ui"
@@ -20,14 +20,30 @@ export function removePlayModSystem(){
 
 export function PlayModeInputSystem(dt: number) {
     //DOWN BUTTON ACTIONS
-    //POINTER
+    //POINTER//
+    if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_UP)) {
+        // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
+        // selectedItem && !selectedItem.enabled ? displayHover(false) : null//
+    }
+
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)) {
         // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
         // selectedItem && !selectedItem.enabled ? displayHover(false) : null//
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
-                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER)
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_DOWN)
+            }
+        }
+    }
+
+    if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)) {
+        // setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
+        // selectedItem && !selectedItem.enabled ? displayHover(false) : null//
+        const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_PRIMARY,  PointerEventType.PET_DOWN)
             }
         }
     }

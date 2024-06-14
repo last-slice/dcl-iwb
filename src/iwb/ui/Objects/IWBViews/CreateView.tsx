@@ -5,13 +5,15 @@ import { displayMainView, mainView } from '../IWBView'
 import { HoriztonalButtons } from '../../Reuse/HoriztonalButtons'
 import { sendServerMessage } from '../../../components/Colyseus'
 import { settings } from '../../../components/Player'
-import { SOUND_TYPES, SERVER_MESSAGE_TYPES, SCENE_CATEGORIES } from '../../../helpers/types'
+import { SOUND_TYPES, SERVER_MESSAGE_TYPES, SCENE_CATEGORIES, NOTIFICATION_TYPES } from '../../../helpers/types'
 import { calculateSquareImageDimensions, sizeFont, getImageAtlasMapping, calculateImageDimensions, getAspect } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { playSound } from '../../../components/Sounds'
 import { setUIClicked } from '../../ui'
 import { createTempScene } from '../../../modes/Create'
 import { displayExpandedMap } from '../ExpandedMapView'
+import { showNotification } from '../NotificationPanel'
+import { utils } from '../../../helpers/libraries'
 
 let name = ""
 let desc = ""

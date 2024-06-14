@@ -260,7 +260,7 @@ function MainLeftView(){
             if(editCurrentSceneParcels){
                 displayExpandedMap(false)
             }else{
-                validateScene()
+                validateScene()//
             }
         }}
         uiText={{value: "Save Scene", color:Color4.White(), fontSize:sizeFont(25,15)}}

@@ -342,7 +342,7 @@ function getLoop(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.videos.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.loop ? 0 : 1
             }
@@ -363,7 +363,7 @@ function getAutostart(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.videos.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.autostart ? 0 : 1
             }
@@ -378,7 +378,7 @@ function getVolume(){
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.videos.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.volume
             }
@@ -410,7 +410,7 @@ function getVideoUrl() {
     if(selectedItem && selectedItem.enabled){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
-            let itemInfo = scene.videos.get(selectedItem.aid)
+            let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
                 return itemInfo.url
             }

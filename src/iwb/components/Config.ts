@@ -1,11 +1,11 @@
 import { getRealm } from "~system/Runtime"
 import { colyseusRoom } from "./Colyseus"
 import { localPlayer, localUserId } from "./Player"
-import { SCENE_MODES, VIEW_MODES } from "../helpers/types"
+import { COMPONENT_TYPES, SCENE_MODES, VIEW_MODES } from "../helpers/types"
 import { Entity, GltfContainer, Material, engine } from "@dcl/sdk/ecs"
 import { Color4 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
-import { hideAllOtherPointers, addBuildModePointers, resetEntityForBuildMode } from "../modes/Build"
+import { hideAllOtherPointers, addBuildModePointers, resetEntityForBuildMode, addAllBuildModePointers } from "../modes/Build"
 import { BuildModeVisibilty, ParcelFloor, redBeam, greenBeam } from "../modes/Create"
 import { addInputSystem, removeInputSystem } from "../systems/InputSystem"
 import { hideAllPanels } from "../ui/ui"
@@ -17,7 +17,7 @@ import { displayHover } from "../ui/Objects/ContextMenu"
 import { clearShowTexts } from "../ui/Objects/ShowText"
 import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
-import { PlayTriggerSystem } from "./Triggers"
+import { PlayTriggerSystem, disableTriggers } from "./Triggers"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -93,7 +93,7 @@ export function setWorlds(config: any) {
         }
     })
 
-    console.log('worlds are set', worlds)
+    // console.log('worlds are set', worlds)
 }
 
 export function addTutorial(info:any){
@@ -137,12 +137,11 @@ export function setPlayerMode(mode:SCENE_MODES){
     hideAllPanels()
 
     colyseusRoom.state.scenes.forEach((scene:any)=>{
-        scene.parenting.forEach((item:any, i:number)=>{
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
             if(i > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
                     if(playerMode === SCENE_MODES.BUILD_MODE){
-                        addBuildModePointers(entityInfo.entity)
                         resetEntityForBuildMode(scene, entityInfo)
                     }else{
                         disableEntityForPlayMode(scene, entityInfo)

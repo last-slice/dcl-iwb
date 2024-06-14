@@ -8,7 +8,6 @@ import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { addBuildModePointers, resetEntityForBuildMode } from "../modes/Build"
 import { afterLoadActions } from "./Scene"
 import { checkMaterialComponent } from "./Materials"
-import { checkSoundComponent } from "./Sounds"
 import { checkTextShapeComponent } from "./TextShape"
 import { checkVideoComponent } from "./Videos"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "../ui/Objects/SceneInfoPanel"
@@ -16,13 +15,16 @@ import { checkNftShapeComponent } from "./NftShape"
 import { checkMeshColliderComponent, checkMeshRenderComponent } from "./Meshes"
 import { checkTextureComponent } from "./Textures"
 import { checkPointerComponent } from "./Pointers"
+import { checkAudioSourceComponent, checkAudioStreamComponent } from "./Sounds"
+import { checkCounterComponent } from "./Counter"
+import { checkTriggerComponent } from "./Triggers"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
     item.entity = ent
+    // item.components = []
 
     console.log('creating entity', ent)
-
     RealmEntityComponent.create(ent)
 
     if (playerMode === SCENE_MODES.BUILD_MODE) {
@@ -32,8 +34,8 @@ function createEntity(item:any){
 }
 
 export function getAssetIdByEntity(scene:any, entity:Entity){
-    for(let i = 0; i < scene.parenting.length; i++){
-        let entityInfo = scene.parenting[i]
+    for(let i = 0; i < scene[COMPONENT_TYPES.PARENTING_COMPONENT].length; i++){
+        let entityInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT][i]
         if(entityInfo && entityInfo.entity && entityInfo.entity === entity){
             return entityInfo.aid
         }
@@ -42,8 +44,9 @@ export function getAssetIdByEntity(scene:any, entity:Entity){
 }
 
 export function findAssetParent(scene:any, aid:string){
-    if(scene.parenting.length > 0){
-        for(const parent of scene.parenting){
+    if(scene[COMPONENT_TYPES.PARENTING_COMPONENT].length > 0){
+        for(const parent of scene[COMPONENT_TYPES.PARENTING_COMPONENT]){
+            console.log('here we are', parent)
             if(parent.children.includes(aid)){
                 switch(parent.aid){
                     case '0':
@@ -64,9 +67,7 @@ export function findAssetParent(scene:any, aid:string){
 }
 
 export function parentingListener(scene:any){
-    scene.parenting.onAdd(async(item:any, aid:any)=>{
-        !scene.components.includes(COMPONENT_TYPES.PARENTING_COMPONENT) ? scene.components.push(COMPONENT_TYPES.PARENTING_COMPONENT) : null
-
+    scene[COMPONENT_TYPES.PARENTING_COMPONENT].onAdd(async(item:any, aid:any)=>{
         if(item.aid){
             if(!["0","1","2"].includes(item.aid)){
                 await createEntity(item)
@@ -74,19 +75,21 @@ export function parentingListener(scene:any){
 
             PointersLoadedComponent.createOrReplace(item.entity, {init: false, sceneId: scene.id})
 
-            // addAssetComponents(localScene, entity, item, itemConfig.ty, itemConfig.n)/////
             await checkTransformComponent(scene, item)  
             await checkGLTFComponent(scene, item)
             await checkTextureComponent(scene, item)
+            await checkPointerComponent(scene, item)
             await checkMeshRenderComponent(scene, item)
             await checkMeshColliderComponent(scene, item)
             await checkMaterialComponent(scene, item)
-            await checkSoundComponent(scene, item)
+            await checkAudioSourceComponent(scene, item)
+            await checkAudioStreamComponent(scene, item)
             await checkTextShapeComponent(scene, item)
             await checkVideoComponent(scene, item)
             await checkNftShapeComponent(scene, item)
-            await checkPointerComponent(scene, item)
-
+            await checkCounterComponent(scene, item)
+            await checkTriggerComponent(scene, item)
+            
             // await checkSmartItemComponent()
 
 
@@ -99,7 +102,7 @@ export function parentingListener(scene:any){
         }
     })
 
-    scene.parenting.onRemove(async(item:any, aid:any)=>{
+    scene[COMPONENT_TYPES.PARENTING_COMPONENT].onRemove(async(item:any, aid:any)=>{
         console.log('remove parenting item', aid, item)
 
         // if(asset.editing && asset.editor === localUserId){
@@ -112,4 +115,4 @@ export function parentingListener(scene:any){
             displaySceneAssetInfoPanel(true)
         }
     })
-}//
+}

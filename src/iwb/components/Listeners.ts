@@ -7,7 +7,7 @@ import { items, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, upd
 import { utils } from "../helpers/libraries";
 import { addLocalWorldPermissionsUser, addTutorial, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
-import { checkPlayerBuildRights, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
+import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
 import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel, deleteCreationEntities } from "../modes/Create";
@@ -15,7 +15,7 @@ import { getEntity } from "./IWB";
 import { refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { getView } from "../ui/uiViews";
-import { showNotification } from "../ui/Objects/NotificationPanel";
+import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel";
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
 import { FlyModeSystem } from "../systems/FlyModeSystem";
 import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem";
@@ -26,7 +26,7 @@ import { SelectedItemSystem } from "../systems/SelectedItemSystem";
 
 export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
-        log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
+        // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
         setCatalog(info.catalog)
         setRealmAssets(info.realmAssets)
@@ -39,7 +39,7 @@ export async function createColyseusListeners(room:Room){
         setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
         setWorlds(info.worlds)
         setNewItems()
-        setPlayMode(localUserId, SCENE_MODES.BUILD_MODE)
+        setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
 
         utils.timers.setTimeout(()=>{
             refreshMap()
@@ -143,10 +143,10 @@ export async function createColyseusListeners(room:Room){
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "" + info, animate:{enabled:true, return:true, time:5}})
     })
 
-    room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
-        log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
-        setPlayerMode(info.mode)
-    })
+    // room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
+    //     setPlayerMode(info.mode)
+    // })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
@@ -189,6 +189,7 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADDED_NEW, ({name, sceneName}: { name: string, sceneName: string }) => {
         log(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW + ' received', name, sceneName)
         if(name === localPlayer.name){
+            hideNotification()
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You just created a new scene " + sceneName + "!", animate:{enabled:true, return:true, time: 5}})
         }else{
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + name + " just created a new scene " + sceneName + "!", animate:{enabled:true, return:true, time: 5}})
@@ -258,6 +259,14 @@ export async function createColyseusListeners(room:Room){
         if(info.user === localUserId){
             checkPlayerBuildRights()
             showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Your builder permissions were removed for scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
+            if(selectedItem && selectedItem.enabled){
+                if(selectedItem.mode === EDIT_MODES.GRAB){
+                    dropSelectedItem()
+                }else{
+                    cancelSelectedItem()
+                }
+            }
+            setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
         }
         else{
             showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on your scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
@@ -348,25 +357,6 @@ export async function createColyseusListeners(room:Room){
 
         await removeEmptyParcels(scene.pcls)
         await loadScene(scene)
-
-        // scene.bps.onAdd((permission:string, permissionKey:any)=>{
-        //     log('adding new build permissions', permissionKey, permission)
-        // })
-    
-        // scene.bps.onRemove((permission:string, permissionKey:any)=>{
-        //     log('removing build permissions', permissionKey, permission)
-        //     if(!scene.bps.includes(localUserId) && localPlayer.mode === SCENE_MODES.BUILD_MODE){
-        //         log('no more build permissions for user, need to kick them to play mode')
-        //         if(selectedItem && selectedItem.enabled){
-        //             if(selectedItem.mode === EDIT_MODES.GRAB){
-        //                 dropSelectedItem()
-        //             }else{
-        //                 cancelSelectedItem()
-        //             }
-        //         }
-        //         setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
-        //     }
-        // })
     
         // scene.pcls.onAdd((parcel:string, parcelKey:any)=>{
         //     if(editCurrentSceneParcels){
@@ -421,13 +411,13 @@ export async function createColyseusListeners(room:Room){
     })
 
     room.state.scenes.onRemove((scene:any, key:string)=>{
-        // log('removing scene from state', key, scene)
-        // if(scene.o === localUserId){
-        //     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You deleted scene " + scene.n, animate:{enabled:true, return:true, time:5}})
-        // }else{
-        //     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.ona + " just deleted their scene " + scene.n, animate:{enabled:true, return:true, time:5}})
-        // }
-        // unloadScene(key)
+        log('removing scene from state', key, scene)
+        if(scene.o === localUserId){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You deleted scene " + scene.n, animate:{enabled:true, return:true, time:5}})
+        }else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.ona + " just deleted their scene " + scene.n, animate:{enabled:true, return:true, time:5}})
+        }
+        unloadScene(scene)
     })
 
     room.state.players.onAdd(async(player:any, userId:any)=>{

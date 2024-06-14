@@ -40,8 +40,8 @@ export function getCurrentValue(states:any) {
   }
 
 // export function addStateComponent(scene:any){
-//     scene.states.forEach((state:any, aid:string)=>{
-//         let info = scene.parenting.find((entity:any)=> entity.aid === aid)
+//     scene[COMPONENT_TYPES.STATE_COMPONENT].forEach((state:any, aid:string)=>{
+//         let info = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
 //         if(info){
 //             States.create(info.entity, {
 //                 defaultValue: state.defaultValue,
@@ -70,8 +70,11 @@ export function setState(state:any, value:any){
 }
 
 export function stateListener(scene:any){
-    scene.states.onAdd((state:any, aid:any)=>{
-      !scene.components.includes(COMPONENT_TYPES.STATE_COMPONENT) ? scene.components.push(COMPONENT_TYPES.STATE_COMPONENT) : null
+    scene[COMPONENT_TYPES.STATE_COMPONENT].onAdd((state:any, aid:any)=>{
+      // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+      // if(!iwbInfo.components.includes(COMPONENT_TYPES.STATE_COMPONENT)){
+      //   iwbInfo.components.push(COMPONENT_TYPES.STATE_COMPONENT)
+      // }
 
       let itemInfo = getEntity(scene, aid)
       if(!itemInfo){

@@ -1,6 +1,6 @@
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { Actions, EDIT_MODIFIERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS } from '../../../../helpers/types'
+import { Actions, COMPONENT_TYPES, EDIT_MODIFIERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS } from '../../../../helpers/types'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
 import { Entity, GltfContainer, Transform, engine } from '@dcl/sdk/ecs'
@@ -25,7 +25,7 @@ export function addSetPositionEntity(){
 
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let transform = scene.transforms.get(selectedItem.aid)
+        let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(selectedItem.aid)
         if(transform){
             let newTransform:any = JSON.parse(JSON.stringify(transform))
                 Transform.createOrReplace(setPositionEntity, {parent:findAssetParent(scene,selectedItem.aid), position:newTransform.p, scale:newTransform.s, rotation:Quaternion.fromEulerDegrees(newTransform.r.x, newTransform.r.y, transform.r.z)})

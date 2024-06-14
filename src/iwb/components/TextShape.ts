@@ -1,7 +1,7 @@
 import { Billboard, BillboardMode, ColliderLayer, Entity, MeshCollider, PBTextShape, TextAlignMode, TextShape, VisibilityComponent } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import { Color4 } from "@dcl/sdk/math"
-import { fontStyles } from "../ui/Objects/Edit/EditText"
+import { COMPONENT_TYPES } from "../helpers/types"
 
 function addTextShape(entity:Entity, textShape:any){
     TextShape.createOrReplace(entity, 
@@ -10,7 +10,7 @@ function addTextShape(entity:Entity, textShape:any){
             font: textShape.font,
             fontSize: textShape.fontSize,
             fontAutoSize: textShape.fontAutoSize,
-            // textAlign: textShape.textAlign,//
+            // textAlign: textShape.textAlign,
             paddingTop: textShape.paddingTop,
             paddingBottom: textShape.paddingBottom,
             paddingLeft: textShape.paddingLeft,
@@ -21,19 +21,28 @@ function addTextShape(entity:Entity, textShape:any){
         })
 
     if(textShape.billboard){
-        Billboard.create(entity, {billboardMode: BillboardMode.BM_Y})
+        Billboard.createOrReplace(entity, {billboardMode: BillboardMode.BM_Y})
     }
 }
 
-export function checkTextShapeComponent(scene:any, entityInfo:any){
-    let itemInfo = scene.textShapes.get(entityInfo.aid)
+export function updateTextComponent(scene:any, entityInfo:any, newText:string){
+    let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(entityInfo.aid)        
     if(itemInfo){
+        let textShape = TextShape.getMutable(entityInfo.entity)
+        textShape.text = newText
+    }
+}
+
+
+export function checkTextShapeComponent(scene:any, entityInfo:any){
+    let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(entityInfo.aid)
+    if(itemInfo && itemInfo.onPlay){
         addTextShape(entityInfo.entity, itemInfo)
     }
 }
 
 export function disableTextShapePlayMode(scene:any, entityInfo:any){
-    let itemInfo = scene.meshRenders.get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         if(!itemInfo.onPlay){
             TextShape.deleteFrom(entityInfo.entity)
@@ -41,9 +50,16 @@ export function disableTextShapePlayMode(scene:any, entityInfo:any){
     }
 }
 
+export function setTextShapeForBuildMode(scene:any, entityInfo:any){
+    let textInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(entityInfo.aid)
+    if(textInfo){
+        addTextShape(entityInfo.entity, textInfo)
+    }
+}
+
 export function setTextShapeForPlayMode(scene:any, entityInfo:any){
-    let meshInfo = scene.meshRenders.get(entityInfo.aid)
-    if(meshInfo){
+    let meshInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(entityInfo.aid)
+    if(meshInfo && meshInfo.hasOwnProperty("onPlay")){
         if(!meshInfo.onPlay){
             TextShape.deleteFrom(entityInfo.entity)
         }
@@ -51,7 +67,12 @@ export function setTextShapeForPlayMode(scene:any, entityInfo:any){
 }
 
 export function textShapeListener(scene:any){
-    scene.textShapes.onAdd((textShape:any, aid:any)=>{
+    scene[COMPONENT_TYPES.TEXT_COMPONENT].onAdd((textShape:any, aid:any)=>{
+        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+        // if(!iwbInfo.components.includes(COMPONENT_TYPES.TEXT_COMPONENT)){
+        //   iwbInfo.components.push(COMPONENT_TYPES.TEXT_COMPONENT)
+        // }
+
         let info = getEntity(scene, aid)
         if(!info){
             return
