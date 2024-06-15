@@ -30,6 +30,7 @@ import { setAnimationBuildMode } from "../components/Animator"
 import { checkTransformComponent } from "../components/Transform"
 import { setTextShapeForBuildMode } from "../components/TextShape"
 import { disableTriggers } from "../components/Triggers"
+import { hideUIText } from "../ui/Objects/Edit/EditUiText"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -275,6 +276,12 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(.5, .5, .5)
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
+            } else if (selectedItem.itemData.n === "UI Text") {
+                MeshRenderer.setBox(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(.5, .5, .5)
+                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
             } else {
                 if (selectedItem.itemData.pending) {
                     MeshRenderer.setBox(selectedItem.entity)
@@ -438,6 +445,7 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
 }
 
 export function saveItem() {
+    hideUIText()
     PointerEvents.deleteFrom(selectedItem.entity)
     // addBuildModePointers(selectedItem.entity)
     addAllBuildModePointers()

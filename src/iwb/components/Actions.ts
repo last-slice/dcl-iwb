@@ -13,6 +13,7 @@ import { getUITransform } from "../ui/helpers"
 import { startTimeout } from "./Timer"
 import { addShowText, removeShowText } from "../ui/Objects/ShowText"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
+import { UiTexts } from "./UIText"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -55,7 +56,11 @@ function updateActions(scene:any, info:any, action:any){
     actionEvents.on(action.id, ()=>{
         switch(action.type){
             case Actions.SHOW_TEXT:
-                handleShowText(info.entity, action)
+                handleShowText(info, action)
+                break;
+
+            case Actions.HIDE_TEXT:
+                handleHideText(info, action)
                 break;
 
             case Actions.ADD_NUMBER:
@@ -180,13 +185,13 @@ function updateActions(scene:any, info:any, action:any){
     })
 }
 
-export function handleShowText(entity:Entity, action:any, forceDelay?:number){
-    addShowText(action)
+export function handleShowText(entityInfo:any, action:any, forceDelay?:number){
+    // addShowText(action)
 
-    if(forceDelay){
-        startTimeout(entity, Actions.HIDE_TEXT, forceDelay, () =>
-        handleHideText(entity, {}))
-    }
+    // if(forceDelay){
+    //     startTimeout(entity, Actions.HIDE_TEXT, forceDelay, () =>
+    //     handleHideText(entity, {}))
+    // }
 
     // const uiTransformComponent = getUITransform(UiTransform, entity)
     // if (uiTransformComponent) {
@@ -199,16 +204,25 @@ export function handleShowText(entity:Entity, action:any, forceDelay?:number){
 
     // //   startTimeout(entity, Actions.HIDE_TEXT, hideAfterSeconds, () =>
     // //     handleHideText(entity, {}),
-    // //   )//
+    // //   )
     // }
+
+    let uiText = UiTexts.get(entityInfo.aid)
+    if(uiText){
+        uiText.show()
+    }
 }
 
-function handleHideText(entity:Entity, action:any){
-    removeShowText(action.id)
+function handleHideText(entityInfo:any, action:any){
+    // removeShowText(action.id)
     // const uiTextComponent = UiText.getOrNull(entity)
     // if (uiTextComponent) {
     //   UiText.deleteFrom(entity)
     // }
+    let uiText = UiTexts.get(entityInfo.aid)
+    if(uiText){
+        uiText.hide()
+    }
 }
 
 function handleSetState(scene:any, info:any, action:any){

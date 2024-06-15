@@ -18,6 +18,7 @@ import { checkPointerComponent } from "./Pointers"
 import { checkAudioSourceComponent, checkAudioStreamComponent } from "./Sounds"
 import { checkCounterComponent } from "./Counter"
 import { checkTriggerComponent } from "./Triggers"
+import { checkUIText } from "./UIText"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
@@ -86,6 +87,7 @@ export function parentingListener(scene:any){
             await checkTextShapeComponent(scene, item)
             await checkVideoComponent(scene, item)
             await checkNftShapeComponent(scene, item)
+            await checkUIText(scene, item)
             await checkCounterComponent(scene, item)
             await checkTriggerComponent(scene, item)
             

@@ -300,6 +300,7 @@ export enum COMPONENT_TYPES {
     STATE_COMPONENT ='States',
     POINTER_COMPONENT = 'Pointers',
     COUNTER_COMPONENT = 'Counters',
+    UI_TEXT_COMPONENT = 'UI_Text',
     TRIGGER_COMPONENT = "Triggers",
     ACTION_COMPONENT = 'Actions',
     TRIGGER_AREA_COMPONENT = "Trigger_Area",
@@ -402,7 +403,8 @@ export enum Actions {
     HIDE_NOTIFICATION = 'hide_notification',
     PLACE_PLAYER_POSITION = 'place_player_position',
     BATCH_ACTIONS = 'batch_actions',
-    RANDOM_ACTION = 'random_action'
+    RANDOM_ACTION = 'random_action',
+    SET_TEXT = 'set_text'
 
 }
 

@@ -28,6 +28,7 @@ import { pointerListener } from "./Pointers"
 import { stateListener } from "./States"
 import { realm, worlds } from "./Config"
 import { soundsListener } from "./Sounds"
+import { uiTextListener } from "./UIText"
 
 export let realmActions: any[] = []
 
@@ -84,6 +85,7 @@ async function loadSceneComponents(scene:any){
     triggerListener(scene)
     pointerListener(scene)
     stateListener(scene)
+    uiTextListener(scene)
 
 
     //todo

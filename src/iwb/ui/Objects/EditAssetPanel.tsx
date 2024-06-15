@@ -30,6 +30,8 @@ import { EditAction, actionView, updateActionView } from './Edit/EditAction'
 import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
 import { resetSetPositionEntity } from './Edit/ActionPanels/AddSetPositionPanel'
 import { EditState } from './Edit/EditState'
+import { EditUiText, hideUIText, showUIText } from './Edit/EditUiText'
+import { UiTexts } from '../../components/UIText'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -40,7 +42,14 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
         componentViewType = "basic"
     }
 
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+
     switch(value){
+        case COMPONENT_TYPES.UI_TEXT_COMPONENT:
+            if(scene){
+                showUIText()
+            }
+            break;
         case COMPONENT_TYPES.ADVANCED_COMPONENT:
             componentViewType = "advanced"
             openEditComponent("")
@@ -48,7 +57,6 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT:
         case COMPONENT_TYPES.AUDIO_STREAM_COMPONENT:
-            let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
             if(scene && scene[value].has(selectedItem.aid)){
                 updateAudioComponent(scene[value].get(selectedItem.aid))
             }
@@ -371,6 +379,11 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.UI_TEXT_COMPONENT:
+            hideUIText()
+            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+        break;
+
         case COMPONENT_TYPES.ADVANCED_COMPONENT:
             componentViewType = "basic"
             openEditComponent("")
@@ -700,12 +713,12 @@ function EditObjectData(){
                 <EditAction/>
                 <EditPointer/>
                 <EditState/>
+                <EditUiText/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
 
                 <MaterialComponentPanel/>
-                <TriggerComponent/>
                 <TriggerAreaComponent/>
                 <AnimationComponent/>
                 <NPCComponent/>
@@ -823,7 +836,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.POINTER_COMPONENT,
         COMPONENT_TYPES.TRIGGER_COMPONENT,
         COMPONENT_TYPES.COUNTER_COMPONENT,
-        COMPONENT_TYPES.STATE_COMPONENT
+        COMPONENT_TYPES.STATE_COMPONENT,
+        COMPONENT_TYPES.UI_TEXT_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
@@ -861,7 +875,7 @@ function getAdvancedComponents(){
     })
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-10).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
