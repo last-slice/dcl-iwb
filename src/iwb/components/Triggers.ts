@@ -2,12 +2,15 @@ import { Entity, InputAction, PointerEventType, PointerEvents, engine, pointerEv
 import { COMPONENT_TYPES, COUNTER_VALUE, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
 import mitt, { Emitter } from "mitt";
 import { getActionEvents } from "./Actions";
-import { getCounterComponentByAssetId, getCounterValue } from "./Counter";
+import { getCounterComponentByAssetId } from "./Counter";
 import { getEntity } from "./IWB";
 import { States, getCurrentValue, getPreviousValue } from "./States";
 import { tickSet } from "./Timer";
+import { utils } from "../helpers/libraries";
+import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
+import { Color3 } from "@dcl/sdk/math";
 
-// const actionQueue: { entity: Entity; action: Action }[] = []
+// const actionQueue: { entity: Entity; action: Action }[] = []//
 const actionQueue:any[] = []
 
 const triggers = new Map<Entity, Emitter<Record<Triggers, any>>>()
@@ -22,6 +25,28 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
           break
       }
     })
+
+    if(itemInfo.isArea){
+      console.log('this is a trigger area')///
+      let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
+      if(transform){
+        utils.triggers.addTrigger(entityInfo.entity, NO_LAYERS, LAYER_1,
+          [{type:'box',
+            scale: transform.scale
+          }],
+          ()=>{
+            const triggerEvents = getTriggerEvents(entityInfo.entity)
+          triggerEvents.emit(Triggers.ON_ENTER)
+          },
+          ()=>{
+            const triggerEvents = getTriggerEvents(entityInfo.entity)
+          triggerEvents.emit(Triggers.ON_LEAVE)
+          },
+          Color3.create(236/255,209/255,92/255)
+        )
+      }
+
+    }
   }
 }
 

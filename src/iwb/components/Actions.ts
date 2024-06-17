@@ -13,7 +13,7 @@ import { getUITransform } from "../ui/helpers"
 import { startTimeout } from "./Timer"
 import { addShowText, removeShowText } from "../ui/Objects/ShowText"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
-import { UiTexts } from "./UIText"
+import { UiTexts, uiDataUpdate } from "./UIText"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -56,7 +56,7 @@ function updateActions(scene:any, info:any, action:any){
     actionEvents.on(action.id, ()=>{
         switch(action.type){
             case Actions.SHOW_TEXT:
-                handleShowText(info, action)
+                handleShowText(scene, info, action)
                 break;
 
             case Actions.HIDE_TEXT:
@@ -185,7 +185,7 @@ function updateActions(scene:any, info:any, action:any){
     })
 }
 
-export function handleShowText(entityInfo:any, action:any, forceDelay?:number){
+export function handleShowText(scene:any, entityInfo:any, action:any, forceDelay?:number){
     // addShowText(action)
 
     // if(forceDelay){
@@ -209,11 +209,12 @@ export function handleShowText(entityInfo:any, action:any, forceDelay?:number){
 
     let uiText = UiTexts.get(entityInfo.aid)
     if(uiText){
+        uiDataUpdate(scene, entityInfo)
         uiText.show()
     }
 }
 
-function handleHideText(entityInfo:any, action:any){
+export function handleHideText(entityInfo:any, action:any){
     // removeShowText(action.id)
     // const uiTextComponent = UiText.getOrNull(entity)
     // if (uiTextComponent) {
@@ -230,6 +231,7 @@ function handleSetState(scene:any, info:any, action:any){
     let state = getStateComponentByAssetId(scene, info.aid)
     if(state){
         setState(state, action.state)
+        uiDataUpdate(scene, info)
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.emit(Triggers.ON_STATE_CHANGE)
     }
@@ -240,6 +242,7 @@ function handleAddNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         updateCounter(counter, action.value)
+        uiDataUpdate(scene, info)
         //single player
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
@@ -253,6 +256,8 @@ function handleSetNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         setCounter(counter, action.value)
+        uiDataUpdate(scene, info)
+
         //single player
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
@@ -265,6 +270,7 @@ function handleSubtractNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         updateCounter(counter, (-1 * action.value))
+        uiDataUpdate(scene, info)
         //single player
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})

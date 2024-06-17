@@ -13,6 +13,7 @@ export const Numbers = engine.defineComponent(resources.slug + "counter::compone
 export function checkCounterComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.COUNTER_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
+        console.log('counter component is', itemInfo)//
         Numbers.createOrReplace(entityInfo.entity, {
             defaultValue: itemInfo.defaultValue,
             currentValue: itemInfo.currentValue,

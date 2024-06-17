@@ -38,13 +38,13 @@ export default {
 
     endpoints:{
         wsTest: "ws://localhost:2751",
-        wsProd: "wss://dcl-iwb.co/toolset",
+        wsProd: "wss://dcl-iwb.co/toolset/qa",
 
         deploymentTest: "http://localhost:3525",
         deploymentProd: "https://deployment.dcl-iwb.co",
 
-        toolsetTest: "http://localhost:3000/toolset",
-        toolsetProd: "https://dcl-iwb.co/toolset",
+        toolsetTest: "http://localhost:3000/toolset/",
+        toolsetProd: "https://dcl-iwb.co/toolset/qa",
 
         validateTest: "http://localhost:2751",
 

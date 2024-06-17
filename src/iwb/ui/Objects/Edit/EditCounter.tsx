@@ -142,7 +142,9 @@ function updateComponent(){
             component:COMPONENT_TYPES.COUNTER_COMPONENT,
             aid:selectedItem.aid,
             sceneId:selectedItem.sceneId,
-            ['defaultValue']:newDefaultValue
+            data:{
+                ['defaultValue']:newDefaultValue
+            }
         }
     )
 }

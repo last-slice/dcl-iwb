@@ -414,10 +414,6 @@ export enum Triggers {
     ON_CLICK = "on_click",
     ON_ENTER = "on_enter",
     ON_LEAVE = "on_leave",
-
-
-
-    //new triggers
     ON_ACCESS_VERIFIED ='on_access_verified',
     ON_ACCESS_DENIED ='on_access_denied',
     ON_INPUT_ACTION = 'on_input_action',
@@ -426,10 +422,10 @@ export enum Triggers {
     ON_LOOP = 'on_loop',
     ON_CLONE = 'on_clone',
     ON_CLICK_IMAGE = 'on_click_image',
-    ON_DAMAGE = 'on_damage',
+    // ON_DAMAGE = 'on_damage',
     ON_GLOBAL_CLICK = 'on_global_click',
     ON_TICK = 'on_tick',
-    ON_HEAL = 'on_heal',
+    // ON_HEAL = 'on_heal',//
     ON_STATE_CHANGE = "on_state_change",
     ON_COUNTER_CHANGE = "on_counter_change",
 }

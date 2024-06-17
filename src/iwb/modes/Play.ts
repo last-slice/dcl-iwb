@@ -15,6 +15,7 @@ import { checkTransformComponent } from "../components/Transform"
 import { disableTextShapePlayMode, setTextShapeForPlayMode } from "../components/TextShape"
 import { disableTriggers, setTriggersForPlayMode } from "../components/Triggers"
 import { disableCounterForPlayMode } from "../components/Counter"
+import { disableUiTextPlayMode, setUiTextPlayMode } from "../components/UIText"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -92,6 +93,7 @@ export function enableSceneEntities(sceneId: string) {
                     checkTransformComponent(scene, entityInfo)
                     setTextShapeForPlayMode(scene, entityInfo)
                     setTriggersForPlayMode(scene, entityInfo)
+                    setUiTextPlayMode(scene, entityInfo)
                 }
             }
         })
@@ -138,9 +140,9 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableTriggers(scene, entityInfo)
         checkTransformComponent(scene, entityInfo)
         disableCounterForPlayMode(scene, entityInfo)
+        disableUiTextPlayMode(scene, entityInfo)
 
-
-        //reset states
+        //reset states//
 
 
         PointerEvents.deleteFrom(entityInfo.entity)

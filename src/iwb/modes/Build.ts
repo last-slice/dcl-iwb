@@ -31,6 +31,7 @@ import { checkTransformComponent } from "../components/Transform"
 import { setTextShapeForBuildMode } from "../components/TextShape"
 import { disableTriggers } from "../components/Triggers"
 import { hideUIText } from "../ui/Objects/Edit/EditUiText"
+import { setUiTextBuildMode } from "../components/UIText"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -280,14 +281,20 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 MeshRenderer.setBox(selectedItem.entity)
                 itemPosition = {x: 0, y: .5, z: itemDepth}
                 selectedItem.initialHeight = .88
-                scale = Vector3.create(.5, .5, .5)
+                scale = Vector3.create(.5, .5, .5)//
+                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
+            } else if (selectedItem.itemData.n === "Trigger Area") {
+                MeshRenderer.setBox(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(1,1,1)
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
             } else {
                 if (selectedItem.itemData.pending) {
                     MeshRenderer.setBox(selectedItem.entity)
                 } else {
                     GltfContainer.create(selectedItem.entity, {
-                        src: 'assets/' + selectedItem.catalogId + ".glb",
+                        src: 'assets/' + selectedItem.catalogId + ".glb",//
                         invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
                         visibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
                     })
@@ -1296,10 +1303,11 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         setAnimationBuildMode(scene, entityInfo)
         setSmartItemBuildMode(scene, entityInfo)
         setTextShapeForBuildMode(scene, entityInfo)
+        setUiTextBuildMode(scene, entityInfo)
         checkTransformComponent(scene, entityInfo)
         addBuildModePointers(entityInfo.entity)
     }
-    //         resetTweenPositions(entity, sceneItem, scene)
+    //         resetTweenPositions(entity, sceneItem, scene)//
 }
 
 export function addSelectionPointer(itemdata: any) {

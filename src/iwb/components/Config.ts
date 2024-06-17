@@ -151,7 +151,7 @@ export function setPlayerMode(mode:SCENE_MODES){
         })
     })
 
-    updatePlayModeReset(true)
+    updatePlayModeReset(true)//
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
         clearShowTexts()

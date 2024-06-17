@@ -1,6 +1,10 @@
 import ReactEcs, { EntityPropTypes, JustifyType, PositionUnit, UiEntity } from '@dcl/sdk/react-ecs'
 import { Color4 } from "@dcl/sdk/math"
 import resources from '../iwb/helpers/resources'
+import { sizeFont } from '../iwb/ui/helpers'
+import { getRandomString } from '../iwb/helpers/functions'
+import { getEntity } from '../iwb/components/IWB'
+import { States } from '../iwb/components/States'
 
 type DigitSprite = {
     letter: string,
@@ -40,8 +44,16 @@ export function UISpriteText(props: CustomTextProps) {
                     justifyContent: props.customText.justifyCounter,
                     display: props.customText.visible ? 'flex' : 'none',
                 }}
+                // uiBackground={{color:Color4.Green()}}
             >
-                {props.customText.generateCounterDigitsUI()}
+
+                {
+                props.customText.style === 0 ? 
+                    props.customText.generateSDKText()                
+                :
+                    props.customText.generateCounterDigitsUI()
+                }
+      
             </UiEntity>
         // </UiEntity>
     )
@@ -51,20 +63,56 @@ export class CustomUIText {
     spriteSheet: string = "images/customCounter/alpha_sheet.png"
     rows: number
     cols: number
-    currentText: string = "a"
+    currentText: string = "text"
+    currentTextData: string = " "
     digits: DigitSprite[]
     size: number = 64
     justifyCounter: JustifyType = "center"
     visible: boolean = false
-    letters:string[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y","z"] 
+    letters:string[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y","z", " "] 
     position:any
+    style:number = 0
+    id:string
+    type:number = -500
+    aid:string = ""
+    sceneId:string = ""
 
-    constructor(_rows: number, _cols: number, _size: number, _justifyType: CounterJustifyType, _imgPath: string,) {
+    constructor(_rows: number, _cols: number, _uiTextInfo:any, _justifyType: CounterJustifyType, _imgPath: string,) {
         this.digits = []
         this.rows = _rows
         this.cols = _cols
         this.spriteSheet = _imgPath
-        this.size = _size
+
+        this.size = _uiTextInfo.size
+        this.type = _uiTextInfo.type
+        this.style = _uiTextInfo.style
+        if(_uiTextInfo.pt){
+            if(!this.position){
+                this.position = {}   
+            }
+            this.position.top =  `${_uiTextInfo.pt}%`
+        }
+        if(_uiTextInfo.pl){
+            if(!this.position){
+                this.position = {}   
+            }
+            this.position.left =  `${_uiTextInfo.pl}%`
+        }
+
+        if(_uiTextInfo.pr){
+            if(!this.position){
+                this.position = {}   
+            }
+            this.position.right =  `${_uiTextInfo.pr}%`
+        }
+
+        if(_uiTextInfo.pb){
+            if(!this.position){
+                this.position = {}   
+            }
+            this.position.bottom =  `${_uiTextInfo.pb}%`
+        }
+        this.id = getRandomString(5)
 
         switch (_justifyType) {
             case 'left':
@@ -90,6 +138,7 @@ export class CustomUIText {
         })
 
         // console.log('this digits are ', this.digits)
+        console.log('ui sprite text', this)
     }
 
     getUVSingleNumber(digit: string): number[] {
@@ -111,14 +160,24 @@ export class CustomUIText {
             right, top,
             right, bottom
         ]
-
     }
 
-    setText(_string: string){
+    setText(_string: string, _data?:string){
         this.digits = []
         this.currentText = _string
+        if(_data){
+            this.currentTextData = _data
+        }
 
-        let digits = _string.toLowerCase().split('');
+        if(this.style === 1){
+            this.resetDigits()
+        }
+    }
+
+    resetDigits(){
+        this.digits.length = 0
+        console.log('string is', (this.currentText + this.currentTextData).toLowerCase().split(''))
+        let digits = (this.currentText + this.currentTextData).toLowerCase().split('');
         let realDigits = digits.map(String)
 
         // realDigits.reverse()
@@ -140,13 +199,27 @@ export class CustomUIText {
                 size: this.size,
                 margin: margin,
             })
-
-
         }
     }
 
     generateCounterDigitsUI() {
         return Array.from(this.digits).map((digit) => <this.DigitComponent value={digit} key={this.digits.indexOf(digit)} />)
+    }
+
+    generateSDKText(){
+        return(
+            <UiEntity
+            key={resources.slug + "ui::text::" + this.id}
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height:"100%"
+            }}
+            uiText={{value: "" + this.currentText + this.currentTextData, fontSize: sizeFont(this.size, this.size), color: Color4.White(), textAlign: 'middle-center'}}
+        />
+        )
     }
 
     DigitComponent(props: { value: DigitSprite; key: string | number }) {

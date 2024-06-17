@@ -87,8 +87,8 @@ export function parentingListener(scene:any){
             await checkTextShapeComponent(scene, item)
             await checkVideoComponent(scene, item)
             await checkNftShapeComponent(scene, item)
-            await checkUIText(scene, item)
             await checkCounterComponent(scene, item)
+            await checkUIText(scene, item)
             await checkTriggerComponent(scene, item)
             
             // await checkSmartItemComponent()

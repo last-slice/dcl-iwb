@@ -250,7 +250,7 @@ export function AddShowTextPanel(){
             }}
             onMouseDown={() => {
                 setUIClicked(true)
-                handleShowText(selectedItem.entity, newActionData, 3)
+                handleShowText(colyseusRoom.state.scenes.get(selectedItem.sceneId), selectedItem.entity, newActionData, 3)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)

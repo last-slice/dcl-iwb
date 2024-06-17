@@ -38,11 +38,14 @@ let componentViewType:string = "basic"
 let newAdvancedComponentIndex:number = 0
 
 export function openEditComponent(value: string, resetToBasic?:boolean) {
+    let scene:any
+
     if(resetToBasic){
         componentViewType = "basic"
+    }else{
+        scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     }
 
-    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
 
     switch(value){
         case COMPONENT_TYPES.UI_TEXT_COMPONENT:
@@ -873,6 +876,8 @@ function getAdvancedComponents(){
             assetComponents.push(component)
         }
     })
+
+    assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
     advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-10).filter(item => assetComponents.includes(item))

@@ -10,7 +10,6 @@ let props:any
 let variableText:any
 
 export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any){
-    console.log('display skinny is', data)
     if(value){
         props = data
     }
