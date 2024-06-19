@@ -36,10 +36,6 @@ export function checkMeshColliderComponent(scene:any, entityInfo:any){
 
 export function meshListener(scene:any){
     scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].onAdd((mesh:any, aid:any)=>{
-        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
-        // if(!iwbInfo.components.includes(COMPONENT_TYPES.MESH_COLLIDER_COMPONENT)){
-        //   iwbInfo.components.push(COMPONENT_TYPES.MESH_COLLIDER_COMPONENT)
-        // }
 
         let entityInfo = getEntity(scene, aid)
         if(!entityInfo){

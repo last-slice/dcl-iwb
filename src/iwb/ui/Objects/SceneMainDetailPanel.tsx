@@ -634,7 +634,7 @@ export function InfoPanel() {
 
 
             <Input
-                onChange={(e) =>{ scene!.n = e }}
+                onChange={(e) =>{ scene!.n = e.trim() }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"" + (scene && scene !== null ? scene.n : "")}
                 placeholderColor={Color4.White()}
@@ -1015,6 +1015,16 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             displaySceneDetailsPanel(false)
             updateSceneDetailsView("Info")
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Scene Saved!", animate:{enabled:true, return:true, time:5}})
+            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS,
+                {
+                    sceneId: scene!.id,
+                    name: scene!.n,
+                    desc: scene!.d,
+                    image: scene!.im,
+                    enabled: scene!.e,
+                    priv: scene!.priv,
+                    lim: scene!.lim
+                })
         }}
         uiText={{value: "Save Edits", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />
@@ -1045,7 +1055,6 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
         />
 
         </UiEntity>
-
 
 
 

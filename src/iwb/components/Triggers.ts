@@ -105,7 +105,7 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
                   console.log('is valid action')
                     let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
                     if(aid){
-                      console.log('action id is', action)
+                      console.log('action info is', {aid:aid, action:action, entity:entity})
                         actionQueue.push({aid:aid, action:action, entity:entity})
                     }
                 }

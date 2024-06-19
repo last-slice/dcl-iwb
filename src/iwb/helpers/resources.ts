@@ -29,8 +29,8 @@ export let colors:Color4[] = [
 ]
 
 export default {
-    DEBUG: false,
-    allowNoWeb3:false,
+    DEBUG: true,
+    allowNoWeb3:false,//
 
     slug:"in::world::builder::",
 
@@ -62,7 +62,7 @@ export default {
         atlas2:"assets/atlas2.png"
     },
     
-
+//
     audioClips:[
         {key:SOUND_TYPES.ATMOS_BLESSING, name:"Blessing Stereo", loop:false, attach:true, volume:.5},
         {key:SOUND_TYPES.WOOD_3, name:"Wood 3", loop:false, attach:true, volume:.5},

@@ -1,8 +1,8 @@
 import { Schemas, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "./Colyseus"
-import { getEntity } from "./IWB"
 import resources from "../helpers/resources"
 import { COMPONENT_TYPES } from "../helpers/types"
+import { getEntity } from "./IWB"
 
 export const Numbers = engine.defineComponent(resources.slug + "counter::component", {
     defaultValue:Schemas.Int,

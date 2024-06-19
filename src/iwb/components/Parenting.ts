@@ -119,5 +119,3 @@ export function parentingListener(scene:any){
         removeItem(item.entity)
     })
 }
-
-//

@@ -323,6 +323,7 @@ function handlePlaySound(info:any, action:any){
     // }
 
     let audio = AudioStream.getMutableOrNull(info.entity)
+    console.log('audio is', audio)
     if(audio){
         // audio.loop = action.loop
         audio.volume = action.volume ? action.volume : 1
@@ -333,7 +334,11 @@ function handlePlaySound(info:any, action:any){
 }
 
 function handleStopSound(info:any){
-    let audio = AudioSource.getMutableOrNull(info.entity)
+    // let audio = AudioSource.getMutableOrNull(info.entity)
+    // if(audio){
+    //     audio.playing = false
+    // }
+    let audio = AudioStream.getMutableOrNull(info.entity)
     if(audio){
         audio.playing = false
     }

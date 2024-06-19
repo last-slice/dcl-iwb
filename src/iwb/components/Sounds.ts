@@ -9,23 +9,27 @@ import { items } from "./Catalog"
 import { AudioLoadedComponent } from "../helpers/Components"
 import { updateTransform } from "./Transform"
 import { selectedItem } from "../modes/Build"
-import { colyseusRoom } from "./Colyseus"
 
 export function checkAudioSourceComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         AudioSource.create(entityInfo.entity, {
-            audioClipUrl: "assets/" + itemInfo.url + ".mp3",
+            audioClipUrl: "assets/" + itemInfo.url,
             playing: false,
             volume: itemInfo.volume,
             loop: itemInfo.loop
+        })
+        AudioStream.create(entityInfo.entity, {
+            url: "assets/" + itemInfo.url,
+            playing: false,
+            volume: itemInfo.volume
         })
         AudioLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
 export function checkAudioStreamComponent(scene:any, entityInfo:any){
-    let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         AudioStream.create(entityInfo.entity, {
             url: itemInfo.url,
@@ -105,7 +109,7 @@ export function setAudioPlayMode(scene:any, entityInfo:any){
             }
         }
 
-        let audioStream = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
+        let audioStream = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
         if(audioStream){
             MeshRenderer.deleteFrom(entityInfo.entity)
             MeshCollider.deleteFrom(entityInfo.entity)
