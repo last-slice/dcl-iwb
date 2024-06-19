@@ -814,19 +814,18 @@ export function placeCenterCurrentScene(id?: string) {
     })
 }
 
-export function duplicateItem(entity: Entity) {
-    // let assetId = itemIdsFromEntities.get(entity)
-    // console.log('found asset id', assetId)
-    // if (assetId) {
-    //     sceneBuilds.forEach((scene: IWBScene) => {
-    //         let sceneItem = scene.ass.find((asset) => asset.aid === assetId)
-    //         console.log('scene item is', sceneItem)
-    //         if (sceneItem) {
-    //             selectCatalogItem(sceneItem.id, EDIT_MODES.GRAB, false, sceneItem)
-    //             return
-    //         }
-    //     })
-    // }
+export function duplicateItem(aid:string) {
+    let scene = localPlayer.activeScene
+    if(!scene){
+        return
+    }
+
+    let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
+    if(!itemInfo){
+        return
+    }
+
+    selectCatalogItem(itemInfo.id, EDIT_MODES.GRAB, false)
 }
 
 export function duplicateItemInPlace(aid:string) {

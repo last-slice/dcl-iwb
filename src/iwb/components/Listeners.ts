@@ -16,10 +16,9 @@ import { refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { getView } from "../ui/uiViews";
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel";
-import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
-import { FlyModeSystem } from "../systems/FlyModeSystem";
-import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem";
-import { SelectedItemSystem } from "../systems/SelectedItemSystem";
+import { scene, sceneInfoDetailView } from "../ui/Objects/SceneMainDetailPanel";
+import { updateIWBTable } from "../ui/Reuse/IWBTable";
+import { colyseusRoom } from "./Colyseus";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -196,10 +195,6 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_EDIT_ASSET + ' received', info)
-    // })
-
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, (info:any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM + ' received', info)
         if(info.user !== localUserId){
@@ -252,6 +247,15 @@ export async function createColyseusListeners(room:Room){
         else{
             showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Build Permissions Granted to user " + info.user + " for your scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
         }
+
+        if(sceneInfoDetailView === "Builders"){
+            utils.timers.setTimeout(()=>{
+                let scene = colyseusRoom.state.scenes.get(info.sceneId)
+                if(scene){
+                    updateIWBTable(scene.bps)
+                }      
+            }, 100)
+        }
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, (info:any) => {
@@ -270,6 +274,15 @@ export async function createColyseusListeners(room:Room){
         }
         else{
             showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "Removed Build Permissions for " + info.user + " on your scene " + info.sceneName, animate:{enabled:true, return:true, time:5}})
+        }
+
+        if(sceneInfoDetailView === "Builders"){
+            utils.timers.setTimeout(()=>{
+                let scene = colyseusRoom.state.scenes.get(info.sceneId)
+                if(scene){
+                    updateIWBTable(scene.bps)
+                }      
+            }, 100)
         }
     })
 

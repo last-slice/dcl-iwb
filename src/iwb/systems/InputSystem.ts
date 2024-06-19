@@ -5,7 +5,7 @@ import { displayHover, updateContextEvents } from "../ui/Objects/ContextMenu"
 import { playerMode } from "../components/Config"
 import { log } from "../helpers/functions"
 import { SCENE_MODES, EDIT_MODES, COMPONENT_TYPES } from "../helpers/types"
-import { selectedItem, cancelSelectedItem, dropSelectedItem, deleteSelectedItem, updateSelectedAssetId, editItem, grabItem, deleteGrabbedItem, duplicateItemInPlace } from "../modes/Build"
+import { selectedItem, cancelSelectedItem, dropSelectedItem, deleteSelectedItem, updateSelectedAssetId, editItem, grabItem, deleteGrabbedItem, duplicateItemInPlace, duplicateItem } from "../modes/Build"
 import { localPlayer, settings } from "../components/Player"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { getView } from "../ui/uiViews"
@@ -244,6 +244,26 @@ export function InputListenSystem(dt:number){
                     }
                 } else {
                     log('player pressed #E on in build mode without selecting item or hitting asset', hoveredEntity)
+                }
+            }
+        }
+    }
+
+    //#2//
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)) {
+        displayHover(false)
+
+        // Logic in response to button press
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)
+        if (result) {
+            if (result.hit && result.hit.entityId) {
+                log('player pressed #2 on an object')
+                if (playerMode === SCENE_MODES.BUILD_MODE) {
+                    log('player pressed #2 on an object in Build mode, need to duplicate')
+                    let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+                    if(aid){
+                        duplicateItem(aid)//
+                    }
                 }
             }
         }

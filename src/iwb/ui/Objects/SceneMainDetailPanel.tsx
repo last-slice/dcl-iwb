@@ -14,12 +14,19 @@ import { editCurrentParcels } from '../../modes/Create'
 import { showNotification } from './NotificationPanel'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
 import { getView } from '../uiViews'
+import { displayAddSpawnPointPanel } from './AddSpawnPointPanel'
+import { localPlayer } from '../../components/Player'
+import { utils } from '../../helpers/libraries'
 
 export let scene:IWBScene | null
+export let sceneInfoDetailView = "Info"
 
 let show = false
-let view = "Info"
 let visibleIndex = 1
+let newSceneBuilderWallet:string = ""
+
+let spawn:any = {x:0,y:0,z:0}
+let camera:any = {x:0,y:0,z:0}
 
 let buttons:any[] = [
     {label:"Info", pressed:true, func:()=>{
@@ -31,9 +38,6 @@ let buttons:any[] = [
         }
     },
     {label:"Spawns", pressed:false, func:()=>{
-        setTableConfig(spawnTableConfig)
-        refreshSpawns()
-        updateIWBTable(spawns)
         updateSceneDetailsView("Spawns")
         }
     },
@@ -42,6 +46,7 @@ let buttons:any[] = [
         }
     },
     {label:"Close", pressed:false, func:()=>{
+        updateIWBTable([])
         displaySceneDetailsPanel(false)
         },
         position:{bottom:0},
@@ -51,9 +56,9 @@ let buttons:any[] = [
 
 let spawns:any[] = []
 let spawnTableConfig:any = {
-    height:'10%', width:'100%', rowCount:6,
+    height:'40%', width:'100%', rowCount:6,
     headerData:[
-        {spawn:"Spawn", camera:"Camera", go:"Visit"},
+        {spawn:"Spawn", camera:"Camera", go:"Del"},
     ],
     rowConfig:[
     { 
@@ -65,7 +70,7 @@ let spawnTableConfig:any = {
         fontSize:sizeFont(25,15),
         textAlign: 'middle-left',
         color:Color4.White(),
-        fun:(data:any)=>{
+        func:(data:any)=>{
             return "x:" + data.split(",")[0] + ", y:" + data.split(",")[1] + ", z:" + data.split(",")[2]
         }
     },
@@ -95,32 +100,95 @@ let spawnTableConfig:any = {
             size:3,
             textureMode: 'stretch',
             texture: {
-                src: 'assets/atlas2.png',
-                uvs:()=>{getImageAtlasMapping(uiSizes.goIcon)}
+                src: 'assets/atlas1.png',
+                uvs:()=>{getImageAtlasMapping(uiSizes.trashButtonTrans)}
             },
             uvs: {
                 atlasHeight: 1024,
                 atlasWidth: 1024,
-                sourceTop: 90,
-                sourceLeft: 844,
-                sourceWidth: 30,
-                sourceHeight: 30
+                sourceTop: 386,
+                sourceLeft: 896,
+                sourceWidth: 128,
+                sourceHeight: 128
             }
         },
-        onClick:()=>{
+        onClickData:'index',
+        onClick:(data:any)=>{
             playSound(SOUND_TYPES.SELECT_3)
+            if(localPlayer.activeScene!.sp.length > 1){
+                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_SPAWN, {
+                        sceneId:localPlayer.activeScene!.id, 
+                        index: data
+                    }
+                )
+                utils.timers.setTimeout(()=>{
+                    updateSceneDetailsView("Spawns")
+                }, 500)
+            }
         }
     },
     ]
 }
 
-function refreshSpawns(){
+export let sceneBuildersConfig:any = {
+    height:'40%', width:'100%', rowCount:6,
+    headerData:[
+        {name:"Name", go:"Del"},
+    ],
+
+    rowConfig:[
+    { 
+        key:"name",
+        overrideKey:true,
+        width:'90%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-left',
+        color:Color4.White(),
+    },
+    {
+        key:"go",
+        width:'10%',
+        height:'80%',
+        margin:{left:"1%"},
+        value:"Go",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        image:{
+            size:3,
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png',
+                uvs:()=>{getImageAtlasMapping(uiSizes.trashButtonTrans)}
+            },
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 386,
+                sourceLeft: 896,
+                sourceWidth: 128,
+                sourceHeight: 128
+            }
+        },
+        onClick:(user:any)=>{
+            playSound(SOUND_TYPES.SELECT_3)
+            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_BP, {sceneId:scene!.id, user:user.toLowerCase()})
+        }
+    },
+    ]
+}
+
+export function refreshSpawns(){
     spawns.length = 0 
     let spawnPoints = paginateArray(scene ? [...scene.sp] : [], visibleIndex, 6)
     let cameraPoints = paginateArray(scene ? [...scene.cp] : [], visibleIndex, 6)
     spawnPoints.forEach((sp:any, i:number)=>{
         spawns.push({spawn: spawnPoints[i], camera:cameraPoints[i]})
     })
+    console.log('spawn points', spawnPoints)
 }
 
 export function displaySceneDetailsPanel(value:boolean, selectedScene?:any, resetScene?:boolean){
@@ -133,18 +201,35 @@ export function displaySceneDetailsPanel(value:boolean, selectedScene?:any, rese
     if(resetScene){
         scene = null
     }
+
+    if(value){
+        updateSceneDetailsView("Info")
+    }
+
 }
 
 export function updateSceneDetailsView(value:string){
-    let button = buttons.find($=> $.label === view)
+    let button = buttons.find($=> $.label === sceneInfoDetailView)
     if(button){
         button.pressed = false
     }
 
-    view = value
+    sceneInfoDetailView = value
     button = buttons.find($=> $.label === value)
     if(button){
         button.pressed = true
+    }
+
+    if(sceneInfoDetailView === "Builders"){
+        newSceneBuilderWallet = ""
+        setTableConfig(sceneBuildersConfig)
+        updateIWBTable(scene !== null ? scene.bps : [])
+    }
+
+    if(sceneInfoDetailView === "Spawns"){
+        setTableConfig(spawnTableConfig)
+        refreshSpawns()
+        updateIWBTable(spawns)
     }
 }
 
@@ -273,6 +358,7 @@ function MainRightView(){
             <InfoPanel/>
             <SizePanel/>
             <SpawnPanel/>
+            <EditBuildersPanel/>
 
         </UiEntity>
   
@@ -284,7 +370,7 @@ function SizePanel() {
         <UiEntity
             key={resources.slug + "scene::size::panel"}
             uiTransform={{
-                display: view === "Size" ? 'flex' : 'none',
+                display: sceneInfoDetailView === "Size" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -399,7 +485,7 @@ function SpawnPanel(){
         <UiEntity
         key={resources.slug + "scene::spawns"}
         uiTransform={{
-            display: view === "Spawns" ? 'flex' : 'none',
+            display: sceneInfoDetailView === "Spawns" ? 'flex' : 'none',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
@@ -408,6 +494,42 @@ function SpawnPanel(){
         }}
     >   
         <IWBTable/>
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '85%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.White()}}
+        >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+            }}
+            uiText={{value: "Add Spawn", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+            onMouseDown={()=>{
+                displayAddSpawnPointPanel(true)
+                updateIWBTable([])
+                displaySceneDetailsPanel(false)
+            }}
+            />
+        </UiEntity>
         </UiEntity>
     )
 }
@@ -417,7 +539,7 @@ export function InfoPanel() {
         <UiEntity
             key={resources.slug + "scene::info::panel"}
             uiTransform={{
-                display: view === "Info" ? 'flex' : 'none',
+                display: sceneInfoDetailView === "Info" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -831,8 +953,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
-            // displaySceneSetting("Access")
-            // updateExportPanelView("main")
+            updateSceneDetailsView("Builders")
         }}
         uiText={{value: "Edit Builders", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />
@@ -945,6 +1066,88 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             }}
             />
 
+        
+        </UiEntity>
+    )
+}
+
+function EditBuildersPanel() {
+    return (
+        <UiEntity
+            key={resources.slug + "scene::edit::builders::panel"}
+            uiTransform={{
+                display: sceneInfoDetailView === "Builders" ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+
+            <IWBTable/>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+        >
+                    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+        >
+
+        <Input
+            onChange={(value) => {
+                newSceneBuilderWallet = value.trim()
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'enter wallet address'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100',
+            }}
+            ></Input>
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+        >
+
+            {generateButtons({slug:"add-scene-access", buttons:[
+                {label:"Add Builder", pressed:false, width:12, height:8, func:()=>{
+                    if(newSceneBuilderWallet !== ""){
+                        sendServerMessage(
+                            SERVER_MESSAGE_TYPES.SCENE_ADD_BP, {
+                                user:newSceneBuilderWallet.toLowerCase(), 
+                                sceneId:scene!.id
+                            }
+                        )
+                        
+                    }
+                    },
+                }
+            ]})}
+            </UiEntity>
+
+            </UiEntity>
         
         </UiEntity>
     )

@@ -68,6 +68,7 @@ export function IWBTable(data:any){
 
 function tableRows(data:any, header?:boolean){
     let arr:any[] = []
+    let count = 0
     data.forEach((rowData:any, i:number)=>{
         arr.push(
             <UiEntity
@@ -94,21 +95,18 @@ function tableRows(data:any, header?:boolean){
                     }}
                 >
 
-                    {generateRow(rowData, header)}
+                    {generateRow(rowData, header, count)}
 
                 </UiEntity>
         )
+        count++
     })
     return arr
 }
 
-function generateRow(data:any, header?:boolean){
+function generateRow(data:any, header?:boolean, rowCount?:number){
     let arr:any[] = []
     let count = 0
-    if(count === 0){
-
-    }
-
     tableConfig && tableConfig.rowConfig.forEach((rowConfig:any, i:number)=>{
         arr.push(
             <UiEntity
@@ -140,10 +138,11 @@ function generateRow(data:any, header?:boolean){
                 //     setUIClicked(false)
                 // }}
             >
-                {tableConfig.rowConfig[i].image && !header && <TableImage count={i} rowConfig={tableConfig.rowConfig[i]} data={data} />}
+                {tableConfig.rowConfig[i].image && !header && <TableImage count={rowCount} rowConfig={tableConfig.rowConfig[i]} data={data} />}
 
             </UiEntity>
         )
+        count++
     })
     return arr
 }
@@ -174,7 +173,8 @@ function TableImage(info:any){
         onMouseDown={()=>{
             setUIClicked(true)
             if(rowConfig.onClick){
-                rowConfig.onClick(data)
+                console.log(info.count)
+                rowConfig.onClick(rowConfig.onClickData && rowConfig.onClickData === "index" ? ((visibleIndex - 1)* 6 + info.count) : data)
             }
         }}
         onMouseUp={()=>{

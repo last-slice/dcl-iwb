@@ -61,7 +61,10 @@ export function displayMainView(value:boolean, toggle?:boolean){
     show = toggle ? !show : value
     resetViews()
 
-    // updateIWBTable([])
+    if(!show){
+        updateIWBTable([]) 
+    }
+   
 
     setTableConfig(currentWorldTableConfig)
     updateMainView("Worlds")

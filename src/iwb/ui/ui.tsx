@@ -25,6 +25,7 @@ import { createSceneDetailsPanel } from './Objects/SceneMainDetailPanel'
 import { createPendingStatusPanel } from './Objects/PendingInfoPanel'
 import { createCustomUITextComponent } from './Objects/createCustomUITextComponent'
 import { createCustomUIImageComponent } from './Objects/UIImage'
+import { createAddSpawnPointPanel } from './Objects/AddSpawnPointPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -54,6 +55,7 @@ const uiComponent:any = () => [
   createPendingStatusPanel(),
   createCustomUITextComponent(),
   createCustomUIImageComponent(),
+  createAddSpawnPointPanel(),
   // createAdvancedEditPanel(),
 ]
 

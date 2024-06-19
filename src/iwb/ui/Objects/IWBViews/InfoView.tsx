@@ -561,8 +561,6 @@ function generateUpdateRows(){
     return arr
 }
 
-
-
 export let worldAccessTableConfig:any = {
     height:'10%', width:'100%', rowCount:6,
     headerData:[
@@ -606,13 +604,13 @@ export let worldAccessTableConfig:any = {
             size:3,
             textureMode: 'stretch',
             texture: {
-                src: 'assets/atlas2.png',
+                src: 'assets/atlas1.png',
                 uvs:()=>{getImageAtlasMapping(uiSizes.trashButtonTrans)}
             },
             uvs: {
                 atlasHeight: 1024,
                 atlasWidth: 1024,
-                sourceTop: 258,
+                sourceTop: 386,
                 sourceLeft: 896,
                 sourceWidth: 128,
                 sourceHeight: 128
