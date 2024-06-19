@@ -130,23 +130,17 @@ function generateRow(data:any, header?:boolean){
                     color: tableConfig.rowConfig[i].color ? tableConfig.rowConfig[i].color : Color4.White()
                     }
                 }
-                onMouseDown={
-                    // tableConfig.rowConfig[i].image ? undefined :
-
-                    tableConfig.rowConfig[i].onClick ?
-                    ()=>{
-                        setUIClicked(true)
-                        if(tableConfig.rowConfig[i].onClick){
-                            tableConfig.rowConfig[i].onClick(data)
-                        }
-                    }
-                    : undefined
-                }
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
+                // onMouseDown={()=>{
+                //     setUIClicked(true)
+                //     // if(tableConfig.rowConfig[i].onClick){
+                //     //     tableConfig.rowConfig[i].onClick(data)
+                //     // }
+                // }}
+                // onMouseUp={()=>{
+                //     setUIClicked(false)
+                // }}
             >
-                {tableConfig.rowConfig[i].image && !header && <TableImage count={i} rowConfig={tableConfig.rowConfig[i]} data={ data[rowConfig.key]} />}
+                {tableConfig.rowConfig[i].image && !header && <TableImage count={i} rowConfig={tableConfig.rowConfig[i]} data={data} />}
 
             </UiEntity>
         )
@@ -156,6 +150,7 @@ function generateRow(data:any, header?:boolean){
 
 function TableImage(info:any){
     let rowConfig = info.rowConfig
+    let data = info.data
     return(
         <UiEntity
         key={resources.slug + "-table-row-image-" + info.count}
@@ -176,16 +171,12 @@ function TableImage(info:any){
         }}
         uiBackground={rowConfig.image ? getImageBackground(rowConfig.image) : undefined}
 
-        onMouseDown={
-            rowConfig.onClick ?
-            ()=>{
-                setUIClicked(true)
-                if(rowConfig.onClick){
-                    rowConfig.onClick()
-                }
+        onMouseDown={()=>{
+            setUIClicked(true)
+            if(rowConfig.onClick){
+                rowConfig.onClick(data)
             }
-            : undefined
-        }
+        }}
         onMouseUp={()=>{
             setUIClicked(false)
         }}

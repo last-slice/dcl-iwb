@@ -32,6 +32,7 @@ import { resetSetPositionEntity } from './Edit/ActionPanels/AddSetPositionPanel'
 import { EditState } from './Edit/EditState'
 import { EditUiText, hideUIText, showUIText } from './Edit/EditUiText'
 import { UiTexts } from '../../components/UIText'
+import { EditUIImage, hideUIImage, showUIImage } from './Edit/EditUIImage'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -53,6 +54,11 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
                 showUIText()
             }
             break;
+
+        case COMPONENT_TYPES.UI_IMAGE_COMPONENT:
+            showUIImage()
+            break;
+
         case COMPONENT_TYPES.ADVANCED_COMPONENT:
             componentViewType = "advanced"
             openEditComponent("")
@@ -387,6 +393,11 @@ function getBackButtonLogic(){
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
         break;
 
+        case COMPONENT_TYPES.UI_IMAGE_COMPONENT:
+            hideUIImage()
+            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+        break;
+
         case COMPONENT_TYPES.ADVANCED_COMPONENT:
             componentViewType = "basic"
             openEditComponent("")
@@ -717,6 +728,7 @@ function EditObjectData(){
                 <EditPointer/>
                 <EditState/>
                 <EditUiText/>
+                <EditUIImage/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
@@ -807,8 +819,7 @@ function generateComponentViews() {
                 }}
                 onMouseDown={() => {
                     setUIClicked(true)
-                    componentViewType = "advanced"
-                    openEditComponent("")
+                    openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
 
                     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
                         {
@@ -840,7 +851,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.TRIGGER_COMPONENT,
         COMPONENT_TYPES.COUNTER_COMPONENT,
         COMPONENT_TYPES.STATE_COMPONENT,
-        COMPONENT_TYPES.UI_TEXT_COMPONENT
+        COMPONENT_TYPES.UI_TEXT_COMPONENT,
+        COMPONENT_TYPES.UI_IMAGE_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
@@ -880,7 +892,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-10).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -919,12 +931,12 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-9).filter(item => !components.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => !components.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")
 
-        return array
+        return array//
     }
     return []
 }

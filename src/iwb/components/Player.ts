@@ -15,6 +15,8 @@ import { FlyModeSystem } from "../systems/FlyModeSystem";
 import { createInputListeners } from "../systems/InputSystem";
 import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem";
 import { SelectedItemSystem } from "../systems/SelectedItemSystem";
+import { changeRealm } from "~system/RestrictedActions";
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 
 export let localUserId: string
 export let localPlayer:any
@@ -45,7 +47,7 @@ export function setPlayerSelectedAsset(player:any, current:any, previous:any){
         if(current === null){
             otherUserRemovedSeletedItem(player.address)
         }else{
-            current.user = player.address
+            current.editor = player.address
             if(current.grabbed){
                 otherUserSelectedItem(current)
             }
@@ -76,7 +78,6 @@ function checkPlayerHomeWorld(player:any){
         player.worlds.forEach(async (world:any) => {
             if ((world.ens === realm)) {
                 player!.homeWorld = true
-                player.worldPermissions = true
                 // await getPlayerLand()
                 return
             }
@@ -198,11 +199,9 @@ export function setPlayMode(userId:string, mode:SCENE_MODES) {
 
 export function worldTravel(world: any) {
     log('traveling to world', world)
-
-    // displaySettingsPanel(false)
-    // displayRealmTravelPanel(false, {})
-//     changeRealm({realm: "https://worlds.dcl-iwb.co/world/" + world.ens})
-//     sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_TRAVEL, {from: realm, to:world.ens})
+    displaySkinnyVerticalPanel(false)
+    changeRealm({realm: "https://worlds.dcl-iwb.co/world/" + world.ens})
+    sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_TRAVEL, {from: realm, to:world.ens})
 }
 
 export function hasBuildPermissions() {

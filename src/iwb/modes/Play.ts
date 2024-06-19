@@ -2,7 +2,7 @@ import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContaine
 import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
-import { AUDIO_TYPES, COMPONENT_TYPES } from "../helpers/types"
+import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
@@ -16,6 +16,10 @@ import { disableTextShapePlayMode, setTextShapeForPlayMode } from "../components
 import { disableTriggers, setTriggersForPlayMode } from "../components/Triggers"
 import { disableCounterForPlayMode } from "../components/Counter"
 import { disableUiTextPlayMode, setUiTextPlayMode } from "../components/UIText"
+import { disableUiImagePlayMode, setUiImagePlayMode } from "../components/UIImage"
+import { getRandomIntInclusive } from "../helpers/functions"
+import { displayMainView } from "../ui/Objects/IWBView"
+import { movePlayerTo } from "~system/RestrictedActions"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -82,6 +86,7 @@ export function enableSceneEntities(sceneId: string) {
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
+                    console.log('enabling entity')
                     setGLTFPlayMode(scene, entityInfo)
                     setVideoPlayMode(scene, entityInfo)
                     setMeshColliderPlayMode(scene, entityInfo)
@@ -94,6 +99,7 @@ export function enableSceneEntities(sceneId: string) {
                     setTextShapeForPlayMode(scene, entityInfo)
                     setTriggersForPlayMode(scene, entityInfo)
                     setUiTextPlayMode(scene, entityInfo)
+                    setUiImagePlayMode(scene, entityInfo)
                 }
             }
         })
@@ -129,6 +135,7 @@ export function enableSceneEntities(sceneId: string) {
 export function disableEntityForPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
+        console.log('disabling entity')
         disableVisibilityPlayMode(scene, entityInfo)
         disableAudioPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
@@ -141,6 +148,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         checkTransformComponent(scene, entityInfo)
         disableCounterForPlayMode(scene, entityInfo)
         disableUiTextPlayMode(scene, entityInfo)
+        disableUiImagePlayMode(scene, entityInfo)
 
         //reset states//
 
@@ -171,4 +179,31 @@ function disableDelayedActionTimers(){
 
 function disablePlayUI(){
     // clearShowTexts()
+}
+
+export function teleportToScene(info:any){
+    let scene = colyseusRoom.state.scenes.get(info.id)
+    if(scene){
+        let rand = getRandomIntInclusive(0, scene.sp.length-1)
+        let parent = Transform.get(scene.parentEntity).position
+
+        let position = {x:0, y:0, z:0}
+        let camera = {x:0, y:0, z:0}
+    
+        let [sx,sy,sz] = scene.sp[rand].split(",")
+        let [cx,cy,cz] = scene.cp[rand].split(",")
+    
+        position.x = parent.x + parseInt(sx)
+        position.y = parent.y + parseInt(sy)
+        position.z = parent.z + parseInt(sz)
+    
+        camera.x = parent.x + parseInt(cx)
+        camera.y = parent.y + parseInt(cy)
+        camera.z = parent.z + parseInt(cz)
+    
+        displayMainView(false)
+    
+        movePlayerTo({newRelativePosition:position, cameraTarget:camera})
+    }
+
 }

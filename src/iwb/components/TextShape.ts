@@ -19,10 +19,6 @@ function addTextShape(entity:Entity, textShape:any){
             outlineColor: Color4.create(textShape.outlineColor.r, textShape.outlineColor.g, textShape.outlineColor.b, textShape.outlineColor.a),
             textColor: Color4.create(textShape.color.r, textShape.color.g, textShape.color.b, textShape.color.a),
         })
-
-    if(textShape.billboard){
-        Billboard.createOrReplace(entity, {billboardMode: BillboardMode.BM_Y})
-    }
 }
 
 export function updateTextComponent(scene:any, entityInfo:any, newText:string){

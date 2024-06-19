@@ -4,13 +4,13 @@ import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, 
 import { uiSizes } from '../uiConfig'
 import { generateButtons, setUIClicked } from '../ui'
 import { IWBTable, setTableConfig, updateIWBTable } from '../Reuse/IWBTable'
-import { testData } from '../../tests/testData'
 import { InfoView, updateInfoView } from './IWBViews/InfoView'
 import { SettingsView, updateSettingsView } from './IWBViews/SettingsView'
 import { currentWorldTableConfig, horiztonalButtons, updateWorldView, WorldsView, worldView } from './IWBViews/WorldView'
 import { displayStoreView } from './StoreView'
 import { CreateSceneView } from './IWBViews/CreateView'
 import { displayExpandedMap } from './ExpandedMapView'
+import { colyseusRoom } from '../../components/Colyseus'
 
 let show = false
 
@@ -22,8 +22,7 @@ let buttons:any[] = [
     },
     {label:"Store", pressed:false, func:()=>{
         displayMainView(false)
-        // displayStoreView(true)
-        displayExpandedMap(true)
+        displayStoreView(true)
         }
     },
     {label:"Create", pressed:false, func:()=>{
@@ -47,11 +46,12 @@ let buttons:any[] = [
     {label:"Close", pressed:false, func:()=>{
         // displaySettingsPanel(false)
         // displaySetting('Builds')
+        updateIWBTable([])
         displayMainView(false)
         // updateMainView("main")
         },
         position:{bottom:0},
-        positionType:'absolute'
+        positionType:'absolute'//
     },
 ]
 
@@ -61,18 +61,23 @@ export function displayMainView(value:boolean, toggle?:boolean){
     show = toggle ? !show : value
     resetViews()
 
+    // updateIWBTable([])
+
     setTableConfig(currentWorldTableConfig)
     updateMainView("Worlds")
     updateWorldView("Current World")
 
     if(show && worldView === "Current World"){
-        updateIWBTable(testData.scenes)
+        let scenes:any[] = []
+        colyseusRoom.state.scenes.forEach((sceneInfo:any)=>{
+            scenes.push(sceneInfo)
+        })
+        updateIWBTable(scenes)
     }
 }
 
 function resetViews(){
     mainView = "Worlds"
-    updateWorldView("Current World")
     buttons.forEach(($:any)=>{
         $.pressed = false
     })

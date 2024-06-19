@@ -9,11 +9,13 @@ import { tickSet } from "./Timer";
 import { utils } from "../helpers/libraries";
 import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
 import { Color3 } from "@dcl/sdk/math";
+import { getAssetIdByEntity } from "./Parenting";
 
 // const actionQueue: { entity: Entity; action: Action }[] = []//
 const actionQueue:any[] = []
 
-const triggers = new Map<Entity, Emitter<Record<Triggers, any>>>()
+// const triggers = new Map<Entity, Emitter<Record<Triggers, any>>>()
+const triggers = new Map<Entity, any>()
 
 export function checkTriggerComponent(scene:any, entityInfo:any){
   let itemInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
@@ -23,11 +25,14 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
         case Triggers.ON_TICK:
           initOnTick(entityInfo.entity)
           break
+
+        case Triggers.ON_INPUT_ACTION:
+          initOnInputActionTrigger(entityInfo.entity, trigger)
+          break;
       }
     })
 
     if(itemInfo.isArea){
-      console.log('this is a trigger area')///
       let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
       if(transform){
         utils.triggers.addTrigger(entityInfo.entity, NO_LAYERS, LAYER_1,
@@ -53,7 +58,7 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
 
 export function getTriggerEvents(entity: Entity) {
     if (!triggers.has(entity)) {
-      triggers.set(entity, mitt())
+      triggers.set(entity, new MittWrapper())
     }
     return triggers.get(entity)!
 }
@@ -80,41 +85,53 @@ export function triggerListener(scene:any){
   })
 }
 
-function updateTriggerEvents(scene:any, entityInfo:any, trigger:any){
+function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   const triggerEvents = getTriggerEvents(entityInfo.entity)
-  triggerEvents.off(trigger.type)
 
-  triggerEvents.on(trigger.type, (triggerEvent:any)=>{
-    console.log('trigger action ', trigger)//
-    if(trigger.type === Triggers.ON_INPUT_ACTION && !checkInputAction(trigger, triggerEvent)){
-      console.log('not the correct input action')
-      return
-    }
-      if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
-        console.log('passed check conditions')
-          for(const triggerAction of trigger.actions){
-              if(isValidAction(triggerAction)){
-                console.log('is valid action')
-                  let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
-                  if(aid){
-                    console.log('action id is', action)
-                      actionQueue.push({aid:aid, action:action, entity:entity})
-                  }
-              }
-          }
-      }else{
-          console.log('trigger condition not met')
+  if(triggerInfo.type === Triggers.ON_INPUT_ACTION && triggerEvents.isListening(triggerInfo.type)){
+    return
+  }
+
+    triggerEvents.off(triggerInfo.type)
+    triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
+      let trigger = findTrigger(scene, triggerEvent)
+      if(!trigger){
+        return
       }
-  })
+        if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
+          console.log('passed check conditions')
+            for(const triggerAction of trigger.actions){
+                if(isValidAction(triggerAction)){
+                  console.log('is valid action')
+                    let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
+                    if(aid){
+                      console.log('action id is', action)
+                        actionQueue.push({aid:aid, action:action, entity:entity})
+                    }
+                }
+            }
+        }else{
+            console.log('trigger condition not met')
+        }
+    })
+}
+
+function findTrigger(scene:any, triggerEvent:any){
+  let aid = getAssetIdByEntity(scene, triggerEvent.entity)
+  if(!aid){
+    return false
+  }
+    let triggers = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(aid)
+    if(!triggers){
+      return false
+    }
+    console.log(triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer))
+    return triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer)
 }
 
 function isValidAction(action: string /*TriggerAction*/) {
     // const { id, /*name*/ } = action//
     return !!action //&& !!name
-}
-
-function checkInputAction(trigger:any, inputInfo:any){
-    return trigger.input === inputInfo.input && trigger.pointer === inputInfo.pointer
 }
 
 function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
@@ -125,11 +142,10 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
           {
             aid:caid, 
             type:trigger.ctype[index], 
-            value:trigger.cvalue[index] ? trigger.cvalue[index] : undefined,
-            counter: trigger.ccounter[index] ? trigger.ccounter[index] : undefined,
+            value:trigger.cvalue[index],
+            counter: trigger.ccounter[index]
           })
       })
-      console.log('trigger conditions are', triggerConditions)//
       const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition))
       const isTrue = (result?: boolean) => !!result
       const operation = trigger.operation || TriggerConditionOperation.AND
@@ -143,7 +159,7 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
       }
       return true
     }
-    return true//
+    return true
   }
 
   function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:any) {
@@ -198,14 +214,6 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
                   return counter.currentValue === numeric
                 }
               }
-  
-              // const value = getCounterValue(scene.id, aid, condition.counter, COUNTER_VALUE.CURRENT)
-              // if(value !== ""){
-              //   const numeric = Number(condition.value)
-              //   if (!isNaN(numeric)) {
-              //     return value === numeric
-              //   }
-              // }
               break
             }
   
@@ -221,16 +229,6 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
                   return counter.currentValue > numeric
                 }
               }
-  
-              // const value = getCounterValue(scene.id, aid, condition.counter, COUNTER_VALUE.CURRENT)
-              // if(value !== ""){
-              //     const numeric = Number(condition.value)
-              //     console.log('counter number is ', numeric)
-              //     if (!isNaN(numeric)) {
-              //         console.log('counter is greater than ', value, numeric)
-              //       return value > numeric
-              //     }   
-              // }
               break
             }
             case TriggerConditionType.WHEN_COUNTER_IS_LESS_THAN: {
@@ -238,21 +236,14 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
               if(!counter){
                 return false
               }
-  
+
               if(counter.currentValue){
                 const numeric = Number(condition.counter)
+                console.log('numerica is', numeric)
                 if (!isNaN(numeric)) {
                   return counter.currentValue < numeric
                 }
               }
-  
-              // const counter = Counter.getOrNull(entity)
-              // if (counter !== null) {
-              //   const numeric = Number(condition.value)
-              //   if (!isNaN(numeric)) {
-              //     return counter.value < numeric
-              //   }
-              // }
               break
             }
           //   case TriggerConditionType.WHEN_DISTANCE_TO_PLAYER_LESS_THAN: {
@@ -296,30 +287,34 @@ function getActionsByActionId(scene:any, actionId:string) {
 }
 
 export function handleInputTriggerForEntity(entity:Entity, input:InputAction, pointer:PointerEventType){
-    console.log('handle input trigger for entity', entity, input)
+    console.log('handle input trigger for entity', entity, input, pointer)
     const triggerEvents = getTriggerEvents(entity)
-    triggerEvents.emit(Triggers.ON_INPUT_ACTION, {input:input, pointer:pointer})
+    triggerEvents.emit(Triggers.ON_INPUT_ACTION, {input:input, pointer:pointer, entity:entity})
 }
 
 function initOnInputActionTrigger(entity:Entity, trigger:any){
     // console.log('adding input action trigger')
     // const pointerEvent = PointerEvents.getOrNull(entity)
-//
+
     // const opts = {
+    //   maxDistance:15,
     //   button:
     //     pointerEvent?.pointerEvents[0].eventInfo?.button ||
     //     InputAction.IA_PRIMARY,
     //   ...(pointerEvent === null ? { hoverText: 'Press' } : {}),
     // }
 
+    // console.log('options are', opts)
+
     // pointerEventsSystem.onPointerDown(
     //   {
     //     entity,
-    //     opts,
+    //     opts:{button:InputAction.IA_POINTER, maxDistance:15, hoverText:'here', showFeedback:true},
     //   },
     //   () => {
+    //     console.log('here clicking action')
     //     const triggerEvents = getTriggerEvents(entity)
-    //     triggerEvents.emit(Triggers.ON_INPUT_ACTION, {input: })
+    //     triggerEvents.emit(Triggers.ON_INPUT_ACTION, {input:InputAction.IA_POINTER, pointer:PointerEventType.PET_DOWN})
     //   },
     // )
 }
@@ -328,8 +323,6 @@ export function PlayTriggerSystem(dt:number){
     while (actionQueue.length > 0) {
         const { entity, action, aid } = actionQueue.shift()!
         const actionEvents = getActionEvents(entity)
-
-        console.log('emitting action', action)
         actionEvents.emit(action.id, action)
       }
 }
@@ -356,5 +349,52 @@ export function setTriggersForPlayMode(scene:any, entityInfo:any){
       updateTriggerEvents(scene, entityInfo, trigger)
     })
     tickSet.add(entityInfo.entity)
+  }
+}
+
+
+class MittWrapper {
+  emitter:any
+  listeners:Map<string,any>
+
+  constructor() {
+    this.emitter = mitt();
+    this.listeners = new Map();
+  }
+
+  on(type:any, handler:any) {
+    if (!this.listeners.has(type)) {
+      this.listeners.set(type, new Set());
+      console.log("create on type", type)
+    }
+
+    const handlers = this.listeners.get(type);
+    if (!handlers.has(handler)) {
+      handlers.add(handler);
+      this.emitter.on(type, handler);
+    }
+  }
+
+  off(type:any, handler:any) {
+    if (this.listeners.has(type)) {
+      const handlers = this.listeners.get(type);
+      if (handlers.has(handler)) {
+        handlers.delete(handler);
+        this.emitter.off(type, handler);
+
+        // Clean up if there are no more handlers for this event type
+        if (handlers.size === 0) {
+          this.listeners.delete(type);
+        }
+      }
+    }
+  }
+
+  emit(type:any, event:any) {
+    this.emitter.emit(type, event);
+  }
+
+  isListening(type:any, handler:any) {
+    return this.listeners.has(type)// && this.listeners.get(type).has(handler);
   }
 }

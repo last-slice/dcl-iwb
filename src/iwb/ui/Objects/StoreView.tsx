@@ -2,13 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import resources from '../../helpers/resources'
 import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
-import { generateButtons } from '../ui'
-import { IWBTable, setTableConfig, updateIWBTable } from '../Reuse/IWBTable'
-import { testData } from '../../tests/testData'
-import { InfoView, updateInfoView } from './IWBViews/InfoView'
-import { SettingsView } from './IWBViews/SettingsView'
-import { currentWorldTableConfig, horiztonalButtons, updateWorldView, WorldsView, worldView } from './IWBViews/WorldView'
-
+import { generateButtons, setUIClicked } from '../ui'
 let show = false
 
 let buttons:any[] = [
@@ -90,6 +84,13 @@ export function createStoreview() {
                         src: 'assets/atlas2.png'
                     },
                     uvs: getImageAtlasMapping(uiSizes.horizRectangle)
+                }}
+                onMouseDown={()=>{
+                    setUIClicked(true)
+                    displayStoreView(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
                 }}
             >
 

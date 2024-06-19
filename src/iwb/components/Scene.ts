@@ -29,6 +29,7 @@ import { stateListener } from "./States"
 import { realm, worlds } from "./Config"
 import { soundsListener } from "./Sounds"
 import { uiTextListener } from "./UIText"
+import { billboardListener } from "./Billboard"
 
 export let realmActions: any[] = []
 
@@ -86,7 +87,7 @@ async function loadSceneComponents(scene:any){
     pointerListener(scene)
     stateListener(scene)
     uiTextListener(scene)
-
+    billboardListener(scene)
 
     //todo
     //we might not need these since these are only metadata changes and can be pulled auto from colyseus room state
@@ -299,7 +300,7 @@ export function updateAsset(asset: any) {
 // }
 
 export function checkBuildPermissionsForScene(scene: IWBScene) {
-    return scene &&  (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId))
+    return scene &&  (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId) || localPlayer.worldPermissions)
 }
 
 export async function checkScenePermissions() {

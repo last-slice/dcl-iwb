@@ -2,60 +2,59 @@ import { InputAction, PBPointerEvents_Entry, PointerEventType, PointerEvents } f
 import { PointersLoadedComponent } from "../helpers/Components"
 import { getEntitiesWithParent } from "@dcl-sdk/utils"
 import { getEntity } from "./IWB"
-import { COMPONENT_TYPES } from "../helpers/types"
+import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
+import { playerMode } from "./Config"
 
 export function checkPointerComponent(scene:any, entityInfo:any, dontInit?:boolean){
-    let itemInfo = scene[COMPONENT_TYPES.POINTER_COMPONENT].get(entityInfo.aid)
-    if(itemInfo){
+    // let itemInfo = scene[COMPONENT_TYPES.POINTER_COMPONENT].get(entityInfo.aid)
+    // if(itemInfo){
+    //     let pointerEvents:any[] = []
+    //     itemInfo.events.forEach((info:any)=>{
+    //         let event:any = {
+    //             eventType:info.eventType,
+    //             eventInfo:{
+    //                 button:info.button,
+    //                 hoverText:"" + info.hoverText,
+    //                 showFeedback:info.showFeedback,
+    //                 maxDistance: info.maxDistance
+    //             }
+    //         }
+    //         pointerEvents.push(event)
+    //     })
+    //     console.log('pointer events are', pointerEvents)
+    //     PointerEvents.create(itemInfo.entity, {pointerEvents:pointerEvents})
+
+    //     // if(dontInit){
+    //     //     return
+    //     // }
+        PointersLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+    // }
+}
+
+function updatePointer(pointerInfo:any, pointer:any){
+    if(playerMode === SCENE_MODES.PLAYMODE){
+        PointerEvents.deleteFrom(pointerInfo.entity)
+
         let pointerEvents:any[] = []
-        itemInfo.events.forEach((info:any)=>{
+        pointer.events.forEach((info:any)=>{
+            console.log('new pointer event is', info)
             let event:any = {
-                eventType:info.eventType,
+                eventType: info.eventType,
                 eventInfo:{
-                    button:info.button,
+                    button: info.button,
                     hoverText:"" + info.hoverText,
-                    showFeedback:info.showFeedback,
+                    showFeedback: info.showFeedback,
                     maxDistance: info.maxDistance
                 }
             }
             pointerEvents.push(event)
         })
-        PointerEvents.createOrReplace(itemInfo.entity, {pointerEvents:pointerEvents})
-
-        if(dontInit){
-            return
-        }
-        PointersLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        PointerEvents.createOrReplace(pointerInfo.entity, {pointerEvents:pointerEvents})   
     }
-}
-
-function updatePointer(pointerInfo:any, pointer:any){
-    PointerEvents.deleteFrom(pointerInfo.entity)
-
-    let pointerEvents:any[] = []
-    pointer.events.forEach((info:any)=>{
-        console.log('new pointer event is', info)
-        let event:any = {
-            eventType: info.eventType,
-            eventInfo:{
-                button: info.button,
-                hoverText:"" + info.hoverText,
-                showFeedback: info.showFeedback,
-                maxDistance: info.maxDistance
-            }
-        }
-        pointerEvents.push(event)
-    })
-    PointerEvents.createOrReplace(pointerInfo.entity, {pointerEvents:pointerEvents})
 }
 
 export function pointerListener(scene:any){
     scene[COMPONENT_TYPES.POINTER_COMPONENT].onAdd((pointer:any, aid:any)=>{
-        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
-        // if(!iwbInfo.components.includes(COMPONENT_TYPES.POINTER_COMPONENT)){
-        //   iwbInfo.components.push(COMPONENT_TYPES.POINTER_COMPONENT)
-        // }
-        
         let pointerInfo = getEntity(scene, aid)
         if(!pointerInfo){
             return
@@ -65,7 +64,6 @@ export function pointerListener(scene:any){
             updatePointer(pointerInfo, pointer)
 
             event.listen("tick", (c:any, p:any)=>{
-                console.log('pointer event updated')
                 if(c > 0){
                     updatePointer(pointerInfo, pointer)
                 }
@@ -103,5 +101,5 @@ export function setPointersPlayMode(scene:any, entityInfo:any){
 
         }
         PointersLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
+    } 
 }

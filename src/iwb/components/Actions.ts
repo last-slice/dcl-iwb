@@ -14,6 +14,7 @@ import { startTimeout } from "./Timer"
 import { addShowText, removeShowText } from "../ui/Objects/ShowText"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { UiTexts, uiDataUpdate } from "./UIText"
+import { UiImages, uiImageDataUpdate } from "./UIImage"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -181,8 +182,24 @@ function updateActions(scene:any, info:any, action:any){
             case Actions.BATCH_ACTIONS:
                 handleBatchAction(scene, info, action)
                 break;
+
+            case Actions.REMOVE:
+                handleRemoveEntity(scene, info, action)
+                break;
+
+            case Actions.SHOW_CUSTOM_IMAGE:
+                handleShowCustomImage(scene, info, action)
+                break;
+
+            case Actions.HIDE_CUSTOM_IMAGE:
+                handleHideCustomImage(scene, info, action)
+                break;
         }
     })
+}
+
+export function handleRemoveEntity(scene:any, entityInfo:any, action:any){
+    engine.removeEntity(entityInfo.entity)
 }
 
 export function handleShowText(scene:any, entityInfo:any, action:any, forceDelay?:number){
@@ -223,6 +240,21 @@ export function handleHideText(entityInfo:any, action:any){
     let uiText = UiTexts.get(entityInfo.aid)
     if(uiText){
         uiText.hide()
+    }
+}
+
+export function handleShowCustomImage(scene:any, entityInfo:any, action:any){
+    let uiImage = UiImages.get(entityInfo.aid)
+    if(uiImage){
+        uiImageDataUpdate(scene, entityInfo)
+        uiImage.show()
+    }
+}
+
+export function handleHideCustomImage(scene:any, entityInfo:any, action:any){
+    let uiImage = UiImages.get(entityInfo.aid)
+    if(uiImage){
+        uiImage.hide()
     }
 }
 

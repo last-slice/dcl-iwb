@@ -2,15 +2,20 @@ import { Color4 } from '@dcl/sdk/math';
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { formatSize, formatDollarAmount } from '../../../helpers/functions';
 import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers';
-import { realm } from '../../../components/Config';
+import { realm, worlds } from '../../../components/Config';
 import resources from '../../../helpers/resources';
 import { HoriztonalButtons } from '../../Reuse/HoriztonalButtons';
 import { IWBTable, setTableConfig, updateIWBTable } from '../../Reuse/IWBTable';
-import { mainView } from '../IWBView';
+import { displayMainView, mainView } from '../IWBView';
 import { testData } from '../../../tests/testData';
 import { uiSizes } from '../../uiConfig';
 import { playSound } from '../../../components/Sounds';
 import { SOUND_TYPES } from '../../../helpers/types';
+import { teleportToScene } from '../../../modes/Play';
+import { colyseusRoom } from '../../../components/Colyseus';
+import { localPlayer, worldTravel } from '../../../components/Player';
+import { displaySkinnyVerticalPanel } from '../../Reuse/SkinnyVerticalPanel';
+import { getView } from '../../uiViews';
 
 export let worldView = "Current World"
 
@@ -31,7 +36,11 @@ export let horiztonalButtons:any[] = [
     {label:"Current World", pressed:false, func:()=>{
         updateWorldView("Current World")
         setTableConfig(currentWorldTableConfig)
-        updateIWBTable(testData.scenes)
+        let scenes:any[] = []
+        colyseusRoom.state.scenes.forEach((sceneInfo:any)=>{
+            scenes.push(sceneInfo)
+        })
+        updateIWBTable(scenes)
         // playSound(SOUND_TYPES.SELECT_3)
         // showYourBuilds()
         // updateExploreView("Current World")
@@ -44,7 +53,7 @@ export let horiztonalButtons:any[] = [
     {label:"My Worlds", pressed:false, func:()=>{
         updateWorldView("My Worlds")
         setTableConfig(myWorldConfig)
-        updateIWBTable(testData.myworlds)
+        updateIWBTable(localPlayer.worlds)
         // playSound(SOUND_TYPES.SELECT_3)
         // showWorlds()
         // updateExploreView("My Worlds")
@@ -57,7 +66,7 @@ export let horiztonalButtons:any[] = [
     {label:"All Worlds", pressed:false, func:()=>{
         updateWorldView("All Worlds")
         setTableConfig(allWorldsConfig)
-        updateIWBTable(testData.allworlds)
+        updateIWBTable(worlds)
         // playSound(SOUND_TYPES.SELECT_3)
         // // displayStatusView("All Worlds")
         // showAllWorlds()
@@ -73,24 +82,24 @@ export let horiztonalButtons:any[] = [
 export let currentWorldTableConfig:any = {
     height:'10%', width:'100%', rowCount:6,
     headerData:[
-        {name:"Name", pcnt:"Parcel Count", si:"Size", pc:"Poly Count", go:"Visit"},
+        {n:"Name", pcnt:"Parcel Count", si:"Size", pc:"Poly Count", go:"Visit"},
     ],
     tableSortFn:(a:any, b:any)=>{
         // Check if either of the names is "Realm Lobby"
-        if (a.name === "Realm Lobby" && b.name !== "Realm Lobby") {
+        if (a.n === "Realm Lobby" && b.n !== "Realm Lobby") {
           return -1; // "Realm Lobby" comes first
-        } else if (a.name !== "Realm Lobby" && b.name === "Realm Lobby") {
+        } else if (a.n !== "Realm Lobby" && b.n === "Realm Lobby") {
           return 1; // "Realm Lobby" comes first
         } else {
           // Both names are not "Realm Lobby", sort by parcel size (high to low)
         //   return b.pcnt - a.pcnt;
-        return a.name.localeCompare(b.name)
+        return a.n.localeCompare(b.n)
         }
     },
 
     rowConfig:[
     { 
-        key:"name",
+        key:"n",
         width:'30%',
         height:'100%',
         margin:{left:"1%"},
@@ -109,7 +118,7 @@ export let currentWorldTableConfig:any = {
         textAlign: 'middle-center',
         color:Color4.White(),
         func:(data:any)=>{
-            return "" + formatSize(data) + "MB"
+            return "" + formatDollarAmount(data)
         }
     },
     {
@@ -122,7 +131,7 @@ export let currentWorldTableConfig:any = {
         textAlign: 'middle-center',
         color:Color4.White(),
         func:(data:any)=>{
-            return "" + formatDollarAmount(data)
+            return "" + formatSize(data) + "MB"
         }
     },
     {
@@ -160,9 +169,10 @@ export let currentWorldTableConfig:any = {
                 sourceHeight: 30
             }
         },
-        onClick:()=>{
+        onClick:(scene:any)=>{
             console.log('ok')
             playSound(SOUND_TYPES.SELECT_3)
+            teleportToScene(scene)
 
             // if(scene.init){
             //     displaySettingsPanel(false)
@@ -238,7 +248,22 @@ export let myWorldConfig:any = {
         fontSize:sizeFont(25,15),
         textAlign: 'middle-center',
         color:Color4.White(),
-        image:true
+        image:{
+            size:3,
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png',
+                uvs:()=>{getImageAtlasMapping(uiSizes.goIcon)}
+            },
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 90,
+                sourceLeft: 844,
+                sourceWidth: 30,
+                sourceHeight: 30
+            }
+        },
     },
     ]
 }
@@ -246,16 +271,16 @@ export let myWorldConfig:any = {
 export let allWorldsConfig:any = {
     height:'10%', width:'100%',
     headerData:[
-        {worldName:"World", updated:"Last Update", builds:"Builds", go:"Go"},
+        {name:"World", updated:"Last Update", builds:"Builds", go:"Go"},
     ],
     tableSortFn:(a:any, b:any) => {
-        if (a.worldName === "BuilderWorld") return -1;
-        if (b.worldName === "BuilderWorld") return 1;
+        if (a.name === "BuilderWorld") return -1;
+        if (b.name === "BuilderWorld") return 1;
 
-        return a.worldName.localeCompare(b.worldName);
+        return a.name.localeCompare(b.name);
     },
     rowConfig:[
-    {   key:"worldName",
+    {   key:"name",
         width:'40%',
         height:'100%',
         margin:{left:"1%"},
@@ -296,7 +321,28 @@ export let allWorldsConfig:any = {
         fontSize:sizeFont(25,15),
         textAlign: 'middle-center',
         color:Color4.White(),
-        image:true
+        image:{
+            size:3,
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png',
+                uvs:()=>{getImageAtlasMapping(uiSizes.goIcon)}
+            },
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 90,
+                sourceLeft: 844,
+                sourceWidth: 30,
+                sourceHeight: 30
+            }
+        },
+        onClick:(data:any)=>{
+            displayMainView(false)
+            displaySkinnyVerticalPanel(true, getView("World Travel"), data.name, ()=>{
+                worldTravel(data)
+            })
+        }
     },
     ]
 }

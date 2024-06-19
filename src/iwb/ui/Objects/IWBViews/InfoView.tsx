@@ -75,7 +75,6 @@ export let horiztonalButtons:any[] = [
         updateInfoView("Access")
         playSound(SOUND_TYPES.SELECT_3)
         setTableConfig(worldAccessTableConfig)
-        console.log(worlds.find($=> $.ens === realm))
         updateIWBTable(getWorldPermissions())
 
         },

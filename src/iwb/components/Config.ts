@@ -41,7 +41,7 @@ export async function setRealm(){
     let realmData = await getRealm({})
     realm = realmData.realmInfo ? 
         realmData.realmInfo.realmName === "LocalPreview" ? 
-        "BuilderWorld.dcl.eth" : 
+        "dclbuilder.dcl.eth" : 
         realmData.realmInfo.realmName : 
         ""
 }
@@ -93,6 +93,11 @@ export function setWorlds(config: any) {
         }
     })
 
+    let worldPermissions = worlds.find(($:any)=> $.ens === realm)
+    if(worldPermissions && worldPermissions.bps.includes(localUserId)){
+        localPlayer.worldPermissions = true
+    }
+
     // console.log('worlds are set', worlds)
 }
 
@@ -133,7 +138,7 @@ export function setPlayerMode(mode:SCENE_MODES){
         }
     }
 
-    hideAllOtherPointers()
+    // hideAllOtherPointers()//
     hideAllPanels()
 
     colyseusRoom.state.scenes.forEach((scene:any)=>{
@@ -151,7 +156,7 @@ export function setPlayerMode(mode:SCENE_MODES){
         })
     })
 
-    updatePlayModeReset(true)//
+    updatePlayModeReset(true)
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
         clearShowTexts()

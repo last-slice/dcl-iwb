@@ -1,9 +1,10 @@
 import { sendServerMessage } from "../components/Colyseus"
-import { localPlayer } from "../components/Player"
+import { localPlayer, worldTravel } from "../components/Player"
 import { SERVER_MESSAGE_TYPES } from "../helpers/types"
 import { deleteSelectedItem, selectedAssetId } from "../modes/Build"
+import { displayMainView } from "./Objects/IWBView"
 import { displaySceneDetailsPanel, scene } from "./Objects/SceneMainDetailPanel"
-import { displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
+import { customFunction, displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { UI_VIEW_TYPES } from "./uiConfig"
 
 export function getView(view:string){
@@ -139,6 +140,31 @@ export let uiViews:any[] = [
                     func:()=>{
                         displaySkinnyVerticalPanel(false)
                         displaySceneDetailsPanel(true, scene)
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"World Travel",
+        props:{
+            label:"World Travel",
+            text:"Would you like to visit this creator world?",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Continue",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
                     }
                 }
             ]

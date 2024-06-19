@@ -61,6 +61,7 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_CLEAR_ASSETS = 'scene_clear_assets',
     SCENE_DEPLOY_FINISHED = 'scene_deploy_finished',
     SCENE_ACTION = 'scene_action',
+    SCENE_DELETE_GRABBED_ITEM = 'scene_delete_grabbed_item',
     
     //World
     INIT_WORLD = "init_world",
@@ -301,11 +302,13 @@ export enum COMPONENT_TYPES {
     POINTER_COMPONENT = 'Pointers',
     COUNTER_COMPONENT = 'Counters',
     UI_TEXT_COMPONENT = 'UI_Text',
+    UI_IMAGE_COMPONENT ='UI_Image',
     TRIGGER_COMPONENT = "Triggers",
     ACTION_COMPONENT = 'Actions',
     TRIGGER_AREA_COMPONENT = "Trigger_Area",
     CLICK_AREA_COMPONENT = "Click_Area",
     AVATAR_SHAPE_COMPONENT = 'Avatar_Shape',
+    BILLBOARD_COMPONENT = 'Billboard'
 }
 
 export enum BLOCKCHAINS {
@@ -382,9 +385,6 @@ export enum Actions {
     DISABLE_TRIGGER_AREA = 'disable_trigger_area',
     GIVE_REWARD = 'give_reward',
     VERIFY_ACCESS = 'verify_access',
-
-
-
     ADD_NUMBER = 'add_number',
     SET_NUMBER = 'set_number',
     SUBTRACT_NUMBER = 'subtract_number',
@@ -404,14 +404,15 @@ export enum Actions {
     PLACE_PLAYER_POSITION = 'place_player_position',
     BATCH_ACTIONS = 'batch_actions',
     RANDOM_ACTION = 'random_action',
-    SET_TEXT = 'set_text'
-
+    SET_TEXT = 'set_text',
+    SHOW_CUSTOM_IMAGE = 'show_ui_image',
+    HIDE_CUSTOM_IMAGE = 'hide_ui_image'
 }
 
 InputAction.IA_ACTION_3
 
 export enum Triggers {
-    ON_CLICK = "on_click",
+    // ON_CLICK = "on_click",
     ON_ENTER = "on_enter",
     ON_LEAVE = "on_leave",
     ON_ACCESS_VERIFIED ='on_access_verified',

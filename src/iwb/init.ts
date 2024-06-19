@@ -15,7 +15,7 @@ export function initIWB() {
             executeTask(async () => {
                 await setRealm()
     
-                // getAssetUploadToken()//
+                // getAssetUploadToken()
     
                 joinWorld(realm)
             })

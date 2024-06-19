@@ -1,11 +1,11 @@
 import { Entity, engine } from "@dcl/sdk/ecs"
-import { isLocalPlayer } from "./Player"
+import { isLocalPlayer, localUserId } from "./Player"
 import { checkGLTFComponent } from "./Gltf"
 import { checkTransformComponent } from "./Transform"
 import { PointersLoadedComponent, RealmEntityComponent } from "../helpers/Components"
 import { playerMode } from "./Config"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
-import { addBuildModePointers, resetEntityForBuildMode } from "../modes/Build"
+import { addBuildModePointers, confirmGrabItem, removeItem, resetEntityForBuildMode } from "../modes/Build"
 import { afterLoadActions } from "./Scene"
 import { checkMaterialComponent } from "./Materials"
 import { checkTextShapeComponent } from "./TextShape"
@@ -19,6 +19,9 @@ import { checkAudioSourceComponent, checkAudioStreamComponent } from "./Sounds"
 import { checkCounterComponent } from "./Counter"
 import { checkTriggerComponent } from "./Triggers"
 import { checkUIText } from "./UIText"
+import { checkUIImage } from "./UIImage"
+import { colyseusRoom } from "./Colyseus"
+import { checkBillboardComponent } from "./Billboard"
 
 function createEntity(item:any){
     let ent = engine.addEntity()
@@ -89,7 +92,9 @@ export function parentingListener(scene:any){
             await checkNftShapeComponent(scene, item)
             await checkCounterComponent(scene, item)
             await checkUIText(scene, item)
+            await checkUIImage(scene, item)
             await checkTriggerComponent(scene, item)
+            await checkBillboardComponent(scene, item)
             
             // await checkSmartItemComponent()
 
@@ -105,15 +110,14 @@ export function parentingListener(scene:any){
 
     scene[COMPONENT_TYPES.PARENTING_COMPONENT].onRemove(async(item:any, aid:any)=>{
         console.log('remove parenting item', aid, item)
-
-        // if(asset.editing && asset.editor === localUserId){
-        //     asset.sceneId = scene.id
-        //     await confirmGrabItem(asset)
-        // }
-
-        engine.removeEntity(item.entity)
-        if(showSceneInfoPanel){
-            displaySceneAssetInfoPanel(true)
-        }
+        colyseusRoom.state.players.forEach(async (player:any, address:string)=>{
+            if(player.selectedAsset && player.selectedAsset.assetId === item.aid && player.address === localUserId){
+                await confirmGrabItem(scene, item.entity, player.selectedAsset)
+                return
+            }
+        })
+        removeItem(item.entity)
     })
 }
+
+//

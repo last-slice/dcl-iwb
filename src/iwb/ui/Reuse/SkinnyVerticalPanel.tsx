@@ -8,13 +8,19 @@ import { generateButtons, setUIClicked } from '../ui'
 let show = false
 let props:any
 let variableText:any
+export let customFunction:()=> void | null
 
-export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any){
+export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any, f?: ()=> void){
     if(value){
         props = data
     }
     show = value
     variableText = extra
+    if(f){
+        console.log('yes function')
+        customFunction = f
+    }
+   
 }
 
 export function createSkinnyVerticalPanel(){

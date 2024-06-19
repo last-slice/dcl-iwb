@@ -56,7 +56,7 @@ export function createToolsPanel() {
             {/* mode icon */}
             <UiEntity
             uiTransform={{
-                display: localPlayer && localPlayer.canBuild ? "flex" : "none",
+                display: localPlayer && (localPlayer.canBuild || localPlayer.worldPermissions) ? "flex" : "none",
                 width: calculateSquareImageDimensions(4).width,
                 height: calculateSquareImageDimensions(4).height,
                 flexDirection:'row',
