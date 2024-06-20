@@ -852,7 +852,7 @@ function getBasicComponents(){
         COMPONENT_TYPES.COUNTER_COMPONENT,
         COMPONENT_TYPES.STATE_COMPONENT,
         COMPONENT_TYPES.UI_TEXT_COMPONENT,
-        COMPONENT_TYPES.UI_IMAGE_COMPONENT
+        COMPONENT_TYPES.UI_IMAGE_COMPONENT,
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
@@ -892,7 +892,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-11).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -931,7 +931,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => !components.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-11).filter(item => !components.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

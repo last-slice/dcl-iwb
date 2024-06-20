@@ -11,6 +11,8 @@ import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { getView } from "../ui/uiViews"
 import { getAssetIdByEntity } from "../components/Parenting"
 import { getEntity } from "../components/IWB"
+import { addNegativeGrabSystem, addPositiveGrabSystem, removeNegativeGrabSystem, removePositiveGrabSystem, updateGrabModifier } from "./GrabChangeSystems"
+import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 
 
 export let added = false
@@ -69,8 +71,10 @@ export function InputListenSystem(dt:number){
 
     const hover = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
     if(hover){
-        displayHover(false)
-            hoveredEntity = -500 as Entity
+        if(selectedItem && selectedItem.enabled && selectedItem.mode !== EDIT_MODES.GRAB){
+            displayHover(false)
+        }
+        hoveredEntity = -500 as Entity
     }
     // if (hover && hover.hit && hover.hit.entityId) {
     //     if(selectedItem && !selectedItem.enabled){
@@ -87,22 +91,20 @@ export function InputListenSystem(dt:number){
 
 
     //PRIMARY
-    if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)) {
-        displayHover(false)
-        setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
+    // if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)) {
+    //     displayHover(false)
+    //     setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
 
-        if(selectedItem && selectedItem.enabled){
-            dropSelectedItem()
-        }
-        else{
-            const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
-            // if (result && !uiInput) {
-            //     if (result.hit && result.hit.entityId) {
-            //         handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_PRIMARY)
-            //     }
-            // }
-        }
-    }
+    //     if(selectedItem && selectedItem.enabled){
+    //         dropSelectedItem()
+    //         displayGrabContextMenu(false)
+    //         removeNegativeGrabSystem()
+    //         removePositiveGrabSystem()
+    //     }
+    //     else{
+    //         const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
+    //     }
+    // }
 
     //SECONDARY
     if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)) {
@@ -117,6 +119,10 @@ export function InputListenSystem(dt:number){
                     let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
                     console.log('aid is', aid)
                     if(aid){
+                        removeNegativeGrabSystem()
+                        removePositiveGrabSystem()
+                        displayGrabContextMenu(false)
+                        
                         if(settings.confirms){
                             updateSelectedAssetId(aid)
                             displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value)
@@ -134,54 +140,56 @@ export function InputListenSystem(dt:number){
     }
 
     //F BUTTON
-    if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)) {
-        displayHover(false)
-        setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
-        const result = inputSystem.getInputCommand(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
-        if (result) {
-            if (result.hit && result.hit.entityId) {
-                log('player pressed #F on an object in Build mode, need to edit')
-                if (selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB) {
-                    log('player has selected item, need to delete')
-                    deleteGrabbedItem()
-                } else {
-                    log('player pressed #E on an object taht isnt selected need to delete')
-                    let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
-                    if(aid){
-                        if(settings.confirms){
-                            updateSelectedAssetId(aid)
-                            displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value)
-                        }else{
-                            deleteSelectedItem(aid)
-                        }
-                    }
-                }
-            } else {
-                log('player pressed #F on an object with no result in Build mode, need to delete', hoveredEntity)
-                if (selectedItem && selectedItem.enabled) {
-                    log('player has selected item, need to delete')
-                    if (selectedItem.mode === EDIT_MODES.GRAB) {
-                        deleteGrabbedItem()
-                    } else {
-                        // saveItem()
-                    }
-                } else {
-                    log('player does not have item selected')
-                    let aid = getAssetIdByEntity(localPlayer.activeScene, hoveredEntity as Entity)
-                    if(aid){
-                        if(settings.confirms){
-                            updateSelectedAssetId(aid)
-                            displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value)
-                        }else{
-                            deleteSelectedItem(aid)
-                        }
-                    }
-                }
-            }
-        } else {
-            log('pressed F key but no result')
-        }
-    }
+    // if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)) {
+    //     displayHover(false)
+    //     setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
+    //     const result = inputSystem.getInputCommand(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
+    //     if (result) {
+    //         if (result.hit && result.hit.entityId) {
+    //             log('player pressed #F on an object in Build mode, need to edit')
+    //             if (selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB) {
+    //                 log('player has selected item, need to delete')
+    //                 deleteGrabbedItem()
+    //                 removeNegativeGrabSystem()
+    //                 removePositiveGrabSystem()
+    //             } else {
+    //                 log('player pressed #E on an object taht isnt selected need to delete')
+    //                 let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+    //                 if(aid){
+    //                     if(settings.confirms){
+    //                         updateSelectedAssetId(aid)
+    //                         displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value)
+    //                     }else{
+    //                         deleteSelectedItem(aid)
+    //                     }
+    //                 }
+    //             }
+    //         } else {
+    //             log('player pressed #F on an object with no result in Build mode, need to delete', hoveredEntity)
+    //             if (selectedItem && selectedItem.enabled) {
+    //                 log('player has selected item, need to delete')
+    //                 if (selectedItem.mode === EDIT_MODES.GRAB) {
+    //                     deleteGrabbedItem()
+    //                 } else {
+    //                     // saveItem()
+    //                 }
+    //             } else {
+    //                 log('player does not have item selected')
+    //                 let aid = getAssetIdByEntity(localPlayer.activeScene, hoveredEntity as Entity)
+    //                 if(aid){
+    //                     if(settings.confirms){
+    //                         updateSelectedAssetId(aid)
+    //                         displaySkinnyVerticalPanel(true, getView("Confirm Delete Entity"), localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value)
+    //                     }else{
+    //                         deleteSelectedItem(aid)
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     } else {
+    //         log('pressed F key but no result')
+    //     }
+    // }
 
 
     //#1 BUTTON
@@ -190,6 +198,8 @@ export function InputListenSystem(dt:number){
 
         if(selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
             cancelSelectedItem()
+            removeNegativeGrabSystem()
+            removePositiveGrabSystem()
         }
         else{
             console.log('ui input is', uiInput)
@@ -227,12 +237,16 @@ export function InputListenSystem(dt:number){
                     if (selectedItem.mode === EDIT_MODES.GRAB) {
                         console.log('dropping item')
                         dropSelectedItem()
+                        displayGrabContextMenu(false)
+                        removeNegativeGrabSystem()
+                        removePositiveGrabSystem()
                     } else {
                         console.log('pressed e while editing asset, do nothing')
                     }
                 } else {
                     log('player pressed #E on an object in Build mode, need to grab')
                     grabItem(result.hit.entityId as Entity)
+                    displayGrabContextMenu(true)
                 }
             } else {
                 log('player pressed #E in Build mode')
@@ -251,42 +265,65 @@ export function InputListenSystem(dt:number){
 
     //#2//
     if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)) {
-        displayHover(false)
-
-        // Logic in response to button press
         const result = inputSystem.getInputCommand(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)
         if (result) {
-            if (result.hit && result.hit.entityId) {
-                log('player pressed #2 on an object')
-                if (playerMode === SCENE_MODES.BUILD_MODE) {
-                    log('player pressed #2 on an object in Build mode, need to duplicate')
-                    let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
-                    if(aid){
-                        duplicateItem(aid)//
+            if (selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
+                addPositiveGrabSystem()
+            }else{
+                displayHover(false)
+                if (result.hit && result.hit.entityId) {
+                    log('player pressed #2 on an object')
+                    if (playerMode === SCENE_MODES.BUILD_MODE) {
+                        log('player pressed #2 on an object in Build mode, need to duplicate')
+                        let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+                        if(aid){
+                            duplicateItem(aid)
+                        }
                     }
                 }
             }
         }
     }
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_UP)) {
+        removePositiveGrabSystem()
+    }
 
     //#3
     if (inputSystem.isTriggered(InputAction.IA_ACTION_5, PointerEventType.PET_DOWN)) {
-        // Logic in response to button press//
-        displayHover(false)
-
-        // Logic in response to button press
         const result = inputSystem.getInputCommand(InputAction.IA_ACTION_5, PointerEventType.PET_DOWN)
         if (result) {
-            if (result.hit && result.hit.entityId) {
-                log('player pressed #3 on an object')
-                if (playerMode === SCENE_MODES.BUILD_MODE) {
-                    log('player pressed #3 on an object in Build mode, need to duplicate in place')
-                    let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
-                    if(!aid){
-                        return
+            if (selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
+                addNegativeGrabSystem()
+            }else{
+                displayHover(false)
+                if (result.hit && result.hit.entityId) {
+                    log('player pressed #3 on an object')
+                    if (playerMode === SCENE_MODES.BUILD_MODE) {
+                        log('player pressed #3 on an object in Build mode, need to duplicate in place')
+                        let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+                        if(!aid){
+                            return
+                        }
+                        duplicateItemInPlace(aid)
                     }
-                    duplicateItemInPlace(aid)
                 }
+            }
+        }
+    }
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_5, PointerEventType.PET_UP)) {
+        removeNegativeGrabSystem()
+    }
+
+        // //SHIFT BUTTON
+    if (inputSystem.isTriggered(InputAction.IA_WALK, PointerEventType.PET_DOWN)) {
+        setButtonState(InputAction.IA_WALK, PointerEventType.PET_DOWN)
+
+        const result = inputSystem.getInputCommand(InputAction.IA_WALK, PointerEventType.PET_DOWN)
+        if (result) {
+            if (selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
+                updateGrabModifier()
+            }else{
+                displayHover(false)
             }
         }
     }

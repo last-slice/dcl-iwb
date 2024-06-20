@@ -272,6 +272,9 @@ export interface SelectedItem {
     duplicate:boolean
     ugc:boolean
     isCatalogSelect?:boolean
+    distance:number
+    rotation:number
+    scale:number
 }
 
 export enum COMPONENT_TYPES {
@@ -295,6 +298,7 @@ export enum COMPONENT_TYPES {
     MESH_RENDER_COMPONENT = 'Mesh_Renderer',
     MESH_COLLIDER_COMPONENT = 'Mesh_Collider',
     TEXTURE_COMPONENT = 'Texture',
+    BILLBOARD_COMPONENT = 'Billboard',
 
     //advanced components
     PARENTING_COMPONENT = 'Parenting',
@@ -308,7 +312,6 @@ export enum COMPONENT_TYPES {
     TRIGGER_AREA_COMPONENT = "Trigger_Area",
     CLICK_AREA_COMPONENT = "Click_Area",
     AVATAR_SHAPE_COMPONENT = 'Avatar_Shape',
-    BILLBOARD_COMPONENT = 'Billboard'
 }
 
 export enum BLOCKCHAINS {

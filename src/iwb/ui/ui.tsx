@@ -26,6 +26,7 @@ import { createPendingStatusPanel } from './Objects/PendingInfoPanel'
 import { createCustomUITextComponent } from './Objects/createCustomUITextComponent'
 import { createCustomUIImageComponent } from './Objects/UIImage'
 import { createAddSpawnPointPanel } from './Objects/AddSpawnPointPanel'
+import { createGrabContextMenu } from './Objects/GrabContextMenu'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -56,6 +57,7 @@ const uiComponent:any = () => [
   createCustomUITextComponent(),
   createCustomUIImageComponent(),
   createAddSpawnPointPanel(),
+  createGrabContextMenu(),
   // createAdvancedEditPanel(),
 ]
 

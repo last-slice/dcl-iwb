@@ -1,10 +1,10 @@
-import { AudioSource, AudioStream, AvatarAnchorPointType, AvatarAttach, Billboard, BillboardMode, ColliderLayer, Entity, GltfContainer, InputAction, Material, MeshCollider, MeshRenderer, NftShape, PointerEventType, PointerEvents, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { AudioSource, AudioStream, AvatarAnchorPointType, AvatarAttach, Billboard, BillboardMode, ColliderLayer, Entity, GltfContainer, InputAction, Material, MeshCollider, MeshRenderer, NftShape, PointerEventType, PointerEvents, RaycastQueryType, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine, raycastSystem } from "@dcl/sdk/ecs"
 import { Actions, COMPONENT_TYPES, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem, SelectedItem } from "../helpers/types"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import players from "@dcl/sdk/players"
 import { items } from "../components/Catalog"
 import { localPlayer, localUserId } from "../components/Player"
-import { getRandomString, log, roundVector } from "../helpers/functions"
+import { getDistance, getRandomString, log, roundVector } from "../helpers/functions"
 import { getWorldPosition, getWorldRotation } from "@dcl-sdk/utils"
 import { colyseusRoom, sendServerMessage } from "../components/Colyseus"
 import { realm } from "../components/Config"
@@ -208,7 +208,10 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             initialHeight: ITEM_HEIGHT_DEFAULT,
             duplicate: duplicate ? duplicate : false,
             ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false,
-            isCatalogSelect: true
+            isCatalogSelect: true,
+            distance:4,
+            rotation:0,
+            scale: 1
         }
 
         console.log('selected item is', selectedItem)
@@ -446,7 +449,10 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
                 rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z),
                 scale: transScal
             },
-            ugc: itemInfo.ugc
+            distance:4,
+            ugc: itemInfo.ugc,
+            rotation: transRot.y,
+            scale:1
         }
     
         let itemdata = items.get(selectedItem.catalogId)
@@ -879,21 +885,21 @@ export function duplicateItemInPlace(aid:string) {
 }
 
 export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
-    console.log('confirming grabbed item', selectedAsset.assetId)
     if(entity){
-        console.log('we have neity')
         let itemData = items.get(selectedAsset.catalogId)
         if(!itemData){
-            console.log('item info or data doesnt exist')
             return
         }
 
-        console.log('item data is', itemData)
+        // console.log('item data is', itemData)
 
         let transform = Transform.get(entity)
         let transPos = Vector3.clone(transform.position)
         let transScal = Vector3.clone(transform.scale)
         let transRot = Quaternion.toEulerAngles(transform.rotation)
+
+        let grabbedDistance = grabbedItemDistances.get(selectedAsset.assetId)
+        console.log('grabbed distance is', grabbedDistance)
 
         selectedItem = {
             n: itemData.n,
@@ -915,6 +921,9 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
                 rotation: Quaternion.fromEulerDegrees(transRot.x, transRot.y, transRot.z),
                 scale: transScal
             },
+            distance: grabbedDistance ?? 4,
+            rotation: transRot.y,
+            scale:1,
             initialHeight: transPos.y - .88,//
             ugc: selectedAsset.ugc
         }
@@ -923,7 +932,7 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
 
         let scale: any
         scale = transScal
-        log('grabbed scale is', scale)
+        // log('grabbed scale is', scale)
 
         let config = localPlayer.worlds.find((w:any) => w.ens === realm)
 
@@ -951,7 +960,7 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
         Transform.createOrReplace(
             selectedItem.entity,
             {
-                position: {x: 0, y: -.88, z: 4},
+                position: {x: 0, y: -.88, z: grabbedDistance ? grabbedDistance : 4},
                 scale: scale,
                 rotation: Quaternion.fromEulerDegrees(transRot.x - playereuler.x, transRot.y - playereuler.y, transRot.z - playereuler.z),
                 parent: engine.PlayerEntity
@@ -972,20 +981,45 @@ export function grabItem(entity: Entity) {
                playSound(SOUND_TYPES.ERROR_2)
                return
             }
-   
-            hideAllOtherPointers()
-            displayHover(true)
-            if (PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
-           sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
-               user: localUserId,
-               catalogId: itemInfo.catalogId,
-               assetId: aid,
-               sceneId: scene.id,
-           })
-           playSound(SOUND_TYPES.SELECT_3)
+
+
+        raycastSystem.registerTargetEntityRaycast(
+            {
+              entity: engine.PlayerEntity,
+              opts: {
+                queryType: RaycastQueryType.RQT_QUERY_ALL,
+                targetEntity: entity,
+                maxDistance:500
+              },
+            },
+            (raycastResult) => {
+              console.log(raycastResult)
+              let distance = 4
+              if(raycastResult.hits.length > 0){
+                let hit = raycastResult.hits[0].position
+                console.log("distance is ", getDistance(hit, Transform.get(engine.PlayerEntity).position))
+                distance = getDistance(hit, Transform.get(engine.PlayerEntity).position)
+              }
+
+              grabbedItemDistances.set(aid, distance)
+
+              hideAllOtherPointers()
+              displayHover(true)
+              if (PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
+             sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
+                 user: localUserId,
+                 catalogId: itemInfo.catalogId,
+                 assetId: aid,
+                 sceneId: scene.id,
+             })
+             playSound(SOUND_TYPES.SELECT_3)
+            }
+          )
         }
     }
 }
+
+export let grabbedItemDistances:Map<string, number> = new Map()
 
 export function deleteGrabbedItem(){
     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_GRABBED_ITEM, {})
@@ -1201,7 +1235,7 @@ function addUseItemPointers(ent: Entity) {
     })
     updateContextEvents([...PointerEvents.get(ent).pointerEvents])
 }
-
+//
 export function addBuildModePointers(ent: Entity) {
     PointerEvents.deleteFrom(ent)
     PointerEvents.createOrReplace(ent, {
@@ -1216,7 +1250,8 @@ export function addBuildModePointers(ent: Entity) {
             {
                 eventType: PointerEventType.PET_HOVER_LEAVE,
                 eventInfo: {
-                    showFeedback: false
+                    showFeedback: false,
+                    maxDistance: 500
                 }
             },
             {
@@ -1224,7 +1259,8 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_ACTION_3,
                     hoverText: "Edit",
-                    showFeedback: false
+                    showFeedback: false,
+                    maxDistance: 500
                 }
             },
             {
@@ -1232,7 +1268,8 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_PRIMARY,
                     hoverText: "Grab",
-                    showFeedback: false
+                    showFeedback: false,
+                    maxDistance: 500
                 }
             },
             {
@@ -1240,7 +1277,8 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_ACTION_4,
                     hoverText: "Copy",
-                    showFeedback: false
+                    showFeedback: false,
+                    maxDistance: 500
                 }
             },
             {
@@ -1248,7 +1286,8 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_SECONDARY,
                     hoverText: "Delete",
-                    showFeedback: false
+                    showFeedback: false,
+                    maxDistance: 500
                 }
             },
             {
@@ -1256,7 +1295,8 @@ export function addBuildModePointers(ent: Entity) {
                 eventInfo: {
                     button: InputAction.IA_ACTION_5,
                     hoverText: "Copy in Place",
-                    showFeedback: false
+                    showFeedback: false,
+                    maxDistance: 500
                 }
             },
         ]
@@ -1293,7 +1333,7 @@ export function hideAllOtherPointers() {
         scene[COMPONENT_TYPES.IWB_COMPONENT].forEach((pointer:any, aid:string)=>{
             let entityInfo = getEntity(scene, aid)
             if(entityInfo){
-                console.log('deleting pointer events', aid)
+                // console.log('deleting pointer events', aid)
                 PointerEvents.deleteFrom(entityInfo.entity)
             }
         })

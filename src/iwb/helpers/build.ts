@@ -65,7 +65,7 @@ export function isItemInScene(transform: TransformType, bb: {
         transform.position.x,
         transform.position.z,
         bb.x * transform.scale.x,
-        bb.z * transform.scale.z,
+        bb.y * transform.scale.y,
         rotEuler.y);
 
     //log('points', points)
@@ -194,13 +194,13 @@ export function createBBForEntity(entity: Entity, catalogId: string) {
     Transform.createOrReplace(bbE, {
         position: Vector3.create(
             transform.position.x,
-            transform.position.y + (transform.scale.y * bb.y / 2),
+            transform.position.y + (transform.scale.y * bb.z / 2),
             transform.position.z),
         rotation: transform.rotation,
         scale: Vector3.create(
             bb.x * transform.scale.x,
-            bb.y * transform.scale.y,
-            bb.z * transform.scale.z)
+            bb.z * transform.scale.y,
+            bb.y * transform.scale.z)
     })
 
 }

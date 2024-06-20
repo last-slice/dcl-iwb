@@ -7,7 +7,7 @@ import { localPlayer } from "../components/Player"
 import { isEntityInScene, createBBForEntity, bbE } from "../helpers/build"
 import { log } from "../helpers/functions"
 import { SCENE_MODES, EDIT_MODES, SERVER_MESSAGE_TYPES } from "../helpers/types"
-import { selectedItem } from "../modes/Build"
+import { grabbedItemDistances, selectedItem } from "../modes/Build"
 
 let lastPlayerPos: Vector3 | undefined = undefined
 let time = 1
@@ -79,10 +79,10 @@ export function SelectedItemSystem(dt: number) {
         // Selected Item Height Control
         let newYPos = getWorldPosition(localPlayer.cameraParent).y - playerPos.y //+ selectedItem.initialHeight
 
-        let itemData = items.get(selectedItem.catalogId)
+        // let itemData = items.get(selectedItem.catalogId)
         newYPos = Math.max(newYPos, -playerPos.y)//(itemData?.bb.y * selEntityTransform.scale.y / 2) - (playerPos.y))
 
-
+//
         // Set new item position w. snap
         if (isSnapEnabled) {
 
@@ -111,9 +111,15 @@ export function SelectedItemSystem(dt: number) {
 
             // Set new item position w.o snap
             selEntityTransform.position = {
-                x: 0, z: 4,
+                x: 0, z: selectedItem.distance,
                 y: newYPos //+ selectedItem.initialHeight
             }
+
+            let rotation = Quaternion.toEulerAngles(selEntityTransform.rotation)
+            rotation.y = selectedItem.rotation
+            selEntityTransform.rotation = Quaternion.fromEulerDegrees(rotation.x, rotation.y, rotation.z)
+
+            selEntityTransform.scale = Vector3.multiply(selEntityTransform.scale, Vector3.create(selectedItem.scale, selectedItem.scale, selectedItem.scale))
 
             selEntityTransform.parent = engine.PlayerEntity
         }
