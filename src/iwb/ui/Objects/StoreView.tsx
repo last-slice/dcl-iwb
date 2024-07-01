@@ -1,9 +1,18 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import resources from '../../helpers/resources'
-import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
+import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { generateButtons, setUIClicked } from '../ui'
-let show = false
+import { sendServerMessage } from '../../components/Colyseus'
+import { SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
+import { HoriztonalButtons } from '../Reuse/HoriztonalButtons'
+import { Color4 } from '@dcl/sdk/math'
+import { paginateArray } from '../../helpers/functions'
+import { marketplaceOriginal } from '../../components/Catalog'
+import { playSound } from '@dcl-sdk/utils'
+
+export let showStore = false
+export let storeView = "main"
 
 let buttons:any[] = [
     // {label:"Worlds", pressed:false, func:()=>{
@@ -45,10 +54,69 @@ let buttons:any[] = [
     // },
 ]
 
-export let mainView = ""
+export let horiztonalButtons:any[] = [
+    {label:"Marketplace", pressed:true, func:()=>{
+        // updateWorldView("Current World")
+        // setTableConfig(currentWorldTableConfig)
+        // let scenes:any[] = []
+        // colyseusRoom.state.scenes.forEach((sceneInfo:any)=>{
+        //     scenes.push(sceneInfo)
+        // })
+        // updateIWBTable(scenes)
+        playSound(SOUND_TYPES.SELECT_3)
+        // showYourBuilds()
+        // updateExploreView("Current World")
+        },
+        height:6,
+        width:8,
+        fontBigScreen:30,
+        fontSmallScreen:12
+    },
+    {label:"Your Listings", pressed:false, func:()=>{
+        // updateWorldView("My Worlds")
+        // setTableConfig(myWorldConfig)
+        // updateIWBTable(localPlayer.worlds)
+        playSound(SOUND_TYPES.SELECT_3)
+        // showWorlds()
+        // updateExploreView("My Worlds")
+        },
+        height:6,
+        width:8,
+        fontBigScreen:30,
+        fontSmallScreen:12
+    },
+]
+
+let visibleItems:any[] = [
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+    {n:"Test", im:"", cat:"Fantasy"},
+]
+let visibleIndex:number = 1
 
 export function displayStoreView(value:boolean){
-    show = value
+    showStore = value
+
+    if(showStore){
+        storeView = "loading"
+        sendServerMessage(SERVER_MESSAGE_TYPES.GET_MARKETPLACE,{})
+    }
+}
+
+export function updateStoreVisibleItems(){
+    visibleItems.length = 0
+    visibleIndex = 1
+    visibleItems = paginateArray([...marketplaceOriginal], visibleIndex, 9)
+}
+
+export function updateStoreView(view:string){
+    storeView = view
 }
 
 export function createStoreview() {
@@ -56,7 +124,7 @@ export function createStoreview() {
         <UiEntity
         key={"" + resources.slug + "main-store-ui"}
             uiTransform={{
-                display: show? 'flex' : 'none',
+                display: showStore? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -155,6 +223,29 @@ function MainRightView(){
         // uiBackground={{color:Color4.Blue()}}
         >
 
+            <DataView/>
+            <LoadingView/>
+        </UiEntity>
+  
+    )
+}
+
+function LoadingView(){
+    return(
+        <UiEntity
+        key={resources.slug + "-store-view-right-loading"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            margin:{left:'2%'},
+            display:showStore && storeView === "loading" ? "flex" : "none"
+        }}
+        // uiBackground={{color:Color4.Blue()}}
+        >
+
     <UiEntity
         uiTransform={{
             flexDirection: 'column',
@@ -163,10 +254,170 @@ function MainRightView(){
             width: '75%',
             height: '10%',
         }}
-        uiText={{value:"COMING SOON", fontSize:sizeFont(25,20)}}
+        uiText={{value:"LOADING...", fontSize:sizeFont(25,20)}}
         />
 
         </UiEntity>
   
+    )
+}
+
+function DataView(){
+    return(
+        <UiEntity
+        key={resources.slug + "-store-view-right-data"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            display:showStore && storeView === "main" ? "flex" : "none"
+        }}
+        // uiBackground={{color:Color4.Blue()}}
+        >
+
+        <HoriztonalButtons buttons={horiztonalButtons} slug={"main-store-view"} />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+        }}
+        >
+            {showStore && storeView === "main" && generateRows()}
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            // uiBackground={{color:Color4.Red()}}
+            />
+            
+        </UiEntity>
+
+        </UiEntity>
+  
+    )
+}
+
+function generateRows(){
+    let arr:any[] = []
+    let count= 0
+    for(let i = 0; i < 2; i++){
+        arr.push(<MarketplaceRow count={count}/>)
+        count++
+    }
+    return arr
+}
+
+function generateMarketPlaceItems(index:number){
+    let arr:any[] = []
+    for(let i = 0; i < 3; i++){
+        if(visibleItems[(index * 3) + i]){
+            arr.push(<MarketplaceItem item={visibleItems[i]}/>)
+            // console.log(visibleItems[i])
+        }
+    }
+    return arr
+}
+
+function MarketplaceRow(data:any){
+    return(
+        <UiEntity
+        key={resources.slug + "store::row::" + data.count}
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '50%',
+            margin:{left:'2%', right:'2%'}
+        }}
+        >
+            {generateMarketPlaceItems(data.count)}
+        </UiEntity>
+    )
+}
+
+function MarketplaceItem(data:any){
+    let item = data.item
+    return(
+        <UiEntity
+        key={resources.slug + "store::item::" + item.n}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '33%',
+            height: '100%',
+            margin:'1%'
+        }}
+        // uiBackground={{color:Color4.Red()}}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(15).width,
+            height: calculateSquareImageDimensions(15).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: '' + item.im
+            },
+        }}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'3%'}
+        }}
+        uiText={{value:item.n, fontSize:sizeFont(25,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+        }}
+        >
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png',
+            },
+            uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{value:"Info", fontSize:sizeFont(25,15)}}
+        />
+        </UiEntity>
+
+        </UiEntity>
     )
 }

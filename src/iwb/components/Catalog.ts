@@ -4,9 +4,11 @@ import { realm, worlds } from "./Config";
 
 export let items: Map<string, SceneItem> = new Map();
 export let newItems: Map<string, SceneItem> = new Map();
+export let marketplaceItems: Map<string, SceneItem> = new Map();
 
 export let original: SceneItem[] = []
 export let playerItemsOriginal: SceneItem[] = []
+export let marketplaceOriginal: SceneItem[] = []
 
 export let sortedAll: SceneItem[] = []
 export let Sorted3D: SceneItem[] = []
@@ -52,6 +54,10 @@ export function refreshSortedItems() {
     Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")
     SortedAudio = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Audio")
     SortedSmartItems = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "SM")
+}
+
+export function refreshMarketplaceItems() {
+    marketplaceOriginal = [...marketplaceItems.values()]
 }
 
 export function updateItem(id: string, update: SceneItem) {

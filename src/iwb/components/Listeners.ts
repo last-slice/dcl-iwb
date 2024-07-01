@@ -3,7 +3,7 @@ import { addInputSystem, createInputListeners } from "../systems/InputSystem";
 import { addPlayerScenes, createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings } from './Player'
 import { EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { log } from "../helpers/functions";
-import { items, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
+import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
 import { addLocalWorldPermissionsUser, addTutorial, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
@@ -19,11 +19,24 @@ import { hideNotification, showNotification } from "../ui/Objects/NotificationPa
 import { scene, sceneInfoDetailView } from "../ui/Objects/SceneMainDetailPanel";
 import { updateIWBTable } from "../ui/Reuse/IWBTable";
 import { colyseusRoom } from "./Colyseus";
+import { updateStoreView, updateStoreVisibleItems } from "../ui/Objects/StoreView";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
 
 export async function createColyseusListeners(room:Room){
+    room.onMessage(SERVER_MESSAGE_TYPES.GET_MARKETPLACE, (info:any)=>{
+        console.log(SERVER_MESSAGE_TYPES.GET_MARKETPLACE + ' received', info)
+        if(info){
+            for(let id in info){
+                marketplaceItems.set(id, info[id])
+            }
+            refreshMarketplaceItems()
+        }
+        updateStoreVisibleItems()
+        updateStoreView("main")
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
