@@ -17,6 +17,7 @@ import { getView } from '../uiViews'
 import { displayAddSpawnPointPanel } from './AddSpawnPointPanel'
 import { localPlayer } from '../../components/Player'
 import { utils } from '../../helpers/libraries'
+import { displayExpandedMap } from './ExpandedMapView'
 
 export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
@@ -975,11 +976,14 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
+            setUIClicked(true)
+            playSound(SOUND_TYPES.SELECT_3)
             editCurrentParcels(scene!.id)
-            // displaySceneInfoPanel(false, null)
-            // displaySettingsPanel(false)
-            // displaySetting("Explore")
-            // displayCreateScenePanel(true, true)
+            displaySceneDetailsPanel(false)
+            displayExpandedMap(true, true)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
         }}
         uiText={{value: "Edit Parcels", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />            

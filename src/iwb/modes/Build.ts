@@ -48,6 +48,38 @@ let ITEM_HEIGHT_DEFAULT = -.88
 
 export function updateSelectedAssetId(value:any){
     selectedAssetId = value
+
+    let iwbInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(value)
+    let entity = getEntity(localPlayer.activeScene, value)
+
+    let fake = {x:0,y:0,z:0}
+
+    selectedItem = {
+        duplicate: false,
+        mode: EDIT_MODES.EDIT,
+        n: iwbInfo.n,
+        modifier: EDIT_MODIFIERS.POSITION,
+        pFactor: 1,
+        sFactor: 1,
+        rFactor: 90,
+        entity: entity,
+        aid: value,//
+        catalogId: iwbInfo.id,
+        sceneId: localPlayer.activeScene.id,
+        itemData: iwbInfo,
+        enabled: false,
+        already: false,
+        initialHeight: 0,
+        transform: {
+            position: fake,
+            rotation:{...fake, ...{w:0}},
+            scale: fake
+        },
+        distance:4,
+        ugc: false,
+        rotation: 0,
+        scale:1
+    }
 }
 
 export function getFactor(mod: EDIT_MODIFIERS) {
@@ -297,8 +329,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(1, 1, 1)
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } 
-            else if (selectedItem.itemData.n === "Trigger Area") {
+            } else if (selectedItem.itemData.n === "Trigger Area") {
                 MeshRenderer.setBox(selectedItem.entity)
                 itemPosition = {x: 0, y: .5, z: itemDepth}
                 selectedItem.initialHeight = .88
@@ -411,6 +442,7 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
     hideAllPanels()
 
     let entityInfo = getEntity(localPlayer.activeScene, aid)
+    console.log('entity info is', entityInfo)
     if(entityInfo){
         let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
         if(itemInfo && itemInfo.locked){
@@ -562,13 +594,13 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     // if scene found and permissions allowed, add item to scene
     if (curScene && bpsCurScene && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
         PointerEvents.deleteFrom(selectedItem.entity);
-        VisibilityComponent.createOrReplace(bbE, {visible: false});//
+        VisibilityComponent.createOrReplace(bbE, {visible: false});
         addAllBuildModePointers();
         localPlayer.activeScene = curScene;
         
         let t = Transform.getMutable(selectedItem.entity);
 
-        // set rotation to current rotation
+        // set rotation to current rotation//
         if(isSnapEnabled) {
             t.rotation = getWorldRotation(selectedItem.entity)
         } else {
@@ -1023,7 +1055,7 @@ export let grabbedItemDistances:Map<string, number> = new Map()
 
 export function deleteGrabbedItem(){
     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_GRABBED_ITEM, {})
-    removeSelectedItem()
+    removeSelectedItem()//
 }
 
 export function deleteSelectedItem(aid:string) {
@@ -1156,6 +1188,7 @@ function addGrabbedComponent(entity: Entity, catalogId: string) {
 }
 
 export function removeSelectedItem() {
+    console.log('removing selected entity', selectedItem)
     if (selectedItem && selectedItem.entity) {
         PointerEvents.deleteFrom(selectedItem.entity)
         engine.removeEntity(selectedItem.entity)
@@ -1515,6 +1548,7 @@ export function checkPlayerBuildRights(){
 
 export function removeItem(entity:Entity){
     engine.removeEntity(entity)
+    console.log('removing item', entity, showSceneInfoPanel)
     if(showSceneInfoPanel){
         updateRows()
         displaySceneAssetInfoPanel(true)

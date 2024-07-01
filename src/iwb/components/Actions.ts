@@ -1,4 +1,4 @@
-import { AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, TextAlignMode, Transform, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, TextAlignMode, Transform, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
@@ -55,6 +55,7 @@ function updateActions(scene:any, info:any, action:any){
     const actionEvents = getActionEvents(info.entity)
 
     actionEvents.on(action.id, ()=>{
+        console.log('action received', action)
         switch(action.type){
             case Actions.SHOW_TEXT:
                 handleShowText(scene, info, action)
@@ -194,8 +195,32 @@ function updateActions(scene:any, info:any, action:any){
             case Actions.HIDE_CUSTOM_IMAGE:
                 handleHideCustomImage(scene, info, action)
                 break;
+
+            case Actions.PLAY_ANIMATION:
+                handlePlayAnimation(scene, info, action)
+                break;
+
+            case Actions.STOP_ANIMATION:
+                handleStopAnimation(scene, info, action)
+                break;
+
+            case Actions.ATTEMPT_GAME_START:
+                handleAttemptGame(scene, info, action)
+                break;
         }
     })
+}
+
+export function handlePlayAnimation(scene:any, entityInfo:any, action:any){
+    Animator.stopAllAnimations(entityInfo.entity)
+    const clip = Animator.getClip(entityInfo.entity, action.anim)
+    clip.playing = true
+}
+
+export function handleStopAnimation(scene:any, entityInfo:any, action:any){
+    if(Animator.has(entityInfo.entity)){
+        Animator.stopAllAnimations(entityInfo.entity)
+    }
 }
 
 export function handleRemoveEntity(scene:any, entityInfo:any, action:any){
@@ -518,4 +543,8 @@ function handleBatchAction(scene:any, info:any, action:any){
 
 function handleShowNotification(scene:any, info:any, action:any){
     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:action.message, animate:{enabled:true, return: true, time:action.time}})
+}
+
+function handleAttemptGame(scene:any, info:any, action:any){
+    console.log("handling attempt game start", info, action)
 }

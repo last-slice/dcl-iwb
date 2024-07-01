@@ -94,6 +94,7 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
 
     triggerEvents.off(triggerInfo.type)
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
+      console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent)
       if(!trigger){
         return
@@ -125,7 +126,8 @@ function findTrigger(scene:any, triggerEvent:any){
     if(!triggers){
       return false
     }
-    console.log(triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer))
+    console.log('triggers', triggers)
+    console.log('trigger found', triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer))
     return triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer)
 }
 
@@ -365,7 +367,6 @@ class MittWrapper {
   on(type:any, handler:any) {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, new Set());
-      console.log("create on type", type)
     }
 
     const handlers = this.listeners.get(type);

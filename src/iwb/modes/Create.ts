@@ -4,11 +4,13 @@ import { sendServerMessage, colyseusRoom } from "../components/Colyseus"
 import { localUserId, localPlayer, setPlayMode } from "../components/Player"
 import { SCENE_MODES, SERVER_MESSAGE_TYPES } from "../helpers/types"
 import { playerMode } from "../components/Config"
-import { editCurrentSceneParcels } from "../ui/Objects/ExpandedMapView"
+import { displayExpandedMap, editCurrentSceneParcels } from "../ui/Objects/ExpandedMapView"
 import { scene } from "../ui/Objects/SceneMainDetailPanel"
+import { addBlankParcels } from "../components/Scene"
 
 export let tempScene:any ={}
 export let tempParcels:Map<string, any> = new Map()
+export let otherTempParcels:Map<string, any> = new Map()
 export let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
 export let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
 
@@ -144,7 +146,9 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
     
         VisibilityComponent.create(floor, {visible:playMode ? false : true})    
         BuildModeVisibilty.create(floor)
-        tempParcels.set(parcel, entities)
+
+
+        local ? tempParcels.set(parcel, entities) : otherTempParcels.set(parcel, entities)
     }
     
 }
@@ -162,16 +166,39 @@ export function isParcelInScene(parcel:string){
 
 export function deleteParcelEntities(parcel: any) {
     let entities = tempParcels.get(parcel)
-
-    entities.forEach((entity:Entity)=>{
-        engine.removeEntity(entity)
-    })
+    if(entities){
+        entities.forEach((entity:Entity)=>{
+            engine.removeEntity(entity)
+        })
+    }
     tempParcels.delete(parcel)
+}
+
+export function deleteOtherParcelEntities(parcel: any) {
+    let otherEntities = otherTempParcels.get(parcel)
+    if(otherEntities){
+        otherEntities.forEach((entity:Entity)=>{
+            engine.removeEntity(entity)
+        })
+    }
+    otherTempParcels.delete(parcel)
+}
+
+export function cancelParcelEdits(){
+    addBlankParcels([...colyseusRoom.state.temporaryParcels])
+          
+    deleteCreationEntities(localUserId)
+    validateScene()
+    displayExpandedMap(false)
 }
 
 export function deleteCreationEntities(player: string) {
     tempParcels.forEach((entities, key)=>{
         deleteParcelEntities(key)
+    })
+
+    otherTempParcels.forEach((entities, key)=>{
+        deleteOtherParcelEntities(key)
     })
 }
 
@@ -179,7 +206,7 @@ export function saveNewScene(userId:string) {
     if(userId !== localUserId) return
 
     // displaySceneSavedPanel(true)
-    // displayCreateScenePanel(false)
+    // displayCreateScenePanel(false)//
 }
 
 export function getParcels() {

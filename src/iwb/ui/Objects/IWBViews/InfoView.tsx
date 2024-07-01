@@ -4,15 +4,17 @@ import { iwbConfig, realm, worlds } from '../../../components/Config'
 import resources from '../../../helpers/resources'
 import { HoriztonalButtons } from '../../Reuse/HoriztonalButtons'
 import { generateButtons, setUIClicked } from '../../ui'
-import { mainView } from '../IWBView'
+import { displayMainView, mainView } from '../IWBView'
 import { sendServerMessage } from '../../../components/Colyseus'
 import { localUserId, localPlayer } from '../../../components/Player'
-import { SOUND_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { SOUND_TYPES, SERVER_MESSAGE_TYPES, NOTIFICATION_TYPES } from '../../../helpers/types'
 import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { playSound } from '../../../components/Sounds'
 import { newItems } from '../../../components/Catalog'
 import { IWBTable, setTableConfig, updateIWBTable } from '../../Reuse/IWBTable'
+import { showNotification } from '../NotificationPanel'
+import { displayPendingPanel } from '../PendingInfoPanel'
 
 export let infoView = "Version"
 
@@ -198,14 +200,14 @@ uiText={{value:"IWB Version: " + (iwbConfig.v ? iwbConfig.v : ""), fontSize:size
     }}
     onMouseDown={() => {
         playSound(SOUND_TYPES.SELECT_3)
-        // displaySettingsPanel(false)
-        // displaySetting("Explore")
-        // showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
-        // sendServerMessage(
-        //     SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, 
-        //     worlds.find((w)=> w.ens === realm)
-        // )
-        // displayPendingPanel(true, "deployment")
+        displayMainView(false)
+        
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
+        sendServerMessage(
+            SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, 
+            worlds.find((w)=> w.ens === realm)
+        )
+        displayPendingPanel(true, "deployment")
     }}
     uiText={{value:"Update", color:Color4.White(), fontSize:sizeFont(30,20)}}
     />

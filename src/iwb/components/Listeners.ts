@@ -133,19 +133,22 @@ export async function createColyseusListeners(room:Room){
     //         type: NOTIFICATION_TYPES.MESSAGE,
     //         message: "Your latest asset uploads have been deployed. Refresh to use them.",
     //         animate: {enabled: true, return: true, time: 10}
-    //     })
+    //     })//
     //     displayPendingPanel(true, 'ready')
     // })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE + ' received', info)
-        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "" + info, animate:{enabled:true, return:true, time:5}})
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "" + info.message, animate:{enabled:true, return:true, time:5}})
+        if(info.sound){
+            playSound(info.sound)
+        }
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
-    //     setPlayerMode(info.mode)
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
+        // setPlayerMode(info.mode)//
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
@@ -369,13 +372,15 @@ export async function createColyseusListeners(room:Room){
         deleteCreationEntities(localUserId)
 
         await removeEmptyParcels(scene.pcls)
+        refreshMap()
+
         await loadScene(scene)
     
         // scene.pcls.onAdd((parcel:string, parcelKey:any)=>{
         //     if(editCurrentSceneParcels){
         //         addBoundariesForParcel(parcel, true, scene.name === "Realm Lobby" ? true : false)
         //     }
-        // })
+        // })//
     
         // scene.pcls.onRemove((parcel:string, parcelKey:any)=>{
         //     if(editCurrentSceneParcels){

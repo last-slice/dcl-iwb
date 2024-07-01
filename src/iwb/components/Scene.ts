@@ -69,8 +69,11 @@ async function loadSceneComponents(scene:any){
     scene.components = []
 
     // await addParenting(scene)//
-    parentingListener(scene)
+    
     iwbInfoListener(scene)
+    parentingListener(scene)
+    
+    
     gltfListener(scene)
     visibilityListener(scene)
     transformListener(scene)
@@ -98,6 +101,7 @@ async function loadSceneComponents(scene:any){
 
 export function unloadScene(scene:any) {
     engine.removeEntityWithChildren(scene.parentEntity)
+
     scene.pcls.forEach((parcel: string) => {
         deleteParcelEntities(parcel)
     })
@@ -108,9 +112,9 @@ export function unloadScene(scene:any) {
 async function loadSceneBoundaries(scene:any) {
     scene.entities = []
 
-    scene.pcls.forEach((parcel: string) => {
-        addBoundariesForParcel(parcel, true, scene.n === "Realm Lobby", true)
-    })
+    // scene.pcls.forEach((parcel: string) => {
+    //     addBoundariesForParcel(parcel, true, scene.n === "Realm Lobby", true)
+    // })
 
     // create parent entity for scene//
     const [x1, y1] = scene.bpcl.split(",")
@@ -361,7 +365,7 @@ export function updateSceneCount(count: number) {
 }
 
 export function checkAllScenesLoaded() {
-    if (scenesLoadedCount >= sceneCount) {
+    if (scenesLoadedCount >= sceneCount && !scenesLoaded) {
         scenesLoaded = true
         loadBlankParcels()
     }
@@ -374,7 +378,7 @@ export function findUGCAssetBeforeDeleting(name:string, id:string){
     // colyseusRoom.state.scenes.forEach((scene:IWBScene)=>{
     //     scene.ass.forEach((asset:any)=>{
     //         if(asset.id === id){
-    //             list.push(scene.n)
+    //             list.push(scene.n)//
     //         }
     //     })
     // })
@@ -416,7 +420,7 @@ async function loadBlankParcels(){
     addBlankParcels(blankParcels)
 }
 
-function addBlankParcels(parcels:string[]){
+export function addBlankParcels(parcels:string[]){
     parcels.forEach((parcel:string) => {
         let blank = engine.addEntity()
         GltfContainer.create(blank, {src: 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb'})

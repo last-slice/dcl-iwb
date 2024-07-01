@@ -299,6 +299,7 @@ export enum COMPONENT_TYPES {
     MESH_COLLIDER_COMPONENT = 'Mesh_Collider',
     TEXTURE_COMPONENT = 'Texture',
     BILLBOARD_COMPONENT = 'Billboard',
+    LEVEL_COMPONENT = 'Levels',
 
     //advanced components
     PARENTING_COMPONENT = 'Parenting',
@@ -309,9 +310,12 @@ export enum COMPONENT_TYPES {
     UI_IMAGE_COMPONENT ='UI_Image',
     TRIGGER_COMPONENT = "Triggers",
     ACTION_COMPONENT = 'Actions',
-    TRIGGER_AREA_COMPONENT = "Trigger_Area",
+    // TRIGGER_AREA_COMPONENT = "Trigger_Area",
     CLICK_AREA_COMPONENT = "Click_Area",
     AVATAR_SHAPE_COMPONENT = 'Avatar_Shape',
+    GAME_COMPONENT = 'Game',
+    // LEVEL_COMPONENT = 'Levels',
+    // BILLBOARD_COMPONENT = 'Billboard'
 }
 
 export enum BLOCKCHAINS {
@@ -377,8 +381,8 @@ export enum Actions {
     STOP_LOOP = 'stop_loop',
     CLONE = 'clone',
     REMOVE = 'remove_entity',
-    SHOW_IMAGE = 'show_image',
-    HIDE_IMAGE = 'hide_image',
+    // SHOW_IMAGE = 'show_image',
+    // HIDE_IMAGE = 'hide_image',
     PLAY_ANIMATION = 'play_animation',
     STOP_ANIMATION = 'stop_animation',
     SHOW_DIALOG ='show_dialog',
@@ -409,7 +413,8 @@ export enum Actions {
     RANDOM_ACTION = 'random_action',
     SET_TEXT = 'set_text',
     SHOW_CUSTOM_IMAGE = 'show_ui_image',
-    HIDE_CUSTOM_IMAGE = 'hide_ui_image'
+    HIDE_CUSTOM_IMAGE = 'hide_ui_image',
+    ATTEMPT_GAME_START = 'attempt_game_start',
 }
 
 InputAction.IA_ACTION_3
@@ -432,6 +437,7 @@ export enum Triggers {
     // ON_HEAL = 'on_heal',//
     ON_STATE_CHANGE = "on_state_change",
     ON_COUNTER_CHANGE = "on_counter_change",
+    ON_RAYCAST_HIT = 'on_raycast_hit'
 }
 
 export enum Pointers {

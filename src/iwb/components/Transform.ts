@@ -6,6 +6,7 @@ import { COMPONENT_TYPES } from "../helpers/types"
 
 export function checkTransformComponent(scene:any, entityInfo:any){
     let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
+    console.log('transform is', transform)
     if(transform){
         Transform.createOrReplace(entityInfo.entity, {parent:findAssetParent(scene,entityInfo.aid), position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
     }
@@ -18,9 +19,9 @@ export function transformListener(scene:any){
             return
         }
 
-        transform.listen("delta", (c:any, p:any)=>{
+        transform.listen("delta", (c:any, p:any)=>{//
             if(p !== undefined){
-                checkTransformComponent(scene, entityInfo)  
+                checkTransformComponent(scene, entityInfo)
             }
         })
 

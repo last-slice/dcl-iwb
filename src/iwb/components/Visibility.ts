@@ -40,16 +40,42 @@ export function visibilityListener(scene:any){
 export function updateAssetBuildVisibility(scene:any, visibility:boolean, entityInfo:any){
     VisibilityComponent.createOrReplace(entityInfo.entity, {visible: visibility})
 
-    let meshCollider = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo. aid)
+    let meshCollider = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
     if(meshCollider){
       MeshCollider.setBox(entityInfo.entity, ColliderLayer.CL_POINTER)
+    }
+
+    let gltfInfo = scene[COMPONENT_TYPES.GLTF_COMPONENT].get(entityInfo.aid)
+    if(gltfInfo){
+        let gltf = GltfContainer.getMutable(entityInfo.entity)
+        if(gltf){
+            console.log('gltf info is', gltfInfo)
+            gltf.invisibleMeshesCollisionMask = !visibility ? ColliderLayer.CL_NONE : gltfInfo.invisibleCollision
+            gltf.visibleMeshesCollisionMask = !visibility ? ColliderLayer.CL_NONE : gltfInfo.visibleCollision
+        }
+    }
+
+    updateChildrenVisibility(scene, visibility, entityInfo)
+}
+
+export function updateChildrenVisibility(scene:any, visibility:boolean, entityInfo:any){
+    let parentItem = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === entityInfo.aid)
+    if(parentItem && parentItem.children.length > 0){
+        parentItem.children.forEach((aid:any)=>{
+            let childEntityInfo = getEntity(scene, aid)
+            let visibilityInfo = scene[COMPONENT_TYPES.VISBILITY_COMPONENT].get(childEntityInfo.aid)
+            if(visibilityInfo){
+                visibilityInfo.visible = visibility
+            }
+            updateAssetBuildVisibility(scene, visibility, childEntityInfo)
+        })
     }
 }
 
 export function setVisibilityBuildMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
-        updateAssetBuildVisibility(scene, itemInfo.buildVis, entityInfo)
+        updateAssetBuildVisibility(scene, itemInfo.buildVis, entityInfo)//
     }
 }
 

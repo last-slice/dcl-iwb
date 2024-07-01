@@ -12,6 +12,9 @@ import { generateButtons, setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
 import { utils } from '../../../helpers/libraries'
 import { engine } from '@dcl/sdk/ecs'
+import { getWorldPosition, getWorldRotation } from '@dcl-sdk/utils'
+import { localPlayer } from '../../../components/Player'
+import { getEntity } from '../../../components/IWB'
 
 ///parenting
 let parentIndex:number = 0
@@ -225,7 +228,7 @@ function getEntities(){
         }
         let entities:any[] = []
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
-            console.log('entity is', item)
+            // console.log('entity is', item)
             let assetName = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(item.aid)
             if(item.aid !== selectedItem.aid){
                 if(assetName){
@@ -339,13 +342,59 @@ function selectParentIndex(index:number){
 }
 
 function update(action:string, data:any){
-    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
-        {
-            component:COMPONENT_TYPES.PARENTING_COMPONENT,
-            aid:selectedItem.aid,
-            sceneId:selectedItem.sceneId,
-            action:action,
-            data:data
+    console.log('trying to update parent', data)
+    let selectedEntityPosition = getWorldPosition(selectedItem.entity)
+    let selectedEntityRotation = getWorldRotation(selectedItem.entity)
+    let parentInfo:any = localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT][data.parent]
+    let parentEntity:any
+
+    if(data.hasOwnProperty("parent")){
+        switch(data.parent){
+            case 0:
+                parentEntity = {entity:localPlayer.activeScene.parentEntity}
+                break;
+
+            case 1:
+                parentEntity = {entity:engine.PlayerEntity}
+                break;
+
+            case 2:
+                parentEntity = {entity:engine.CameraEntity}
+                break;
+
+            default:
+                parentEntity = getEntity(localPlayer.activeScene, parentInfo.aid)
+                break;
         }
-    )
+
+        console.log("parent entity is", parentEntity)//
+
+        if(parentEntity){
+            let parentEntityPosition = getWorldPosition(parentEntity.entity)
+            let parentEntityRotation = getWorldRotation(parentEntity.entity)
+            sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+                {
+                    component:COMPONENT_TYPES.PARENTING_COMPONENT,
+                    aid:selectedItem.aid,
+                    sceneId:selectedItem.sceneId,
+                    action:action,
+                    data:data,
+                    pp:parentEntityPosition,
+                    pr:Quaternion.toEulerAngles(parentEntityRotation),
+                    sp:selectedEntityPosition,
+                    sr:Quaternion.toEulerAngles(selectedEntityRotation)
+                }
+            )
+        }
+    }else{
+        sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+            {
+                component:COMPONENT_TYPES.PARENTING_COMPONENT,
+                aid:selectedItem.aid,
+                sceneId:selectedItem.sceneId,
+                action:action,
+                data:data
+            }
+        )
+    }
 }

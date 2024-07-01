@@ -72,6 +72,7 @@ export function updateVisibleIndex(amt: number) {
 }
 
 export function updateRows() {
+    console.log('updating scene asset rows')
     if(localPlayer.activeScene){
         let assets:any[] = []
         localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((parentingInfo:any, i:number)=>{
@@ -246,7 +247,7 @@ export function createSceneInfoPanel() {
                         height: calculateSquareImageDimensions(3.5).height,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        display: localUserId && localPlayer && localPlayer.homeWorld ? 'flex' : 'none',
+                        display: localUserId && localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? 'flex' : 'none',
                     }}
                     uiBackground={{
                         textureMode: 'stretch',

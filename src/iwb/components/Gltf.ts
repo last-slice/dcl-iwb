@@ -60,7 +60,6 @@ export function setGLTFCollisionBuildMode(scene:any, entityInfo:any) {
             // }    
             object.invisibleMeshesCollisionMask = 2
             object.visibleMeshesCollisionMask = 1 //ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER
-            console.log(object)
         }
         AvatarAttach.deleteFrom(entityInfo.entity)
     }

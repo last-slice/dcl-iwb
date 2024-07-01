@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
@@ -6,7 +6,7 @@ import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
-import { disableVisibilityPlayMode, setVisibilityPlayMode } from "../components/Visibility"
+import { disableVisibilityPlayMode, setVisibilityPlayMode, updateAssetBuildVisibility } from "../components/Visibility"
 import { disableAudioPlayMode, setAudioPlayMode } from "../components/Sounds"
 import { disableAnimationPlayMode } from "../components/Animator"
 import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/SmartItems"
@@ -80,32 +80,46 @@ export async function disableSceneEntities(sceneId:any) {
 export function enableSceneEntities(sceneId: string) {
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(scene){
+        disabledEntities = false
+        updatePlayModeReset(false)
+
         // findSceneEntryTrigger(scene)//
+
+        let levels:any[] =[]
+        scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((level:any, aid:string)=>{
+            levels.push(aid)
+        })
 
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
-                    console.log('enabling entity')
-                    setGLTFPlayMode(scene, entityInfo)
-                    setVideoPlayMode(scene, entityInfo)
-                    setMeshColliderPlayMode(scene, entityInfo)
-                    setMeshRenderPlayMode(scene, entityInfo)
-                    setVisibilityPlayMode(scene, entityInfo)
-                    setAudioPlayMode(scene, entityInfo)
-                    setSmartItemPlaydMode(scene, entityInfo)
-                    setPointersPlayMode(scene, entityInfo)
-                    checkTransformComponent(scene, entityInfo)
-                    setTextShapeForPlayMode(scene, entityInfo)
-                    setTriggersForPlayMode(scene, entityInfo)
-                    setUiTextPlayMode(scene, entityInfo)
-                    setUiImagePlayMode(scene, entityInfo)
+                    levels.forEach((level:string)=>{
+                        let parenting = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((parent:any)=> parent.aid === level)
+                        if(parenting && parenting.children.includes(item.aid)){
+                            disableEntityForPlayMode(scene, entityInfo)
+                            updateAssetBuildVisibility(scene, false, entityInfo)
+                        }else{
+                            setGLTFPlayMode(scene, entityInfo)
+                            setVideoPlayMode(scene, entityInfo)
+                            setMeshColliderPlayMode(scene, entityInfo)
+                            setMeshRenderPlayMode(scene, entityInfo)
+                            setVisibilityPlayMode(scene, entityInfo)
+                            setAudioPlayMode(scene, entityInfo)
+                            setSmartItemPlaydMode(scene, entityInfo)
+                            setPointersPlayMode(scene, entityInfo)
+                            checkTransformComponent(scene, entityInfo)
+                            setTextShapeForPlayMode(scene, entityInfo)
+                            setTriggersForPlayMode(scene, entityInfo)
+                            setUiTextPlayMode(scene, entityInfo)
+                            setUiImagePlayMode(scene, entityInfo)
+                        }
+                    })
                 }
             }
         })
     }
 
-    disabledEntities = false
     // log('enable scene entities for play mode')
     // let scene = sceneBuilds.get(sceneId)
     // if (scene) {
@@ -135,7 +149,6 @@ export function enableSceneEntities(sceneId: string) {
 export function disableEntityForPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
-        console.log('disabling entity')
         disableVisibilityPlayMode(scene, entityInfo)
         disableAudioPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)

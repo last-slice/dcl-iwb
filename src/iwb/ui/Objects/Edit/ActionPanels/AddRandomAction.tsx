@@ -5,11 +5,12 @@ import { selectedItem } from '../../../../modes/Build'
 import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping } from '../../../helpers'
 import { setUIClicked } from '../../../ui'
 import { uiSizes } from '../../../uiConfig'
-import { editingTrigger, triggerInfoView, triggerView, update } from '../EditTrigger'
 import { getAllAssetNames } from '../../../../components/Name'
-import { colyseusRoom } from '../../../../components/Colyseus'
-import { COMPONENT_TYPES } from '../../../../helpers/types'
-import { selectedTrigger } from './TriggerInfoPanel'
+import { colyseusRoom, sendServerMessage } from '../../../../components/Colyseus'
+import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../../helpers/types'
+import { editingTrigger, triggerView, triggerInfoView } from '../EditTrigger'
+import { selectedTrigger } from '../TriggerPanels/TriggerInfoPanel'
+import { visibleComponent } from '../../EditAssetPanel'
 
 let entities:any[] = []
 let entitiesWithActions:any[] = []
@@ -19,7 +20,7 @@ let selectedActionIndex:number = 0
 
 let newAction:any = {}
 
-export function updateEntityActions(aid:string){
+export function updateEntityActionsRandom(aid:string){
     entitiesWithActions.length = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(!scene){
@@ -32,15 +33,14 @@ export function updateEntityActions(aid:string){
             entitiesWithActions.push(action)
         })
     }
-    console.log('entity actions are ', entitiesWithActions)
 }
 
-export function updateTriggerActionsPanel(){
+export function updateRandomActionsPanel(){
     entities.length = 0
     entities = getAllAssetNames(selectedItem.sceneId)
 }
 
-export function resetTriggerActionsPanel(){
+export function resetRandomActionsPanel(){
     entities.length = 0
     entitiesWithActions.length = 0
     selectedEntityIndex = 0
@@ -48,9 +48,9 @@ export function resetTriggerActionsPanel(){
     newAction = {}
 }
 
-export function TriggerActionsPanel(){
+export function AddRandomActionPanel(){
     return(<UiEntity
-    key={resources.slug + "trigger::action::panel"}
+    key={resources.slug + "actions::random::action::panel"}
     uiTransform={{
     flexDirection: 'column',
     alignItems: 'center',
@@ -58,7 +58,7 @@ export function TriggerActionsPanel(){
     alignContent:'center',
     width: '100%',
     height: '100%',
-    display: triggerInfoView === "actions" ? "flex" : "none"
+    display: visibleComponent === COMPONENT_TYPES.ACTION_COMPONENT ? 'flex' : 'none',
     }}
 >
             <UiEntity
@@ -70,7 +70,7 @@ export function TriggerActionsPanel(){
         width: '100%',
         height: '10%',
     }}
-        uiText={{value:"Add Trigger Action", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+        uiText={{value:"Add Random Action", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
     />
 
 {/* action entity dropdown */}
@@ -157,7 +157,6 @@ export function TriggerActionsPanel(){
     onMouseDown={() => {
         setUIClicked(true)
         let info:any = {...newAction}
-        info.tid = selectedTrigger.id
         update("addaction", info)
     }}
     onMouseUp={()=>{
@@ -190,11 +189,9 @@ uiTransform={{
 
     {selectedItem && 
     selectedItem.enabled && 
-    editingTrigger && 
-    triggerView === "info" && 
-    triggerInfoView === "actions" && 
+    visibleComponent === COMPONENT_TYPES.ACTION_COMPONENT &&  
     
-    getTriggerActions()
+    getSceneActions()
     }
     
 </UiEntity>
@@ -202,7 +199,7 @@ uiTransform={{
     )
 }
 
-export function TriggerActionRow(info:any){
+export function ActionRow(info:any){
     let data:any = info.data
     return(
         <UiEntity
@@ -275,7 +272,7 @@ export function TriggerActionRow(info:any){
                     uvs: getImageAtlasMapping(uiSizes.trashButton)
                 }}
                 onMouseDown={() => {
-                    update("deleteaction", {tid:selectedTrigger.id, actionId: data.actionId})
+                    // update("deleteaction", {tid:selectedTrigger.id, actionId: data.actionId})
                 }}
             />
                 </UiEntity>
@@ -287,7 +284,7 @@ export function TriggerActionRow(info:any){
 function selectEntityIndex(index:number){
     selectedEntityIndex = index
     if(index !== 0){
-        updateEntityActions(entities[index-1].aid)
+        updateEntityActionsRandom(entities[index-1].aid)
     }
 }
 
@@ -299,29 +296,29 @@ function selectActionIndex(index:number){
     }
 }
 
-function getTriggerActions(){
+function getSceneActions(){
     let arr:any[] = []
     let count = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(scene){
-        let triggerData = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(selectedItem.aid)
-        if(triggerData){
-            let trigger = triggerData.triggers.find((trigger:any) => trigger.id === selectedTrigger.id)
-            if(trigger){
-                trigger.actions.forEach((actionId:string)=>{
-                    scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((sceneAction:any, aid:string)=>{
-                        let action = sceneAction.actions.find((act:any) => act.id === actionId)
-                        if(action){
-                            let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
-                            if(itemInfo){
-                                arr.push(<TriggerActionRow data={{entity:itemInfo.value, name:action.name, actionId:actionId}} rowCount={count} />)
-                                count++
-                            }
-                        }
-                    })
-                })
-            }
-        }
+        scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((sceneAction:any, aid:string)=>{
+            let entityInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
+            arr.push(<ActionRow data={{entity:entityInfo.value, name:sceneAction.name, actionId:sceneAction.id}} rowCount={count} />)
+            count++
+        })
     }
     return arr
+}
+
+export function update(action:string, data:any){
+    console.log('update action data', action, data)
+    // sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+    //     {
+    //         component:COMPONENT_TYPES.TRIGGER_COMPONENT,
+    //         aid:selectedItem.aid,
+    //         sceneId:selectedItem.sceneId,
+    //         action:action,
+    //         data:triggerData,
+    //     }
+    // )
 }

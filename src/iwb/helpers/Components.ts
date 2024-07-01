@@ -57,3 +57,14 @@ export let AssetComponentList:any = {
     Visibility: VisibilityComponent,
     Collision: CollisionComponent
 }
+
+export const GunDataComponent = engine.defineComponent("iwb::GunDataComponent", {
+    active: Schemas.Boolean,
+    recoilPosition: Schemas.Vector3,
+    restPosition: Schemas.Vector3,
+    recoilRotation: Schemas.Quaternion,
+    restRotation: Schemas.Quaternion,
+    recoilFactor: Schemas.Number,
+    recoilSpeed:Schemas.Number
+})
+  

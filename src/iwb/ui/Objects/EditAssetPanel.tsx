@@ -33,6 +33,7 @@ import { EditState } from './Edit/EditState'
 import { EditUiText, hideUIText, showUIText } from './Edit/EditUiText'
 import { UiTexts } from '../../components/UIText'
 import { EditUIImage, hideUIImage, showUIImage } from './Edit/EditUIImage'
+import { EditGaming, updateGamingInfo } from './Edit/EditGaming'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -49,6 +50,9 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.GAME_COMPONENT:
+            updateGamingInfo()
+            break;
         case COMPONENT_TYPES.UI_TEXT_COMPONENT:
             if(scene){
                 showUIText()
@@ -388,6 +392,10 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.GAME_COMPONENT:
+            updateGamingInfo(true)///
+            break;
+
         case COMPONENT_TYPES.UI_TEXT_COMPONENT:
             hideUIText()
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -643,8 +651,6 @@ function EditObjectData(){
                     height: '100%',
                 }}
                 >
-
- 
             <Dropdown
                 options={getComponents(true)}
                 selectedIndex={0}
@@ -657,7 +663,6 @@ function EditObjectData(){
                 color={Color4.White()}
                 fontSize={sizeFont(20, 15)}
             />
-
                 </UiEntity>
 
                 <UiEntity
@@ -729,6 +734,7 @@ function EditObjectData(){
                 <EditState/>
                 <EditUiText/>
                 <EditUIImage/>
+                <EditGaming/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
@@ -853,6 +859,7 @@ function getBasicComponents(){
         COMPONENT_TYPES.STATE_COMPONENT,
         COMPONENT_TYPES.UI_TEXT_COMPONENT,
         COMPONENT_TYPES.UI_IMAGE_COMPONENT,
+        COMPONENT_TYPES.GAME_COMPONENT,
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){

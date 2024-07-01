@@ -28,6 +28,7 @@ import { AddSubtractNumberActionPanel } from './ActionPanels/AddSubtractNumberPa
 import { AddShowNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
 import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
+import { AddRandomActionPanel } from './ActionPanels/AddRandomAction'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -440,6 +441,9 @@ function getActionDataPanel(){
         case Actions.SHOW_NOTIFICATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddShowNotificationPanel/>
 
+        case Actions.RANDOM_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddRandomActionPanel/>
+
 
         //play sound - doesnt need any action metadata//
         //stop sound - doesnt need any action metadata
@@ -554,5 +558,8 @@ const ActionDefaults:any = {
         message:"",
         return:true,
         time:5
+    },
+    [Actions.RANDOM_ACTION]:{
+        actions:[]
     },
 }

@@ -7,7 +7,7 @@ import resources from '../../../helpers/resources';
 import { HoriztonalButtons } from '../../Reuse/HoriztonalButtons';
 import { IWBTable, setTableConfig, updateIWBTable } from '../../Reuse/IWBTable';
 import { displayMainView, mainView } from '../IWBView';
-import { testData } from '../../../tests/testData';
+// import { testData } from '../../../tests/testData';
 import { uiSizes } from '../../uiConfig';
 import { playSound } from '../../../components/Sounds';
 import { SOUND_TYPES } from '../../../helpers/types';

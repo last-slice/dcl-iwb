@@ -5,10 +5,13 @@ import { uiSizes } from '../uiConfig'
 import { setUIClicked } from '../ui'
 import { Color4 } from '@dcl/sdk/math'
 import { colyseusRoom, sendServerMessage } from '../../components/Colyseus'
-import { IWBScene, SERVER_MESSAGE_TYPES } from '../../helpers/types'
-import { deleteCreationEntities, getParcels, tempParcels, validateScene } from '../../modes/Create'
+import { IWBScene, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
+import { addBoundariesForParcel, cancelParcelEdits, deleteCreationEntities, deleteParcelEntities, getParcels, otherTempParcels, tempParcels, validateScene } from '../../modes/Create'
 import { localUserId, localPlayer } from '../../components/Player'
 import { formatDollarAmount } from '../../helpers/functions'
+import { addBlankParcels, removeEmptyParcels } from '../../components/Scene'
+import { scene } from './SceneMainDetailPanel'
+import { playSound } from '../../components/Sounds'
 
 let show = false
 export let editCurrentSceneParcels = false
@@ -19,7 +22,7 @@ let yMin = -21
 let yMax = 23
 
 let mapTiles:any[] = []
-// let selectedTiles:any[] = []
+let currentSceneParcels:any[] = []
 
 export let mainView = ""
 
@@ -27,8 +30,8 @@ export function displayExpandedMap(value:boolean, current?:boolean){
     show = value
 
     if(current){
-        console.log("editing current scene parcles")
         editCurrentSceneParcels = current
+        currentSceneParcels = [...localPlayer.activeScene.pcls]
     }else{
         editCurrentSceneParcels = false
     }
@@ -37,38 +40,9 @@ export function displayExpandedMap(value:boolean, current?:boolean){
         createMapTiles()
     }else{
         mapTiles.length = 0
+        currentSceneParcels.length = 0
     }
-    // resetViews()
-
-    // setTableConfig(currentWorldTableConfig)
-    // updateMainView("Worlds")
-    // updateWorldView("Current World")
-
-    // if(show && worldView === "Current World"){
-    //     updateIWBTable(testData.scenes)
-    // }
 }
-
-// function resetViews(){
-//     mainView = "Worlds"
-//     updateWorldView("Current World")
-//     buttons.forEach(($:any)=>{
-//         $.pressed = false
-//     })
-// }
-
-// export function updateMainView(view:string){
-//     let button = buttons.find($=> $.label === mainView)
-//     if(button){
-//         button.pressed = false
-//     }
-
-//     mainView = view
-//     button = buttons.find($=> $.label === view)
-//     if(button){
-//         button.pressed = true
-//     }
-// }
 
 function createMapTiles(){
     mapTiles.length = 0
@@ -91,17 +65,25 @@ function createMapTiles(){
 
     mapParcels.forEach(subArray => {
         subArray.forEach((obj:any) => {
-            if (sceneParcels.includes(obj.coords)) {
-                obj.scene = true;
-                // selectedTiles.push(obj)
-            }else{
-              obj.scene = false
+            if(editCurrentSceneParcels){
+                if(currentSceneParcels.includes(obj.coords)){
+                    obj.selected = true
+                }else{
+                    obj.selected = false
+                }
             }
-            obj.selected = false
+            else{
+                if (sceneParcels.includes(obj.coords)) {
+                    obj.scene = true;
+                }else{
+                  obj.scene = false
+                }
+                obj.selected = false
+            }
+            
         });
       });
     mapTiles = mapParcels
-    console.log(mapTiles)
 }
 
 export function createExpandedMapView() {
@@ -201,7 +183,7 @@ function MainLeftView(){
             width: '100%',
             height: '10%',//
         }}
-    uiText={{value:"Create New Scene", fontSize:sizeFont(30, 20), color:Color4.White(), textAlign:'middle-center'}}
+    uiText={{value:"" + editCurrentSceneParcels ? "Edit Parcels" : "Create New Scene", fontSize:sizeFont(30, 20), color:Color4.White(), textAlign:'middle-center'}}
     />
 
     <UiEntity
@@ -256,12 +238,10 @@ function MainLeftView(){
         }}
         onMouseDown={() => {
             setUIClicked(true)
+            playSound(SOUND_TYPES.SELECT_3)
+            validateScene()
             displayExpandedMap(false)
-            if(editCurrentSceneParcels){
-                displayExpandedMap(false)
-            }else{
-                validateScene()//
-            }
+            deleteCreationEntities("")
         }}
         uiText={{value: "Save Scene", color:Color4.White(), fontSize:sizeFont(25,15)}}
         onMouseUp={()=>{
@@ -288,8 +268,8 @@ function MainLeftView(){
         }}
         onMouseDown={() => {
             setUIClicked(true)
-            displayExpandedMap(false)
-            deleteCreationEntities(localUserId)
+            playSound(SOUND_TYPES.SELECT_3)
+            cancelParcelEdits()
         }}
         onMouseUp={()=>{
             setUIClicked(false)
@@ -375,17 +355,36 @@ function generateMapRow(data:any){
                     height: '100%',
                     margin:{left: '0.1%', right:'0.1%'}
                 }}
-                uiBackground={{color: mapColumn.scene ? Color4.create(.4,.5,.6,1) : tempParcels.has(mapColumn.coords) ? Color4.Green() : Color4.create(0,0,0,.2)}}
+                uiBackground={{color: getBackground(mapColumn)}}
                 // uiBackground={{color: parcel.cur ? Color4.create(0,1,0,.2) : parcel.scene ? Color4.create(.4,.5,.6,1) :  Color4.create(0,0,0,.2)}}
                 // uiBackground={{color: Color4.create(0,0,0,.2)}}//
                 onMouseDown={()=>{
                     setUIClicked(true)
-                    console.log(mapColumn)
+                    playSound(SOUND_TYPES.SELECT_3)
+                    if(editCurrentSceneParcels){
+                        //check if click is in current scene first
+                        if(scene?.pcls.includes(mapColumn.coords)){
+                            console.log('need to remove current scene parcel')
+                            deleteParcelEntities(mapColumn.coords)
+                            addBlankParcels([mapColumn.coords])
+                        }else{
+                            if(colyseusRoom.state.temporaryParcels.includes(mapColumn.coords)){
+                                console.log('parcel is already selected to be addred, remove from selection')
+                                deleteParcelEntities(mapColumn.coords)
+                                addBlankParcels([mapColumn.coords])
+                            }else{
+                                console.log('parcel is added to temp parcel list')
+                                removeEmptyParcels([mapColumn.coords])
+                                addBoundariesForParcel(mapColumn.coords, true, false)
+                            }
+                        }
+                    }
+
                     sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
                         player: localUserId,
                         parcel: mapColumn.coords,
                         scene: 0,
-                        current:0
+                        current: editCurrentSceneParcels ? scene?.id : 0
                     })
                 }}
                 onMouseUp={()=>setUIClicked(false)}
@@ -394,4 +393,26 @@ function generateMapRow(data:any){
         )
     })
     return arr
+}
+
+function getBackground(mapColumn:any){
+    // mapColumn.scene ?  : editCurrentSceneParcels ? mapColumn.selected ? : tempParcels.has(mapColumn.coords) ? Color4.Red() :  tempParcels.has(mapColumn.coords) ? Color4.Green() : Color4.create(0,0,0,.2)
+    if(mapColumn.scene){
+        return Color4.create(.4,.5,.6,1)
+    }else if(editCurrentSceneParcels){
+        if(tempParcels.has(mapColumn.coords)){
+            return Color4.Green()
+        }
+
+        if(otherTempParcels.has(mapColumn.coords)){
+            return Color4.Red()
+        }
+
+        return Color4.create(0,0,0,.2)
+    }
+    else if(tempParcels.has(mapColumn.coords)){
+        return Color4.Green()
+    }else{
+        return Color4.create(0,0,0,.2)
+    }
 }
