@@ -29,7 +29,7 @@ export async function colyseusConnect(data:any, token:string, world?:any) {
         })
 
         engine.addSystem(createTimerSystem())
-        createColyseusListeners(room)//
+        createColyseusListeners(room)
         
         
     }).catch((err) => {

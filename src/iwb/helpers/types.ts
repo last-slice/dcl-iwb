@@ -75,6 +75,7 @@ export enum SERVER_MESSAGE_TYPES {
     WORLD_ADD_BP = 'world_add_build_permissions',
     WORLD_DELETE_BP = 'world_delete_build_permissions',
     GET_MARKETPLACE = 'get_marketplace',
+    START_GAME = 'start_game',
     
     CUSTOM = "custom",
 
@@ -438,7 +439,9 @@ export enum Triggers {
     // ON_HEAL = 'on_heal',//
     ON_STATE_CHANGE = "on_state_change",
     ON_COUNTER_CHANGE = "on_counter_change",
-    ON_RAYCAST_HIT = 'on_raycast_hit'
+    ON_RAYCAST_HIT = 'on_raycast_hit',
+    ON_GAME_START = 'on_game_start',
+    ON_LOAD_LEVEL = 'on_load_level'
 }
 
 export enum Pointers {

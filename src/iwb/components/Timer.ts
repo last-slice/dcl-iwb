@@ -98,8 +98,8 @@ export function stopTimeout(entity: Entity, action: string) {
   )
 }
 
-export function stopAllTimeouts(entity: Entity) {
-  queueDelay.delete(entity)
+export function stopAllTimeouts() {
+  queueDelay.clear()
 }
 
 export function startInterval(
@@ -121,6 +121,7 @@ export function stopInterval(entity: Entity, action: string) {
   )
 }
 
-export function stopAllIntervals(entity: Entity) {
-  queueInterval.delete(entity)
+export function stopAllIntervals() {
+  queueInterval.clear()
+  console.log('stopped all intervals', queueInterval.size)
 }

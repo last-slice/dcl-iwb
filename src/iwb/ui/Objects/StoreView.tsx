@@ -13,6 +13,7 @@ import { playSound } from '@dcl-sdk/utils'
 
 export let showStore = false
 export let storeView = "main"
+export let selectedItem:any
 
 let buttons:any[] = [
     // {label:"Worlds", pressed:false, func:()=>{
@@ -155,7 +156,6 @@ export function createStoreview() {
                 }}
                 onMouseDown={()=>{
                     setUIClicked(true)
-                    displayStoreView(false)
                 }}
                 onMouseUp={()=>{
                     setUIClicked(false)
@@ -199,10 +199,10 @@ function MainLeftView(){
         width: '20%',
         height: '100%',
     }}
-    // uiBackground={{color:Color4.Red()}}
+    uiBackground={{color:Color4.Red()}}
     >
 
-    {generateButtons({slug:"main-view", buttons:buttons})}
+    {generateButtons({slug:"store-left-view", buttons:buttons})}
 
     </UiEntity>
    )
@@ -224,6 +224,7 @@ function MainRightView(){
         >
 
             <DataView/>
+            <ItemView/>
             <LoadingView/>
         </UiEntity>
   
@@ -323,7 +324,6 @@ function generateMarketPlaceItems(index:number){
     for(let i = 0; i < 3; i++){
         if(visibleItems[(index * 3) + i]){
             arr.push(<MarketplaceItem item={visibleItems[i]}/>)
-            // console.log(visibleItems[i])
         }
     }
     return arr
@@ -415,9 +415,126 @@ function MarketplaceItem(data:any){
             uvs:getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
         uiText={{value:"Info", fontSize:sizeFont(25,15)}}
+        onMouseDown={()=>{
+            setUIClicked(true)
+            selectedItem = item
+            updateStoreView("item")
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
         />
         </UiEntity>
 
         </UiEntity>
+    )
+}
+
+function ItemView(){
+    return(
+        <UiEntity
+        key={resources.slug + "store::item::view"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            display: showStore && storeView === "item" && selectedItem ? "flex" : "none"
+        }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignContent:'flex-start',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '80%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+    
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(30).width,
+            height: calculateSquareImageDimensions(30).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: '' + (selectedItem && selectedItem.im)
+            },
+        }}
+        />
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '80%',
+            height: '10%',
+            margin:{left:"5%"}
+        }}
+        uiText={{value:"" + (selectedItem && selectedItem.n), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+        />
+
+                </UiEntity>
+
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '20%',
+        }}
+        // uiBackground={{color:Color4.Blue()}}
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:"2%"},
+        }}
+        uiText={{value:"Category: " + (selectedItem && selectedItem.cat), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+        uiText={{value:"Artist: " + (selectedItem && selectedItem.o), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+        />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+        uiText={{value:"" + (selectedItem && selectedItem.d), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+        />
+
+
+            </UiEntity>
+
+
+            </UiEntity>
     )
 }

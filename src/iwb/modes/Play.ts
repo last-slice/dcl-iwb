@@ -20,6 +20,7 @@ import { disableUiImagePlayMode, setUiImagePlayMode } from "../components/UIImag
 import { getRandomIntInclusive } from "../helpers/functions"
 import { displayMainView } from "../ui/Objects/IWBView"
 import { movePlayerTo } from "~system/RestrictedActions"
+import { stopAllIntervals, stopAllTimeouts } from "../components/Timer"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -30,8 +31,14 @@ export function updatePlayModeReset(value: boolean) {
 
 export async function disableSceneEntities(sceneId:any) {
     if (!disabledEntities) {
+        console.log('disabling entities')
+        stopAllIntervals()
+        stopAllTimeouts()
+
         let scene = colyseusRoom.state.scenes.get(sceneId)
         if(scene){
+            stopAllIntervals()
+
             scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
                 if(index > 2){
                     let entityInfo = getEntity(scene, item.aid)
@@ -80,8 +87,7 @@ export async function disableSceneEntities(sceneId:any) {
 export function enableSceneEntities(sceneId: string) {
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(scene){
-        disabledEntities = false
-        updatePlayModeReset(false)
+        updatePlayModeReset(true)
 
         // findSceneEntryTrigger(scene)//
 
@@ -144,6 +150,7 @@ export function enableSceneEntities(sceneId: string) {
     //     }
     //     disabledEntities = false
     // }
+    disabledEntities = false
 }
 
 export function disableEntityForPlayMode(scene:any, entityInfo:any){

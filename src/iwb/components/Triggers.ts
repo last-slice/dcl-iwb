@@ -50,7 +50,6 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
           Color3.create(236/255,209/255,92/255)
         )
       }
-
     }
   }
 }
@@ -78,7 +77,7 @@ export function triggerListener(scene:any){
     
     assetTrigger.triggers.onAdd((trigger:any, index:any)=>{
       trigger.listen("tick", (c:any, p:any)=>{
-          console.log('trigger is', trigger)
+          console.log('trigger is', trigger, info.entity)//
           updateTriggerEvents(scene, info, trigger)
       })
     })
@@ -89,6 +88,7 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   const triggerEvents = getTriggerEvents(entityInfo.entity)
 
   if(triggerInfo.type === Triggers.ON_INPUT_ACTION && triggerEvents.isListening(triggerInfo.type)){
+    console.log('alreadly listening for input trigger on entity', entityInfo.entity)
     return
   }
 
@@ -97,6 +97,7 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
       console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent)
       if(!trigger){
+        console.log('cant find trigger')//
         return
       }
         if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
@@ -119,6 +120,7 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
 
 function findTrigger(scene:any, triggerEvent:any){
   let aid = getAssetIdByEntity(scene, triggerEvent.entity)
+  // console.log('trigger aid is', aid)
   if(!aid){
     return false
   }
@@ -126,8 +128,8 @@ function findTrigger(scene:any, triggerEvent:any){
     if(!triggers){
       return false
     }
-    console.log('triggers', triggers)
-    console.log('trigger found', triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer))
+    // console.log('triggers', triggers)
+    // console.log('trigger found', triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer))
     return triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer)
 }
 

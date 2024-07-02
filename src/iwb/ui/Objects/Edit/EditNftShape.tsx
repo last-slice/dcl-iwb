@@ -282,5 +282,3 @@ function updateNFT(type:string, value:any){
         }
     )
 }
-
-//

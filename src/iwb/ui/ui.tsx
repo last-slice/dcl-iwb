@@ -27,6 +27,7 @@ import { createCustomUITextComponent } from './Objects/createCustomUITextCompone
 import { createCustomUIImageComponent } from './Objects/UIImage'
 import { createAddSpawnPointPanel } from './Objects/AddSpawnPointPanel'
 import { createGrabContextMenu } from './Objects/GrabContextMenu'
+import { createGameStartUI } from './Objects/GameStartUI'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -58,6 +59,7 @@ const uiComponent:any = () => [
   createCustomUIImageComponent(),
   createAddSpawnPointPanel(),
   createGrabContextMenu(),
+  createGameStartUI(),
   // createAdvancedEditPanel(),
 ]
 

@@ -10,11 +10,13 @@ import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { getEntity } from "./IWB"
 import { getUITransform } from "../ui/helpers"
-import { startTimeout } from "./Timer"
+import { startInterval, startTimeout, stopInterval } from "./Timer"
 import { addShowText, removeShowText } from "../ui/Objects/ShowText"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
+import { localPlayer } from "./Player"
+import { displayGameStartUI } from "../ui/Objects/GameStartUI"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -207,6 +209,14 @@ function updateActions(scene:any, info:any, action:any){
             case Actions.ATTEMPT_GAME_START:
                 handleAttemptGame(scene, info, action)
                 break;
+
+            case Actions.START_LOOP:
+                handleStartLoop(scene, info, action)
+                break;
+
+            case Actions.STOP_LOOP:
+                handleStopLoop(scene, info, action)
+                break;
         }
     })
 }
@@ -251,6 +261,7 @@ export function handleShowText(scene:any, entityInfo:any, action:any, forceDelay
 
     let uiText = UiTexts.get(entityInfo.aid)
     if(uiText){
+        console.log('showing ui text')
         uiDataUpdate(scene, entityInfo)
         uiText.show()
     }
@@ -290,7 +301,7 @@ function handleSetState(scene:any, info:any, action:any){
         setState(state, action.state)
         uiDataUpdate(scene, info)
         const triggerEvents = getTriggerEvents(info.entity)
-        triggerEvents.emit(Triggers.ON_STATE_CHANGE)
+        triggerEvents.emit(Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
     }
 }
 
@@ -546,5 +557,26 @@ function handleShowNotification(scene:any, info:any, action:any){
 }
 
 function handleAttemptGame(scene:any, info:any, action:any){
-    console.log("handling attempt game start", info, action)
+    console.log("handling attempt game start", info.aid, action)
+    if(!localPlayer.playingGame){
+        let game:any = {...scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)}
+        game.entity = info.entity
+        displayGameStartUI(true, game)//
+    }
+}
+
+function handleStartLoop(scene:any, info:any, action:any){
+    const actionEvents = getActionEvents(info.entity)
+
+    console.log("loop actions are", action)
+    action.actions && action.actions.forEach((actionId:any)=>{
+        startInterval(info.entity, actionId, action.timer, () => {
+            console.log("interval action", actionId)
+            actionEvents.emit(actionId, getActionById(scene, info.aid, actionId))
+          })
+    })
+}
+
+function handleStopLoop(scene:any, info:any, action:any){
+    stopInterval(info.entity, action.id)
 }

@@ -77,7 +77,7 @@ export function getEntity(scene:any, aid:string){
 export function createEntity(item:any){
   let ent = engine.addEntity()
   item.entity = ent
-  // item.components = []//
+  // item.components = []
 
   console.log('creating entity', ent)
   RealmEntityComponent.create(ent)
@@ -85,7 +85,6 @@ export function createEntity(item:any){
   if (playerMode === SCENE_MODES.BUILD_MODE) {
       addBuildModePointers(ent)
   }
-  console.log('finished creating entity')
 }
 
 export async function iwbInfoListener(scene:any){

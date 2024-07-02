@@ -18,6 +18,7 @@ import { clearShowTexts } from "../ui/Objects/ShowText"
 import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { PlayTriggerSystem, disableTriggers } from "./Triggers"
+import { stopAllIntervals } from "./Timer"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -159,6 +160,7 @@ export function setPlayerMode(mode:SCENE_MODES){
     updatePlayModeReset(true)
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
+        stopAllIntervals()
         clearShowTexts()
         removePlayModSystem()
         addInputSystem()

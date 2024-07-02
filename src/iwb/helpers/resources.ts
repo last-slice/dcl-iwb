@@ -29,7 +29,7 @@ export let colors:Color4[] = [
 ]
 
 export default {
-    DEBUG: false,
+    DEBUG: true,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",

@@ -29,6 +29,7 @@ import { AddShowNotificationPanel } from './ActionPanels/AddShowNotificationPane
 import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
 import { AddRandomActionPanel } from './ActionPanels/AddRandomAction'
+import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -320,13 +321,13 @@ export function ActionRow(info:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%',
+                width: '80%',
                 height: '100%',
                 margin:{left:'2%'}
             }}
             uiText={{value:"" + data.name, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
-
+{/* 
              <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -336,7 +337,7 @@ export function ActionRow(info:any){
                 height: '100%',
             }}
             uiText={{value:"" + (data.type && data.type.replace(/_/g, ' ').replace(/\b\w/g, (char:any) => char.toUpperCase())), fontSize:sizeFont(20,15), color:Color4.White()}}
-            />
+            /> */}
 
             {/* action edit buttons column */}
             <UiEntity
@@ -443,6 +444,10 @@ function getActionDataPanel(){
 
         case Actions.RANDOM_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddRandomActionPanel/>
+
+        case Actions.START_LOOP.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateAssetActionsLoopPanel()
+            return <AddLoopPanel/>
 
 
         //play sound - doesnt need any action metadata//
@@ -561,5 +566,9 @@ const ActionDefaults:any = {
     },
     [Actions.RANDOM_ACTION]:{
         actions:[]
+    },
+    [Actions.START_LOOP]:{
+        actions:[],
+        timer:1
     },
 }
