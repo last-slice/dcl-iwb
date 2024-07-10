@@ -29,7 +29,7 @@ export let colors:Color4[] = [
 ]
 
 export default {
-    DEBUG: false,
+    DEBUG: true,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
@@ -54,7 +54,7 @@ export default {
     },
     colors:{
         transparent: Color4.create(0,0,0,0),
-        opaqueGreen: Color4.create(0,1,0,0.4)
+        opaqueGreen: Color4.create(0,1,0,0.4)//
     },
 
     textures:{

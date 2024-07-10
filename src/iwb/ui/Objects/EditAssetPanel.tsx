@@ -33,7 +33,7 @@ import { EditState } from './Edit/EditState'
 import { EditUiText, hideUIText, showUIText } from './Edit/EditUiText'
 import { UiTexts } from '../../components/UIText'
 import { EditUIImage, hideUIImage, showUIImage } from './Edit/EditUIImage'
-import { EditGaming, updateGamingInfo } from './Edit/EditGaming'
+import { EditGaming, gameView, updateEditGameView, updateGamingInfo } from './Edit/EditGaming'
 import { EditLevel, levelView, resetLevelSpawnEntity, updateEditLevelView, updateLevelInfo } from './Edit/EditLevel'
 
 export let visibleComponent: string = ""
@@ -85,7 +85,7 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.POINTER_COMPONENT:
             updatePointerView("info")
-            updatePointerView("main")
+            updatePointerView("main")//
             break;
 
         case COMPONENT_TYPES.PARENTING_COMPONENT:
@@ -153,10 +153,10 @@ export function createEditAssetPanel() {
                 onMouseDown={()=>{
                     setUIClicked(true)
                 }}
-                onMouseUp={()=>[
+                onMouseUp={()=>{
                     setUIClicked(false)
-                ]}
-            >
+                }}
+                >
                 
                 <EditObjectDetails/>
                 <EditObjectData/> 
@@ -407,8 +407,12 @@ function getBackButtonLogic(){
             break;
 
         case COMPONENT_TYPES.GAME_COMPONENT:
-            updateGamingInfo(true)
-            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            if(gameView === "main"){
+                updateGamingInfo(true)
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }else if(gameView === "levels"){
+                updateEditGameView("main")
+            }
             break;
 
         case COMPONENT_TYPES.UI_TEXT_COMPONENT:

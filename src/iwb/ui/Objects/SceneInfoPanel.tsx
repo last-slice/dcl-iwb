@@ -1,7 +1,7 @@
 import { Billboard, BillboardMode, Entity, GltfContainer, Material, MeshRenderer, Transform, VisibilityComponent, engine } from '@dcl/sdk/ecs'
 import { Vector3, Color4 } from '@dcl/sdk/math'
 import players from '@dcl/sdk/players'
-import ReactEcs, {Input, UiEntity} from '@dcl/sdk/react-ecs'
+import ReactEcs, {Dropdown, Input, UiEntity} from '@dcl/sdk/react-ecs'
 import { items } from '../../components/Catalog'
 import { colyseusRoom, sendServerMessage } from '../../components/Colyseus'
 import { localPlayer, localUserId, settings } from '../../components/Player'
@@ -22,11 +22,12 @@ export let visibleIndex = 1
 export let visibleRows = 7
 export let visibleItems: any[] = []
 export let selectedRow = -1
-// export let selectedAssetId:any
 export let localScene = false
 export let sceneAssetSearchFilter:string = ""
 export let showSceneInfoPanel = false
 export let sceneInfoEntitySelector: Entity
+
+let assetTypeIndex:number = 0
 
 export function displaySceneAssetInfoPanel(value: boolean) {
     showSceneInfoPanel = value
@@ -73,19 +74,48 @@ export function updateVisibleIndex(amt: number) {
 
 export function updateRows() {
     console.log('updating scene asset rows')
-    if(localPlayer.activeScene){
+    let scene = localPlayer.activeScene
+    if(scene){
         let assets:any[] = []
-        localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((parentingInfo:any, i:number)=>{
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((parentingInfo:any, i:number)=>{
             if(i > 2){
-                let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(parentingInfo.aid)
+                let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(parentingInfo.aid)
                 if(itemInfo){
-                    assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:localPlayer.activeScene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
+                    switch(assetTypeIndex){
+                        case 0:
+                            assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
+                            break;
+
+                        case 1:
+                            let gameAsset = scene[COMPONENT_TYPES.GAME_COMPONENT].get(parentingInfo.aid)
+                            let levelAsset = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(parentingInfo.aid)
+                            if(gameAsset || levelAsset){
+                                assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
+                            }
+                            break;
+
+                        case 2:
+                            let triggerAsset = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(parentingInfo.aid)
+                            if(triggerAsset){
+                                assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
+                            }
+                            break;
+
+                        case 3:
+                            let actionAsset = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(parentingInfo.aid)
+                            if(actionAsset){
+                                assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
+                            }
+                            break;
+                    }
+                    
                 }
             }
         })
 
+        assets.sort((a, b) => a.name.localeCompare(b.name))
+
         if(sceneAssetSearchFilter !== ""){
-            assets.sort((a, b) => a.name.localeCompare(b.name))
             assets = assets.filter(item => item.name.toLowerCase().includes(sceneAssetSearchFilter.toLowerCase()))
         }
 
@@ -206,9 +236,21 @@ export function createSceneInfoPanel() {
                     height: '10%',
                     margin: {top: "5%"}
                 }}
+                // uiBackground={{color:Color4.Green()}}
             >
 
                 <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '55%',
+                        height: '100%',
+                    }}
+                    // uiBackground={{color:Color4.Blue()}}
+                    >
+                        <UiEntity
                     uiTransform={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -224,133 +266,200 @@ export function createSceneInfoPanel() {
                         color: Color4.White()
                     }}
                 />
+                    </UiEntity>
+
+                    <UiEntity
+                    uiTransform={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '45%',
+                        height: '100%',
+                    }}
+                    // uiBackground={{color:Color4.Teal()}}
+                    >            
+                    
+                    {/* scene info buttons */}
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                display: localUserId && localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? 'flex' : 'none',
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas1.png'
+                                },
+                                uvs: getImageAtlasMapping(uiSizes.infoButtonTrans)
+                            }}
+                            onMouseDown={() => {
+                                setUIClicked(true)
+                                displaySceneAssetInfoPanel(false)
+                                displaySceneDetailsPanel(true, localPlayer.activeScene)
+        
+                            }}
+                            onMouseUp={()=>{
+                                setUIClicked(false)
+                            }}
+                        />
+        
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: {left: '2%'},
+                                display: localUserId && localPlayer && localPlayer.homeWorld ? 'flex' : 'none',
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas1.png'
+                                },
+                                uvs: getImageAtlasMapping(uiSizes.saveButton)
+                            }}
+                            onMouseDown={() => {
+                                setUIClicked(true)
+                                displaySceneAssetInfoPanel(false)
+                                showNotification({
+                                    type: NOTIFICATION_TYPES.MESSAGE,
+                                    message: "Your download is pending. Please wait for a popup with the download link.",
+                                    animate: {enabled: true, return: true, time: 10}
+                                })
+                                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, {sceneId: localPlayer.activeScene!.id})
+                            }}
+                            onMouseUp={()=>{
+                                setUIClicked(false)
+                            }}
+                        />
+        
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                width: calculateSquareImageDimensions(3.5).width,
+                                height: calculateSquareImageDimensions(3.5).height,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: {left: '2%'},
+                                display: localUserId && localPlayer && localPlayer.canBuild ? 'flex' : 'none',
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas1.png'
+                                },
+                                uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
+                            }}
+                            onMouseDown={() => {
+                                setUIClicked(true)
+                                displaySceneAssetInfoPanel(false)
+                                displaySkinnyVerticalPanel(true, getView("Clear Scene"))
+                            }}
+                            onMouseUp={()=>{
+                                setUIClicked(false)
+                            }}
+                        />
+        
+                        {/* do not delete*/}
+                        {/*<UiEntity*/}
+                        {/*    uiTransform={{*/}
+                        {/*        flexDirection: 'column',*/}
+                        {/*        width: calculateSquareImageDimensions(3.5).width,*/}
+                        {/*        height: calculateSquareImageDimensions(3.5).height,*/}
+                        {/*        alignItems: 'center',*/}
+                        {/*        justifyContent: 'center',*/}
+                        {/*        margin: {left: '2%'},*/}
+                        {/*        display: localUserId && players.get(localUserId) && players.get(localUserId)?.canBuild ? 'flex' : 'none',*/}
+                        {/*    }}*/}
+                        {/*    uiBackground={{*/}
+                        {/*        textureMode: 'stretch',*/}
+                        {/*        texture: {*/}
+                        {/*            src: 'assets/atlas1.png'*/}
+                        {/*        },*/}
+                        {/*        uvs: getImageAtlasMapping(uiSizes.inspectorButtonTrans)*/}
+                        {/*    }}*/}
+                        {/*    onMouseDown={() => {*/}
+                        {/*        showBBForAllItems()*/}
+                        {/*    }}*/}
+                        {/*/>*/}
+
+                        </UiEntity>
+
+                
             </UiEntity>
 
-
-            {/* scene info buttons */}
+            {/* search filter row */}
             <UiEntity
                 uiTransform={{
+                    display: 'flex',
                     flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     width: '80%',
-                    height: '5%',
-                    alignItems: 'flex-start',
-                    alignContent: 'flex-start',
-                    justifyContent: 'flex-start',
+                    height: '8%',
                 }}
+                // uiBackground={{color:Color4.Green()}}
             >
-
-
-                <UiEntity
+                 <UiEntity
                     uiTransform={{
-                        flexDirection: 'column',
-                        width: calculateSquareImageDimensions(3.5).width,
-                        height: calculateSquareImageDimensions(3.5).height,
+                        display: 'flex',
+                        flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        display: localUserId && localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? 'flex' : 'none',
+                        width: '50%',
+                        height: '100%',
+                        margin:{right:'1%'}
                     }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas1.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.infoButtonTrans)
-                    }}
-                    onMouseDown={() => {
-                        setUIClicked(true)
-                        displaySceneAssetInfoPanel(false)
-                        displaySceneDetailsPanel(true, localPlayer.activeScene)
+                    > 
 
-                    }}
-                    onMouseUp={()=>{
-                        setUIClicked(false)
-                    }}
-                />
+                    <Dropdown
+                        options={["All Assets", "Gaming", "Triggers", "Actions"]}
+                        selectedIndex={assetTypeIndex}
+                        onChange={selectAssetFilter}
+                        uiTransform={{
+                            width: '100%',
+                            height: '100%',
+                        }}
+                        color={Color4.White()}
+                        fontSize={sizeFont(20, 15)}
+                    />
+                    
+                    </UiEntity>
 
-                <UiEntity
+                    <UiEntity
                     uiTransform={{
-                        flexDirection: 'column',
-                        width: calculateSquareImageDimensions(3.5).width,
-                        height: calculateSquareImageDimensions(3.5).height,
+                        display: 'flex',
+                        flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        margin: {left: '2%'},
-                        display: localUserId && localPlayer && localPlayer.homeWorld ? 'flex' : 'none',
+                        width: '50%',
+                        height: '100%',
+                        margin:{left:'1%'}
                     }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas1.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.saveButton)
-                    }}
-                    onMouseDown={() => {
-                        setUIClicked(true)
-                        displaySceneAssetInfoPanel(false)
-                        showNotification({
-                            type: NOTIFICATION_TYPES.MESSAGE,
-                            message: "Your download is pending. Please wait for a popup with the download link.",
-                            animate: {enabled: true, return: true, time: 10}
-                        })
-                        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, {sceneId: localPlayer.activeScene!.id})
-                    }}
-                    onMouseUp={()=>{
-                        setUIClicked(false)
-                    }}
-                />
+                    > 
 
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        width: calculateSquareImageDimensions(3.5).width,
-                        height: calculateSquareImageDimensions(3.5).height,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: {left: '2%'},
-                        display: localUserId && localPlayer && localPlayer.canBuild ? 'flex' : 'none',
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas1.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
-                    }}
-                    onMouseDown={() => {
-                        setUIClicked(true)
-                        displaySceneAssetInfoPanel(false)
-                        displaySkinnyVerticalPanel(true, getView("Clear Scene"))
-                    }}
-                    onMouseUp={()=>{
-                        setUIClicked(false)
-                    }}
-                />
-
-                {/* do not delete*/}
-                {/*<UiEntity*/}
-                {/*    uiTransform={{*/}
-                {/*        flexDirection: 'column',*/}
-                {/*        width: calculateSquareImageDimensions(3.5).width,*/}
-                {/*        height: calculateSquareImageDimensions(3.5).height,*/}
-                {/*        alignItems: 'center',*/}
-                {/*        justifyContent: 'center',*/}
-                {/*        margin: {left: '2%'},*/}
-                {/*        display: localUserId && players.get(localUserId) && players.get(localUserId)?.canBuild ? 'flex' : 'none',*/}
-                {/*    }}*/}
-                {/*    uiBackground={{*/}
-                {/*        textureMode: 'stretch',*/}
-                {/*        texture: {*/}
-                {/*            src: 'assets/atlas1.png'*/}
-                {/*        },*/}
-                {/*        uvs: getImageAtlasMapping(uiSizes.inspectorButtonTrans)*/}
-                {/*    }}*/}
-                {/*    onMouseDown={() => {*/}
-                {/*        showBBForAllItems()*/}
-                {/*    }}*/}
-                {/*/>*/}
-
-
-            </UiEntity>
+                    <Input
+                        onChange={(value) => {
+                            updateAssetSearchFilter(value.trim())
+                        }}
+                        fontSize={sizeFont(20, 15)}
+                        placeholder={'Search Assets'}
+                        placeholderColor={Color4.White()}
+                        uiTransform={{
+                            width: '100%',
+                            height: '100%',
+                        }}
+                        color={Color4.White()}
+                    ></Input>
+                    </UiEntity>
+                </UiEntity>
 
             {/* data container */}
             <UiEntity
@@ -559,34 +668,6 @@ const SceneAssetList = () => {
                 height: '90%',
             }}
         >
-
-                {/* searh row */}
-                <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    alignContent: 'flex-start',
-                    alignItems:'flex-start',
-                    width: '100%',
-                    height: '15%',
-                    margin:{bottom:'2%'}
-                }}
-                >
-                <Input
-                        onChange={(value) => {
-                            updateAssetSearchFilter(value.trim())
-                        }}
-                        fontSize={sizeFont(20, 15)}
-                        placeholder={'Search Assets'}
-                        placeholderColor={Color4.White()}
-                        uiTransform={{
-                            width: '50%',
-                            height: '100%',
-                        }}
-                        color={Color4.White()}
-                    ></Input>
-                </UiEntity>
 
     {/* labels row */}
     <UiEntity
@@ -1144,4 +1225,9 @@ function getLocked(aid:string){
         return getImageAtlasMapping(uiSizes.unlockedIcon)
     }
     return getImageAtlasMapping(uiSizes.unlockedIcon)
+}
+
+function selectAssetFilter(index:number){
+    assetTypeIndex = index
+    updateRows()
 }
