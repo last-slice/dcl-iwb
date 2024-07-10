@@ -64,6 +64,7 @@ export function PlayModeInputSystem(dt: number) {
     if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)) {
         setButtonState(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
         const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
+        console.log('E button result', result, uiInput)
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
                 handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_PRIMARY,  PointerEventType.PET_DOWN)
@@ -85,6 +86,7 @@ export function PlayModeInputSystem(dt: number) {
     if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)) {
         setButtonState(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
         const result = inputSystem.getInputCommand(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN)
+        console.log('F button result', result, uiInput)
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
                 handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_SECONDARY,  PointerEventType.PET_DOWN)

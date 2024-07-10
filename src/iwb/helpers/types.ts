@@ -76,8 +76,9 @@ export enum SERVER_MESSAGE_TYPES {
     WORLD_DELETE_BP = 'world_delete_build_permissions',
     GET_MARKETPLACE = 'get_marketplace',
     START_GAME = 'start_game',
-    
-    CUSTOM = "custom",
+    END_GAME = 'end_game',
+
+    CUSTOM = "custom",//
 
 
     //REMOTE SERVER ACTIONS
@@ -301,7 +302,6 @@ export enum COMPONENT_TYPES {
     MESH_COLLIDER_COMPONENT = 'Mesh_Collider',
     TEXTURE_COMPONENT = 'Texture',
     BILLBOARD_COMPONENT = 'Billboard',
-    LEVEL_COMPONENT = 'Levels',
 
     //advanced components
     PARENTING_COMPONENT = 'Parenting',
@@ -318,6 +318,7 @@ export enum COMPONENT_TYPES {
     GAME_COMPONENT = 'Game',
     // LEVEL_COMPONENT = 'Levels',
     // BILLBOARD_COMPONENT = 'Billboard'
+    LEVEL_COMPONENT = 'Levels',
 }
 
 export enum BLOCKCHAINS {
@@ -397,8 +398,8 @@ export enum Actions {
     ADD_NUMBER = 'add_number',
     SET_NUMBER = 'set_number',
     SUBTRACT_NUMBER = 'subtract_number',
-    // CHANGE_LEVEL = 'change_level',
-    // END_LEVEL = 'end_level',
+    LOAD_LEVEL = 'load_level',
+    END_LEVEL = 'end_level',
     START_TIMER = 'start_timer',
     STOP_TIMER = 'stop_timer',
     LOCK_PLAYER = 'lock_player',
@@ -417,6 +418,7 @@ export enum Actions {
     SHOW_CUSTOM_IMAGE = 'show_ui_image',
     HIDE_CUSTOM_IMAGE = 'hide_ui_image',
     ATTEMPT_GAME_START = 'attempt_game_start',
+    END_GAME = 'end_game'
 }
 
 InputAction.IA_ACTION_3
@@ -436,12 +438,12 @@ export enum Triggers {
     // ON_DAMAGE = 'on_damage',
     ON_GLOBAL_CLICK = 'on_global_click',
     ON_TICK = 'on_tick',
-    // ON_HEAL = 'on_heal',//
+    // ON_HEAL = 'on_heal',
     ON_STATE_CHANGE = "on_state_change",
     ON_COUNTER_CHANGE = "on_counter_change",
     ON_RAYCAST_HIT = 'on_raycast_hit',
     ON_GAME_START = 'on_game_start',
-    ON_LOAD_LEVEL = 'on_load_level'
+    ON_LEVEL_LOADED = 'on_level_loaded'
 }
 
 export enum Pointers {
@@ -695,4 +697,8 @@ export enum SCENE_CATEGORIES {
     SHOP = 'shop',
     BUSINESS = 'business',
     SPORTS = 'sports',   
+}
+
+export enum CATALOG_IDS {
+    WHITE_ARROW = "cb3a9e83-4b2d-4b3b-b9c1-2b636a94b36c"
 }

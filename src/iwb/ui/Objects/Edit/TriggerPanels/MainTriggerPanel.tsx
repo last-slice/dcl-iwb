@@ -7,7 +7,7 @@ import { setUIClicked } from "../../../ui"
 import { uiSizes } from "../../../uiConfig"
 import { editingTrigger, triggerView, update, updateTriggerInfoView, updateTriggerView } from "../EditTrigger"
 import { colyseusRoom } from "../../../../components/Colyseus"
-import { COMPONENT_TYPES, ENTITY_POINTER_LABELS } from "../../../../helpers/types"
+import { COMPONENT_TYPES, ENTITY_POINTER_LABELS, Triggers } from "../../../../helpers/types"
 
 
 export function MainTriggerPanel(){
@@ -156,7 +156,7 @@ function TriggerRow(trigger:any){
                 justifyContent: 'center',
                 width: '100%',
                 height: '25%',
-                display: data.hasOwnProperty("input") ? "flex" : "none"//
+                display: data.type === Triggers.ON_INPUT_ACTION ? "flex" : "none"//
             }}
             uiText={{value:"" + ENTITY_POINTER_LABELS[data.input], fontSize:sizeFont(20,15), color:Color4.White()}}
             />

@@ -10,7 +10,7 @@ import { BuildModeVisibilty, ParcelFloor, redBeam, greenBeam } from "../modes/Cr
 import { addInputSystem, removeInputSystem } from "../systems/InputSystem"
 import { hideAllPanels } from "../ui/ui"
 import { updatePlayModeReset } from "../modes/Play"
-import { getEntity } from "./IWB"
+import { createAsset, getEntity } from "./IWB"
 import { removePlayModSystem, addPlayModeSystem } from "../systems/PlayModeSystem"
 import { disableEntityForPlayMode } from "../modes/Play"
 import { displayHover } from "../ui/Objects/ContextMenu"
@@ -19,6 +19,7 @@ import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { PlayTriggerSystem, disableTriggers } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
+import { isLevelAsset } from "./Level"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -148,9 +149,18 @@ export function setPlayerMode(mode:SCENE_MODES){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
                     if(playerMode === SCENE_MODES.BUILD_MODE){
-                        resetEntityForBuildMode(scene, entityInfo)
+                        if(isLevelAsset(scene, item.aid)){
+                            createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(item.aid))
+                        }else{
+                            resetEntityForBuildMode(scene, entityInfo)
+                        }
                     }else{
-                        disableEntityForPlayMode(scene, entityInfo)
+                        if(isLevelAsset(scene, item.aid)){
+                            engine.removeEntity(entityInfo.entity)
+                        }
+                        else{
+                            disableEntityForPlayMode(scene, entityInfo)
+                        }
                     }
                 }
             }

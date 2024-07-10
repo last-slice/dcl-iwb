@@ -154,22 +154,6 @@ export function EditState() {
         />
 
         {selectedItem && selectedItem.enabled && visibleComponent === COMPONENT_TYPES.STATE_COMPONENT && getAssetStates()}
-
-
-
-        {/* {generateButtons({slug:"update-name", buttons:[
-            {label:"Update", pressed:false, func:()=>{
-                sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
-                    {
-                        component:COMPONENT_TYPES.NAMES_COMPONENT,
-                        aid:selectedItem.aid, 
-                        sceneId:selectedItem.sceneId, 
-                        value:updatedName
-                    }
-                )
-                }
-            }
-        ]})} */}
         </UiEntity>
     )
 }

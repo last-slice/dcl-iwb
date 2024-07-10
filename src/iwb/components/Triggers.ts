@@ -11,8 +11,7 @@ import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
 import { Color3 } from "@dcl/sdk/math";
 import { getAssetIdByEntity } from "./Parenting";
 
-// const actionQueue: { entity: Entity; action: Action }[] = []//
-const actionQueue:any[] = []
+export const actionQueue:any[] = []
 
 // const triggers = new Map<Entity, Emitter<Record<Triggers, any>>>()
 const triggers = new Map<Entity, any>()
@@ -77,7 +76,7 @@ export function triggerListener(scene:any){
     
     assetTrigger.triggers.onAdd((trigger:any, index:any)=>{
       trigger.listen("tick", (c:any, p:any)=>{
-          console.log('trigger is', trigger, info.entity)//
+          console.log('trigger is', trigger, info.entity)
           updateTriggerEvents(scene, info, trigger)
       })
     })
@@ -92,12 +91,11 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
     return
   }
 
-    triggerEvents.off(triggerInfo.type)
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
       console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent)
       if(!trigger){
-        console.log('cant find trigger')//
+        console.log('cant find trigger')
         return
       }
         if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
@@ -339,9 +337,10 @@ export function disableTriggers(scene:any, entityInfo:any){
   let itemInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
   if(itemInfo){
     const triggerEvents = getTriggerEvents(entityInfo.entity)
-    triggerEvents.off("*", ()=>{
-      console.log('disabling triggers')
-    })
+    // triggerEvents.off("*", ()=>{
+    //   console.log('disabling triggers')
+    // })
+    triggerEvents.remove()
     tickSet.delete(entityInfo.entity)
   }
 }
@@ -353,6 +352,36 @@ export function setTriggersForPlayMode(scene:any, entityInfo:any){
       updateTriggerEvents(scene, entityInfo, trigger)
     })
     tickSet.add(entityInfo.entity)
+  }
+}
+
+class MittExtender {
+  emitter:any
+  callbacks:Map<string,Function>
+
+  constructor(){
+    this.emitter = mitt()
+    this.callbacks = new Map()
+  }
+  on(type:Triggers, callback:any){
+     if(!this.callbacks.has(type)){
+      this.callbacks.set(type, callback)
+     }
+
+     this.emitter.on(type, callback)
+     console.log('received event', type)
+  }
+  remove(){
+    this.emitter.all.clear()
+    this.callbacks.clear()
+  }
+
+  emit(type:Triggers, event:any) {
+    this.emitter.emit(type, event);
+  }
+
+  isListening(type:Triggers) {
+    return this.callbacks.has(type)// && this.listeners.get(type).has(handler);
   }
 }
 
@@ -369,6 +398,9 @@ class MittWrapper {
   on(type:any, handler:any) {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, new Set());
+    }else{
+      const handlers = this.listeners.get(type);
+      handlers.delete(handler)
     }
 
     const handlers = this.listeners.get(type);
@@ -391,6 +423,11 @@ class MittWrapper {
         }
       }
     }
+  }
+
+  remove(){
+    this.emitter.all.clear()
+    this.listeners.clear()
   }
 
   emit(type:any, event:any) {

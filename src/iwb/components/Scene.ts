@@ -5,7 +5,7 @@ import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../mo
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
 import { log } from "../helpers/functions"
-import { colyseusRoom } from "./Colyseus"
+import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { gltfListener } from "./Gltf"
 import { parentingListener } from "./Parenting"
 import { localUserId, localPlayer } from "./Player"
@@ -30,6 +30,7 @@ import { realm, worlds } from "./Config"
 import { soundsListener } from "./Sounds"
 import { uiTextListener } from "./UIText"
 import { billboardListener } from "./Billboard"
+import { levelListener } from "./Level"
 
 export let realmActions: any[] = []
 
@@ -69,7 +70,8 @@ async function loadSceneComponents(scene:any){
     scene.components = []
 
     // await addParenting(scene)//
-    
+
+    levelListener(scene)
     iwbInfoListener(scene)
     parentingListener(scene)
     
@@ -335,7 +337,7 @@ export async function checkScenePermissions() {
     } else {
         localPlayer.canBuild = false
         // player.activeScene = null
-        // displaySceneAssetInfoPanel(false)
+        // displaySceneAssetInfoPanel(false)//
     }
 
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {

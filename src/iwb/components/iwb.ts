@@ -5,7 +5,7 @@ import { PointersLoadedComponent, RealmEntityComponent } from "../helpers/Compon
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { addBuildModePointers, removeItem, resetEntityForBuildMode } from "../modes/Build"
 import { checkBillboardComponent } from "./Billboard"
-import { iwbConfig, playerMode } from "./Config"
+import { playerMode } from "./Config"
 import { checkCounterComponent } from "./Counter"
 import { checkGLTFComponent } from "./Gltf"
 import { checkMaterialComponent } from "./Materials"
@@ -22,6 +22,7 @@ import { checkUIImage } from "./UIImage"
 import { checkUIText } from "./UIText"
 import { checkVideoComponent } from "./Videos"
 import { updateAssetBuildVisibility } from "./Visibility"
+import { isLevelAsset } from "./Level"
 
 // export function checkIWBComponent(scene:any, entityInfo:any){
 //   let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
@@ -97,49 +98,56 @@ export async function iwbInfoListener(scene:any){
           await createEntity(iwbInfo)
       }
 
-      PointersLoadedComponent.createOrReplace(iwbInfo.entity, {init: false, sceneId: scene.id})
-
-      await checkTransformComponent(scene, iwbInfo)  
-      await checkGLTFComponent(scene, iwbInfo)
-      await checkTextureComponent(scene, iwbInfo)
-      await checkPointerComponent(scene, iwbInfo)
-      await checkMeshRenderComponent(scene, iwbInfo)
-      await checkMeshColliderComponent(scene, iwbInfo)
-      await checkMaterialComponent(scene, iwbInfo)
-      await checkAudioSourceComponent(scene, iwbInfo)
-      await checkAudioStreamComponent(scene, iwbInfo)
-      await checkTextShapeComponent(scene, iwbInfo)
-      await checkVideoComponent(scene, iwbInfo)
-      await checkNftShapeComponent(scene, iwbInfo)
-      await checkCounterComponent(scene, iwbInfo)
-      await checkUIText(scene, iwbInfo)
-      await checkUIImage(scene, iwbInfo)
-      await checkTriggerComponent(scene, iwbInfo)
-      await checkBillboardComponent(scene, iwbInfo)
-      
-      // await checkSmartItemComponent()
-
-
-      if(playerMode === SCENE_MODES.BUILD_MODE){
-          resetEntityForBuildMode(scene, iwbInfo)
+      if(isLevelAsset(scene, aid)){}
+      else{
+        createAsset(scene, iwbInfo)
       }
+    }
 
-      let fn = afterLoadActions.pop()
-      if (fn) fn(scene.id, iwbInfo.entity)
-  }
-
-  iwbInfo.listen("buildVis", (c:any, p:any)=>{
-          if(p !== undefined){
-              let entityInfo = getEntity(scene, aid)
-              if(entityInfo && playerMode === SCENE_MODES.BUILD_MODE){
-                updateAssetBuildVisibility(scene, c, entityInfo)
-              }
-          }
-      })
-  })
+    iwbInfo.listen("buildVis", (c:any, p:any)=>{
+            if(p !== undefined){
+                let entityInfo = getEntity(scene, aid)
+                if(entityInfo && playerMode === SCENE_MODES.BUILD_MODE){
+                  updateAssetBuildVisibility(scene, c, entityInfo)
+                }
+            }
+        })
+    })
 
   scene[COMPONENT_TYPES.IWB_COMPONENT].onRemove((iwbInfo:any, aid:string)=>{
     console.log('removing iwb info', aid, iwbInfo)
     removeItem(iwbInfo.entity)
   })
+}
+
+export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean){
+  PointersLoadedComponent.createOrReplace(iwbInfo.entity, {init: false, sceneId: scene.id})
+
+  await checkTransformComponent(scene, iwbInfo)  
+  await checkGLTFComponent(scene, iwbInfo,isLevelAsset)
+  await checkTextureComponent(scene, iwbInfo)
+  await checkPointerComponent(scene, iwbInfo)
+  await checkMeshRenderComponent(scene, iwbInfo)
+  await checkMeshColliderComponent(scene, iwbInfo)
+  await checkMaterialComponent(scene, iwbInfo)
+  await checkAudioSourceComponent(scene, iwbInfo)
+  await checkAudioStreamComponent(scene, iwbInfo)
+  await checkTextShapeComponent(scene, iwbInfo)
+  await checkVideoComponent(scene, iwbInfo)
+  await checkNftShapeComponent(scene, iwbInfo)
+  await checkCounterComponent(scene, iwbInfo)
+  await checkUIText(scene, iwbInfo)
+  await checkUIImage(scene, iwbInfo)
+  await checkTriggerComponent(scene, iwbInfo)
+  await checkBillboardComponent(scene, iwbInfo)
+  
+  // await checkSmartItemComponent()
+
+
+  if(playerMode === SCENE_MODES.BUILD_MODE){
+      resetEntityForBuildMode(scene, iwbInfo)
+  }
+
+  let fn = afterLoadActions.pop()
+  if (fn) fn(scene.id, iwbInfo.entity)
 }

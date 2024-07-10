@@ -14,13 +14,13 @@ export function checkAudioSourceComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         AudioSource.create(entityInfo.entity, {
-            audioClipUrl: "assets/" + itemInfo.url,
+            audioClipUrl: "" + itemInfo.url,
             playing: false,
             volume: itemInfo.volume,
             loop: itemInfo.loop
         })
         AudioStream.create(entityInfo.entity, {
-            url: "assets/" + itemInfo.url,
+            url: "" + itemInfo.url,
             playing: false,
             volume: itemInfo.volume
         })

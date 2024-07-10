@@ -89,9 +89,8 @@ export function updateCurrentNotification(data:NOTIFICATION_DETAIL){
 }
 
 export function hideNotification(){
-    log('hiding notification')
     currentNotification.animating = true
-    startAnimating({return:true, direction:2})
+    startAnimating({return:true, direction:2, time:0})
 }
 
 function startAnimating(animate:any){

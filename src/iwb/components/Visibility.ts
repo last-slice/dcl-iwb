@@ -47,7 +47,7 @@ export function updateAssetBuildVisibility(scene:any, visibility:boolean, entity
 
     let gltfInfo = scene[COMPONENT_TYPES.GLTF_COMPONENT].get(entityInfo.aid)
     if(gltfInfo){
-        let gltf = GltfContainer.getMutable(entityInfo.entity)
+        let gltf = GltfContainer.getMutableOrNull(entityInfo.entity)
         if(gltf){
             console.log('gltf info is', gltfInfo)
             gltf.invisibleMeshesCollisionMask = !visibility ? ColliderLayer.CL_NONE : gltfInfo.invisibleCollision
@@ -75,7 +75,7 @@ export function updateChildrenVisibility(scene:any, visibility:boolean, entityIn
 export function setVisibilityBuildMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
-        updateAssetBuildVisibility(scene, itemInfo.buildVis, entityInfo)//
+        updateAssetBuildVisibility(scene, itemInfo.buildVis, entityInfo)
     }
 }
 

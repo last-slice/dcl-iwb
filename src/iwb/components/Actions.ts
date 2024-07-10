@@ -17,6 +17,8 @@ import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
 import { localPlayer } from "./Player"
 import { displayGameStartUI } from "../ui/Objects/GameStartUI"
+import { loadLevelAssets } from "./Level"
+import { attemptGameEnd } from "./Game"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -217,6 +219,14 @@ function updateActions(scene:any, info:any, action:any){
             case Actions.STOP_LOOP:
                 handleStopLoop(scene, info, action)
                 break;
+
+            case Actions.LOAD_LEVEL:
+                handleLoadLevel(scene, info, action)
+            break;
+
+            case Actions.END_GAME:
+                handleEndGame(scene, info, action)
+            break;
         }
     })
 }
@@ -442,18 +452,30 @@ function handleOpenLink(action:any){
 }
 
 function handleMovePlayer(scene:any, action:any){
-    movePlayerTo({
-        newRelativePosition:{
-            x:action.x, 
-            y:action.y, 
-            z:action.z
-        }, 
-        // cameraTarget:{
-        //     x:parseFloat(cam[0]), 
-        //     y:parseFloat(cam[1]), 
-        //     z:parseFloat(cam[2])
-        // }
-    })
+    console.log('moving playerr', action)
+    if(action.cx){
+        movePlayerTo({
+            newRelativePosition:{
+                x:action.x, 
+                y:action.y, 
+                z:action.z
+            }, 
+            cameraTarget:{
+                x:action.cx, 
+                y:action.cy, 
+                z:action.cz
+            }
+        })
+    }else{
+        movePlayerTo({
+            newRelativePosition:{
+                x:action.x, 
+                y:action.y, 
+                z:action.z
+            }
+        })
+    }
+
 }
 
 function handleEmote(action:any){
@@ -579,4 +601,21 @@ function handleStartLoop(scene:any, info:any, action:any){
 
 function handleStopLoop(scene:any, info:any, action:any){
     stopInterval(info.entity, action.id)
+}
+
+function handleLoadLevel(scene:any, info:any, action:any){
+    let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(info.aid)
+    if(levelInfo){
+        //display loading screen
+        
+        let sceneTransform = Transform.get(scene.parentEntity).position
+        let spawnLocation = Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
+        handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
+        loadLevelAssets(scene, info, action)
+    }
+}
+
+function handleEndGame(scene:any, info:any, action:any){
+    attemptGameEnd({sceneId:scene.id})
+    sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
 }

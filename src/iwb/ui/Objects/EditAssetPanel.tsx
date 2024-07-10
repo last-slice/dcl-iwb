@@ -34,6 +34,7 @@ import { EditUiText, hideUIText, showUIText } from './Edit/EditUiText'
 import { UiTexts } from '../../components/UIText'
 import { EditUIImage, hideUIImage, showUIImage } from './Edit/EditUIImage'
 import { EditGaming, updateGamingInfo } from './Edit/EditGaming'
+import { EditLevel, levelView, resetLevelSpawnEntity, updateEditLevelView, updateLevelInfo } from './Edit/EditLevel'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -50,6 +51,9 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.LEVEL_COMPONENT:
+            updateLevelInfo()
+            break;
         case COMPONENT_TYPES.GAME_COMPONENT:
             updateGamingInfo()
             break;
@@ -392,8 +396,19 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.LEVEL_COMPONENT:
+            if(levelView === "main"){
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }else if(levelView === "spawn"){
+                resetLevelSpawnEntity()
+                updateEditLevelView("main")
+            }
+            
+            break;
+
         case COMPONENT_TYPES.GAME_COMPONENT:
-            updateGamingInfo(true)///
+            updateGamingInfo(true)
+            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             break;
 
         case COMPONENT_TYPES.UI_TEXT_COMPONENT:
@@ -735,6 +750,7 @@ function EditObjectData(){
                 <EditUiText/>
                 <EditUIImage/>
                 <EditGaming/>
+                <EditLevel/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
@@ -860,6 +876,7 @@ function getBasicComponents(){
         COMPONENT_TYPES.UI_TEXT_COMPONENT,
         COMPONENT_TYPES.UI_IMAGE_COMPONENT,
         COMPONENT_TYPES.GAME_COMPONENT,
+        COMPONENT_TYPES.LEVEL_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
@@ -899,7 +916,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-11).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -938,7 +955,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-11).filter(item => !components.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => !components.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

@@ -46,7 +46,7 @@ export function EditName() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '15%',
+                height: '10%',
             }}
         >
 
@@ -60,7 +60,7 @@ export function EditName() {
             color={Color4.White()}
             uiTransform={{
                 width: '100%',
-                height: '100',
+                height: '100%',
             }}
             />
 

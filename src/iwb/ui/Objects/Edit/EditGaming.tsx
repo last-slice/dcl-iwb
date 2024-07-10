@@ -115,6 +115,73 @@ export function EditGaming(){
 
         </UiEntity>
 
+        {/* disable teleport options */}
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                >
+                      <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '70%',
+                    height: '100%',
+                }}
+                >
+                    <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        alignContent:'center',
+                        width: '100%',
+                        height: '10%',
+                    }}
+                        uiText={{value:"Disable Teleporting", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+                    />
+            </UiEntity>
+
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '30%',
+                    height: '100%',
+                }}
+                >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(4).width,
+                    height: calculateSquareImageDimensions(4).height,
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: gamingInfo && gamingInfo.disableTeleport ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                }}
+                onMouseDown={() => {
+                    gamingInfo.disableTeleport = !gamingInfo.disableTeleport
+                    update("disableTeleport", gamingInfo.disableTeleport)
+                }}
+                />
+        </UiEntity>
+        </UiEntity>
+
+     {/* start screen options */}
         <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
@@ -122,6 +189,7 @@ export function EditGaming(){
                     justifyContent: 'center',
                     width: '100%',
                     height: '10%',
+                    display: 'none'
                 }}
                 >
             <Dropdown
@@ -164,6 +232,9 @@ export function EditGaming(){
         />
 
         </UiEntity>
+
+
+
 
         {/* <UiEntity
         uiTransform={{

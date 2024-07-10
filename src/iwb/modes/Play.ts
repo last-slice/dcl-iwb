@@ -2,7 +2,7 @@ import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContaine
 import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
-import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene } from "../helpers/types"
+import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
@@ -21,6 +21,10 @@ import { getRandomIntInclusive } from "../helpers/functions"
 import { displayMainView } from "../ui/Objects/IWBView"
 import { movePlayerTo } from "~system/RestrictedActions"
 import { stopAllIntervals, stopAllTimeouts } from "../components/Timer"
+import { abortGameTermination, checkGameplay } from "../components/Game"
+import { setUIClicked } from "../ui/ui"
+import { localPlayer } from "../components/Player"
+import { showNotification } from "../ui/Objects/NotificationPanel"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -38,6 +42,13 @@ export async function disableSceneEntities(sceneId:any) {
         let scene = colyseusRoom.state.scenes.get(sceneId)
         if(scene){
             stopAllIntervals()
+
+            checkGameplay(scene)
+
+            let levels:any[] =[]
+            scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((level:any, aid:string)=>{
+                levels.push(aid)
+            })
 
             scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
                 if(index > 2){
@@ -87,25 +98,28 @@ export async function disableSceneEntities(sceneId:any) {
 export function enableSceneEntities(sceneId: string) {
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(scene){
+        setUIClicked(false)
         updatePlayModeReset(true)
+
+        abortGameTermination(scene)
 
         // findSceneEntryTrigger(scene)//
 
-        let levels:any[] =[]
-        scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((level:any, aid:string)=>{
-            levels.push(aid)
-        })
+        // let levels:any[] =[]
+        // scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((level:any, aid:string)=>{
+        //     levels.push(aid)
+        // })//
 
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
-                    levels.forEach((level:string)=>{
-                        let parenting = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((parent:any)=> parent.aid === level)
-                        if(parenting && parenting.children.includes(item.aid)){
-                            disableEntityForPlayMode(scene, entityInfo)
-                            updateAssetBuildVisibility(scene, false, entityInfo)
-                        }else{
+                    // levels.forEach((level:string)=>{
+                    //     let parenting = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((parent:any)=> parent.aid === level)
+                    //     if(parenting && parenting.children.includes(item.aid)){
+                    //         disableEntityForPlayMode(scene, entityInfo)
+                    //         updateAssetBuildVisibility(scene, false, entityInfo)
+                    //     }else{
                             setGLTFPlayMode(scene, entityInfo)
                             setVideoPlayMode(scene, entityInfo)
                             setMeshColliderPlayMode(scene, entityInfo)
@@ -119,8 +133,8 @@ export function enableSceneEntities(sceneId: string) {
                             setTriggersForPlayMode(scene, entityInfo)
                             setUiTextPlayMode(scene, entityInfo)
                             setUiImagePlayMode(scene, entityInfo)
-                        }
-                    })
+                        // }
+                    // })
                 }
             }
         })
@@ -170,25 +184,14 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableUiTextPlayMode(scene, entityInfo)
         disableUiImagePlayMode(scene, entityInfo)
 
-        //reset states//
+        //to do
+        // - reset states
+        // - reset tweens
+        // - disabe smart items?
 
 
         PointerEvents.deleteFrom(entityInfo.entity)
     }
-
-
-    // if(scene){
-    //     let assetId = itemIdsFromEntities.get(entity)
-    //     if(assetId){
-    //         let sceneItem = scene.ass.find((a:any)=> a.aid === assetId)
-    //         if(sceneItem){
-    //             disableSmartItems(entity, sceneItem)
-    //             PointerEvents.deleteFrom(entity)
-    //             sceneItem.visComp ? VisibilityComponent.createOrReplace(entity, {visible: sceneItem.visComp.visible}) : null
-    //             resetTweenPositions(entity, sceneItem, scene)
-    //         }
-    //     }
-    // }//
 }
 
 function disableDelayedActionTimers(){
@@ -203,6 +206,11 @@ function disablePlayUI(){
 
 export function teleportToScene(info:any){
     let scene = colyseusRoom.state.scenes.get(info.id)
+    if(!localPlayer.canTeleport){
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Telporting is disabled", animate:{enabled:true, return:true, time:3}})
+        return
+    }
+
     if(scene){
         let rand = getRandomIntInclusive(0, scene.sp.length-1)
         let parent = Transform.get(scene.parentEntity).position

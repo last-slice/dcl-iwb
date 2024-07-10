@@ -1,13 +1,18 @@
 import { AvatarAttach, ColliderLayer, GltfContainer, PointerEvents, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
-import { GLTFLoadedComponent } from "../helpers/Components"
+import { GLTFLoadedComponent, LevelAssetGLTF } from "../helpers/Components"
 import { playerMode } from "./Config"
 import { COLLIDER_LAYERS, COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { setAnimationPlayMode } from "./Animator"
 
-export function checkGLTFComponent(scene:any, entityInfo:any){
+export function checkGLTFComponent(scene:any, entityInfo:any, isLevelAsset?:boolean){
     let gltf = scene[COMPONENT_TYPES.GLTF_COMPONENT].get(entityInfo.aid)
     if(gltf){
+        if(isLevelAsset){
+            console.log('we have level asset', entityInfo.entity)
+            LevelAssetGLTF.create(entityInfo.entity)
+        }
+
         GltfContainer.createOrReplace(entityInfo.entity, {
             src:"assets/" + gltf.src + ".glb", 
             visibleMeshesCollisionMask: (gltf.visibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltf.visibleCollision].toString())), 

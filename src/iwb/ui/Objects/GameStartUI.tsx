@@ -4,10 +4,9 @@ import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions,
 import { setUIClicked } from '../ui'
 import resources from '../../helpers/resources'
 import { uiSizes } from '../uiConfig'
-import { getTriggerEvents } from '../../components/Triggers'
 import { SERVER_MESSAGE_TYPES, Triggers } from '../../helpers/types'
-import { engine } from '@dcl/sdk/ecs'
 import { sendServerMessage } from '../../components/Colyseus'
+import { localPlayer } from '../../components/Player'
 
 let showGameStart = false
 let startGame:any
@@ -146,16 +145,19 @@ export function createGameStartUI(){
                 value: "Start Game",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
-                textAlign: 'middle-center'
+                textAlign: 'middle-center'//
             }}
             onMouseDown={() => {
                 setUIClicked(true)
+                console.log('on mouse down')
+
                 displayGameStartUI(false)
                 sendServerMessage(SERVER_MESSAGE_TYPES.START_GAME, {sceneId: startGame.id, entity:startGame.entity})
 
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
+                console.log('on mouse up')
             }}
         />
 
@@ -201,4 +203,56 @@ export function createGameStartUI(){
   </UiEntity>
 
   )
+}
+
+export function createEndGameButton(){
+    return(
+        <UiEntity
+        key={resources.slug + "game::end::button::ui"}
+        uiTransform={{
+          width: '100%',
+          height:'100%',
+          justifyContent:'center',
+          flexDirection:'column',
+          alignContent:'center',
+          alignItems:'center',
+          positionType:'absolute',
+          position:{top:0, right:0},
+          display: localPlayer && localPlayer.playingGame ? "flex" :"none"
+        }}
+      >
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+            height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+            margin:'1%',
+            positionType:'absolute',
+            position:{left:'11%', top:'6%'}
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{
+            value: "End Game",
+            fontSize: sizeFont(25, 15),
+            color: Color4.White(),
+            textAlign: 'middle-center'
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+    />
+        </UiEntity>
+    )
 }

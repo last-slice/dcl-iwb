@@ -97,6 +97,7 @@ function setPlayerDefaults(player:any){
     player.canBuild = false
     player.homeWorld = false
     player.worldPermissions = false
+    player.canTeleport = true
     player.selectedEntity = null
     player.activeSceneId = ""
     player.mode = SCENE_MODES.PLAYMODE

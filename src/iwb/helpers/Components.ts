@@ -1,5 +1,6 @@
 import { Animator, Schemas, VisibilityComponent, engine } from "@dcl/sdk/ecs";
 
+export const LevelAssetGLTF = engine.defineComponent("iwb::level::asset::gltf::component", {})
 export const RealmEntityComponent = engine.defineComponent("iwb::realm::entity::component", {})
 
 // export const AnimatorComponent = engine.defineComponent("iwb::asset::animator::component", {})

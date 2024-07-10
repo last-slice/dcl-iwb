@@ -35,6 +35,8 @@ import { setUiTextBuildMode } from "../components/UIText"
 import { setUiImageBuildMode } from "../components/UIImage"
 import { hideUIImage } from "../ui/Objects/Edit/EditUIImage"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel, updateRows } from "../ui/Objects/SceneInfoPanel"
+import { resetCloneEntity } from "../ui/Objects/Edit/ActionPanels/AddClonePanel"
+import { resetLevelSpawnEntity } from "../ui/Objects/Edit/EditLevel"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -532,6 +534,9 @@ export function saveItem() {
     //         addTriggerArea(scene, selectedItem.entity, selectedItem.itemData, items.get(selectedItem.catalogId)!.n)
     //     }
     // }//
+
+    resetCloneEntity()
+    resetLevelSpawnEntity()
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {

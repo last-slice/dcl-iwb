@@ -30,6 +30,7 @@ import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from '
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
 import { AddRandomActionPanel } from './ActionPanels/AddRandomAction'
 import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
+import { resetLevelSpawnEntity } from './EditLevel'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -484,6 +485,7 @@ async function buildAction(){
     resetSetScaleEntity()
     resetMovePlayerEntity()
     resetCloneEntity()
+    resetLevelSpawnEntity()
 }
 
 function resetActionData(){

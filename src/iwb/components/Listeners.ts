@@ -21,6 +21,7 @@ import { updateIWBTable } from "../ui/Reuse/IWBTable";
 import { colyseusRoom } from "./Colyseus";
 import { updateStoreView, updateStoreVisibleItems } from "../ui/Objects/StoreView";
 import { getTriggerEvents } from "./Triggers";
+import { attemptGameEnd, attemptGameStart } from "./Game";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -369,10 +370,12 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.START_GAME, (info:any) => {
         log(SERVER_MESSAGE_TYPES.START_GAME + ' received', info)
-        if(info && info.entity && info.sceneId){
-            const triggerEvents = getTriggerEvents(info.entity)
-            triggerEvents.emit(Triggers.ON_GAME_START, {entity:info.entity, input:0, pointer:0})
-        }
+        attemptGameStart(info)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.END_GAME, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.END_GAME + ' received', info)
+        attemptGameEnd(info)
     })
 
     room.state.listen("sceneCount", (c:any, p:any)=>{
