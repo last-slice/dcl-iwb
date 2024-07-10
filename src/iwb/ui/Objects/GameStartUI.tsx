@@ -145,7 +145,7 @@ export function createGameStartUI(){
                 value: "Start Game",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
-                textAlign: 'middle-center'//
+                textAlign: 'middle-center'
             }}
             onMouseDown={() => {
                 setUIClicked(true)

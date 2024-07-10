@@ -11,13 +11,14 @@ import { openEditComponent, visibleComponent } from '../EditAssetPanel'
 import { generateButtons, setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
 import { utils } from '../../../helpers/libraries'
-import { engine } from '@dcl/sdk/ecs'
+import { Transform, engine } from '@dcl/sdk/ecs'
 import { getWorldPosition, getWorldRotation } from '@dcl-sdk/utils'
 import { localPlayer } from '../../../components/Player'
 import { getEntity } from '../../../components/IWB'
 
 ///parenting
 let parentIndex:number = 0
+let parentEntityArray:any[] = []
 let children:any[] = []
 
 export function updateChildrenAssets(){
@@ -33,8 +34,17 @@ export function updateChildrenAssets(){
                 }
             })
         }
+
+        getEntities()
+
+        //find asset parent
+        let parentsWithChildren = scene[COMPONENT_TYPES.PARENTING_COMPONENT].filter((obj:any) => obj.children.length > 0);
+        let parentInfo = parentsWithChildren.find(($:any)=> $.children.includes(selectedItem.aid))
+        let parent = parentEntityArray.findIndex(($:any)=> $.aid === parentInfo.aid)
+        if(parent >= 0){
+            parentIndex = parent
+        }
     }
-    console.log('children are', children)
 }
 
 export function EditParenting(){
@@ -60,7 +70,7 @@ export function EditParenting(){
             width: '100%',
             height: '10%',
         }}
-            uiText={{value:"Current Parent Entity", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{value:"Choose Parent Entity", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
         />
 
             {/* current parent row */}
@@ -87,8 +97,8 @@ export function EditParenting(){
                 >
 
                     <Dropdown
-                        options={getEntities()}
-                        selectedIndex={0}
+                        options={[...parentEntityArray.map(($:any)=> $.name)]}
+                        selectedIndex={parentIndex} 
                         onChange={selectParentIndex}
                         uiTransform={{
                             width: '100%',
@@ -118,8 +128,9 @@ export function EditParenting(){
                         alignItems: 'center',
                         justifyContent: 'center',
                         alignSelf:'flex-start',
-                        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                        width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
                         height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                        margin:{left:'1%'}
                     }}
                     uiBackground={{
                         textureMode: 'stretch',
@@ -129,7 +140,7 @@ export function EditParenting(){
                         uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                     }}
                     uiText={{
-                        value: "Save",
+                        value: "Update Parent",
                         fontSize: sizeFont(25, 15),
                         color: Color4.White(),
                         textAlign: 'middle-center'
@@ -157,41 +168,17 @@ export function EditParenting(){
                     }}
                 >
 
-            <UiEntity
+                <UiEntity
                     uiTransform={{
                         flexDirection: 'row',
+                        alignContent:'center',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
-                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                        width: '50%',
+                        height: '100%',
                     }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                    }}
-                    uiText={{
-                        value: "Add Child Entity",
-                        fontSize: sizeFont(25, 15),
-                        color: Color4.White(),
-                        textAlign: 'middle-center'
-                    }}
-                    onMouseDown={() => {
-                        setUIClicked(true)
-                        update("newchild", {})
-                        utils.timers.setTimeout(()=>{
-                            updateChildrenAssets()
-                        }, 200)
-                    }}
-                    onMouseUp={()=>{
-                        setUIClicked(false)
-                    }}
-                />
-                </UiEntity>
-
-            <UiEntity
+                >
+                                <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -202,6 +189,55 @@ export function EditParenting(){
         }}
             uiText={{value:"Current Child Entities", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
         />
+                    </UiEntity>
+
+                    <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignContent:'center',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '50%',
+                        height: '100%',
+                    }}
+                ><UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                }}
+                uiText={{
+                    value: "Add New Entity",
+                    fontSize: sizeFont(25, 15),
+                    color: Color4.White(),
+                    textAlign: 'middle-center'
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    update("newchild", {})
+                    utils.timers.setTimeout(()=>{
+                        updateChildrenAssets()
+                    }, 200)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+            />
+                    </UiEntity>
+
+            
+                </UiEntity>
+
+
 
         {selectedItem && selectedItem.enabled && visibleComponent === COMPONENT_TYPES.PARENTING_COMPONENT && getChildrenViews()}
 
@@ -221,29 +257,26 @@ function getChildrenViews(){
 }
 
 function getEntities(){
-    if(selectedItem && selectedItem.enabled && visibleComponent === COMPONENT_TYPES.PARENTING_COMPONENT){
-        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-        if(!scene){
-            return []
-        }
-        let entities:any[] = []
-        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
-            // console.log('entity is', item)
-            let assetName = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(item.aid)
-            if(item.aid !== selectedItem.aid){
-                if(assetName){
-                    let data:any = {...item}
-                    data.name = assetName
-                    entities.push(assetName.value) 
-                }
-            }
-        })
-        entities.unshift("Player Camera")
-        entities.unshift("Player")
-        entities.unshift("Scene")
-        return entities
+    parentEntityArray.length = 0
+
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return
     }
-    return []
+    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
+        // console.log('entity is', item)
+        let assetName = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(item.aid)
+        if(item.aid !== selectedItem.aid && assetName){
+            // console.log('found entity name')
+            // let data:any = {...item}
+            // data.name = assetName
+            parentEntityArray.push({name:assetName.value, aid:item.aid}) 
+        }
+    })
+    parentEntityArray.sort((a:any, b:any) => a.name.localeCompare(b.name))
+    parentEntityArray.unshift({name:"Player Camera", aid:"2"})
+    parentEntityArray.unshift({name:"Player", aid:"1"})
+    parentEntityArray.unshift({name:"Scene", aid:"0"})
 }
 
 function Row(info:any){
@@ -345,7 +378,7 @@ function update(action:string, data:any){
     console.log('trying to update parent', data)
     let selectedEntityPosition = getWorldPosition(selectedItem.entity)
     let selectedEntityRotation = getWorldRotation(selectedItem.entity)
-    let parentInfo:any = localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT][data.parent]
+    let parentInfo:any = parentEntityArray[data.parent]
     let parentEntity:any
 
     if(data.hasOwnProperty("parent")){
@@ -367,18 +400,24 @@ function update(action:string, data:any){
                 break;
         }
 
-        console.log("parent entity is", parentEntity)//
+        // console.log("parent entity is", parentEntity)//
 
         if(parentEntity){
             let parentEntityPosition = getWorldPosition(parentEntity.entity)
             let parentEntityRotation = getWorldRotation(parentEntity.entity)
+
+            // console.log('parent entity world position', parentEntityPosition)
+            // console.log('parent entity transform position', Transform.get(parentEntity.entity).position)
+
+            // console.log('distance is', Vector3.subtract(selectedEntityPosition, parentEntityPosition))
+
             sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
                 {
                     component:COMPONENT_TYPES.PARENTING_COMPONENT,
                     aid:selectedItem.aid,
                     sceneId:selectedItem.sceneId,
                     action:action,
-                    data:data,
+                    data:parentInfo.aid,
                     pp:parentEntityPosition,
                     pr:Quaternion.toEulerAngles(parentEntityRotation),
                     sp:selectedEntityPosition,

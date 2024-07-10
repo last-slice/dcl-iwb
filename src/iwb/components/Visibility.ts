@@ -37,7 +37,7 @@ export function visibilityListener(scene:any){
     })
 }
 
-export function updateAssetBuildVisibility(scene:any, visibility:boolean, entityInfo:any){
+export function updateAssetBuildVisibility(scene:any, visibility:boolean, entityInfo:any, updatingChild?:boolean){
     VisibilityComponent.createOrReplace(entityInfo.entity, {visible: visibility})
 
     let meshCollider = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
@@ -49,13 +49,15 @@ export function updateAssetBuildVisibility(scene:any, visibility:boolean, entity
     if(gltfInfo){
         let gltf = GltfContainer.getMutableOrNull(entityInfo.entity)
         if(gltf){
-            console.log('gltf info is', gltfInfo)
             gltf.invisibleMeshesCollisionMask = !visibility ? ColliderLayer.CL_NONE : gltfInfo.invisibleCollision
             gltf.visibleMeshesCollisionMask = !visibility ? ColliderLayer.CL_NONE : gltfInfo.visibleCollision
         }
     }
 
-    updateChildrenVisibility(scene, visibility, entityInfo)
+    if(updatingChild){}
+    else{
+        updateChildrenVisibility(scene, visibility, entityInfo)
+    }
 }
 
 export function updateChildrenVisibility(scene:any, visibility:boolean, entityInfo:any){
@@ -67,7 +69,7 @@ export function updateChildrenVisibility(scene:any, visibility:boolean, entityIn
             if(visibilityInfo){
                 visibilityInfo.visible = visibility
             }
-            updateAssetBuildVisibility(scene, visibility, childEntityInfo)
+            updateAssetBuildVisibility(scene, visibility, childEntityInfo, true)
         })
     }
 }
