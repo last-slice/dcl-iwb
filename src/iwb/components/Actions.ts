@@ -16,7 +16,7 @@ import { hideNotification, showNotification } from "../ui/Objects/NotificationPa
 import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
 import { localPlayer } from "./Player"
-import { displayGameStartUI } from "../ui/Objects/GameStartUI"
+import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStartUI"
 import { loadLevelAssets } from "./Level"
 import { attemptGameEnd } from "./Game"
 
@@ -606,7 +606,7 @@ function handleStopLoop(scene:any, info:any, action:any){
 function handleLoadLevel(scene:any, info:any, action:any){
     let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(info.aid)
     if(levelInfo){
-        //display loading screen
+        displayLoadingScreen(true, levelInfo)
         
         let sceneTransform = Transform.get(scene.parentEntity).position
         let spawnLocation = Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})

@@ -219,31 +219,6 @@ export function EditGaming(){
         </UiEntity>
         </UiEntity>
 
-     {/* start screen options */}
-        <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                    display: 'none'
-                }}
-                >
-            <Dropdown
-                options={['IWB']}//, 'Custom']}
-                selectedIndex={gamingInfo && gamingInfo.startScreen !== "iwb" ? 1 : 0}
-                onChange={selectStartScreenType}
-                uiTransform={{
-                    width: '100%',
-                    height: '120%',
-                }}
-                // uiBackground={{color:Color4.Purple()}}//
-                color={Color4.White()}
-                fontSize={sizeFont(20, 15)}
-            />
-        </UiEntity>
-
         <UiEntity
     uiTransform={{
         flexDirection: 'column',
@@ -417,10 +392,6 @@ export function EditGaming(){
 
         </UiEntity>
     )
-}
-
-function selectStartScreenType(index:number){
-    gamingInfo.startScreen = index === 0 ? "iwb" : startScreen
 }
 
 function update(action:string, type:string, value:any){

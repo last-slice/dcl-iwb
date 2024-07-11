@@ -402,6 +402,8 @@ function getBackButtonLogic(){
             }else if(levelView === "spawn"){
                 resetLevelSpawnEntity()
                 updateEditLevelView("main")
+            }else if(levelView === "loading"){
+                updateEditLevelView("main")
             }
             
             break;

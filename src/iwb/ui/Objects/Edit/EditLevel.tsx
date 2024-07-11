@@ -17,13 +17,13 @@ import { TransformInputModifiers } from './EditTransform'
 import { getWorldPosition } from '@dcl-sdk/utils'
 
 let levelStatuses:string[] = ["Live", "Edit"]
-let levelName:string = ""
 
-let levelNumber:number = 0
 let levelStatusIndex:number = 0
 
 let levelSpawnEntity:Entity
 let levelSpawnArrowEntity:Entity
+
+let levelInfo:any
 
 export let levelView:string = "main"
 
@@ -82,10 +82,9 @@ export function updateLevelSpawnLookEntity(direction:string, factor:number, manu
 export function updateLevelInfo(){
     let scene = localPlayer.activeScene
     if(scene){
-        let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(selectedItem.aid)
+        levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(selectedItem.aid)
         if(levelInfo){
-            levelNumber = levelInfo.number
-            levelName = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(selectedItem.aid).value
+            levelInfo.name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(selectedItem.aid).value
             levelStatusIndex = levelInfo.live ? 0 : 1
             levelView = "main"
         }
@@ -165,7 +164,7 @@ export function EditLevel() {
                 updateMetadata(COMPONENT_TYPES.NAMES_COMPONENT, "value", value.trim())
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'' + levelName}
+            placeholder={'' + (levelInfo && levelInfo.name)}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -219,7 +218,7 @@ export function EditLevel() {
                 }
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'' + levelNumber}
+            placeholder={'' + (levelInfo && levelInfo.number)}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -346,6 +345,7 @@ export function EditLevel() {
                     justifyContent: 'center',
                     width: '100%',
                     height: '10%',
+                    margin:{bottom:'1%'}
                 }}
                 uiBackground={{color: Color4.Black()}}
                 uiText={{value: "Level Spawn", fontSize: sizeFont(30, 20)}}
@@ -353,6 +353,25 @@ export function EditLevel() {
                     setUIClicked(true)
                     addLevelSpawnEntity()
                     levelView = "spawn"
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                uiBackground={{color: Color4.Black()}}
+                uiText={{value: "Loading Screen", fontSize: sizeFont(30, 20)}}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    levelView = "loading"
                 }}
                 onMouseUp={()=>{
                     setUIClicked(false)
@@ -438,6 +457,268 @@ export function EditLevel() {
 
         </UiEntity>
 
+            {/* loading screen view */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+                display: levelView === "loading" ? "flex" : "none",
+                margin:{top:'1%'}
+            }}
+        >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:'1%'}
+            }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+            >
+                 <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'}
+                }}
+            uiText={{value:"Level Loading Screen", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+            }}
+            >
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(4).width,
+                    height: calculateSquareImageDimensions(4).height,
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: levelInfo && levelInfo.loadingType >= 0 ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                }}
+                onMouseDown={() => {
+                    levelInfo.loadingType >= 0 ? levelInfo.loadingType = -1 : levelInfo.loadingType = 0
+                    updateMetadata(COMPONENT_TYPES.LEVEL_COMPONENT, "loadingType", levelInfo.loadingType)
+                }}
+                />
+            </UiEntity>
+
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'},
+                    display: levelInfo && levelInfo.loadingType >= 0 ? 'flex' :'none'
+                }}
+            uiText={{value:"Loading Screen Type", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '20%',
+                    margin:{bottom:'1%'},
+                    display: levelInfo && levelInfo.loadingType >= 0 ? 'flex' :'none'
+                }}
+            >
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '50%',
+                }}
+            >
+                <Dropdown
+                options={['IWB', 'Custom']}
+                selectedIndex={!levelInfo ? 0 :levelInfo.loadingType < 0 ? 0 : levelInfo.loadingType}
+                onChange={selectStartScreenType}
+                uiTransform={{
+                    width: '100%',
+                    height: '120%',
+                }}
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '50%',
+                    margin:{bottom:'1%'},
+                    display: levelInfo && levelInfo.loadingType === 1 ? 'flex' : 'none'
+                }}
+            uiText={{value:"Enter Image URL", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+                </UiEntity>
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
+                    <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(12).width,
+                    height: calculateSquareImageDimensions(15).height,
+                    display: !levelInfo || levelInfo.loadingType < 1 ? "none" : "flex"
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: '' + (levelInfo && levelInfo.loadingScreen)
+                    },}}
+                ></UiEntity>
+                </UiEntity>
+                
+                </UiEntity>
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'},
+                    display: levelInfo && levelInfo.loadingType === 1 ? 'flex' : 'none'
+                }}
+            >
+                <Input
+                    onChange={(value) => {
+                        levelInfo.loadingScreen = "" + value.trim()
+                        updateMetadata(COMPONENT_TYPES.LEVEL_COMPONENT, "loadingScreen", levelInfo.loadingScreen)
+                    }}
+                    onSubmit={(value) => {
+                        levelInfo.loadingScreen = "" + value.trim()
+                        updateMetadata(COMPONENT_TYPES.LEVEL_COMPONENT, "loadingScreen", levelInfo.loadingScreen)
+                    }}
+                    fontSize={sizeFont(20,15)}
+                    placeholder={'' + (levelInfo && levelInfo.loadingScreen)}
+                    placeholderColor={Color4.White()}
+                    color={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                />
+            </UiEntity>
+
+
+
+
+
+
+                    <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'},
+                    display: levelInfo && levelInfo.loadingType >= 0 ? 'flex' :'none'
+                }}
+            uiText={{value:"Minimum Display Time (seconds)", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'},
+                    display: levelInfo && levelInfo.loadingType >= 0 ? 'flex' :'none'
+                }}
+            >
+                <Input
+                    onChange={(value) => {
+                        levelInfo.loadingMin = parseFloat(value.trim())
+                        updateMetadata(COMPONENT_TYPES.LEVEL_COMPONENT, "loadingMin", levelInfo.loadingMin)
+                    }}
+                    onSubmit={(value) => {
+                        updateMetadata(COMPONENT_TYPES.LEVEL_COMPONENT, "loadingMin", levelInfo.loadingMin)
+                    }}
+                    fontSize={sizeFont(20,15)}
+                    placeholder={'' + (levelInfo && levelInfo.loadingMin)}
+                    placeholderColor={Color4.White()}
+                    color={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                />
+            </UiEntity>
+            
+
+        </UiEntity>
+
 
         </UiEntity>
     )
@@ -456,4 +737,10 @@ function updateMetadata(component:any, type:any, value:any){
             [type]:value
         }
     )
+}
+
+function selectStartScreenType(index:number){
+    levelInfo.loadingType = index
+    levelInfo.loadingScreen = ""
+    updateMetadata(COMPONENT_TYPES.LEVEL_COMPONENT, "loadingType", index)
 }
