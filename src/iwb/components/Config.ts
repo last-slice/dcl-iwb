@@ -1,6 +1,6 @@
 import { getRealm } from "~system/Runtime"
 import { colyseusRoom } from "./Colyseus"
-import { localPlayer, localUserId } from "./Player"
+import { localPlayer, localUserId, settings } from "./Player"
 import { COMPONENT_TYPES, SCENE_MODES, VIEW_MODES } from "../helpers/types"
 import { Entity, GltfContainer, Material, engine } from "@dcl/sdk/ecs"
 import { Color4 } from "@dcl/sdk/math"
@@ -20,6 +20,7 @@ import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { PlayTriggerSystem, disableTriggers } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
 import { isLevelAsset } from "./Level"
+import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
 
 export let realm: string = ""
 export let scenes: any[] = []
@@ -170,23 +171,25 @@ export function setPlayerMode(mode:SCENE_MODES){
     updatePlayModeReset(true)
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
+        settings.triggerDebug ? utils.triggers.enableDebugDraw(true) :null 
         stopAllIntervals()
         clearShowTexts()
         removePlayModSystem()
         addInputSystem()
         updatePlayModeReset(false)
         engine.removeSystem(PlayTriggerSystem)
+        displayLiveControl(false)
     }else if(playerMode === SCENE_MODES.PLAYMODE){
+        // utils.triggers.enableDebugDraw(false)
         hideAllPanels()
         displayHover(false)
         removeInputSystem()
         addPlayModeSystem()
         engine.addSystem(PlayTriggerSystem)
-        utils.triggers.enableDebugDraw(false)
     }else{
+        utils.triggers.enableDebugDraw(false)
         removeInputSystem()
         removePlayModSystem()
-        utils.triggers.enableDebugDraw(false)
     }
 }
 

@@ -28,6 +28,7 @@ import { createCustomUIImageComponent } from './Objects/UIImage'
 import { createAddSpawnPointPanel } from './Objects/AddSpawnPointPanel'
 import { createGrabContextMenu } from './Objects/GrabContextMenu'
 import { createEndGameButton, createGameStartUI, createLoadingScreen } from './Objects/GameStartUI'
+import { createLiveUI } from './Objects/LiveShowPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -62,6 +63,7 @@ const uiComponent:any = () => [
   createGameStartUI(),
   createEndGameButton(),
   createLoadingScreen(),
+  createLiveUI(),
   // createAdvancedEditPanel(),
 ]
 

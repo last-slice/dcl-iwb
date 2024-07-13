@@ -1,6 +1,6 @@
 import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import { getSceneInformation } from '~system/Runtime'
-import {COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
+import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
 import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
@@ -425,7 +425,7 @@ async function loadBlankParcels(){
 export function addBlankParcels(parcels:string[]){
     parcels.forEach((parcel:string) => {
         let blank = engine.addEntity()
-        GltfContainer.create(blank, {src: 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb'})
+        GltfContainer.create(blank, {src: CATALOG_IDS.BLANK_GRASS})
 
         const center = getCenterOfParcels([parcel])
         Transform.create(blank, {position: Vector3.create(center[0], 0, center[1])})

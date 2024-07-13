@@ -37,6 +37,7 @@ import { hideUIImage } from "../ui/Objects/Edit/EditUIImage"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel, updateRows } from "../ui/Objects/SceneInfoPanel"
 import { resetCloneEntity } from "../ui/Objects/Edit/ActionPanels/AddClonePanel"
 import { resetLevelSpawnEntity } from "../ui/Objects/Edit/EditLevel"
+import { resetCurrentBouncerSpawns, resetLiveSpawnEntity } from "../ui/Objects/Edit/EditLive"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -267,7 +268,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
 
-        if ((selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > colyseusRoom.state.cv) || (!selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
+        if ((selectedItem.itemData.pending || selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > colyseusRoom.state.cv) || (!selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
 
@@ -276,6 +277,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                     console.log('bb is a string')
                     selectedItem.itemData.bb = JSON.parse(selectedItem.itemData.bb)
                 }
+                console.log('item bb is', selectedItem.itemData.bb)
                 scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.z, selectedItem.itemData.bb.y)
             }
 
@@ -537,6 +539,8 @@ export function saveItem() {
 
     resetCloneEntity()
     resetLevelSpawnEntity()
+    resetLiveSpawnEntity()
+    resetCurrentBouncerSpawns()
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {

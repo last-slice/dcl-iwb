@@ -570,14 +570,11 @@ export function createSceneInfoPanel() {
                     }}
                     onMouseDown={() => {
                         setUIClicked(true)
-                        // pressed.Save = true
                         editItem(selectedAssetId, EDIT_MODES.EDIT)
                         deselectRow()
                     }}
                     onMouseUp={() => {
                         setUIClicked(true)
-                        // pressed.Save = false
-
                     }}
                     uiText={{value: "Edit", color: Color4.White(), fontSize: sizeFont(30, 15)}}
                 />

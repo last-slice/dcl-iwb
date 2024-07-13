@@ -22,18 +22,47 @@ import { colyseusRoom } from "./Colyseus";
 import { updateStoreView, updateStoreVisibleItems } from "../ui/Objects/StoreView";
 import { getTriggerEvents } from "./Triggers";
 import { attemptGameEnd, attemptGameStart } from "./Game";
+import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
+import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
+import { movePlayerTo } from "~system/RestrictedActions";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
 
 export async function createColyseusListeners(room:Room){
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, (info:any)=>{
+        console.log(SERVER_MESSAGE_TYPES.SCENE_ACTION + ' received', info)
+        if(!info && !info.type){
+            return
+        }
+
+        switch(info.type){
+            case 'live-bounce':
+                movePlayerTo({newRelativePosition:info.p, cameraTarget:info.l})
+                break;
+
+            case 'live-players-get':
+                updatePlayers(info.players)
+                break;
+        }
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.ADD_WORLD_ASSETS, (info:any)=>{
+        console.log(SERVER_MESSAGE_TYPES.ADD_WORLD_ASSETS + ' received', info)
+        setRealmAssets(info)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.DELETE_WORLD_ASSETS, (info:any)=>{
+        console.log(SERVER_MESSAGE_TYPES.DELETE_WORLD_ASSETS + ' received', info)
+        setRealmAssets(info)
+    })
+    
     room.onMessage(SERVER_MESSAGE_TYPES.GET_MARKETPLACE, (info:any)=>{
         console.log(SERVER_MESSAGE_TYPES.GET_MARKETPLACE + ' received', info)
         if(info){
             for(let id in info){
                 marketplaceItems.set(id, info[id])
             }
-            refreshMarketplaceItems()
         }
         updateStoreVisibleItems()
         updateStoreView("main")
@@ -42,7 +71,7 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
-        setCatalog(info.catalog)
+        // setCatalog(info.catalog)//
         setRealmAssets(info.realmAssets)
 
         refreshSortedItems()
@@ -58,28 +87,30 @@ export async function createColyseusListeners(room:Room){
         utils.timers.setTimeout(()=>{
             refreshMap()
         }, 1000 * 5)
+
+        // displayLiveControl(true)//
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
-    //     if (info.owner.toLowerCase() === localUserId) {
-    //         if(info.init){
-    //             displayWorldReadyPanel(true, info)
-    //             displayPendingPanel(false, "ready")
-    //         }
-    //         else{
-    //             displayPendingPanel(true, "ready")
-    //         }
-    //     } else {
-    //         log('should display something else')
-    //         showNotification({
-    //             type: NOTIFICATION_TYPES.MESSAGE,
-    //             message: (info.init? "New world deployed!\n" : "World Updated!\n") + info.ens + "!",
-    //             animate: {enabled: true, return: true, time: 5}
-    //         })
-    //     }
-    //     setWorlds([info])
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
+        if (info.owner.toLowerCase() === localUserId) {
+            if(info.init){
+                // displayWorldReadyPanel(true, info)
+                displayPendingPanel(false, "ready")
+            }
+            else{
+                displayPendingPanel(true, "ready")
+            }
+        } else {
+            log('should display something else')
+            showNotification({
+                type: NOTIFICATION_TYPES.MESSAGE,
+                message: (info.init? "New world deployed!\n" : "World Updated!\n") + info.ens + "!",
+                animate: {enabled: true, return: true, time: 5}
+            })
+        }
+        setWorlds([info])
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL + ' received', info)
@@ -154,6 +185,12 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE + ' received', info)
+        if(info.forceScene){
+            if(!localPlayer.activeScene || localPlayer.activeScene.id !== info.forceScene){
+                return
+            }
+        }
+
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "" + info.message, animate:{enabled:true, return:true, time:5}})
         if(info.sound){
             playSound(info.sound)

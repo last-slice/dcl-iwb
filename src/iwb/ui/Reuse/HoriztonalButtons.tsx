@@ -1,8 +1,6 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
 import { generateButtons } from '../ui'
 import resources from '../../helpers/resources'
-import { Color4 } from '@dcl/sdk/math'
-
 
 export function HoriztonalButtons(data:any){
     return(
@@ -12,8 +10,8 @@ export function HoriztonalButtons(data:any){
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
+                    width: data.width ? data.width : '100%',
+                    height: data.height ? data.height : '10%',
                 }}
                 // uiBackground={{ color: Color4 .Teal() }}
             >

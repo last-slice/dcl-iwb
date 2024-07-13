@@ -22,6 +22,8 @@ import { attemptGameEnd } from "./Game"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
+let lockbox:Entity
+
 export function getActionEvents(entity: Entity) {
     if (!actions.has(entity)) {
       actions.set(entity, mitt())
@@ -227,6 +229,14 @@ function updateActions(scene:any, info:any, action:any){
             case Actions.END_GAME:
                 handleEndGame(scene, info, action)
             break;
+
+            case Actions.LOCK_PLAYER:
+                handleLockPlayer(scene, info, action)
+                break;
+
+            case Actions.UNLOCK_PLAYER:
+                handleUnlockPlayer(scene, info, action)
+                break;
         }
     })
 }
@@ -618,4 +628,31 @@ function handleLoadLevel(scene:any, info:any, action:any){
 function handleEndGame(scene:any, info:any, action:any){
     attemptGameEnd({sceneId:scene.id})
     sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+}
+
+function handleLockPlayer(scene:any, info:any, action:any){
+    lockbox = engine.addEntity()
+    let left = engine.addEntity()
+    let right = engine.addEntity()
+    let front = engine.addEntity()
+    let back = engine.addEntity()
+
+    let player = Transform.get(engine.PlayerEntity).position
+    console.log(Transform.get(engine.PlayerEntity).position)
+
+    Transform.createOrReplace(lockbox, {position: Vector3.create(player.x, player.y + 1, player.z)})
+
+    MeshCollider.setPlane(left, ColliderLayer.CL_PHYSICS)
+    MeshCollider.setPlane(right, ColliderLayer.CL_PHYSICS)
+    MeshCollider.setPlane(front, ColliderLayer.CL_PHYSICS)
+    MeshCollider.setPlane(back, ColliderLayer.CL_PHYSICS)
+
+    Transform.create(left, {position: Vector3.create(-0.5, 0, 0), rotation:Quaternion.fromEulerDegrees(0,90,0), scale:Vector3.create(1,100,1), parent:lockbox})
+    Transform.create(right, {position: Vector3.create(0.5, 0, 0), rotation:Quaternion.fromEulerDegrees(0,90,0), scale:Vector3.create(1,100,1), parent:lockbox})
+    Transform.create(front, {position: Vector3.create(0, 0, 0.5), scale:Vector3.create(1,100,1), parent:lockbox})
+    Transform.create(back, {position: Vector3.create(0, 0, -0.5), scale:Vector3.create(1,100,1), parent:lockbox})
+}
+
+function handleUnlockPlayer(scene:any, info:any, action:any){
+    engine.removeEntityWithChildren(lockbox)
 }

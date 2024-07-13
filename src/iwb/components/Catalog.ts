@@ -1,5 +1,5 @@
 import { SceneItem } from "../helpers/types";
-import { selectedSetting } from "../ui/Objects/CatalogPanel";
+import { initCatalog, selectedSetting } from "../ui/Objects/CatalogPanel";
 import { realm, worlds } from "./Config";
 
 export let items: Map<string, SceneItem> = new Map();
@@ -45,6 +45,12 @@ export function setRealmAssets(assets:any){
     }
 }
 
+export function deleteRealmAsset(item:any){
+    items.delete(item.id)
+    refreshSortedItems()
+    initCatalog(sortedAll)
+}
+
 export function refreshSortedItems() {
     original = [...items.values()].filter((it:any)=> !it.ugc)
     playerItemsOriginal = [...items.values()].filter((it:any)=> it.ugc)
@@ -57,7 +63,13 @@ export function refreshSortedItems() {
 }
 
 export function refreshMarketplaceItems() {
-    marketplaceOriginal = [...marketplaceItems.values()]
+    marketplaceOriginal = [...marketplaceItems.values()].filter(item1 => !original.some(item2 => item2.id === item1.id));
+
+    sortedAll = sortByType(marketplaceOriginal)
+    Sorted3D = sortByType(marketplaceOriginal, "3D")
+    Sorted2D = sortByType(marketplaceOriginal, "2D")
+    SortedAudio = sortByType(marketplaceOriginal, "Audio")
+    SortedSmartItems = sortByType(marketplaceOriginal, "SM")
 }
 
 export function updateItem(id: string, update: SceneItem) {
@@ -82,5 +94,4 @@ export function setNewItems() {
             }
         })
     }
-
 }

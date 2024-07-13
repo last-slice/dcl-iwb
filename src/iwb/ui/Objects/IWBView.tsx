@@ -20,7 +20,7 @@ let buttons:any[] = [
         updateWorldView("Current World")
         }
     },
-    {label:"Store", pressed:false, func:()=>{
+    {label:"Catalog", pressed:false, func:()=>{
         displayMainView(false)
         displayStoreView(true)
         }

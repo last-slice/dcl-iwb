@@ -35,6 +35,7 @@ import { UiTexts } from '../../components/UIText'
 import { EditUIImage, hideUIImage, showUIImage } from './Edit/EditUIImage'
 import { EditGaming, gameView, updateEditGameView, updateGamingInfo } from './Edit/EditGaming'
 import { EditLevel, levelView, resetLevelSpawnEntity, updateEditLevelView, updateLevelInfo } from './Edit/EditLevel'
+import { EditLive, liveView, resetCurrentBouncerSpawns, resetLiveSpawnEntity, updateEditLiveView, updateLiveBouncerPositions } from './Edit/EditLive'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -51,6 +52,9 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.LIVE_COMPONENT:
+            updateLiveBouncerPositions()
+            break;
         case COMPONENT_TYPES.LEVEL_COMPONENT:
             updateLevelInfo()
             break;
@@ -396,6 +400,17 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.LIVE_COMPONENT:
+            if(liveView === "main"){
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }else if(liveView === "add-bounce-spawn"){
+                resetLiveSpawnEntity()
+                updateEditLiveView("bouncer")
+            }else if(liveView === "bouncer"){
+                resetCurrentBouncerSpawns()
+                updateEditLiveView("main")
+            }
+            break;
         case COMPONENT_TYPES.LEVEL_COMPONENT:
             if(levelView === "main"){
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -405,7 +420,6 @@ function getBackButtonLogic(){
             }else if(levelView === "loading"){
                 updateEditLevelView("main")
             }
-            
             break;
 
         case COMPONENT_TYPES.GAME_COMPONENT:
@@ -757,6 +771,7 @@ function EditObjectData(){
                 <EditUIImage/>
                 <EditGaming/>
                 <EditLevel/>
+                <EditLive/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
@@ -882,12 +897,13 @@ function getBasicComponents(){
         COMPONENT_TYPES.UI_TEXT_COMPONENT,
         COMPONENT_TYPES.UI_IMAGE_COMPONENT,
         COMPONENT_TYPES.GAME_COMPONENT,
-        COMPONENT_TYPES.LEVEL_COMPONENT
+        COMPONENT_TYPES.LEVEL_COMPONENT,
+        COMPONENT_TYPES.LIVE_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
             components.push(component)
-        }
+        }//
     })
 
     components.sort((a,b) => a.localeCompare(b))
@@ -922,7 +938,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-13).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -961,7 +977,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-12).filter(item => !components.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-13).filter(item => !components.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

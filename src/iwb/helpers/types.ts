@@ -38,6 +38,8 @@ export enum SERVER_MESSAGE_TYPES {
     UPDATE_ASSET_LOCKED = 'update_asset_locked',
     UPDATE_ASSET_BUILD_VIS = 'update_asset_build_visibility',
     DELETE_UGC_ASSET = 'delete_ugc_asset',
+    ADD_WORLD_ASSETS = 'add_world_assets',
+    DELETE_WORLD_ASSETS = 'delete_world_assets',
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
@@ -319,6 +321,7 @@ export enum COMPONENT_TYPES {
     // LEVEL_COMPONENT = 'Levels',
     // BILLBOARD_COMPONENT = 'Billboard'
     LEVEL_COMPONENT = 'Levels',
+    LIVE_COMPONENT = 'Live'
 }
 
 export enum BLOCKCHAINS {
@@ -703,5 +706,6 @@ export enum SCENE_CATEGORIES {
 }
 
 export enum CATALOG_IDS {
-    WHITE_ARROW = "cb3a9e83-4b2d-4b3b-b9c1-2b636a94b36c"
+    WHITE_ARROW = "cb3a9e83-4b2d-4b3b-b9c1-2b636a94b36c",
+    BLANK_GRASS = 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb'
 }

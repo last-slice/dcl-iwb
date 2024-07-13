@@ -259,4 +259,5 @@ export function addPendingAsset(info:any){
 export function setSettings(sets:any){
     settings = sets
     settings.sceneCheck = true
+    settings.triggerDebug = false
 }

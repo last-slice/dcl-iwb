@@ -10,6 +10,7 @@ import { calculateSquareImageDimensions, sizeFont, getImageAtlasMapping } from '
 import { uiSizes } from '../../uiConfig'
 import { playSound } from '../../../components/Sounds'
 import { setUIClicked } from '../../ui'
+import { utils } from '../../../helpers/libraries'
 
 let settingsView = "Visual"
 
@@ -17,6 +18,7 @@ let labels:any[] = [
     {label:"Scene Notifications", key:"nots"},
     {label:"Popup Confirmations", key:"confirms"},
     {label:"Check Scene Boundaries", key:"sceneCheck"},
+    {label:"Enable Trigger Debug", key:"triggerDebug"},
 ]
 
 export function updateSettingsView(view:string){
@@ -152,6 +154,9 @@ function generateSettingsToggles(){
             setUIClicked(true)
             playSound(SOUND_TYPES.SELECT_3)
             settings[setting.key] = !settings[setting.key]
+            if(setting.key === "triggerDebug"){
+                utils.triggers.enableDebugDraw(settings[setting.key])
+            }
             sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, {action:"update", key:setting.key, value: settings[setting.key]})
         }}
         onMouseUp={()=>{

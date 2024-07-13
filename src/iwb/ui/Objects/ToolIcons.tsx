@@ -11,6 +11,7 @@ import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from
 import { playerMode } from "../../components/Config"
 import { settingsIconData, topTools, uiModes } from "../uiConfig"
 import { setUIClicked } from "../ui"
+import { showStore } from "./StoreView"
 
 export let showToolsPanel = false
 
@@ -71,7 +72,7 @@ export function createToolsPanel() {
             }}
             onMouseDown={()=>{
                 setUIClicked(true)
-                if(selectedItem && selectedItem.enabled){
+                if(selectedItem && selectedItem.enabled || showStore){
                     return
                 }
                 
@@ -182,7 +183,7 @@ function CreateToolIcon(data:any){
     }}
     onMouseDown={()=>{
         setUIClicked(true)
-        if(selectedItem && selectedItem.enabled){
+        if(selectedItem && selectedItem.enabled || showStore){
             return
         }
 

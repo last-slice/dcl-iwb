@@ -1,8 +1,8 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { calculateImageDimensions, calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
-import { CatalogItemType, EDIT_MODES, SCENE_MODES } from '../../helpers/types'
-import { sortedAll, original, Sorted2D, Sorted3D, SortedAudio, SortedSmartItems, refreshSortedItems, styles, items } from '../../components/Catalog'
+import { CatalogItemType, EDIT_MODES, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
+import { sortedAll, original, Sorted2D, Sorted3D, SortedAudio, SortedSmartItems, refreshSortedItems, styles, items, deleteRealmAsset } from '../../components/Catalog'
 import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import { Color4 } from '@dcl/sdk/math'
@@ -10,48 +10,71 @@ import { playerMode } from '../../components/Config'
 import { displayCatalogInfoPanel, setSelectedInfoItem } from './CatalogInfoPanel'
 import { selectCatalogItem } from '../../modes/Build'
 import { setUIClicked } from '../ui'
+import { displayStoreView } from './StoreView'
+import { sendServerMessage } from '../../components/Colyseus'
+import { showNotification } from './NotificationPanel'
+import { displayPendingPanel } from './PendingInfoPanel'
 
 let alphabet = [
     "A", "B", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 ]
-let settings: any[] = [
-    {label: "Public", enabled: true},
-    {label: "Private", enabled: false},
-]
+
 let catalogInitialized = false
-let assetTypeSelectedIndex = 0
 let columns = 3;
 let rows = 3;
-let currentPage = 0;
-let itemsPerPage = 9;
-let totalPages = 0
+export let currentPage = 0;
+export let itemsPerPage = 9;
+export let totalPages = 0
 
 export let showCatalogPanel = false
 export let filtered: CatalogItemType[] = []
 export let itemsToShow: CatalogItemType[] = []
 
 export let styleFilter = "All"
-// export let typeFilter = "All"
 export let searchFilter = ""
-export let objName = ""
 
 export let selectedSetting = 0
 
+export function updateCatalogSizing(row:number, column:number, perPage:number){
+    rows = row
+    columns = column
+    itemsPerPage = perPage
+}
+
+export function updateSearchFilter(filter:string){//
+    searchFilter = filter
+}
+
+export function updateCurrentPage(value:number, force?:boolean){
+    currentPage += value
+    force ? currentPage = value : null
+    console.log('current page is', currentPage, value)
+}
+
 export function displayCatalogPanel(show: boolean) {
     if (show) {
-        if (!catalogInitialized) {
-            filtered = sortedAll
-            totalPages = Math.ceil(original.length / (columns * rows));
-            refreshView()
+        itemsToShow.length = 0
+        updateCatalogSizing(4,2,8)
 
+
+        refreshSortedItems()
+
+        // if (!catalogInitialized) {
+            initCatalog(sortedAll)
             catalogInitialized = true
-        }
+        // }
     }
 
     showCatalogPanel = show
 }
 
-function refreshView() {
+export function initCatalog(items:CatalogItemType[]){
+    filtered = items
+    totalPages = Math.ceil(items.length / (columns * rows));
+    refreshView()
+}
+
+export function refreshView() {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
@@ -91,7 +114,7 @@ function findPageForLetter(letter: string): number | null {
     return null; // No names starting with "B" found in the list
 }
 
-function filterByStyle(index: number) {
+export function filterByStyle(index: number) {
     styleFilter = styles[index]
     filterCatalog()
 }
@@ -131,7 +154,7 @@ export function filterCatalog() {
     refreshView()
 }
 
-function generateAlphabet() {
+export function generateAlphabet() {
     let arr: any[] = []
     for (let i = 0; i < alphabet.length; i++) {
         arr.push(<AlphabetItem row={i} item={alphabet[i]}/>)
@@ -171,16 +194,71 @@ function AlphabetItem(data: any) {
 }
 
 function generateCatalogRows() {
-    let arr: any[] = []
+    if(itemsToShow.length > 0){
+        let arr: any[] = []
 
-    let start = 0
-    let end = 3
-    for (let i = 0; i < Math.ceil(itemsToShow.length / 3); i++) {
-        arr.push(<CatalogRow row={start} items={itemsToShow.slice(start, end)}/>)
-        start += 3
-        end += 3
+        let start = 0
+        let end = 2
+        for (let i = 0; i < Math.ceil(itemsToShow.length / 2); i++) {
+            arr.push(<CatalogRow row={start} items={itemsToShow.slice(start, end)}/>)
+            start += 2
+            end += 2
+        }
+        return arr
+    }else{
+        return(
+            <UiEntity
+            key={"catalog-empty-container"}
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '60%',
+            }}
+            >
+                <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                uiText={{value:"Choose assets from the Catalog!", fontSize:sizeFont(25,20)}}
+                />
+
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5.5, getAspect(uiSizes.buttonPillBlack)).height,
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                    }}
+                    onMouseDown={() => {
+                        setUIClicked(true)
+                        displayCatalogPanel(false)
+                        displayStoreView(true)
+                    }}
+                    onMouseUp={()=>{
+                        setUIClicked(false)
+                    }}
+                    uiText={{value:"View", fontSize:sizeFont(25,20)}}
+                />
+
+            </UiEntity>
+        )
     }
-    return arr
 }
 
 function generateRowItems(row: number, items: CatalogItemType[]) {
@@ -196,13 +274,14 @@ const CatalogRow = ({row, items}: { row: number, items: CatalogItemType[] }) => 
             uiTransform={{
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 alignContent:'center',
                 justifyContent: 'center',
                 width: '85%',
-                height: '20%',
-                margin: {top: '1%'}
+                height: '15%',
+                margin: {top: '1%', bottom:'1%'}
             }}
+            // uiBackground={{color:Color4.Green()}}
         >
             {generateRowItems(row, items)}
 
@@ -219,13 +298,38 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '32%',
+                width: '50%',
                 height: '100%',
             }}
-            // uiBackground={{color:Color4.Teal()}}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.horizRectangle)
+            }}
         >
 
-            {/* item image */}
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '80%',
+                }}
+                >
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '70%',
+                    height: '100%',
+                }}
+                >
+                                {/* item image */}
             <UiEntity
                 uiTransform={{
                     display: 'flex',
@@ -258,55 +362,37 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 }}
             >
 
-<UiEntity
-                uiTransform={{
-                    display: item.anim ? 'flex' : 'none',
-                    justifyContent: 'flex-start',
-                    width: calculateSquareImageDimensions(2).width,
-                    height: calculateSquareImageDimensions(2).height,
-                    positionType:'absolute',
-                    position:{right:0, bottom:0}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png',
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.rotateLeftArrow2Trans)
-                }}
-            />
+                <UiEntity
+                    uiTransform={{
+                        display: item.anim ? 'flex' : 'none',
+                        justifyContent: 'flex-start',
+                        width: calculateSquareImageDimensions(2).width,
+                        height: calculateSquareImageDimensions(2).height,
+                        positionType:'absolute',
+                        position:{right:0, bottom:0}
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png',
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.rotateLeftArrow2Trans)
+                    }}
+                />
 
             </UiEntity>
+                </UiEntity>
 
-            <UiEntity
+                <UiEntity
                 uiTransform={{
-                    display: 'flex',
                     flexDirection: 'column',
-                    width: '90%',
-                    height: '20%',
-                }}
-                uiText={{
-                    value: item.n.length > 15 ? item.n.substring(0, 15) + "..." : item.n,
-                    fontSize: sizeFont(20, 12)
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            />
-
-
-            <UiEntity
-                uiTransform={{
-                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
-                    alignContent: 'center',
-                    flexDirection: 'row',
-                    width: '90%',
-                    height: '15%',
-                    margin: {top: '2%'}
+                    width: '30%',
+                    height: '100%',
                 }}
-                // uiBackground={{color:Color4.Green()}}
-            >
-
-                {/* <UiEntity
+                >
+                     {/* <UiEntity
                     uiTransform={{
                         display: 'flex',
                         justifyContent: 'center',
@@ -329,6 +415,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         }
                     }}
                 /> */}
+
 
 
                 <UiEntity
@@ -358,9 +445,54 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                     }}
                 />
 
+                    <UiEntity
+                        uiTransform={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignContent: 'center',
+                            flexDirection: 'row',
+                            width: calculateSquareImageDimensions(4).width,
+                            height: calculateSquareImageDimensions(4).height,
+                            margin: {left: '1%'}
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas1.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
+                        }}
+                        onMouseDown={() => {
+                            setUIClicked(true)
+                            deleteRealmAsset(item)
+                            sendServerMessage(SERVER_MESSAGE_TYPES.DELETE_WORLD_ASSETS, [item.id])
+                            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Item removed! Initiate a deployment to remove them from your world.", animate:{enabled:true, return:true, time:7}})
+                            displayPendingPanel(true, "assetsready")//
+                        }}
+                        onMouseUp={()=>{
+                            setUIClicked(false)
+                        }}
+                    />
+
+                </UiEntity>
 
             </UiEntity>
 
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                    height: '15%',
+                    margin:{bottom:'3%', left:"5%"}
+                }}
+                uiText={{
+                    value: item.n.length > 20 ? item.n.substring(0, 20) + "..." : item.n,
+                    fontSize: sizeFont(20, 15),
+                    textAlign:'middle-left'
+                }}
+                // uiBackground={{color:Color4.Blue()}}
+            />
 
         </UiEntity>
     )
@@ -645,7 +777,7 @@ export function createCatalogPanel(){
                     width: '5%',
                     height: '70%',
                     positionType: 'absolute',
-                    position: {left: '5%', top: '26%'}
+                    position: {left: '3%', top: '24%'}
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >

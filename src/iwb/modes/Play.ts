@@ -25,6 +25,7 @@ import { abortGameTermination, checkGameplay } from "../components/Game"
 import { setUIClicked } from "../ui/ui"
 import { localPlayer } from "../components/Player"
 import { showNotification } from "../ui/Objects/NotificationPanel"
+import { disableLivePanel, setLivePanel } from "../components/Live"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -133,6 +134,7 @@ export function enableSceneEntities(sceneId: string) {
                             setTriggersForPlayMode(scene, entityInfo)
                             setUiTextPlayMode(scene, entityInfo)
                             setUiImagePlayMode(scene, entityInfo)
+                            setLivePanel(scene, entityInfo)
                         // }
                     // })
                 }
@@ -183,6 +185,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableCounterForPlayMode(scene, entityInfo)
         disableUiTextPlayMode(scene, entityInfo)
         disableUiImagePlayMode(scene, entityInfo)
+        disableLivePanel(scene, entityInfo)
 
         //to do
         // - reset states

@@ -40,11 +40,11 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
           }],
           ()=>{
             const triggerEvents = getTriggerEvents(entityInfo.entity)
-          triggerEvents.emit(Triggers.ON_ENTER)
+          triggerEvents.emit(Triggers.ON_ENTER, {input:0, pointer:0, entity:entityInfo.entity})
           },
           ()=>{
             const triggerEvents = getTriggerEvents(entityInfo.entity)
-          triggerEvents.emit(Triggers.ON_LEAVE)
+          triggerEvents.emit(Triggers.ON_LEAVE, {input:0, pointer:0, entity:entityInfo.entity})
           },
           Color3.create(236/255,209/255,92/255)
         )
@@ -52,7 +52,6 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
     }
   }
 }
-
 
 export function getTriggerEvents(entity: Entity) {
     if (!triggers.has(entity)) {

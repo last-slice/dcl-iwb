@@ -7,9 +7,11 @@ import resources, { colors } from '../../helpers/resources'
 import { isPreview } from '../../helpers/functions'
 import { Spinner, UISpinner } from '../../../ui_components/UISpinner'
 import { playSound } from '../../components/Sounds'
-import { NOTIFICATION_TYPES, SOUND_TYPES } from '../../helpers/types'
+import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
 import { displayMainView } from './IWBView'
 import { showNotification } from './NotificationPanel'
+import { sendServerMessage } from '../../components/Colyseus'
+import { realm, worlds } from '../../components/Config'
 
 let showView = false
 let view = ""
@@ -198,12 +200,12 @@ export function createPendingStatusPanel(){
             },
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
-        uiText={{value:"Update", fontSize:sizeFont(25,20), color:Color4.White()}}
+        uiText={{value:"Update", fontSize:sizeFont(20,15), color:Color4.White()}}
         onMouseDown={()=>{
             playSound(SOUND_TYPES.SELECT_3)
             displayMainView(false)
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
-            // cRoom.send(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
+            sendServerMessage(SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, worlds.find((w)=> w.ens === realm))
             displayPendingPanel(true, "deployment")
         }}
     />
