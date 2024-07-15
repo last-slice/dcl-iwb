@@ -1,8 +1,8 @@
-import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "../components/Colyseus"
 import { getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
-import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES } from "../helpers/types"
+import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, Triggers } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
@@ -13,7 +13,7 @@ import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/
 import { setPointersPlayMode } from "../components/Pointers"
 import { checkTransformComponent } from "../components/Transform"
 import { disableTextShapePlayMode, setTextShapeForPlayMode } from "../components/TextShape"
-import { disableTriggers, setTriggersForPlayMode } from "../components/Triggers"
+import { disableTriggers, getTriggerEvents, setTriggersForPlayMode } from "../components/Triggers"
 import { disableCounterForPlayMode } from "../components/Counter"
 import { disableUiTextPlayMode, setUiTextPlayMode } from "../components/UIText"
 import { disableUiImagePlayMode, setUiImagePlayMode } from "../components/UIImage"
@@ -99,6 +99,7 @@ export async function disableSceneEntities(sceneId:any) {
 export function enableSceneEntities(sceneId: string) {
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(scene){
+
         setUIClicked(false)
         updatePlayModeReset(true)
 
@@ -137,6 +138,9 @@ export function enableSceneEntities(sceneId: string) {
                             setLivePanel(scene, entityInfo)
                         // }
                     // })
+
+                    let triggerEvents = getTriggerEvents(entityInfo.entity)
+                    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
                 }
             }
         })
@@ -186,6 +190,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableUiTextPlayMode(scene, entityInfo)
         disableUiImagePlayMode(scene, entityInfo)
         disableLivePanel(scene, entityInfo)
+        resetTween(scene, entityInfo)
 
         //to do
         // - reset states
@@ -194,6 +199,9 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
 
 
         PointerEvents.deleteFrom(entityInfo.entity)
+
+        let triggerEvents = getTriggerEvents(entityInfo.entity)
+        triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
     }
 }
 
@@ -236,5 +244,11 @@ export function teleportToScene(info:any){
     
         movePlayerTo({newRelativePosition:position, cameraTarget:camera})
     }
+}
 
+export function resetTween(scene:any, entityInfo:any){
+    // let tweenData = Tween.getMutableOrNull(entityInfo.entity)
+    // tweenData ? tweenData.playing = false : null
+    TweenSequence.deleteFrom(entityInfo.entity)
+    Tween.deleteFrom(entityInfo.entity)
 }

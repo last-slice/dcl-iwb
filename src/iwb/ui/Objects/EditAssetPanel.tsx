@@ -2,7 +2,7 @@ import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgro
 import resources from '../../helpers/resources'
 import { localPlayer, settings } from '../../components/Player'
 import { EDIT_MODES, COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
-import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity } from '../../modes/Build'
+import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity, resetAdditionalAssetFeatures } from '../../modes/Build'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
@@ -21,7 +21,7 @@ import { EditGltf } from './Edit/EditGltf'
 import { EditVideo } from './Edit/EditVideo'
 import { EditMeshCollider } from './Edit/EditMeshCollider'
 import { EditMeshRender } from './Edit/EditMeshRender'
-import { EditMaterial } from './Edit/EditMaterial'
+import { EditMaterial, updateMaterialComponent } from './Edit/EditMaterial'
 import { EditTexture } from './Edit/EditTexture'
 import { EditParenting, updateChildrenAssets } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
@@ -36,6 +36,7 @@ import { EditUIImage, hideUIImage, showUIImage } from './Edit/EditUIImage'
 import { EditGaming, gameView, updateEditGameView, updateGamingInfo } from './Edit/EditGaming'
 import { EditLevel, levelView, resetLevelSpawnEntity, updateEditLevelView, updateLevelInfo } from './Edit/EditLevel'
 import { EditLive, liveView, resetCurrentBouncerSpawns, resetLiveSpawnEntity, updateEditLiveView, updateLiveBouncerPositions } from './Edit/EditLive'
+import { resetTweenActionPanel } from './Edit/ActionPanels/AddTweenPanel'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -89,7 +90,11 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.POINTER_COMPONENT:
             updatePointerView("info")
-            updatePointerView("main")//
+            updatePointerView("main")
+            break;
+
+        case COMPONENT_TYPES.MATERIAL_COMPONENT:
+            updateMaterialComponent()
             break;
 
         case COMPONENT_TYPES.PARENTING_COMPONENT:
@@ -175,7 +180,7 @@ export function createEditAssetPanel() {
                         height: '5%',
                         margin: {top: '1%'}
                     }}
-                    // uiBackground={{color:Color4.Green()}}//
+                    // uiBackground={{color:Color4.Green()}}// 
                 >
 
                     {/* save button */}
@@ -231,6 +236,7 @@ export function createEditAssetPanel() {
                             }else{
                                 deleteSelectedItem(selectedItem.aid)
                             }
+                            resetAdditionalAssetFeatures()
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)
@@ -260,6 +266,7 @@ export function createEditAssetPanel() {
                             cancelEditingItem()
                                 componentViewType = "basic"
                                 openEditComponent("")
+                                resetAdditionalAssetFeatures()
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)
@@ -450,6 +457,7 @@ function getBackButtonLogic(){
             if(actionView === "add"){
                 updateActionView("main")
                 resetSetPositionEntity()
+                resetTweenActionPanel()
             }else{
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             }

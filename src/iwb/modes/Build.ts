@@ -38,6 +38,8 @@ import { displaySceneAssetInfoPanel, showSceneInfoPanel, updateRows } from "../u
 import { resetCloneEntity } from "../ui/Objects/Edit/ActionPanels/AddClonePanel"
 import { resetLevelSpawnEntity } from "../ui/Objects/Edit/EditLevel"
 import { resetCurrentBouncerSpawns, resetLiveSpawnEntity } from "../ui/Objects/Edit/EditLive"
+import { resetTweenActionPanel } from "../ui/Objects/Edit/ActionPanels/AddTweenPanel"
+import { resetTween } from "./Play"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -53,7 +55,8 @@ export function updateSelectedAssetId(value:any){
     selectedAssetId = value
 
     let iwbInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(value)
-    let entity = getEntity(localPlayer.activeScene, value)
+    let entityInfo = getEntity(localPlayer.activeScene, value)
+    console.log('entity is', entityInfo.entity)
 
     let fake = {x:0,y:0,z:0}
 
@@ -65,7 +68,7 @@ export function updateSelectedAssetId(value:any){
         pFactor: 1,
         sFactor: 1,
         rFactor: 90,
-        entity: entity,
+        entity: entityInfo.entity,
         aid: value,//
         catalogId: iwbInfo.id,
         sceneId: localPlayer.activeScene.id,
@@ -262,13 +265,14 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         let scale: any
         scale = Vector3.One()
 
-        // TODO use configurable parameters for item height and depth
+        // TODO use configurable parameters for item height and dept
         let itemHeight = ITEM_HEIGHT_DEFAULT
         let itemDepth = ITEM_DEPTH_DEFAULT
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
 
-        if ((selectedItem.itemData.pending || selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > colyseusRoom.state.cv) || (!selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
+        if ((selectedItem.itemData.pending || selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > colyseusRoom.state.cv) || 
+            (!selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
 
@@ -446,7 +450,7 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
     hideAllPanels()
 
     let entityInfo = getEntity(localPlayer.activeScene, aid)
-    console.log('entity info is', entityInfo)
+    console.log('entity info is', entityInfo.entity)
     if(entityInfo){
         let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
         if(itemInfo && itemInfo.locked){
@@ -536,11 +540,15 @@ export function saveItem() {
     //         addTriggerArea(scene, selectedItem.entity, selectedItem.itemData, items.get(selectedItem.catalogId)!.n)
     //     }
     // }//
+    resetAdditionalAssetFeatures()
+}
 
+export function resetAdditionalAssetFeatures(){
     resetCloneEntity()
     resetLevelSpawnEntity()
     resetLiveSpawnEntity()
     resetCurrentBouncerSpawns()
+    resetTweenActionPanel()
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
@@ -1413,6 +1421,7 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         setUiImageBuildMode(scene, entityInfo)
         checkTransformComponent(scene, entityInfo)
         addBuildModePointers(entityInfo.entity)
+        resetTween(scene, entityInfo)
     }
     //         resetTweenPositions(entity, sceneItem, scene)//
 }

@@ -170,4 +170,29 @@ export let uiViews:any[] = [
             ]
         }
     },
+    {
+        view:"Deployment_Ready",
+        props:{
+            label:"Deployment Ready!",
+            text:"Your deployment is ready! Please click the button to sign your deployment.",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Sign",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
 ]

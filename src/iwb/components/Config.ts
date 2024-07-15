@@ -23,6 +23,7 @@ import { isLevelAsset } from "./Level"
 import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
 
 export let realm: string = ""
+export let island: string = "world"
 export let scenes: any[] = []
 export let worlds: any[] = []
 export let realmActions: any[] = []
@@ -40,13 +41,20 @@ export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
 
-export async function setRealm(){
+export async function setRealm(world:string, url:any){
+    realm = world
+
     let realmData = await getRealm({})
-    realm = realmData.realmInfo ? 
-        realmData.realmInfo.realmName === "LocalPreview" ? 
-        "dclbuilder.dcl.eth" : 
-        realmData.realmInfo.realmName : 
-        ""
+    console.log('realm data is', realmData)
+    // realm = realmData.realmInfo ? 
+    //     realmData.realmInfo.realmName === "LocalPreview" ? 
+    //     "dclbuilder.dcl.eth" : 
+    //     realmData.realmInfo.realmName : 
+    //     ""
+
+    if(getURLParameter(url, "realm") === "main"){
+        island = getURLParameter(url, "island")
+    }
 }
 
 export function setConfig(version:any, updates:any, videos:any, tutorialCID:any){
@@ -211,4 +219,20 @@ export function removeLocalWorldPermissionsUser(user:string){
         }
         updateIWBTable(getWorldPermissions())
     }
+}
+
+function getURLParameter(url: string, urlKey:string) {
+    const paramsString = url.split('?')[1];
+    if (!paramsString) {
+        return "";
+    }
+
+    const params = paramsString.split('&');
+    for (const param of params) {
+        const [key, value] = param.split('=');
+        if (key === urlKey) {
+            return decodeURIComponent(value);
+        }
+    }
+    return ""
 }

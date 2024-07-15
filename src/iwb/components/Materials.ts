@@ -57,19 +57,23 @@ export function materialListener(scene:any){
         // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
         // if(!iwbInfo.components.includes(COMPONENT_TYPES.MATERIAL_COMPONENT)){
         //   iwbInfo.components.push(COMPONENT_TYPES.MATERIAL_COMPONENT)
-        // }
+        // }//
         let info = getEntity(scene, aid)
         if(!info){
             return
         }
 
-        // material.listen("collision", (c:any, p:any)=>{
-        //     if(p !== undefined){
-        //         let info = getEntity(scene, aid)
-        //         if(info){
-        //             MeshCollider.setPlane(info.entity, mesh.p === -500 ? ColliderLayer.CL_POINTER || ColliderLayer.CL_PHYSICS : mesh.p)
-        //         }
-        //     }
-        // })//
+        material.albedoColor && material.albedoColor.listen("r", (c:any, p:any)=>{
+            checkMaterialComponent(scene, info)
+        })
+        material.albedoColor && material.albedoColor.listen("g", (c:any, p:any)=>{
+            checkMaterialComponent(scene, info)
+        })
+        material.albedoColor && material.albedoColor.listen("b", (c:any, p:any)=>{
+            checkMaterialComponent(scene, info)
+        })
+        material.albedoColor && material.albedoColor.listen("a", (c:any, p:any)=>{
+            checkMaterialComponent(scene, info)
+        })
     })
 }

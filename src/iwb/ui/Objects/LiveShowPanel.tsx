@@ -20,6 +20,7 @@ let bounceLocations:any[] = []
 
 let playerIndex:number = 0
 let bounceLocationIndex:number = 0
+let sceneActionIndex:number = 0
 
 export function displayLiveControl(value:boolean, aid?:string){
     showLiveControl = value
@@ -175,6 +176,7 @@ function MainView(){
     >
         <LiveMessage/>
         <LiveBouncer/>
+        {showLivePanel && liveView === "main" && <LiveActions/>}
     </UiEntity>
     )
 }
@@ -324,7 +326,8 @@ function LiveMessage(){
                             message:message,
                             sceneId: localPlayer.activeScene.id,
                             forceScene:forceScene ? localPlayer.activeScene.id :undefined
-                        })
+                        }
+                    )
                 }}
                 onMouseUp={()=>{
                     setUIClicked(false)
@@ -513,11 +516,86 @@ function LiveActions(){
             alignContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{bottom:'2%'}
+            margin:{bottom:'2%', top:"2%"}
         }}
-        uiText={{value:"Choose Action", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+        uiText={{value:"Run Action", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
         />
 
+    <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignContent: 'center',
+            width: '100%',
+            height: '50%',
+        }}
+        >
+             <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignContent: 'center',
+            width: '80%',
+            height: '100%',
+        }}
+        >
+            <Dropdown
+                options={[...["Select Action"], ...getSceneActions()]}
+                // options={entitiesWithActions.length > 0 ? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
+                selectedIndex={sceneActionIndex}
+                onChange={selectActionIndex}
+                uiTransform={{
+                width: '100%',
+                height: '100%',
+                }}
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
+        </UiEntity>
+
+         <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignContent: 'center',
+            width: '20%',
+            height: '100%',
+        }}
+        >
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '90%',
+                margin: {left: "1%", right: "1%"}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            uiText={{value: "Run", fontSize: sizeFont(20, 16)}}
+            onMouseDown={() => {
+                setUIClicked(true)
+                attemptAction()
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
+        </UiEntity>
+
+        </UiEntity>
+
+
+    
         </UiEntity>
     )
 }
@@ -537,5 +615,57 @@ function LiveAdmins(){
     }}
     >
     </UiEntity>
+    )
+}
+
+function selectActionIndex(index:number){
+    sceneActionIndex = index
+}
+
+function getSceneActions(){
+    if(!localPlayer){
+        return []
+    }
+
+    let scene = localPlayer.activeScene
+    if(!scene){
+        console.log('no scene to get actions')
+        return [] 
+    }
+    let actions = getActions(scene)
+    return actions.map(($:any)=> $.name)
+}
+
+function getActions(scene:any){
+    let actions:any[] = []
+    scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+        actionComponent.actions.forEach((action:any)=>{
+            actions.push({id:action.id, aid:aid, name:action.name})
+        })
+    })
+    return actions
+}
+
+function attemptAction(){
+    if(sceneActionIndex === 0 || !localPlayer){
+        return
+    }
+
+    let scene = localPlayer.activeScene
+    if(!scene){
+        return
+    }
+
+    let actions = getActions(scene)
+    let action = actions[sceneActionIndex - 1]
+    console.log('action attempt run is', action)
+    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, //
+        {
+            type:"live-action", 
+            actionId: action.id,
+            aid: action.aid,
+            sceneId: localPlayer.activeScene.id,
+            forceScene: localPlayer.activeScene.id
+        }
     )
 }

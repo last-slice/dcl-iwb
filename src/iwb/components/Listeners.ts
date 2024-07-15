@@ -1,18 +1,18 @@
 import { Room } from "colyseus.js";
 import { addInputSystem, createInputListeners } from "../systems/InputSystem";
 import { addPlayerScenes, createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings } from './Player'
-import { EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
+import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addLocalWorldPermissionsUser, addTutorial, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
+import { addLocalWorldPermissionsUser, addTutorial, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
 import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel, deleteCreationEntities } from "../modes/Create";
 import { getEntity } from "./IWB";
-import { refreshMap } from "../ui/Objects/Map";
+import { displayIWBMap, refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { getView } from "../ui/uiViews";
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel";
@@ -20,11 +20,11 @@ import { scene, sceneInfoDetailView } from "../ui/Objects/SceneMainDetailPanel";
 import { updateIWBTable } from "../ui/Reuse/IWBTable";
 import { colyseusRoom } from "./Colyseus";
 import { updateStoreView, updateStoreVisibleItems } from "../ui/Objects/StoreView";
-import { getTriggerEvents } from "./Triggers";
+import { actionQueue, getTriggerEvents } from "./Triggers";
 import { attemptGameEnd, attemptGameStart } from "./Game";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
-import { movePlayerTo } from "~system/RestrictedActions";
+import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -33,10 +33,33 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, (info:any)=>{
         console.log(SERVER_MESSAGE_TYPES.SCENE_ACTION + ' received', info)
         if(!info && !info.type){
+            console.log('invalid arguments, do not proceed with scene action')
             return
         }
 
         switch(info.type){
+            case 'live-action':
+                let scene = colyseusRoom.state.scenes.get(info.sceneId)
+                if(!scene || !info.aid || !info.actionId){
+                    console.log('invalid arguments, cannot run live action')//
+                    return
+                }
+
+                let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(info.aid)
+                console.log('action info is', actionInfo)
+                if(actionInfo){
+                    let entityInfo = getEntity(scene, info.aid)
+                    console.log('entity info is', entityInfo, entityInfo.entity)
+
+                    let action = actionInfo.actions.find(($:any)=> $.id === info.actionId)
+                    if(action){
+                        console.log('running entity action', action)
+                        actionQueue.push({aid:info.aid, action:action, entity:entityInfo.entity})
+                    }
+                }
+               
+                break;
+
             case 'live-bounce':
                 movePlayerTo({newRelativePosition:info.p, cameraTarget:info.l})
                 break;
@@ -84,11 +107,25 @@ export async function createColyseusListeners(room:Room){
         setNewItems()
         setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
 
+
+        //show/hide map on genesis city or world deployment
+        if(island !== "world"){
+            displayIWBMap(false)
+            return
+        }
         utils.timers.setTimeout(()=>{
             refreshMap()
         }, 1000 * 5)
+    })
 
-        // displayLiveControl(true)//
+    room.onMessage(SERVER_MESSAGE_TYPES.IWB_VERSION_UPDATE, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.IWB_VERSION_UPDATE + ' received', info)
+        if(!info){
+            return
+        }
+        iwbConfig.updates = info.updates
+        iwbConfig.v = info.version
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "The IWB Platform has an update!", animate:{enabled:true, return:true, time:5}})
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
@@ -127,18 +164,21 @@ export async function createColyseusListeners(room:Room){
     //     updateTutorialCID(info)
     // })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED + ' received', info)
-    //     displayPendingPanel(false, "")
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED + ' received', info)
+        displayPendingPanel(false, "")
 
-    //     if(info.valid){
-    //         displayDCLWorldPopup(true, info.world)
-    //         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
-    //     }
-    //     else{
-    //         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error deploying to your DCL World", animate:{enabled:true, return:true, time:10}})
-    //     }
-    // })
+        if(info.valid){
+            if(info.dest === "gc"){
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene " + info.name + " deployed to Genesis City!", animate:{enabled:true, return:true, time:10}})
+            }else{
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
+            }
+        }
+        else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error deploying to your DCL World", animate:{enabled:true, return:true, time:10}})
+        }
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_UPLOADED + ' received', info)
@@ -353,21 +393,25 @@ export async function createColyseusListeners(room:Room){
     //     }
     // })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY + ' received', info)
-    //     updateExportPanelView('main')
-    //     displaySceneSetting("Info")
-    //     displaySceneInfoPanel(false,null)
-    //     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: info.msg, animate:{enabled:true, return:true, time: 5}})
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY + ' received', info)
+        // updateExportPanelView('main')
+        // displaySceneSetting("Info")
+        // displaySceneInfoPanel(false,null)
+        if(!info.valid){
+            displayPendingPanel(false, "")
+        }
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: info.msg, animate:{enabled:true, return:true, time: 5}})
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY + ' received', info)
-    //     if(info && info.link){
-    //         localPlayer.deploymentLink = info.link
-    //         displayDeployPendingPanel(true)
-    //     }
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY + ' received', info)
+        if(info && info.link){
+            displaySkinnyVerticalPanel(true, getView("Deployment_Ready"), undefined, ()=>{
+                openExternalUrl({url:info.link.replace(" ", "%20")})
+            })
+        }
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_COUNT, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SCENE_COUNT + ' received', info)

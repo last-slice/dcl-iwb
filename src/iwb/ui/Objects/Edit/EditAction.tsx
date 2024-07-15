@@ -31,6 +31,7 @@ import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/
 import { AddRandomActionPanel } from './ActionPanels/AddRandomAction'
 import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
 import { resetLevelSpawnEntity } from './EditLevel'
+import { addTweenActionEntity, AddTweenActionPanel, resetTweenActionPanel } from './ActionPanels/AddTweenPanel'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -42,6 +43,10 @@ export function updateActionView(value:string){
 
     if(actionView === "main"){
         newActionData = {}
+    }
+
+    if(actionView === "add"){
+        newActionIndex = 0
     }
 }
 
@@ -450,6 +455,9 @@ function getActionDataPanel(){
             updateAssetActionsLoopPanel()
             return <AddLoopPanel/>
 
+        case Actions.START_TWEEN.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddTweenActionPanel/>
+
 
         //play sound - doesnt need any action metadata//
         //stop sound - doesnt need any action metadata
@@ -572,5 +580,15 @@ const ActionDefaults:any = {
     [Actions.START_LOOP]:{
         actions:[],
         timer:1
+    },
+    [Actions.START_TWEEN]:{
+        fn:()=>{addTweenActionEntity()},
+        x:0,
+        y:0,
+        z:0,
+        ip:0,
+        ttype:0,
+        timer:3,
+        tloop:0
     },
 }

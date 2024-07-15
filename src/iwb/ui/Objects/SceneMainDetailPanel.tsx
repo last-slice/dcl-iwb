@@ -18,6 +18,8 @@ import { displayAddSpawnPointPanel } from './AddSpawnPointPanel'
 import { localPlayer } from '../../components/Player'
 import { utils } from '../../helpers/libraries'
 import { displayExpandedMap } from './ExpandedMapView'
+import { displayMainView } from './IWBView'
+import { displayPendingPanel } from './PendingInfoPanel'
 
 export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
@@ -26,8 +28,8 @@ let show = false
 let visibleIndex = 1
 let newSceneBuilderWallet:string = ""
 
-let spawn:any = {x:0,y:0,z:0}
-let camera:any = {x:0,y:0,z:0}
+let selectedGenesisParcels:any[] = []
+let visibleLands:any[] = []
 
 let buttons:any[] = [
     {label:"Info", pressed:true, func:()=>{
@@ -43,11 +45,16 @@ let buttons:any[] = [
         }
     },
     {label:"Export", pressed:false, func:()=>{
+        visibleLands.length = 0
+        visibleIndex = 1
+        visibleLands = paginateArray(localPlayer.landsAvailable, visibleIndex, 6)
         updateSceneDetailsView("Export")
+        console.log('visible lands are ', visibleLands)
         }
     },
     {label:"Close", pressed:false, func:()=>{
         updateIWBTable([])
+        displayMainView(false)
         displaySceneDetailsPanel(false)
         },
         position:{bottom:0},
@@ -232,6 +239,7 @@ export function updateSceneDetailsView(value:string){
         refreshSpawns()
         updateIWBTable(spawns)
     }
+    selectedGenesisParcels.length = 0
 }
 
 export function createSceneDetailsPanel() {
@@ -360,6 +368,8 @@ function MainRightView(){
             <SizePanel/>
             <SpawnPanel/>
             <EditBuildersPanel/>
+            <ExportPanel/>
+            <ExportGenesisCityPanel/>
 
         </UiEntity>
   
@@ -1084,6 +1094,165 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
     )
 }
 
+export function ExportPanel(){
+    return (
+        <UiEntity
+            key={resources.slug + "scene::export::panel"}
+            uiTransform={{
+                display: sceneInfoDetailView === "Export" ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+{/* 
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            // uiBackground={{color:Color4.Gray()}}
+            uiText={{value:"Export Options", color:Color4.White(), fontSize:sizeFont(30,25)}}
+            /> */}
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                    height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                    margin:{top:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+                }}
+                uiText={{value: "Genesis City", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+                onMouseDown={()=>{
+                    setUIClicked(true)
+                    playSound(SOUND_TYPES.SELECT_3)
+                    sceneInfoDetailView = "Export-Genesis"
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />
+
+            </UiEntity>
+    )
+}
+
+export function ExportGenesisCityPanel(){
+    return (
+        <UiEntity
+            key={resources.slug + "scene::export::genesis::panel"}
+            uiTransform={{
+                display: sceneInfoDetailView === "Export-Genesis" ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    height: '10%',
+                }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40%',
+                    height: '100%',
+                }}
+                // uiBackground={{color:Color4.Gray()}}
+                uiText={{value:"Required Parcels: " + (scene && scene.pcls.length), color:Color4.White(), fontSize:sizeFont(20,15)}}
+                />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40%',
+                    height: '100%',
+                }}
+                // uiBackground={{color:Color4.Gray()}}
+                uiText={{value:"Selected Parcels: " + (selectedGenesisParcels.length), color:Color4.White(), fontSize:sizeFont(20,15)}}
+                />
+
+                    <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30%',
+                            height: '100%',
+                            margin: {left: "1%", right: "1%"},
+                            display: scene && selectedGenesisParcels.length >= scene.pcls.length ? "flex" :"none"
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                        }}
+                        uiText={{value: "Deploy", fontSize: sizeFont(20, 16)}}
+                        onMouseDown={() => {
+                            setUIClicked(true)
+                            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY,{
+                                sceneId:scene?.id,
+                                dest:'gc',
+                                tokenId: "",
+                                parcels: [...selectedGenesisParcels]
+                            })
+                            displaySceneDetailsPanel(false)
+                            updateSceneDetailsView("Info")
+                            displayPendingPanel(true, "deployment")
+                        }}
+                        onMouseUp={()=>{
+                            setUIClicked(false)
+                        }}
+                    />
+
+                </UiEntity>
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    height: '90%',
+                }}
+                // uiBackground={{color:Color4.Gray()}}
+                >
+                    {sceneInfoDetailView === "Export-Genesis" && generateRows()}
+                </UiEntity>
+
+            </UiEntity>
+    )
+}
+
 function EditBuildersPanel() {
     return (
         <UiEntity
@@ -1193,4 +1362,147 @@ function getSizeWidth():  PositionUnit | undefined {
     if (!scene) return '0%';
     const sizeRatio = parseFloat(formatSize(scene.si)) / (scene.pcnt > 20 ? 300 : scene.pcnt * 15) * 100;
     return `${Math.min(sizeRatio, 100)}%`;
+}
+
+function generateRows(){
+    let arr: any[] = []
+    let start = 0
+    let end = 3
+
+    for (let i = 0; i < Math.ceil(localPlayer.landsAvailable.length / 3); i++) {
+        arr.push(<Row row={start} land={[...localPlayer.landsAvailable.slice(start, end)]}/>)
+        start += 3
+        end += 3
+    }
+    return arr
+}
+
+function Row({row, land}: { row: number, land:any }){
+    return(
+        <UiEntity
+        key={resources.slug + "store::row::" + row}
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '33%',
+            margin:'1%'
+        }}
+        >
+            {generateItems(row, land)}
+        </UiEntity>
+    )
+}
+
+
+function generateItems(row: number, land:any){
+    return land.map((item:any, index:number) => {
+        return <Item row={row + "-" + index} item={item}/>
+    })
+}
+
+function Item({row, item}: { row: string, item:any }){
+    return(
+        <UiEntity
+        key={resources.slug + "land::item::" + item.x + item.y}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '33%',
+            height: '100%',
+            margin:'1%'
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: isSelected(item.x, item.y) ? getImageAtlasMapping(uiSizes.buttonPillBlue) : getImageAtlasMapping(uiSizes.horizRectangle)
+        }}
+        onMouseDown={()=>{
+            setUIClicked(true)
+            // if(localPlayer && localPlayer.homeWorld){
+                toggleSelectItem(item)
+            // }
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        >
+
+             <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '80%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.Blue()}}
+        >
+         <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(11).width,
+            height: calculateSquareImageDimensions(11).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: ''
+            },
+        }}
+        />
+        </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            margin:{bottom:'3%'}
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{value:item.name.length > 15 ? item.name.substring(0, 15) + "..." : item.name, fontSize:sizeFont(25,15)}}
+        />
+
+
+        </UiEntity>
+    )
+}
+
+function isSelected(x:string, y:string){
+    if(selectedGenesisParcels.find(($:any)=> $.x === x && $.y === y)){
+        return true
+    }else{
+        return false
+    }
+}
+
+function toggleSelectItem(item:any){
+    if(isSelected(item.x, item.y)){
+        let itemIndex = selectedGenesisParcels.findIndex(($:any)=> $.id === item.id)
+        if(itemIndex >= 0){
+            selectedGenesisParcels.splice(itemIndex, 1)
+        }
+    }else{
+        selectedGenesisParcels.push(item)
+    }
 }

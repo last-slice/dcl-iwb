@@ -7,6 +7,8 @@ import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
+import { uiSizes } from '../../uiConfig'
+import { localPlayer } from '../../../components/Player'
 
 let shapeIndex = 0
 
@@ -81,6 +83,69 @@ export function EditMeshRender() {
 
 
         </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '70%',
+                height: '100%',
+            }}
+        uiText={{value:"Show On Play", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: selectedItem && selectedItem.enabled && getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.MESH_RENDER_COMPONENT ,selectedItem.aid) ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+            }}
+            onMouseDown={() => {
+                sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+                    {
+                        component:COMPONENT_TYPES.MESH_RENDER_COMPONENT,
+                        aid:selectedItem.aid, 
+                        sceneId:selectedItem.sceneId,
+                        onPlay: !getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.MESH_RENDER_COMPONENT ,selectedItem.aid)
+                    }
+                )
+
+            }}
+            />
+        </UiEntity>
+
+
+        </UiEntity>
      
         </UiEntity>
     )
@@ -116,4 +181,16 @@ function update(type:any, value:any){
             [type]:value
         }
     )
+}
+
+export function getOnPlay(scene:any, component:any, aid:string){
+    if(!scene){
+        return false
+    }
+
+    let componentInfo:any = scene[component].get(aid)
+    if(componentInfo && componentInfo.onPlay){
+        return true
+    }
+    return false
 }

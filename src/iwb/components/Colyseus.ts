@@ -7,6 +7,7 @@ import { createColyseusListeners } from "./Listeners";
 import { createTimerSystem } from "./Timer";
 import { engine } from "@dcl/sdk/ecs";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
+import { island } from "./Config";
 
 export let data:any
 export let colyseusRoom:Room
@@ -15,8 +16,8 @@ export let connected:boolean = false
 export let sessionId:any
 export const iwbEvents = mitt()
 
-export async function colyseusConnect(data:any, token:string, world?:any) {
-    connect('iwb-world', data, token, world).then((room: Room) => {
+export async function colyseusConnect(data:any, token:string, world?:any, island?:any) {
+    connect('iwb-world', data, token, world, island).then((room: Room) => {
         log("Connected!");
         colyseusRoom = room
         sessionId = room.sessionId
@@ -43,10 +44,17 @@ export async function joinWorld(world?: any) {
         colyseusRoom.leave(true)
         connected = false
     }
-    console.log('colyseusRoom is', colyseusRoom, world)
+    console.log('colyseusRoom is', colyseusRoom, world, island)
     try{
-        const playerData = getPlayer()
-        await colyseusConnect(playerData, "", world)
+        let playerData:any = getPlayer()
+        if(playerData){
+            delete playerData.wearables
+            delete playerData.avatar
+            delete playerData.emotes
+        }
+
+
+        await colyseusConnect(playerData, "", world, island)
     }
     catch(e){
         console.log('error connecting to colyseus')

@@ -17,11 +17,13 @@ import { utils } from '../../../helpers/libraries'
 
 let levelSpawnEntity:Entity
 let levelSpawnArrowEntity:Entity
+
 let bouncePosition:any
 let bounceLook:any
-let bounceName:string = ""
-let bounceLocations:any[] = []
 
+let bounceName:string = ""
+
+let bounceLocations:any[] = []
 let bounceLocationEntities:Entity[] = []
 
 export let liveView:string = "main"

@@ -31,6 +31,7 @@ import { soundsListener } from "./Sounds"
 import { uiTextListener } from "./UIText"
 import { billboardListener } from "./Billboard"
 import { levelListener } from "./Level"
+import { materialListener } from "./Materials"
 
 export let realmActions: any[] = []
 
@@ -93,6 +94,7 @@ async function loadSceneComponents(scene:any){
     stateListener(scene)
     uiTextListener(scene)
     billboardListener(scene)
+    materialListener(scene)
 
     //todo
     //we might not need these since these are only metadata changes and can be pulled auto from colyseus room state

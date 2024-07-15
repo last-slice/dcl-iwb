@@ -3,7 +3,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { Actions, COMPONENT_TYPES, EDIT_MODIFIERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS } from '../../../../helpers/types'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
-import { Entity, GltfContainer, Transform, engine } from '@dcl/sdk/ecs'
+import { Animator, Entity, GltfContainer, Transform, engine } from '@dcl/sdk/ecs'
 import { selectedItem } from '../../../../modes/Build'
 import { TransformInputModifiers } from '../EditTransform'
 import { colyseusRoom } from '../../../../components/Colyseus'
@@ -21,6 +21,7 @@ export function addCloneEntity(){
     if(GltfContainer.has(selectedItem.entity)){
         let gltf = GltfContainer.get(selectedItem.entity)
         GltfContainer.create(setPositionEntity, gltf)
+        Animator.create(setPositionEntity)
     }
 
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)

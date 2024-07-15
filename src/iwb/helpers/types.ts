@@ -81,7 +81,7 @@ export enum SERVER_MESSAGE_TYPES {
     END_GAME = 'end_game',
 
     CUSTOM = "custom",//
-
+    IWB_VERSION_UPDATE ='iwb_version_update',
 
     //REMOTE SERVER ACTIONS
     CLAIM_REWARD = 'claim_reward',
@@ -361,6 +361,7 @@ export enum NFT_FRAMES {
 }
 
 export enum Actions {
+    STOP_TWEEN = 'stop_tween',
     START_TWEEN = "start_tween",
     PLAY_SOUND = "play_sound",
     STOP_SOUND = "stop_sound",
@@ -449,7 +450,9 @@ export enum Triggers {
     ON_GAME_START = 'on_game_start',
     ON_LEVEL_LOADED = 'on_level_loaded',
     ON_LEVEL_COMPLETE = 'on_level_complete',
-    ON_LEVEL_END = 'on_level_end'
+    ON_LEVEL_END = 'on_level_end',
+    ON_ENTER_SCENE = 'on_enter_scene',
+    ON_LEAVE_SCENE = 'on_leave_scene',
 }
 
 export enum Pointers {
@@ -629,9 +632,9 @@ export enum TWEEN_EASE_TYPES {
 }
 
 export let TWEEN_LOOP_SLUGS:string[] = [
+    "NONE",
     "RESTART",
     "YOYO",
-    "NONE"
 ]
 
 export enum REWARD_TYPES {

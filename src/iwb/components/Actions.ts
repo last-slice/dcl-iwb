@@ -1,5 +1,5 @@
-import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, TextAlignMode, Transform, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
-import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
+import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
@@ -9,9 +9,7 @@ import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedA
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { getEntity } from "./IWB"
-import { getUITransform } from "../ui/helpers"
 import { startInterval, startTimeout, stopInterval } from "./Timer"
-import { addShowText, removeShowText } from "../ui/Objects/ShowText"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
@@ -19,6 +17,7 @@ import { localPlayer } from "./Player"
 import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStartUI"
 import { loadLevelAssets } from "./Level"
 import { attemptGameEnd } from "./Game"
+import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -236,6 +235,14 @@ function updateActions(scene:any, info:any, action:any){
 
             case Actions.UNLOCK_PLAYER:
                 handleUnlockPlayer(scene, info, action)
+                break;
+
+            case Actions.START_TWEEN:
+                handleStartTween(scene, info, action)
+                break;
+
+            case Actions.STOP_TWEEN:
+                handleStopTween(scene, info, action)
                 break;
         }
     })
@@ -656,3 +663,213 @@ function handleLockPlayer(scene:any, info:any, action:any){
 function handleUnlockPlayer(scene:any, info:any, action:any){
     engine.removeEntityWithChildren(lockbox)
 }
+
+function handleStopTween(scene:any, info:any, action:any){
+    if(action){
+        TweenSequence.deleteFrom(info.entity)
+        Tween.deleteFrom(info.entity)
+    }
+}
+
+function handleStartTween(scene:any, info:any, action:any){
+    if (action) {
+      // Get the initial tween if exists to revert the object movement to that sequence when executing a tween from actions
+      const initialTween = Tween.getMutableOrNull(info.entity)
+      let tween
+
+      switch (action.ttype) {
+        case TWEEN_TYPES.MOVE: {
+          tween = handleMoveItem(scene, info, action)
+          break
+        }
+        case TWEEN_TYPES.ROTATION: {
+          tween = handleRotateItem(scene, info, action)
+          break
+        }
+        case TWEEN_TYPES.SCALE: {
+          tween = handleScaleItem(scene, info, action)
+          break
+        }
+        default: {
+          throw new Error(`Unknown tween type: ${action.type}`)
+        }
+      }
+
+      revertTween(info.entity, initialTween, tween)
+    }
+  }
+
+  // Restart to the initial movement sequence when executing an aditional tween
+  function revertTween(
+    entity: Entity,
+    initialTween: PBTween | null,
+    tween: PBTween,
+  ) {
+    const tweenSequence = TweenSequence.getMutableOrNull(entity)
+    let _revertTween = {
+      ...tween,
+    }
+
+    console.log('trying to revert tween')
+
+    if (!initialTween || !tweenSequence || !tweenSequence.loop) return
+
+    console.log('got past initial return revert tween')
+
+    switch (initialTween.mode?.$case) {
+      case 'move': {
+        _revertTween = {
+          ..._revertTween,
+          mode: Tween.Mode.Move({
+            start: (tween.mode as { $case: 'move'; move: Move }).move.end,
+            end: initialTween.mode.move.start,
+          }),
+        }
+        break
+      }
+      case 'rotate': {
+        _revertTween = {
+          ..._revertTween,
+          mode: Tween.Mode.Rotate({
+            start: (tween.mode as { $case: 'rotate'; rotate: Rotate }).rotate
+              .end,
+            end: initialTween.mode.rotate.start,
+          }),
+        }
+        break
+      }
+      case 'scale': {
+        _revertTween = {
+          ..._revertTween,
+          mode: Tween.Mode.Scale({
+            start: (tween.mode as { $case: 'scale'; scale: Scale }).scale.end,
+            end: initialTween.mode.scale.start,
+          }),
+        }
+        break
+      }
+      default: {
+        throw new Error(`Unknown tween mode: ${initialTween.mode}`)
+      }
+    }
+
+    // If the initial tween is not playing but the loop property is active, start it
+    initialTween.playing = true
+    tweenSequence.sequence = [_revertTween, initialTween]
+    console.log('tween sequence is', tweenSequence)
+  }
+
+  // MOVE_ITEM
+  function handleMoveItem(scene:any, info:any, action:any){
+    const transform = Transform.get(info.entity)
+    const { timer, ip, relative, x,y,z } = action
+    const end = Vector3.create(x, y, z)
+    const endPosition = relative ? Vector3.add(transform.position, end) : end
+
+    let tween = Tween.createOrReplace(info.entity, {
+        mode: Tween.Mode.Move({
+          start: transform.position,
+          end: endPosition,
+        }),
+        duration: timer * 1000, // from secs to ms
+        easingFunction: getEasingFunctionFromInterpolation(ip),
+      })
+
+    switch(action.tloop){
+        case 0://nothing
+            break;
+
+        case 1://restart
+            TweenSequence.deleteFrom(info.entity)
+            TweenSequence.createOrReplace(info.entity, { sequence: [], loop: TweenLoop.TL_RESTART })
+            break
+
+        case 2://yoyo
+            TweenSequence.deleteFrom(info.entity)
+            TweenSequence.create(info.entity, { sequence: [], loop: TweenLoop.TL_YOYO })
+        break;
+    }
+
+    return tween
+  }
+
+  // ROTATE_ITEM
+  function handleRotateItem(scene:any, info:any, action:any){
+    const transform = Transform.get(info.entity)
+    const { timer, ip, relative, x,y,z } = action
+    const end = Quaternion.fromEulerDegrees(x,y,z)
+    const endRotation = relative
+      ? Quaternion.multiply(transform.rotation, end)
+      : end
+
+    let tween = Tween.createOrReplace(info.entity, {
+      mode: Tween.Mode.Rotate({
+        start: transform.rotation,
+        end: endRotation,
+      }),
+      duration: timer * 1000, // from secs to ms
+      easingFunction: getEasingFunctionFromInterpolation(ip),
+    })
+
+    switch(action.tloop){
+        case 0://nothing
+            break;
+
+        case 1://restart
+            TweenSequence.deleteFrom(info.entity)
+            TweenSequence.createOrReplace(info.entity, {
+                loop: TweenLoop.TL_RESTART,
+                sequence: [
+                  {
+                    mode: Tween.Mode.Rotate({
+                      start: Quaternion.fromEulerDegrees(0, Math.floor(y), 0),
+                      end: Quaternion.fromEulerDegrees(0, Math.floor(y) * 2, 0)
+                    }),
+                    duration: timer * 1000,
+                    easingFunction: EasingFunction.EF_LINEAR
+                  }
+                ]
+            })
+            break
+
+        case 2://yoyo
+            TweenSequence.deleteFrom(info.entity)
+            TweenSequence.create(info.entity, { sequence: [], loop: TweenLoop.TL_YOYO })
+        break;
+    }
+
+    return tween
+  }
+
+  // SCALE_ITEM
+  function handleScaleItem(scene:any, info:any, action:any){
+    const transform = Transform.get(info.entity)
+    const { timer, ip, relative, x,y,z } = action
+    const end = Vector3.create(x, y, z)
+    const endScale = relative ? Vector3.add(transform.scale, end) : end
+
+    let tween = Tween.createOrReplace(info.entity, {
+        mode: Tween.Mode.Scale({
+          start: transform.scale,
+          end: endScale,
+        }),
+        duration: timer * 1000, // from secs to ms
+        easingFunction: getEasingFunctionFromInterpolation(ip),
+      }) 
+
+    switch(action.tloop){
+        case 0://nothing
+            break;
+
+        case 1://restart
+            TweenSequence.deleteFrom(info.entity)
+            TweenSequence.createOrReplace(info.entity, { sequence: [], loop: TweenLoop.TL_RESTART })
+            break
+
+        case 2://yoyo
+            TweenSequence.deleteFrom(info.entity)
+            TweenSequence.create(info.entity, { sequence: [], loop: TweenLoop.TL_YOYO })
+        break;
+    }
+    return tween
+  }

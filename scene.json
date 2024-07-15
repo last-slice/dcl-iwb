@@ -2203,5 +2203,8 @@
   "featureToggles": {},
   "worldConfiguration": {
     "name": "dclbuilder.dcl.eth"
+  },
+  "iwb":{
+    "name":"dclbuilder.dcl.eth"
   }
 }
