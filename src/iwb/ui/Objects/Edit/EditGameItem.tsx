@@ -66,23 +66,23 @@ export function updateGamingInfo(reset?:boolean){
     console.log('gaming info', gamingInfo)
 }
 
-export function EditGaming(){
+export function EditGameItem(){
     return (
         <UiEntity
-        key={resources.slug + "advanced::gaming:panel::ui"}
+        key={resources.slug + "advanced::gaming:item::ui"}
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
-                display: visibleComponent === COMPONENT_TYPES.GAME_COMPONENT ? 'flex' : 'none',
+                display: visibleComponent === COMPONENT_TYPES.GAME_ITEM_COMPONENT ? 'flex' : 'none',
             }}
         >
-            <GameMainView/>
+            {/* <GameMainView/>
             <GameMetadataView/>
             <GameVariablesView/>
-            <GameLevelsView/>
+            <GameLevelsView/> */}
 
         </UiEntity>
     )

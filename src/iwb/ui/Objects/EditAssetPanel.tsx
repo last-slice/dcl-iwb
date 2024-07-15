@@ -37,6 +37,7 @@ import { EditGaming, gameView, updateEditGameView, updateGamingInfo } from './Ed
 import { EditLevel, levelView, resetLevelSpawnEntity, updateEditLevelView, updateLevelInfo } from './Edit/EditLevel'
 import { EditLive, liveView, resetCurrentBouncerSpawns, resetLiveSpawnEntity, updateEditLiveView, updateLiveBouncerPositions } from './Edit/EditLive'
 import { resetTweenActionPanel } from './Edit/ActionPanels/AddTweenPanel'
+import { EditGameItem } from './Edit/EditGameItem'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -407,6 +408,9 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.GAME_ITEM_COMPONENT:
+            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            break;
         case COMPONENT_TYPES.LIVE_COMPONENT:
             if(liveView === "main"){
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -433,9 +437,12 @@ function getBackButtonLogic(){
             if(gameView === "main"){
                 updateGamingInfo(true)
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
-            }else if(gameView === "levels"){
+            }else{
                 updateEditGameView("main")
             }
+            // else if(gameView === "levels" || gameView === "metadata"){
+            //     updateEditGameView("main")
+            // }
             break;
 
         case COMPONENT_TYPES.UI_TEXT_COMPONENT:
@@ -778,6 +785,7 @@ function EditObjectData(){
                 <EditUiText/>
                 <EditUIImage/>
                 <EditGaming/>
+                <EditGameItem/>
                 <EditLevel/>
                 <EditLive/>
 
@@ -906,12 +914,13 @@ function getBasicComponents(){
         COMPONENT_TYPES.UI_IMAGE_COMPONENT,
         COMPONENT_TYPES.GAME_COMPONENT,
         COMPONENT_TYPES.LEVEL_COMPONENT,
-        COMPONENT_TYPES.LIVE_COMPONENT
+        COMPONENT_TYPES.LIVE_COMPONENT,
+        COMPONENT_TYPES.GAME_ITEM_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
             components.push(component)
-        }//
+        }
     })
 
     components.sort((a,b) => a.localeCompare(b))

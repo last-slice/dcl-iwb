@@ -321,7 +321,8 @@ export enum COMPONENT_TYPES {
     // LEVEL_COMPONENT = 'Levels',
     // BILLBOARD_COMPONENT = 'Billboard'
     LEVEL_COMPONENT = 'Levels',
-    LIVE_COMPONENT = 'Live'
+    LIVE_COMPONENT = 'Live',
+    GAME_ITEM_COMPONENT = 'GameItem',
 }
 
 export enum BLOCKCHAINS {
@@ -711,4 +712,10 @@ export enum SCENE_CATEGORIES {
 export enum CATALOG_IDS {
     WHITE_ARROW = "cb3a9e83-4b2d-4b3b-b9c1-2b636a94b36c",
     BLANK_GRASS = 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb'
+}
+
+export enum GAME_TYPES {
+    SOLO,
+    MULTIPLAYER,
+    TEAM_COMPETITION
 }

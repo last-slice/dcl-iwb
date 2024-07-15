@@ -265,7 +265,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         let scale: any
         scale = Vector3.One()
 
-        // TODO use configurable parameters for item height and dept
+        // TODO use configurable parameters for item height and depth//
         let itemHeight = ITEM_HEIGHT_DEFAULT
         let itemDepth = ITEM_DEPTH_DEFAULT
 
