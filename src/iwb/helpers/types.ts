@@ -455,7 +455,9 @@ export enum Triggers {
     ON_LEVEL_END = 'on_level_end',
     ON_ENTER_SCENE = 'on_enter_scene',
     ON_LEAVE_SCENE = 'on_leave_scene',
-    ON_JOIN_LOBBY = 'on_join_lobby'
+    ON_ATTEMPT_START_GAME = 'on_attempt_start_game',
+    ON_JOIN_LOBBY = 'on_join_lobby',
+    ON_GAME_START_COUNTDOWN = 'on_game_start_countdown'
 }
 
 export enum Pointers {

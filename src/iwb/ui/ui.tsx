@@ -42,6 +42,8 @@ export function setUIClicked(value:boolean){
 }
 
 const uiComponent:any = () => [
+  createCustomUIImageComponent(),
+  createCustomUITextComponent(),
   createIWBMap(),
   createToolsPanel(),
   createSkinnyVerticalPanel(),
@@ -57,8 +59,6 @@ const uiComponent:any = () => [
   createExpandedMapView(),
   createSceneDetailsPanel(),
   createPendingStatusPanel(),
-  createCustomUITextComponent(),
-  createCustomUIImageComponent(),
   createAddSpawnPointPanel(),
   createGrabContextMenu(),
   createGameStartUI(),

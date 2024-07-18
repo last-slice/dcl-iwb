@@ -43,7 +43,7 @@ export function actionListener(scene:any){
         // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
         // if(!iwbInfo.components.includes(COMPONENT_TYPES.ACTION_COMPONENT)){
         //   iwbInfo.components.push(COMPONENT_TYPES.ACTION_COMPONENT)
-        // }
+        // }//
 
         let info = getEntity(scene, aid)
         if(!info){
@@ -195,7 +195,7 @@ function updateActions(scene:any, info:any, action:any){
 
             case Actions.SHOW_CUSTOM_IMAGE:
                 handleShowCustomImage(scene, info, action)
-                break;
+                break;//
 
             case Actions.HIDE_CUSTOM_IMAGE:
                 handleHideCustomImage(scene, info, action)
@@ -315,6 +315,7 @@ export function handleShowCustomImage(scene:any, entityInfo:any, action:any){
 }
 
 export function handleHideCustomImage(scene:any, entityInfo:any, action:any){
+    console.log('handle hide custom image')
     let uiImage = UiImages.get(entityInfo.aid)
     if(uiImage){
         uiImage.hide()

@@ -89,8 +89,8 @@ export function setUiTextPlayMode(scene:any, entityInfo:any){
     }
 }
 
-export function uiDataUpdate(scene:any, entityInfo:any){
-    console.log('ui update')
+export function uiDataUpdate(scene:any, entityInfo:any, all?:boolean){
+    console.log('ui update', entityInfo, all)
     // setUiTextPlayMode(scene, entityInfo)
     scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((sceneEntity:any)=>{
         if(!["0", "1","2"].includes(entityInfo.aid)){
@@ -98,31 +98,48 @@ export function uiDataUpdate(scene:any, entityInfo:any){
             if(uiTextInfo){
                 let uiTextComponent = UiTexts.get(sceneEntity.aid)
 
-                if(uiTextComponent && uiTextInfo.aid === entityInfo.aid){
-                    let textData:string = " "
-                    switch(uiTextComponent.type){
-                        case 0://nothing//
-                            break;
-                        case 1://state
-                            if(States.has(entityInfo.entity)){
-                                let state = States.get(entityInfo.entity)
-                            textData += "" + state.currentValue
-                            }
-                            
-                            break;
-                
-                        case 2://counter
-                            if(Numbers.has(entityInfo.entity)){
-                                let counter = Numbers.get(entityInfo.entity)
-                                textData += "" + counter.currentValue
-                            }
- 
-                            break;
-                
-                        default:
-                            break;
+                if(uiTextComponent){
+                    let advance = false
+                    if(all){
+                        advance = true
+                    }else{
+                        if(uiTextInfo.aid === entityInfo.aid){
+                            advance = true
+                        }
                     }
-                    uiTextComponent.setText(uiTextComponent.currentText, textData)
+
+                    if(advance){
+                        let textData:string = " "
+                        switch(uiTextComponent.type){
+                            case 0://nothing//
+                                break;
+                            case 1://state
+                                if(States.has(entityInfo.entity)){
+                                    let state = States.get(entityInfo.entity)
+                                textData += "" + state.currentValue
+                                }
+                                
+                                break;
+                    
+                            case 2://counter
+                                if(Numbers.has(entityInfo.entity)){
+                                    let counter = Numbers.get(entityInfo.entity)
+                                    textData += "" + counter.currentValue
+                                }
+                                break;
+
+                            case 3://start countdown
+                                console.log('text data is start countdown')
+                                scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((gameComponent:any, aid:string)=>{
+                                    textData += "" + gameComponent.gameCountdown
+                                })
+                            break;
+                    
+                            default:
+                                break;
+                        }
+                        uiTextComponent.setText(uiTextComponent.currentText, textData)
+                    }
                 }
             }
         }

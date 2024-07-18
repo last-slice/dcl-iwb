@@ -99,18 +99,19 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
       }
         if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
           console.log('passed check conditions')
-            for(const triggerAction of trigger.actions){
+            for(const triggerAction of triggerInfo.actions){
+              // console.log('trigger actions area', triggerAction)
                 if(isValidAction(triggerAction)){
                   console.log('is valid action')
                     let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
                     if(aid){
-                      console.log('action info is', {aid:aid, action:action, entity:entity})
+                      // console.log('action info is', {aid:aid, action:action, entity:entity})
                         actionQueue.push({aid:aid, action:action, entity:entity})
                     }
                 }
             }
         }else{
-            console.log('trigger condition not met')//
+            console.log('trigger condition not met')
         }
     })
 }
@@ -275,9 +276,11 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
 
 function getActionsByActionId(scene:any, actionId:string) {
     let assets = scene[COMPONENT_TYPES.ACTION_COMPONENT].toJSON()
+    // console.log('finding action by id', actionId)
     for(let aid in assets){
         let actions = assets[aid].actions
-        let found = actions.find(($: { id: string; })=> $.id === actionId)
+        // console.log('actions are', actions)
+        let found = actions.find(($:any)=> $.id === actionId)
         let info = getEntity(scene, aid)
 
         if(found && info.entity){

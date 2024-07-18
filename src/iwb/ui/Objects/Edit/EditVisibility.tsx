@@ -45,7 +45,7 @@ export function EditVisibility() {
                 width: '15%',
                 height: '100%',
             }}
-        uiText={{value:"Enabled", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{value:"Play Visibility", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
             <UiEntity
@@ -91,6 +91,74 @@ export function EditVisibility() {
 
 
         </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"5%"}
+            }}
+        >
+
+                    {/* url label */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+            }}
+        uiText={{value:"Build Visibility", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '85%',
+                height: '100%',
+            }}
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.EDIT && getBuildVis() ? 
+            getImageAtlasMapping(uiSizes.toggleOnTrans) : 
+            getImageAtlasMapping(uiSizes.toggleOffTrans)
+        }}
+        onMouseDown={() => {
+            sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+                {
+                    component:COMPONENT_TYPES.IWB_COMPONENT, 
+                    sceneId:selectedItem.sceneId, 
+                    aid:selectedItem.aid, 
+                    buildVis: !getBuildVis()
+                }
+            )
+        }}
+        />
+
+
+        </UiEntity>
+
+
+        </UiEntity>
      
         </UiEntity>
     )
@@ -106,4 +174,18 @@ function getVisibility(){
         }
     }
     return getImageAtlasMapping(uiSizes.toggleOffTrans)
+}
+
+function getBuildVis(){
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return false
+    }
+
+    let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(selectedItem.aid)
+    if(!iwbInfo){
+        return false
+    }
+    
+    return iwbInfo.buildVis
 }

@@ -493,13 +493,13 @@ async function buildAction(){
     resetSetScaleEntity()
     resetMovePlayerEntity()
     resetCloneEntity()
-    resetLevelSpawnEntity()
+    resetLevelSpawnEntity()//
 }
 
 function resetActionData(){
     if(newActionIndex !== 0){
-        newActionData.type = getActionList()[newActionIndex].replace(" ", "_").toLowerCase()
-        newActionData.name = getActionList()[newActionIndex].replace(" ", "_").toLowerCase()
+        newActionData.type = getActionList()[newActionIndex].replace(/ /g, "_").toLowerCase()
+        newActionData.name = getActionList()[newActionIndex].replace(/ /g, "_").toLowerCase()
         let actionTemplate:any = {...ActionDefaults[getActionList()[newActionIndex].replace(" ", "_").toLowerCase()]}//
         for(let key in actionTemplate){
             if(key === "actions"){

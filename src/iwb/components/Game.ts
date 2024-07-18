@@ -1,17 +1,18 @@
 import { Transform, VisibilityComponent } from "@dcl/sdk/ecs"
-import { Actions, COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
+import { Actions, COMPONENT_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { getEntity } from "./IWB"
 import { unloadAllSceneGameAssets } from "./Level"
-import { localPlayer } from "./Player"
+import { localPlayer, localUserId } from "./Player"
 import { utils } from "../helpers/libraries"
 import { setUIClicked } from "../ui/ui"
 import { displayGameLobby, updateLobbyPanel } from "../ui/Objects/GameLobby"
 import { Vector3 } from "@dcl/sdk/math"
 import { getRandomPointInArea } from "../helpers/functions"
 import { movePlayerTo } from "~system/RestrictedActions"
+import { uiDataUpdate } from "./UIText"
 
 export let gameEndingtimer:any
 
@@ -94,5 +95,88 @@ export function disableLevelPlayMode(scene:any, entityInfo:any){
         VisibilityComponent.createOrReplace(entityInfo.entity, {
             visible: false
         })
+    }
+}
+
+export function gameListener(scene:any){
+    scene[COMPONENT_TYPES.GAME_COMPONENT].onAdd((gameComponent:any, aid:any)=>{
+        let info = getEntity(scene, aid)
+        if(!info){
+            return
+        }
+
+        gameComponent.listen("gameCountdown", (c:any, p:any)=>{
+            console.log('game countodown', p, c, gameComponent.startingSoon)
+            if((p !== undefined || p !== -500) && c > 0 && gameComponent.startingSoon){
+                console.log('countdown started')
+                uiDataUpdate(scene, info.entity, true)
+            }
+
+            // if(p !== undefined && (c !== -500 || c !== 0)){
+            //     runGlobalTrigger(scene, Triggers.ON_GAME_START_COUNTDOWN)
+            // }
+    
+            if(c === -500){
+                // displayGamingCountdown(false, 0)
+                //game countdown over
+            }
+        })
+
+        gameComponent.listen("startingSoon", (c:any, p:any)=>{
+            console.log('starting soon variable', p, c)
+            if(c){
+                prepGame(scene, aid, info, gameComponent)
+            }
+        })
+
+        gameComponent.listen("started", (c:any, p:any)=>{
+            console.log('started variable', p, c)
+            if(c && (p === undefined || !p)){
+                startGame(scene, aid, info, gameComponent)
+            }
+        })
+    })
+}
+
+function prepGame(scene:any, aid:string, info:any, gameComponent:any){
+    runGlobalTrigger(scene, Triggers.ON_GAME_START_COUNTDOWN, {input:0, pointer:0, entity:info.entity})
+}
+
+function startGame(scene:any, aid:string, info:any, gameInfo:any){
+    ///enable ray casting,
+    //add objects to players
+    //do we load the game items here?
+    //etc etc
+
+    //do we check if player is playing right now? or expose that as a condition in the scene
+
+    runGlobalTrigger(scene, Triggers.ON_GAME_START, {
+        input:0,
+        pointer:0,
+        entity: info.entity
+    })
+
+    console.log('player game status is', localPlayer.gameStatus, localPlayer.gameId, aid, gameInfo)
+
+    if(localPlayer && localPlayer.gameStatus == PLAYER_GAME_STATUSES.PLAYING && localPlayer.gameId === gameInfo.id){
+        movePlayerToTeamSpawn(scene, gameInfo)
+    }
+}
+
+function movePlayerToTeamSpawn(scene:any, gameInfo:any){
+    let position = Transform.get(scene.parentEntity).position
+    let teamInfo:any
+
+    gameInfo.teams.forEach((team:any, aid:string)=>{
+        if(team.mates && team.mates.includes(localUserId)){
+            teamInfo = team
+        }
+    })
+
+    if(teamInfo){
+        let randomPoint = getRandomPointInArea(teamInfo.sp, teamInfo.ss.x, teamInfo.ss.y, teamInfo.ss.z)
+
+        let spawnPosition = Vector3.add(position, randomPoint)
+        movePlayerTo({newRelativePosition:spawnPosition})
     }
 }

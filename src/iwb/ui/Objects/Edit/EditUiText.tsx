@@ -700,7 +700,7 @@ function TextDataRow(){
         }}
     >
         <Dropdown
-            options={["None", "State", "Counter"]}
+            options={["None", "State", "Counter", "Start Countdown"]}
             selectedIndex={
                 selectedItem && 
                 selectedItem.enabled && 
@@ -742,7 +742,7 @@ function TextDataRow(){
             selectedItem && 
             selectedItem.enabled && 
             visibleComponent === COMPONENT_TYPES.UI_TEXT_COMPONENT &&
-            getUiVariable("type") > 0 ? "flex" : "none"
+            (getUiVariable("type") !== 0 || getUiVariable("type") !== 3 ) ? "flex" : "none"
         }}
         >
             
@@ -873,6 +873,13 @@ function getEntities(){
             
         }
     })
+
+    scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((gameComponent:any, aid:string)=>{
+        console.log('game component is', gameComponent)
+        if(gameComponent.type === 'MULTIPLAYER'){
+            dataEntities.push({name: "Start Countdown", aid:aid})
+        }
+    })
 }
 
 function selectDataEntity(index:number){
@@ -989,13 +996,16 @@ function clearUiPosition(){
 function updateUi(){
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(!scene){
-        return -500//
+        return -500
     }
 
     let uiTextInfo = scene[COMPONENT_TYPES.UI_TEXT_COMPONENT].get(selectedItem.aid)
     if(uiTextInfo){
         let data = {...uiTextInfo}
-        data.aid = dataEntities[selectedEntityIndex].aid
+        if(dataEntities[selectedEntityIndex]){
+            data.aid = dataEntities[selectedEntityIndex].aid
+        }
+        
         sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
             {
                 component:COMPONENT_TYPES.UI_TEXT_COMPONENT, 
