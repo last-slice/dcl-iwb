@@ -116,6 +116,18 @@ export function createGameStartUI(){
             uiText={{value:"Start Game " + (startGame && startGame.name), fontSize:sizeFont(25,20)}}
             />
 
+                <UiEntity
+                uiTransform={{
+                width: '90%',
+                height:'10%',
+                justifyContent:'center',
+                flexDirection:'column',
+                alignContent:'center',
+                alignItems:'center',
+                }}
+                uiText={{value:"Type: " + (startGame && startGame.type === 0 ? "SOLO" : "MULTIPLAYER"), fontSize:sizeFont(20,15), textAlign:'top-left'}}
+                />
+
             <UiEntity
                 uiTransform={{
                 width: '90%',
@@ -135,7 +147,7 @@ export function createGameStartUI(){
                 justifyContent: 'center',
                 width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
                 height: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).height,
-                margin:'2%'
+                margin:'2%',
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -145,22 +157,19 @@ export function createGameStartUI(){
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{
-                value: "Start Game",
+                value: "" + (!startGame ? "none" : startGame.type === 0 ? "Start Game" : "Join Lobby"),
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
                 textAlign: 'middle-center'
             }}
             onMouseDown={() => {
                 setUIClicked(true)
-                console.log('on mouse down')
-
                 displayGameStartUI(false)
                 sendServerMessage(SERVER_MESSAGE_TYPES.START_GAME, {sceneId: startGame.id, entity:startGame.entity})
 
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
-                console.log('on mouse up')
             }}
         />
 

@@ -45,24 +45,12 @@ export function updateEditGameView(view:string){
     }
 }
 
-export function updateGamingInfo(reset?:boolean){
+export function updateGameItemInfo(reset?:boolean){
     if(reset){
         gamingInfo = undefined
         return
     }
-    gamingInfo = {...localPlayer.activeScene[COMPONENT_TYPES.GAME_COMPONENT].get(selectedItem.aid)}
-    gameTypes.length = 0
-
-    gameTypes = Object.keys(GAME_TYPES).filter($ => isNaN(parseInt($)))
-    gameTypes.unshift("Select Game Type")
-
-    if(gamingInfo.type){
-        let typeIndex = gameTypes.findIndex($ => $ === gamingInfo.type)
-        if(typeIndex >= 0){
-            gameTypeIndex = typeIndex
-        }
-    }
-    newVariable = ""
+    gamingInfo = {...localPlayer.activeScene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].get(selectedItem.aid)}
     console.log('gaming info', gamingInfo)
 }
 
@@ -79,516 +67,14 @@ export function EditGameItem(){
                 display: visibleComponent === COMPONENT_TYPES.GAME_ITEM_COMPONENT ? 'flex' : 'none',
             }}
         >
+            <GameVariablesView/>
+
             {/* <GameMainView/>
             <GameMetadataView/>
-            <GameVariablesView/>
+            
             <GameLevelsView/> */}
 
         </UiEntity>
-    )
-}
-
-function GameMainView(){
-    return(
-        <UiEntity
-        key={resources.slug + "game::main:view"}
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            width: '100%',
-            height: '100%',
-            display: gameView === "main" ? "flex" : "none"
-        }}
-        >
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    alignContent:'center',
-                    width: '100%',
-                    height: '10%',
-                }}
-                    uiText={{value:"Game Type", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-                />
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    alignContent:'center',
-                    width: '100%',
-                    height: '8%',
-                }}
-            >
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    alignContent:'center',
-                    width: '70%',
-                    height: '100%',
-                }}
-            >
-                <Dropdown
-                    options={gameTypes.map($ => $.replace("_", " "))}
-                    selectedIndex={gameTypeIndex}
-                    onChange={(index:number)=>{gameTypeIndex = index}}
-                    uiTransform={{
-                        width: '100%',
-                        height: '120%',
-                    }}
-                    // uiBackground={{color:Color4.Purple()}}//
-                    color={Color4.White()}
-                    fontSize={sizeFont(20, 15)}
-                />
-            </UiEntity>
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    alignContent:'center',
-                    width: '30%',
-                    height: '100%',
-                }}
-            >
-                    <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '90%',
-                    height: '100%',
-                    margin: {left: "1%", right: "1%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                uiText={{value: "Update", fontSize: sizeFont(20, 16)}}
-                onMouseDown={() => {
-                    setUIClicked(true)
-                    if(gameTypeIndex > 0){
-                        // gamingInfo.type = gameTypes[gameTypeIndex]
-                        update("edit-type", "gameType", gameTypes[gameTypeIndex])
-                        utils.timers.setTimeout(()=>{
-                            updateGamingInfo()
-                        }, 200)
-                    }
-                }}
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
-            />
-            </UiEntity>
-
-            </UiEntity>
-
-
-              <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                    margin:{top:'1%', bottom:'1%'}
-                }}
-                uiBackground={{color: Color4.Black()}}
-                uiText={{value: "Details", fontSize: sizeFont(30, 20)}}
-                onMouseDown={() => {
-                    setUIClicked(true)
-                    updateEditGameView("metadata")
-                }}
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
-            />
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                    margin:{top:'1%', bottom:'1%'},
-                }}
-                uiBackground={{color: Color4.Black()}}
-                uiText={{value: "Variables", fontSize: sizeFont(30, 20)}}
-                onMouseDown={() => {
-                    setUIClicked(true)
-                    updateEditGameView("variables")
-                }}
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
-            />
-
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                    margin:{top:'1%', bottom:'1%'},
-                    display: gamingInfo && gamingInfo.type === "SOLO" ? "flex" : "none"
-                }}
-                uiBackground={{color: Color4.Black()}}
-                uiText={{value: "Levels", fontSize: sizeFont(30, 20)}}
-                onMouseDown={() => {
-                    setUIClicked(true)
-                    updateEditGameView("levels")
-                }}
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
-            />
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                    margin:{top:'1%', bottom:'1%'},
-                    display: gamingInfo && gamingInfo.type === "TEAM_COMPETITION" ? "flex" : "none"
-                }}
-                uiBackground={{color: Color4.Black()}}
-                uiText={{value: "Teams", fontSize: sizeFont(30, 20)}}
-                onMouseDown={() => {
-                    setUIClicked(true)
-                    updateEditGameView("teams")
-                }}
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
-            />
-
-        </UiEntity>
-    )
-}
-
-function GameMetadataView(){
-    return(
-        <UiEntity
-        key={resources.slug + "game::metadata:view"}
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            width: '100%',
-            height: '100%',
-            display: gameView === "metadata" ? "flex" : "none"
-        }}
-    >
-        <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignContent:'center',
-        width: '100%',
-        height: '10%',
-    }}
-        uiText={{value:"Game Name", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-    />
-
-<UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '10%',
-        }}
-        >
-<Input
-    onChange={(value) => {
-        update("edit", "name", value.trim())
-    }}
-    fontSize={sizeFont(20,15)}
-    placeholder={'' + (gamingInfo && gamingInfo.name)}
-    placeholderColor={Color4.White()}
-    color={Color4.White()}
-    uiTransform={{
-        width: '100%',
-        height: '100%',
-    }}
-    />
-
-    </UiEntity>
-
-        <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignContent:'center',
-        width: '100%',
-        height: '10%',
-    }}
-        uiText={{value:"Game Description", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-    />
-    
-    <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '10%',
-        }}
-        >
-<Input
-    onChange={(value) => {
-        // gamingInfo.description = value.trim()//
-        update("edit", "description", value.trim())
-    }}
-    fontSize={sizeFont(20,15)}
-    placeholder={'' + (gamingInfo && gamingInfo.description)}
-    placeholderColor={Color4.White()}
-    color={Color4.White()}
-    uiTransform={{
-        width: '100%',
-        height: '100%',
-    }}
-    // value={selectedItem && selectedItem.enabled  ? getDefaultCounterValue() : ""}
-    />
-
-    </UiEntity>
-
-    {/* disable teleport options */}
-    <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-            }}
-            >
-                  <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '70%',
-                height: '100%',
-            }}
-            >
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    alignContent:'center',
-                    width: '100%',
-                    height: '10%',
-                }}
-                    uiText={{value:"Disable Teleporting", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-                />
-        </UiEntity>
-
-    <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-            }}
-            >
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateSquareImageDimensions(4).width,
-                height: calculateSquareImageDimensions(4).height,
-                margin:{top:"1%", bottom:'1%'},
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: gamingInfo && gamingInfo.disableTeleport ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
-            }}
-            onMouseDown={() => {
-                gamingInfo.disableTeleport = !gamingInfo.disableTeleport
-                update("edit", "disableTeleport", gamingInfo.disableTeleport)
-            }}
-            />
-    </UiEntity>
-    </UiEntity>
-
-    <UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '10%',
-    display: gamingInfo && gamingInfo.startScreen !== "iwb" ? "flex" : "none"
-}}
->
-<Input
-    onChange={(value) => {
-        // startScreen = value.trim()
-    }}
-    fontSize={sizeFont(20,15)}
-    placeholder={'' + (gamingInfo && gamingInfo.startScreen)}
-    placeholderColor={Color4.White()}
-    color={Color4.White()}
-    uiTransform={{
-        width: '100%',
-        height: '100%',
-    }}
-    />
-
-    </UiEntity>
-
-        </UiEntity>
-    )
-}
-
-function GameLevelsView(){
-    return(
-        <UiEntity
-        key={resources.slug + "game::levels:view"}
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            width: '100%',
-            height: '100%',
-            display: gameView === "levels" ? "flex" : "none"
-        }}
-    >
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                }}
-            >
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '50%',
-                    height: '100%',
-                }}
-            >
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '10%',
-                    margin:{bottom:'1%'}
-                }}
-            uiText={{value:"Levels", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
-            />
-
-            </UiEntity>
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '50%',
-                    height: '100%',
-                }}
-            >
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        alignSelf:'flex-start',
-                        width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
-                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                        margin:{left:'1%'}
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                    }}
-                    uiText={{
-                        value: "Add Level",
-                        fontSize: sizeFont(25, 15),
-                        color: Color4.White(),
-                        textAlign: 'middle-center'
-                    }}
-                    onMouseDown={() => {
-                        setUIClicked(true)
-                        update("addlevel", "", {})
-                        utils.timers.setTimeout(()=>{
-                            updateEditGameView('levels')
-                        }, 200)
-                    }}
-                    onMouseUp={()=>{
-                        setUIClicked(false)
-                    }}
-                />
-
-            </UiEntity>
-            </UiEntity>
-
-
-    <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                alignSelf:'flex-start',
-                width: '100%',
-                height: '80%',
-            }}
-            // uiBackground={{color:Color4.Green()}}
-        >
-
-            {gameView === "levels" && generateLevels()}
-            
-        </UiEntity>
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf:'flex-start',
-                width: '100%',
-                height: '10%',
-            }}
-            // uiBackground={{color:Color4.Blue()}}//
-        >
-            </UiEntity>
-
-            </UiEntity>
     )
 }
 
@@ -602,7 +88,7 @@ function GameVariablesView(){
             justifyContent: 'flex-start',
             width: '100%',
             height: '100%',
-            display: gameView === "variables" ? "flex" : "none"
+            // display: gameView === "variables" ? "flex" : "none"
         }}
         >
             <UiEntity
@@ -614,84 +100,8 @@ function GameVariablesView(){
         width: '100%',
         height: '10%',
     }}
-        uiText={{value:"Add Game Variable", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+        uiText={{value:"Game Variables", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
     />
-
-    <UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '10%',
-    }}
-    >
-        <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '70%',
-        height: '100%',
-    }}
-    >
-
-    <Input
-        onChange={(value) => {
-            newVariable = value.trim()
-        }}
-        fontSize={sizeFont(20,15)}
-        placeholder={'enter variable name'}
-        placeholderColor={Color4.White()}
-        color={Color4.White()}
-        uiTransform={{
-            width: '100%',
-            height: '100%',
-        }}
-        />
-
-    </UiEntity>
-
-    <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '30%',
-        height: '100%',
-    }}
-    >
-        <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '90%',
-                    height: '100%',
-                    margin: {left: "1%", right: "1%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas2.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                }}
-                uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
-                onMouseDown={() => {
-                    setUIClicked(true)
-                    update("edit", "variables", newVariable)
-                    utils.timers.setTimeout(()=>{
-                        updateGamingInfo()
-                    }, 200)
-                }}
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
-            />
-        </UiEntity>
-
-    </UiEntity>
 
 <UiEntity
     uiTransform={{
@@ -705,7 +115,7 @@ function GameVariablesView(){
     }}
     // uiBackground={{color:Color4.Green()}}
     >
-        {selectedItem && selectedItem.enabled && gameView === "variables" && generateVariableRows()}
+        {/* {selectedItem && selectedItem.enabled && generateVariableRows()} */}
     </UiEntity>
 
         </UiEntity>
@@ -724,70 +134,6 @@ function update(action:string, type:string, value:any){
     )
 }
 
-function generateLevels(){
-    let arr:any[] = []
-    let count:number = 0
-    visibleItems.forEach((levelItem:any, i:number)=>{
-        arr.push(<LevelRow count={count} data={levelItem} />)
-        count++
-    })
-    return arr
-}
-
-function LevelRow(data:any){
-    let levelInfo = data.data
-    return(
-        <UiEntity
-                uiTransform={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    width: '100%',
-                    height: '10%',
-                    margin:{top:"1%", bottom:"1%"}
-                }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas1.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.vertRectangleOpaque)
-                }}
-            >
-
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    width: '60%',
-                    height: '100%',
-                    margin:{left:'5%'}
-                }}
-                uiText={{value:"" + levelInfo.name, fontSize:sizeFont(20,15), textAlign:'middle-left'}}
-                />
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    width: '20%',
-                    height: '100%',
-                }}
-                uiText={{value:"" + levelInfo.number, fontSize:sizeFont(20,15), textAlign:'middle-center'}}
-                />
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    width: '20%',
-                    height: '100%',
-                }}
-                />
-
-            </UiEntity>
-    )
-}
-
 function generateVariableRows(){
     let arr:any[] = []
     let count:number = 0
@@ -800,7 +146,7 @@ function generateVariableRows(){
 function Row(data:any){
     return(
         <UiEntity
-                key={resources.slug + "gaming::variable::row" + data.count}
+                key={resources.slug + "gaming::item::variable::row" + data.count}
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -821,7 +167,7 @@ function Row(data:any){
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
-                    width: '80%',
+                    width: '70%',
                     height: '100%',
                     margin:{left:'5%'}
                 }}
@@ -832,39 +178,24 @@ function Row(data:any){
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
-                    width: '20%',
+                    width: '30%',
                     height: '100%',
                     margin:{right:'5%'}
                 }}
-            >
-                 <UiEntity
+            > 
+            <Input
+                onChange={(value) => {
+                    // update("edit", "name", value.trim())
+                }}
+                fontSize={sizeFont(20,15)}
+                placeholder={'' + (gamingInfo && gamingInfo.name)}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
                 uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
-                    height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
-                    positionType:'absolute',
+                    width: '100%',
+                    height: '100%',
                 }}
-                uiBackground={{
-                    textureMode: 'stretch',
-                    texture: {
-                        src: 'assets/atlas1.png'
-                    },
-                    uvs: getImageAtlasMapping(uiSizes.trashButton)
-                }}
-                onMouseDown={() => {
-                    setUIClicked(true)
-                    update("delete-variable", "variables", data.variable)
-                    utils.timers.setTimeout(()=>{
-                        updateGamingInfo()
-                    }, 200)
-                }}
-                onMouseUp={()=>{
-                    setUIClicked(false)
-                }}
-                />  
-
+                />
             </UiEntity>
 
             </UiEntity>

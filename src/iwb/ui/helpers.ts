@@ -1,5 +1,6 @@
 import { Entity, UiCanvasInformation, YGPositionType, YGUnit, engine } from "@dcl/sdk/ecs"
 import { uiSizes } from "./uiConfig"
+import { Color4 } from "@dcl/sdk/math"
 
 export let dimensions:any = {
     width:0,
@@ -117,4 +118,8 @@ export function getImageAtlasMapping(data?: ImageAtlasData): number[] {
     }
   
     return uiTransformComponent
+  }
+
+  export function getRandomColor4(alpha?:number){
+    return Color4.create(Math.random(), Math.random(), Math.random(), alpha ? alpha : Math.random())
   }

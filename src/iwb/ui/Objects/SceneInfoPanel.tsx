@@ -34,11 +34,12 @@ export function displaySceneAssetInfoPanel(value: boolean) {
 
     if (value) {
         deselectRow()
+        assetTypeIndex = 0
         visibleIndex = 1
         visibleItems.length = 0
         if (!showSceneInfoPanel || !localPlayer || !localPlayer.activeScene) return null
 
-        localScene = true
+        localScene = true//
 
         if(localPlayer.activeScene){
             let assets:any[] = []
@@ -82,10 +83,12 @@ export function updateRows() {
                 let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(parentingInfo.aid)
                 if(itemInfo){
                     switch(assetTypeIndex){
+                        //all
                         case 0:
                             assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
                             break;
 
+                            //gaming
                         case 1:
                             let gameAsset = scene[COMPONENT_TYPES.GAME_COMPONENT].get(parentingInfo.aid)
                             let levelAsset = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(parentingInfo.aid)
@@ -94,6 +97,7 @@ export function updateRows() {
                             }
                             break;
 
+                            //triggers
                         case 2:
                             let triggerAsset = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(parentingInfo.aid)
                             if(triggerAsset){
@@ -101,11 +105,20 @@ export function updateRows() {
                             }
                             break;
 
+                            //assets
                         case 3:
                             let actionAsset = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(parentingInfo.aid)
                             if(actionAsset){
                                 assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
                             }
+                            break;
+
+                            //smart items
+                        case 3:
+                            // let actionAsset = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(parentingInfo.aid)
+                            // if(actionAsset){
+                            //     assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
+                            // }
                             break;
                     }
                     
@@ -420,7 +433,7 @@ export function createSceneInfoPanel() {
                     > 
 
                     <Dropdown
-                        options={["All Assets", "Gaming", "Triggers", "Actions"]}
+                        options={["All Assets", "Gaming", "Triggers", "Actions",  "Smart Items", "Audio"]}
                         selectedIndex={assetTypeIndex}
                         onChange={selectAssetFilter}
                         uiTransform={{

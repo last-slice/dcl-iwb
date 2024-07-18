@@ -33,11 +33,11 @@ import { EditState } from './Edit/EditState'
 import { EditUiText, hideUIText, showUIText } from './Edit/EditUiText'
 import { UiTexts } from '../../components/UIText'
 import { EditUIImage, hideUIImage, showUIImage } from './Edit/EditUIImage'
-import { EditGaming, gameView, updateEditGameView, updateGamingInfo } from './Edit/EditGaming'
+import { EditGaming, gameView, removeGameTeamEntities, resetGamePanel, updateEditGameView, updateGamingInfo } from './Edit/EditGaming'
 import { EditLevel, levelView, resetLevelSpawnEntity, updateEditLevelView, updateLevelInfo } from './Edit/EditLevel'
 import { EditLive, liveView, resetCurrentBouncerSpawns, resetLiveSpawnEntity, updateEditLiveView, updateLiveBouncerPositions } from './Edit/EditLive'
 import { resetTweenActionPanel } from './Edit/ActionPanels/AddTweenPanel'
-import { EditGameItem } from './Edit/EditGameItem'
+import { EditGameItem, updateGameItemInfo } from './Edit/EditGameItem'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -60,6 +60,11 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
         case COMPONENT_TYPES.LEVEL_COMPONENT:
             updateLevelInfo()
             break;
+
+        case COMPONENT_TYPES.GAME_ITEM_COMPONENT:
+            updateGameItemInfo()
+            break;
+
         case COMPONENT_TYPES.GAME_COMPONENT:
             updateGamingInfo()
             break;
@@ -437,7 +442,15 @@ function getBackButtonLogic(){
             if(gameView === "main"){
                 updateGamingInfo(true)
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
-            }else{
+            }
+            else if(gameView === "teams-edit"){
+                updateEditGameView("teams")
+            }
+            else if(gameView === "teams-edit-spawns"){
+                updateEditGameView("teams-edit")
+            }
+            else{
+                resetGamePanel()
                 updateEditGameView("main")
             }
             // else if(gameView === "levels" || gameView === "metadata"){

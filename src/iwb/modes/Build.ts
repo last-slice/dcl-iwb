@@ -40,6 +40,7 @@ import { resetLevelSpawnEntity } from "../ui/Objects/Edit/EditLevel"
 import { resetCurrentBouncerSpawns, resetLiveSpawnEntity } from "../ui/Objects/Edit/EditLive"
 import { resetTweenActionPanel } from "../ui/Objects/Edit/ActionPanels/AddTweenPanel"
 import { resetTween } from "./Play"
+import { removeGameTeamEntities, resetGamePanel } from "../ui/Objects/Edit/EditGaming"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -549,6 +550,7 @@ export function resetAdditionalAssetFeatures(){
     resetLiveSpawnEntity()
     resetCurrentBouncerSpawns()
     resetTweenActionPanel()
+    resetGamePanel()
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {

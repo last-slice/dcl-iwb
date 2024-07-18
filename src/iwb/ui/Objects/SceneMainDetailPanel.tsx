@@ -26,7 +26,7 @@ export let sceneInfoDetailView = "Info"
 
 let show = false
 let visibleIndex = 1
-let newSceneBuilderWallet:string = ""
+let newSceneBuilderWallet:string = ""//
 
 let selectedGenesisParcels:any[] = []
 let visibleLands:any[] = []

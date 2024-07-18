@@ -323,6 +323,7 @@ export enum COMPONENT_TYPES {
     LEVEL_COMPONENT = 'Levels',
     LIVE_COMPONENT = 'Live',
     GAME_ITEM_COMPONENT = 'GameItem',
+    TEAM_COMPONENT = 'Team',
 }
 
 export enum BLOCKCHAINS {
@@ -454,6 +455,7 @@ export enum Triggers {
     ON_LEVEL_END = 'on_level_end',
     ON_ENTER_SCENE = 'on_enter_scene',
     ON_LEAVE_SCENE = 'on_leave_scene',
+    ON_JOIN_LOBBY = 'on_join_lobby'
 }
 
 export enum Pointers {
@@ -717,5 +719,12 @@ export enum CATALOG_IDS {
 export enum GAME_TYPES {
     SOLO,
     MULTIPLAYER,
-    TEAM_COMPETITION
+}
+
+export enum PLAYER_GAME_STATUSES {
+    NONE = 'none',
+    PLAYING = 'playing',
+    LOBBY = 'lobby',
+    WAITING = 'waiting',
+    ELIMINATED = 'eliminated'
 }

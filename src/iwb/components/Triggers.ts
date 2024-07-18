@@ -110,7 +110,7 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
                 }
             }
         }else{
-            console.log('trigger condition not met')
+            console.log('trigger condition not met')//
         }
     })
 }
@@ -352,6 +352,17 @@ export function setTriggersForPlayMode(scene:any, entityInfo:any){
     })
     tickSet.add(entityInfo.entity)
   }
+}
+
+export function runGlobalTrigger(scene:any, type:Triggers, data:any){
+  scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
+    let entityInfo = getEntity(scene, item.aid)
+    if(entityInfo){
+      data.entity = entityInfo.entity
+      let triggerEvents = getTriggerEvents(entityInfo.entity)
+      triggerEvents.emit(type, data)
+    }
+  })
 }
 
 class MittExtender {

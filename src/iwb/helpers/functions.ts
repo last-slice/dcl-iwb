@@ -213,3 +213,11 @@ export function easeOutBack(x: number): number {
 
   return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
 }
+
+export function getRandomPointInArea(boxPosition:Vector3, boxWidth: number, boxHeight: number, boxDepth: number) {
+  const x = boxPosition.x + Math.random() * boxWidth;
+  const y = boxPosition.y + Math.random() * boxHeight;
+  const z = boxPosition.z + Math.random() * boxDepth;
+  
+  return { x, y, z };
+}

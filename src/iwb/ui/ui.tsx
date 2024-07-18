@@ -29,6 +29,7 @@ import { createAddSpawnPointPanel } from './Objects/AddSpawnPointPanel'
 import { createGrabContextMenu } from './Objects/GrabContextMenu'
 import { createEndGameButton, createGameStartUI, createLoadingScreen } from './Objects/GameStartUI'
 import { createLiveUI } from './Objects/LiveShowPanel'
+import { createGameLobbyPanel } from './Objects/GameLobby'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -64,6 +65,7 @@ const uiComponent:any = () => [
   createEndGameButton(),
   createLoadingScreen(),
   createLiveUI(),
+  createGameLobbyPanel(),
   // createAdvancedEditPanel(),
 ]
 

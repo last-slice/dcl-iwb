@@ -442,7 +442,7 @@ export async function createColyseusListeners(room:Room){
     //             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error: Claim Response\n" + info.reason, animate:{enabled:true, return:true, time:5}})
     //         }
     //     }, 1000 * 2)
-    // })
+    // })//
 
     // room.onMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.VERIFY_ACCESS + ' received', info)
