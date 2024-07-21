@@ -26,7 +26,7 @@ export function setTableConfig(config:any){
 export function refreshVisibleItems(){
     visibleItems.length = 0
 
-    if(tableConfig.tableSortFn){
+    if(tableConfig && tableConfig.tableSortFn){
         tableArray.sort(tableConfig.tableSortFn)
     }
 

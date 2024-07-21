@@ -142,7 +142,7 @@ export async function getPlayerLand(){
         body: JSON.stringify({
             "operationName": "Land",
             "variables": {
-              "address": "0xaabe0ecfaf9e028d63cf7ea7e772cf52d662691a",
+              "address": localUserId,
               "tenantTokenIds": [],
               "lessorTokenIds": []
             },

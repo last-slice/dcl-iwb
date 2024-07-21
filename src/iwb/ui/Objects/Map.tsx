@@ -9,8 +9,10 @@ import { SCENE_MODES, IWBScene } from '../../helpers/types'
 import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { colyseusRoom } from '../../components/Colyseus'
+import { setUIClicked } from '../ui'
+import { displayExpandedMap } from './ExpandedMapView'
 
-let showView = true
+let showView = false
 let init = false
 
 let size = 9
@@ -67,6 +69,13 @@ export function createIWBMap(){
       },
       textureMode: 'stretch',
       uvs:getImageAtlasMapping(uiSizes.vertRectangle)
+    }}
+    onMouseDown={()=>{
+      setUIClicked(true)
+      displayExpandedMap(true, undefined, true)
+    }}
+    onMouseUp={()=>{
+      setUIClicked(false)
     }}
   >
         

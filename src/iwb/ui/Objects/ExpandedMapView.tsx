@@ -1,6 +1,6 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import resources from '../../helpers/resources'
-import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont } from '../helpers'
+import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { setUIClicked } from '../ui'
 import { Color4 } from '@dcl/sdk/math'
@@ -12,8 +12,12 @@ import { formatDollarAmount } from '../../helpers/functions'
 import { addBlankParcels, removeEmptyParcels } from '../../components/Scene'
 import { scene } from './SceneMainDetailPanel'
 import { playSound } from '../../components/Sounds'
+import { rotateUVs } from '../../../ui_components/utilities'
+import { engine, Transform } from '@dcl/sdk/ecs'
+import { teleportToScene } from '../../modes/Play'
 
 let show = false
+let navigation = false
 export let editCurrentSceneParcels = false
 
 let xMin = -22
@@ -24,10 +28,18 @@ let yMax = 23
 let mapTiles:any[] = []
 let currentSceneParcels:any[] = []
 
+let selectedScene:any
+
 export let mainView = ""
 
-export function displayExpandedMap(value:boolean, current?:boolean){
+export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean){
     show = value
+
+    if(nav){
+        navigation = true
+    }else{
+        navigation = false
+    }
 
     if(current){
         editCurrentSceneParcels = current
@@ -41,11 +53,14 @@ export function displayExpandedMap(value:boolean, current?:boolean){
     }else{
         mapTiles.length = 0
         currentSceneParcels.length = 0
+        selectedScene = undefined
     }
 }
 
 function createMapTiles(){
     mapTiles.length = 0
+
+    console.log('x tiles are ', xMax - xMin + 1)
 
     let mapParcels:any[] = []
     for(let y = yMax; y >= yMin; y--){
@@ -65,22 +80,35 @@ function createMapTiles(){
 
     mapParcels.forEach(subArray => {
         subArray.forEach((obj:any) => {
-            if(editCurrentSceneParcels){
-                if(currentSceneParcels.includes(obj.coords)){
+            if(navigation){
+                if(selectedScene && selectedScene.pcls.includes(obj.coords)){
                     obj.selected = true
                 }else{
+                    if (sceneParcels.includes(obj.coords)) {
+                        obj.scene = true;
+                    }else{
+                      obj.scene = false
+                    }
                     obj.selected = false
                 }
             }
             else{
-                if (sceneParcels.includes(obj.coords)) {
-                    obj.scene = true;
-                }else{
-                  obj.scene = false
+                if(editCurrentSceneParcels){
+                    if(currentSceneParcels.includes(obj.coords)){
+                        obj.selected = true
+                    }else{
+                        obj.selected = false
+                    }
                 }
-                obj.selected = false
+                else{
+                    if (sceneParcels.includes(obj.coords)) {
+                        obj.scene = true;
+                    }else{
+                      obj.scene = false
+                    }
+                    obj.selected = false
+                }
             }
-            
         });
       });
     mapTiles = mapParcels
@@ -122,6 +150,9 @@ export function createExpandedMapView() {
                 }}
                 onMouseDown={()=>{
                     setUIClicked(true)
+                    // if(navigation){
+                    //     displayExpandedMap(false)
+                    // }
                 }}
                 onMouseUp={()=>{
                     setUIClicked(false)
@@ -164,18 +195,102 @@ function MainLeftView(){
         justifyContent: 'flex-start',
         width: '25%',
         height: '100%',
-    }}
-    // uiBackground={{color:Color4.Red()}}
-    onMouseDown={()=>{
-        setUIClicked(true)
-        displayExpandedMap(false)
-    }}
-    onMouseUp={()=>{
-        setUIClicked(false)
+        // display: navigation ? "none" : "flex"
     }}
     >
 
+{/* clicked map navigatyion */}
 <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+        display: navigation ? "flex" : "none"
+    }}
+    >
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+    uiText={{value:"" + (selectedScene ? selectedScene.n : ""), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+    />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{right:"1%"},
+            display: selectedScene ? "flex" : "none"
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            teleportToScene(selectedScene)
+            displayExpandedMap(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        uiText={{value: "Visit", color:Color4.White(), fontSize:sizeFont(20,15)}}
+        />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{right:"1%"},
+            display: selectedScene ? "flex" : "none",
+            positionType:'absolute',
+            position:{bottom:0}
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            displayExpandedMap(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        uiText={{value: "Close", color:Color4.White(), fontSize:sizeFont(20,15)}}
+        />
+
+        </UiEntity>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+        display: navigation ? "none" : "flex"
+    }}
+    >
+        <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -186,7 +301,7 @@ function MainLeftView(){
     uiText={{value:"" + editCurrentSceneParcels ? "Edit Parcels" : "Create New Scene", fontSize:sizeFont(30, 20), color:Color4.White(), textAlign:'middle-center'}}
     />
 
-    <UiEntity
+<UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -196,6 +311,8 @@ function MainLeftView(){
         }}
     uiText={{value:"Parcels: " + tempParcels.size, fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-center'}}
     />
+
+
 
 <UiEntity
         uiTransform={{
@@ -276,6 +393,11 @@ function MainLeftView(){
         }}
         uiText={{value: "Cancel Scene", color:Color4.White(), fontSize:sizeFont(25,15)}}
         />
+        </UiEntity>
+
+
+
+
 
     </UiEntity>
    )
@@ -289,18 +411,92 @@ function MainRightView(){
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '75%',
+            width: navigation ? '90%' : '75%',
             height: '100%',
-            margin:{left:'1%'}
+            margin:{left:  navigation ? 0 : '1%'}
         }}
         // uiBackground={{color:Color4.Blue()}}
         >
 
             {show && mapTiles.length > 0 && generateMapTiles()}
 
+                {navigation && <PlayerArrow/>}
+
         </UiEntity>
   
     )
+}
+
+function PlayerArrow(){
+    return(
+      <UiEntity
+      key={resources.slug + "player::arrow::expanded::map"}
+      uiTransform={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width:calculateSquareImageDimensions(3).width,
+          height: calculateSquareImageDimensions(3).height,
+          positionType:'absolute',
+          position: navigation ? getPlayerPosition() : {}
+      }}
+      uiBackground={{
+        texture:{
+            src: "images/map_arrow.png"
+        },
+        textureMode: 'stretch',
+        uvs:rotateUVs(navigation && localPlayer && localPlayer.rotation ? localPlayer.rotation : 0)
+      }}
+      >
+
+      </UiEntity>
+    )
+}
+
+function getPlayerPosition(){
+    let position = Transform.get(engine.PlayerEntity).position
+    let x = Math.round(Math.abs(position.x) / 16)
+    let y = Math.round(Math.abs(position.z) / 16)
+    let left:any
+    let bottom:any
+
+    if(position.x < 0){
+        let fromLeft = -23 + x
+        fromLeft = ((Math.abs(fromLeft) / 51.5) * 100)
+        left = `${fromLeft}%`
+    }
+    else if(x === 0){
+        let fromLeft = 23
+        fromLeft = (Math.abs(fromLeft) / 51.5) * 100
+        left = `${fromLeft}%`
+    }
+    else{
+        let fromLeft = 23 + x
+        fromLeft = (Math.abs(fromLeft) / 51.5) * 100
+        left = `${fromLeft}%`
+    }
+
+    if(y < 0){
+        let fromBottom = -22 + y
+        fromBottom = (Math.abs(fromBottom) / 52) * 100
+        bottom = `${fromBottom}%`
+    }
+    else if(y === 0){
+        let fromBottom = 22
+        fromBottom = (Math.abs(fromBottom) / 52) * 100
+        bottom = `${fromBottom}%`
+    }
+    else{
+        let fromBottom = 22 + y
+        fromBottom = (Math.abs(fromBottom) / 52) * 100
+        bottom = `${fromBottom}%`
+    }
+
+
+    return {
+        left:left,
+        bottom:bottom
+    }
 }
 
 function generateMapTiles(){
@@ -361,31 +557,37 @@ function generateMapRow(data:any){
                 onMouseDown={()=>{
                     setUIClicked(true)
                     playSound(SOUND_TYPES.SELECT_3)
-                    if(editCurrentSceneParcels){
-                        //check if click is in current scene first
-                        if(scene?.pcls.includes(mapColumn.coords)){
-                            console.log('need to remove current scene parcel')
-                            deleteParcelEntities(mapColumn.coords)
-                            addBlankParcels([mapColumn.coords])
-                        }else{
-                            if(colyseusRoom.state.temporaryParcels.includes(mapColumn.coords)){
-                                console.log('parcel is already selected to be addred, remove from selection')
+                    if(navigation){
+                        selectScene(mapColumn.coords)
+                    }
+                    else{
+                        if(editCurrentSceneParcels){
+                            //check if click is in current scene first
+                            if(scene?.pcls.includes(mapColumn.coords)){
+                                console.log('need to remove current scene parcel')
                                 deleteParcelEntities(mapColumn.coords)
                                 addBlankParcels([mapColumn.coords])
                             }else{
-                                console.log('parcel is added to temp parcel list')
-                                removeEmptyParcels([mapColumn.coords])
-                                addBoundariesForParcel(mapColumn.coords, true, false)
+                                if(colyseusRoom.state.temporaryParcels.includes(mapColumn.coords)){
+                                    console.log('parcel is already selected to be addred, remove from selection')
+                                    deleteParcelEntities(mapColumn.coords)
+                                    addBlankParcels([mapColumn.coords])
+                                }else{
+                                    console.log('parcel is added to temp parcel list')
+                                    removeEmptyParcels([mapColumn.coords])
+                                    addBoundariesForParcel(mapColumn.coords, true, false)
+                                }
                             }
                         }
+    
+                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                            player: localUserId,
+                            parcel: mapColumn.coords,
+                            scene: 0,
+                            current: editCurrentSceneParcels ? scene?.id : 0
+                        })
                     }
-
-                    sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
-                        player: localUserId,
-                        parcel: mapColumn.coords,
-                        scene: 0,
-                        current: editCurrentSceneParcels ? scene?.id : 0
-                    })
+                    
                 }}
                 onMouseUp={()=>setUIClicked(false)}
             >
@@ -396,23 +598,44 @@ function generateMapRow(data:any){
 }
 
 function getBackground(mapColumn:any){
-    // mapColumn.scene ?  : editCurrentSceneParcels ? mapColumn.selected ? : tempParcels.has(mapColumn.coords) ? Color4.Red() :  tempParcels.has(mapColumn.coords) ? Color4.Green() : Color4.create(0,0,0,.2)
-    if(mapColumn.scene){
-        return Color4.create(.4,.5,.6,1)
-    }else if(editCurrentSceneParcels){
-        if(tempParcels.has(mapColumn.coords)){
+    if(navigation){
+        if(mapColumn.selected){
             return Color4.Green()
+        }else if(mapColumn.scene){
+            return Color4.create(.4,.5,.6,1)
+        }else{
+            return Color4.create(0,0,0,.2)
         }
-
-        if(otherTempParcels.has(mapColumn.coords)){
-            return Color4.Red()
+    }
+    else{
+        if(mapColumn.scene){
+            return Color4.create(.4,.5,.6,1)
+        }else if(editCurrentSceneParcels){
+            if(tempParcels.has(mapColumn.coords)){
+                return Color4.Green()
+            }
+    
+            if(otherTempParcels.has(mapColumn.coords)){
+                return Color4.Red()
+            }
+    
+            return Color4.create(0,0,0,.2)
         }
+        else if(tempParcels.has(mapColumn.coords)){
+            return Color4.Green()
+        }else{
+            return Color4.create(0,0,0,.2)
+        }
+    }
+}
 
-        return Color4.create(0,0,0,.2)
-    }
-    else if(tempParcels.has(mapColumn.coords)){
-        return Color4.Green()
-    }else{
-        return Color4.create(0,0,0,.2)
-    }
+function selectScene(parcel:string){
+    selectedScene = undefined
+    colyseusRoom.state.scenes.forEach((s:any)=>{
+        if(s.pcls.includes(parcel)){
+            selectedScene = s
+        }
+    })
+
+    createMapTiles()
 }

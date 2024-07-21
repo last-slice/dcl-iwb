@@ -11,6 +11,7 @@ import { displayStoreView } from './StoreView'
 import { CreateSceneView } from './IWBViews/CreateView'
 import { displayExpandedMap } from './ExpandedMapView'
 import { colyseusRoom } from '../../components/Colyseus'
+import { island } from '../../components/Config'
 
 let show = false
 
@@ -27,11 +28,17 @@ let buttons:any[] = [
     },
     {label:"Create", pressed:false, func:()=>{
         updateMainView("Create")
+        },
+        displayCondition:()=>{
+            return island === "world"
         }
     },
     {label:"Settings", pressed:false, func:()=>{
         updateMainView("Settings")
         updateSettingsView("Visual")
+        },
+        displayCondition:()=>{
+            return island === "world"
         }
     },
     {label:"Info", pressed:false, func:()=>{
@@ -41,6 +48,9 @@ let buttons:any[] = [
         // updateHelpView("main")
         // displayStatusView("Version")
         // displaySetting(button.label)
+        },
+        displayCondition:()=>{
+            return island === "world"
         }
     },
     {label:"Close", pressed:false, func:()=>{

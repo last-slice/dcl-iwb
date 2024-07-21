@@ -8,7 +8,7 @@ import { log } from "../../helpers/functions"
 import { SCENE_MODES, SOUND_TYPES } from "../../helpers/types"
 import { selectedItem } from "../../modes/Build"
 import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
-import { playerMode } from "../../components/Config"
+import { island, playerMode } from "../../components/Config"
 import { settingsIconData, topTools, uiModes } from "../uiConfig"
 import { setUIClicked } from "../ui"
 import { showStore } from "./StoreView"
@@ -28,7 +28,7 @@ export function createToolsPanel() {
                 display: connected ? 'flex' :'none',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 width: dimensions.width * .04,
                 height: '90%',
                 positionType: 'absolute',
@@ -49,7 +49,8 @@ export function createToolsPanel() {
                 alignSelf:'flex-start',
                 width: '100%',
                 height: '50%',
-                margin:{bottom:"5%"}
+                margin:{bottom:"5%"},
+                display: island === "world" ? "flex" : "none"
             }}
             // uiBackground={{ color: Color4.Green() }}//
         >

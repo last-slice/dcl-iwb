@@ -729,10 +729,11 @@ export function InfoPanel() {
 
 
             <Input
-                onChange={(e) =>{ scene!.im = e }}
+                onChange={(e) =>{ scene!.im = e.trim() }}
                 fontSize={sizeFont(20,15)}
                 placeholder={"" + (scene && scene !== null && scene.im ? scene.im : "")}
                 placeholderColor={Color4.White()}
+                color={Color4.White()}
                 uiTransform={{
                     width: '80%',
                     height:'100%',
@@ -1108,7 +1109,7 @@ export function ExportPanel(){
             }}
         >
 {/* 
-        <UiEntity
+        <UiEntity//
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -1207,7 +1208,7 @@ export function ExportGenesisCityPanel(){
                             width: '30%',
                             height: '100%',
                             margin: {left: "1%", right: "1%"},
-                            display: scene && selectedGenesisParcels.length >= scene.pcls.length ? "flex" :"none"
+                            display: scene && selectedGenesisParcels.length === scene.pcls.length ? "flex" :"none"
                         }}
                         uiBackground={{
                             textureMode: 'stretch',
@@ -1226,7 +1227,7 @@ export function ExportGenesisCityPanel(){
                                 parcels: [...selectedGenesisParcels]
                             })
                             displaySceneDetailsPanel(false)
-                            updateSceneDetailsView("Info")
+                            updateSceneDetailsView("Info")//
                             displayPendingPanel(true, "deployment")
                         }}
                         onMouseUp={()=>{
@@ -1462,7 +1463,7 @@ function Item({row, item}: { row: string, item:any }){
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: ''
+                src: '' + resources.endpoints.dclApi + "parcels/" + item.x + "/" + item.y + "/map.png?width=200&height=200&size=10"
             },
         }}
         />
@@ -1480,7 +1481,20 @@ function Item({row, item}: { row: string, item:any }){
             margin:{bottom:'3%'}
         }}
         // uiBackground={{color:Color4.Green()}}
-        uiText={{value:item.name.length > 15 ? item.name.substring(0, 15) + "..." : item.name, fontSize:sizeFont(25,15)}}
+        uiText={{value:item.name.length > 20 ? item.name.substring(0, 20) + "..." : item.name, fontSize:sizeFont(25,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            margin:{bottom:'3%'}
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{value:"" +(item.x + "," + item.y), fontSize:sizeFont(25,15)}}
         />
 
 

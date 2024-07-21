@@ -25,7 +25,7 @@ export function initIWB() {
                     console.log("scene json is", sceneJson)
 
                     if(!sceneJson.iwb) return
-                    await setRealm(sceneJson.iwb.name, data.clientUri)
+                    await setRealm(sceneJson, data.clientUri)
         
                     // getAssetUploadToken()
         

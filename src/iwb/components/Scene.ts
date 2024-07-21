@@ -26,7 +26,7 @@ import { actionListener } from "./Actions"
 import { triggerListener } from "./Triggers"
 import { pointerListener } from "./Pointers"
 import { stateListener } from "./States"
-import { realm, worlds } from "./Config"
+import { isGCScene, realm, worlds } from "./Config"
 import { soundsListener } from "./Sounds"
 import { uiTextListener } from "./UIText"
 import { billboardListener } from "./Billboard"
@@ -116,6 +116,7 @@ export function unloadScene(scene:any) {
 }
 
 async function loadSceneBoundaries(scene:any) {
+    console.log('loading scene boundaries', scene)
     scene.entities = []
 
     // scene.pcls.forEach((parcel: string) => {
@@ -129,8 +130,10 @@ async function loadSceneBoundaries(scene:any) {
 
     const sceneParent = engine.addEntity()
     Transform.createOrReplace(sceneParent, {
-        position: Vector3.create(x * 16, 0, y * 16)
+        position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16)
     })
+
+    console.log('scene parent is', Transform.get(sceneParent))
 
     scene.parentEntity = sceneParent
 

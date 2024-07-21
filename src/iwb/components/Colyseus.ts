@@ -7,7 +7,7 @@ import { createColyseusListeners } from "./Listeners";
 import { createTimerSystem } from "./Timer";
 import { engine } from "@dcl/sdk/ecs";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
-import { island } from "./Config";
+import { island, localConfig } from "./Config";
 
 export let data:any
 export let colyseusRoom:Room
@@ -17,7 +17,7 @@ export let sessionId:any
 export const iwbEvents = mitt()
 
 export async function colyseusConnect(data:any, token:string, world?:any, island?:any) {
-    connect('iwb-world', data, token, world, island).then((room: Room) => {
+    connect('iwb-world', data, token, world, island, island !== "world" ? localConfig : undefined).then((room: Room) => {
         log("Connected!");
         colyseusRoom = room
         sessionId = room.sessionId

@@ -5,7 +5,7 @@ import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES,
 import { log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addLocalWorldPermissionsUser, addTutorial, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
+import { addLocalWorldPermissionsUser, addTutorial, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
@@ -107,15 +107,12 @@ export async function createColyseusListeners(room:Room){
         setNewItems()
         setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
 
-
-        //show/hide map on genesis city or world deployment
-        if(island !== "world"){
-            displayIWBMap(false)
-            return
+        if(!isGCScene()){
+            displayIWBMap(true)
+            utils.timers.setTimeout(()=>{
+                refreshMap()
+            }, 1000 * 5)
         }
-        utils.timers.setTimeout(()=>{
-            refreshMap()
-        }, 1000 * 5)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.IWB_VERSION_UPDATE, (info: any) => {
@@ -475,11 +472,13 @@ export async function createColyseusListeners(room:Room){
 
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         console.log('scene added', key, scene)
-        deleteCreationEntities(localUserId)
 
-        await removeEmptyParcels(scene.pcls)
-        refreshMap()
-
+        if(!isGCScene()){
+            deleteCreationEntities(localUserId)
+            await removeEmptyParcels(scene.pcls)
+            refreshMap()
+        }
+        
         await loadScene(scene)
     
         // scene.pcls.onAdd((parcel:string, parcelKey:any)=>{

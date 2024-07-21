@@ -15,6 +15,7 @@ import { newItems } from '../../../components/Catalog'
 import { IWBTable, setTableConfig, updateIWBTable } from '../../Reuse/IWBTable'
 import { showNotification } from '../NotificationPanel'
 import { displayPendingPanel } from '../PendingInfoPanel'
+import { formatDollarAmount } from '../../../helpers/functions'
 
 export let infoView = "Version"
 
@@ -133,27 +134,38 @@ function VersionView(){
         <UiEntity
         key={resources.slug + "-info-view-version"}
         uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
             width: '100%',
             height: '100%',
-            display:infoView === "Version" ? 'flex' : 'none'
+            display:infoView === "Version" ? 'flex' : 'none',
+            margin:{top:"2%"}
         }}
         // uiBackground={{color:Color4.Green()}}
         >
-             <UiEntity
+
+
+{/* update column */}
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '60%',
+        height: '100%',
+    }}
+    >
+            <UiEntity
     uiTransform={{
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
         height: '10%',
-        margin:{top:'5%', bottom:"1%"}
     }}
-// uiBackground={{ color: Color4.Teal() }}
-uiText={{value:"This World Version: " + (worlds.find((w)=> w.ens === realm) ? worlds.find((w)=> w.ens === realm).v : ""), fontSize:sizeFont(35,25), textAlign:'middle-center', color:Color4.White()}}
-/>
+        // uiBackground={{ color: Color4.Teal() }}
+        uiText={{value:"Version Info", fontSize:sizeFont(25,20), textAlign:'middle-left', color:Color4.White()}}
+    />
 
     <UiEntity
     uiTransform={{
@@ -161,11 +173,37 @@ uiText={{value:"This World Version: " + (worlds.find((w)=> w.ens === realm) ? wo
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
+        height: '7%',
+    }}
+        // uiBackground={{ color: Color4.Teal() }}
+        uiText={{value:"World Version: " + (worlds.find((w)=> w.ens === realm) ? worlds.find((w)=> w.ens === realm).v : ""), fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '7%',
+    }}
+    // uiBackground={{ color: Color4.Teal() }}
+    uiText={{value:"IWB Version: " + (iwbConfig.v ? iwbConfig.v : ""), fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
         height: '10%',
     }}
-// uiBackground={{ color: Color4.Teal() }}
-uiText={{value:"IWB Version: " + (iwbConfig.v ? iwbConfig.v : ""), fontSize:sizeFont(35,25), textAlign:'middle-center', color:Color4.White()}}
-/>
+        // uiBackground={{ color: Color4.Teal() }}
+        uiText={{value:"IWB Updates", fontSize:sizeFont(25,20), textAlign:'middle-left', color:Color4.White()}}
+    />
+
+
 
     {/* updates panel */}
     <UiEntity
@@ -176,20 +214,28 @@ uiText={{value:"IWB Version: " + (iwbConfig.v ? iwbConfig.v : ""), fontSize:size
         width: '100%',
         height: '40%',
     }}
-// uiBackground={{ color: Color4.Teal() }}
->
+    >
     {generateUpdateRows()}
-</UiEntity>
+    </UiEntity>
 
+    <UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '10%',
+    }}
+    >
 <UiEntity
     uiTransform={{
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
-        height: calculateImageDimensions(8,getAspect(uiSizes.buttonPillBlue)).height,
+        justifyContent: 'flex-start',
+        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+        height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
         margin:{top:"1%", bottom:'1%'},
-        // display: localUserId && players.get(localUserId)!.worlds.find((w)=> w.ens === realm) ?  (players.get(localUserId)!.worlds.find((w)=> w.ens === realm).v < iwbConfig.v ? 'flex' : 'none') : "none"
+        display: localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? "flex" : "none"
     }}
     uiBackground={{
         textureMode: 'stretch',
@@ -204,13 +250,88 @@ uiText={{value:"IWB Version: " + (iwbConfig.v ? iwbConfig.v : ""), fontSize:size
         
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your deployment is processing...please wait for confirmation to refresh", animate:{enabled:true, time:7, return:true}})
         sendServerMessage(
-            SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, 
-            worlds.find((w)=> w.ens === realm)
+            SERVER_MESSAGE_TYPES.FORCE_DEPLOYMENT, {sceneId:localPlayer.activeScene.id}
         )
         displayPendingPanel(true, "deployment")
     }}
     uiText={{value:"Update", color:Color4.White(), fontSize:sizeFont(30,20)}}
     />
+    </UiEntity>
+
+    
+
+
+    </UiEntity>
+
+        {/* backup column */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '40%',
+                height:'100%',
+                display: localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? "flex" : "none"
+            }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+                // uiBackground={{ color: Color4.Teal() }}
+                uiText={{value:"World Backup", fontSize:sizeFont(25,20), textAlign:'middle-left', color:Color4.White()}}
+            />
+
+                        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+                // uiBackground={{ color: Color4.Teal() }}
+                uiText={{value:"Last Backup: " + getLastBackUp(), fontSize:sizeFont(20,15), textAlign:'middle-left', color:Color4.White()}}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                    height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+                    margin:{top:"1%", bottom:'1%'},
+                    display: localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? "flex" : "none"
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+                }}
+                onMouseDown={() => {
+                    playSound(SOUND_TYPES.SELECT_3)
+                    displayMainView(false)
+                    
+                    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your world backup is pending...", animate:{enabled:true, time:7, return:true}})
+                    sendServerMessage(
+                        SERVER_MESSAGE_TYPES.FORCE_BACKUP, 
+                        worlds.find((w)=> w.ens === realm)
+                    )
+                }}
+                uiText={{value:"Back Up", color:Color4.White(), fontSize:sizeFont(30,20)}}
+            />
+
+
+                
+        </UiEntity>
 
     </UiEntity>
     )
@@ -512,7 +633,7 @@ function generateUpdateRows(){
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '70%',
+                width: '100%',
                 height: '15%',
                 margin:{top:"1%", bottom:'1%'},
             }}
@@ -561,6 +682,19 @@ function generateUpdateRows(){
         }
     }
     return arr
+}
+
+function getLastBackUp(){
+    let world = worlds.find((w)=> w.ens === realm)
+    if(!world){
+        return ""
+    }
+    // console.log('world is', world)
+    if(world.backedUp){
+        return Math.floor((Math.floor(Date.now()/1000) - world.backedUp) / 86400) + " days ago"
+    }else{
+       return "Never"
+    }
 }
 
 export let worldAccessTableConfig:any = {

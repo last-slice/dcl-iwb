@@ -968,7 +968,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-13).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-15).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1007,7 +1007,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-13).filter(item => !components.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-15).filter(item => !components.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

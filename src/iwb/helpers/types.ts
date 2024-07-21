@@ -79,6 +79,7 @@ export enum SERVER_MESSAGE_TYPES {
     GET_MARKETPLACE = 'get_marketplace',
     START_GAME = 'start_game',
     END_GAME = 'end_game',
+    FORCE_BACKUP = 'force_backup',
 
     CUSTOM = "custom",//
     IWB_VERSION_UPDATE ='iwb_version_update',

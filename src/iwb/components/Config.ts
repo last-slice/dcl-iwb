@@ -41,8 +41,18 @@ export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
 
-export async function setRealm(world:string, url:any){
-    realm = world
+export let localConfig:any = {
+    parcels:[],
+    base:"",
+    id:""
+}
+
+export async function setRealm(sceneJSON:any, url:any){
+    realm = sceneJSON.iwb.name
+
+    localConfig.base = sceneJSON.scene.base
+    localConfig.parcels = sceneJSON.scene.parcels
+    localConfig.id = sceneJSON.iwb.scene
 
     let realmData = await getRealm({})
     console.log('realm data is', realmData)
@@ -74,7 +84,7 @@ export function setWorlds(config: any) {
                 ens: world.ens,
                 builds: world.builds,
                 updated: world.updated,
-                bps:world.bps 
+                bps:world.bps ,
             })
         } else {
             let w = worlds.find((wo: any) => wo.ens === world.ens)
@@ -89,7 +99,8 @@ export function setWorlds(config: any) {
                     ens: world.ens,
                     builds: world.builds,
                     updated: world.updated,
-                    bps:world.bps 
+                    bps:world.bps,
+                    backedUp:world.backedUp
                 })
             }
         }
@@ -235,4 +246,8 @@ function getURLParameter(url: string, urlKey:string) {
         }
     }
     return ""
+}
+
+export function isGCScene(){
+    return island !== "world"
 }

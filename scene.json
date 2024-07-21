@@ -2205,6 +2205,7 @@
     "name": "dclbuilder.dcl.eth"
   },
   "iwb":{
-    "name":"dclbuilder.dcl.eth"
+    "name":"dclbuilder.dcl.eth",
+    "scene": "OaT46"
   }
 }

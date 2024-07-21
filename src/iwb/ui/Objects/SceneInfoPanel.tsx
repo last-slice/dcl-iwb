@@ -114,7 +114,7 @@ export function updateRows() {
                             break;
 
                             //smart items
-                        case 3:
+                        case 4:
                             // let actionAsset = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(parentingInfo.aid)
                             // if(actionAsset){
                             //     assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
