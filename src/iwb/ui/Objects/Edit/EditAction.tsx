@@ -6,7 +6,7 @@ import { log } from '../../../helpers/functions'
 import resources, { colors, colorsLabels } from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { Actions, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from '../../../helpers/types'
-import { selectedItem } from '../../../modes/Build'
+import { resetAdditionalAssetFeatures, selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
 import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
@@ -18,7 +18,7 @@ import { AddAnimationActionPanel, updateAssetAnimations } from './ActionPanels/A
 import { AddShowTextPanel } from './ActionPanels/AddShowTextPanel'
 import { AvatarAnchorPointType } from '@dcl/sdk/ecs'
 import { AddAttachPlayerPanel } from './ActionPanels/AddAttachPlayerPanel'
-import { AddBatchActionPanel, updateEntityActions } from './ActionPanels/AddBatchActionsPanel'
+import { AddBatchActionPanel, updateEntitiesWithActions, updateEntityActions } from './ActionPanels/AddBatchActionsPanel'
 import { AddSetPositionPanel, addSetPositionEntity, resetSetPositionEntity } from './ActionPanels/AddSetPositionPanel'
 import { AddSetScalePanel, addSetScaleEntity, resetSetScaleEntity } from './ActionPanels/AddSetScalePanel'
 import { AddSetRotationPanel, addsetRotationEntity, resetSetRotationEntity } from './ActionPanels/AddSetRotationPanel'
@@ -28,7 +28,7 @@ import { AddSubtractNumberActionPanel } from './ActionPanels/AddSubtractNumberPa
 import { AddShowNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
 import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
-import { AddRandomActionPanel } from './ActionPanels/AddRandomAction'
+import { AddRandomActionPanel, updateEntitiesWithRandomActions } from './ActionPanels/AddRandomAction'
 import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
 import { resetLevelSpawnEntity } from './EditLevel'
 import { addTweenActionEntity, AddTweenActionPanel, resetTweenActionPanel } from './ActionPanels/AddTweenPanel'
@@ -104,7 +104,8 @@ export function EditAction(){
                 value: "Add Action",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
-                textAlign: 'middle-center'
+                textAlign: 'middle-center',
+                textWrap:'nowrap'
             }}
             onMouseDown={() => {
                 setUIClicked(true)
@@ -424,7 +425,7 @@ function getActionDataPanel(){
             return <AddAttachPlayerPanel/>
 
         case Actions.BATCH_ACTIONS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateEntityActions()
+            updateEntitiesWithActions()//
             return <AddBatchActionPanel/>
 
         case Actions.SET_POSITION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -450,6 +451,7 @@ function getActionDataPanel(){
             return <AddShowNotificationPanel/>
 
         case Actions.RANDOM_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateEntitiesWithRandomActions()
             return <AddRandomActionPanel/>
 
         case Actions.START_LOOP.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -492,12 +494,7 @@ async function buildAction(){
     selectNewActionIndex(0)
 
     //clean up actions
-    resetSetPositionEntity()
-    resetSetRotationEntity()
-    resetSetScaleEntity()
-    resetMovePlayerEntity()
-    resetCloneEntity()
-    resetLevelSpawnEntity()//
+    resetAdditionalAssetFeatures()
 }
 
 function resetActionData(){

@@ -1,16 +1,14 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
+import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../../helpers'
+import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
-import { selectedItem } from '../../../../modes/Build'
-import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping } from '../../../helpers'
 import { setUIClicked } from '../../../ui'
 import { uiSizes } from '../../../uiConfig'
+import { selectedItem } from '../../../../modes/Build'
+import { colyseusRoom } from '../../../../components/Colyseus'
+import { COMPONENT_TYPES } from '../../../../helpers/types'
 import { getAllAssetNames } from '../../../../components/Name'
-import { colyseusRoom, sendServerMessage } from '../../../../components/Colyseus'
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../../helpers/types'
-import { editingTrigger, triggerView, triggerInfoView } from '../EditTrigger'
-import { selectedTrigger } from '../TriggerPanels/TriggerInfoPanel'
-import { visibleComponent } from '../../EditAssetPanel'
 
 let entities:any[] = []
 let entitiesWithActions:any[] = []
@@ -18,9 +16,15 @@ let entitiesWithActions:any[] = []
 let selectedEntityIndex:number = 0
 let selectedActionIndex:number = 0
 
-let newAction:any = {}
+let batchActions:any[] = []
 
-export function updateEntityActionsRandom(aid:string){
+let updated = false
+
+export function releaseRandomActions(){
+    updated = false
+}
+
+export function updateRandomEntityActions(aid:string){
     entitiesWithActions.length = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(!scene){
@@ -33,45 +37,44 @@ export function updateEntityActionsRandom(aid:string){
             entitiesWithActions.push(action)
         })
     }
+    console.log('entity actions are ', entitiesWithActions,batchActions)
 }
 
-export function updateRandomActionsPanel(){
-    entities.length = 0
-    entities = getAllAssetNames(selectedItem.sceneId)
-}
-
-export function resetRandomActionsPanel(){
-    entities.length = 0
-    entitiesWithActions.length = 0
-    selectedEntityIndex = 0
-    selectedActionIndex = 0
-    newAction = {}
+export function updateEntitiesWithRandomActions(){
+    if(!updated){
+        updated = true
+        entities.length = 0
+        entities = getAllAssetNames(selectedItem.sceneId)
+        batchActions.length = 0
+        console.log('updatnig entites wit hactions')
+    }
 }
 
 export function AddRandomActionPanel(){
-    return(<UiEntity
-    key={resources.slug + "actions::random::action::panel"}
-    uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    alignContent:'center',
-    width: '100%',
-    height: '100%',
-    display: visibleComponent === COMPONENT_TYPES.ACTION_COMPONENT ? 'flex' : 'none',
-    }}
->
-            <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignContent:'center',
-        width: '100%',
-        height: '10%',
-    }}
-        uiText={{value:"Add Random Action", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-    />
+    return(
+        <UiEntity
+        key={resources.slug + "action::random::actions::panel"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.Green()}}
+    >
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%'}
+        }}
+        uiText={{value:"Add Random Action", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
 
 {/* action entity dropdown */}
 <UiEntity
@@ -81,14 +84,14 @@ export function AddRandomActionPanel(){
         justifyContent: 'center',
         alignContent:'center',
         width: '100%',
-        height: '10%',
+        height: '15%',
     }}
     >
 
     <Dropdown
         // options={[...["Select Entity"], ...getEntityList()]}
         options={[...["Select Entity"], ...entities.map($=> $.name)]}
-        selectedIndex={selectedEntityIndex}
+        selectedIndex={0}
         onChange={selectEntityIndex}
         uiTransform={{
             width: '100%',
@@ -108,7 +111,7 @@ export function AddRandomActionPanel(){
         justifyContent: 'center',
         alignContent:'center',
         width: '100%',
-        height: '10%',
+        height: '15%',
         margin:{top:"1%"}
     }}
     >
@@ -116,7 +119,7 @@ export function AddRandomActionPanel(){
     <Dropdown
         options={[...["Select Action"], ...entitiesWithActions.map(($:any)=> $.name)]}
         // options={entitiesWithActions.length > 0 ? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
-        selectedIndex={selectedActionIndex}
+        selectedIndex={0}
         onChange={selectActionIndex}
         uiTransform={{
             width: '100%',
@@ -131,85 +134,119 @@ export function AddRandomActionPanel(){
 
         {/* add action button */}
         <UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf:'flex-start',
-        margin:{top:"1%"},
-        display: selectedEntityIndex !== 0 ? "flex" : "none",
-        width: calculateImageDimensions(10, getAspect(uiSizes.buttonPillBlack)).width,
-        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-    }}
-    uiBackground={{
-        textureMode: 'stretch',
-        texture: {
-            src: 'assets/atlas2.png'
-        },
-        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-    }}
-    uiText={{
-        value: "Add Action",
-        fontSize: sizeFont(25, 15),
-        color: Color4.White(),
-        textAlign: 'middle-center'
-    }}
-    onMouseDown={() => {
-        setUIClicked(true)
-        let info:any = {...newAction}
-        update("addaction", info)
-    }}
-    onMouseUp={()=>{
-        setUIClicked(false)
-    }}
-/>
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignSelf:'flex-start',
+                width: calculateImageDimensions(10, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            uiText={{
+                value: "Add Action",
+                fontSize: sizeFont(25, 15),
+                color: Color4.White(),
+                textAlign: 'middle-center'
+            }}
+            onMouseDown={() => {
+                setUIClicked(true)
+                setData({...entitiesWithActions[selectedActionIndex]}.id)
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
 
-<UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignContent:'center',
-    width: '100%',
-    height: '10%',
-}}
-    uiText={{value:"Current Actions", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-/>
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            alignContent:'center',
+            width: '100%',
+            height: '10%',
+        }}
+            uiText={{value:"Current Actions", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+        />
 
-<UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    alignContent:'center',
-    width: '100%',
-    height: '45%',
-}}
->
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            alignContent:'center',
+            width: '100%',
+            height: '45%',
+        }}
+        >
 
-    {selectedItem && 
-    selectedItem.enabled && 
-    visibleComponent === COMPONENT_TYPES.ACTION_COMPONENT &&  
-    
-    getSceneActions()
-    }
-    
-</UiEntity>
+            {selectedItem && selectedItem.enabled && newActionData && updated && getBatchActionList()}
+            
+        </UiEntity>
     </UiEntity>
     )
 }
 
-export function ActionRow(info:any){
+function selectEntityIndex(index:number){
+    console.log('select entity index', index)
+    selectedEntityIndex = index
+    if(index !== 0){
+        updateRandomEntityActions(entities[index-1].aid)
+    }
+}
+
+function selectActionIndex(index:number){
+    console.log('select action index', index)
+    selectedActionIndex = index
+    // if(index !== 0){
+    //     newAction = entitiesWithActions[index-1]
+    //     console.log('new action is', newAction)
+    // }
+}
+
+function setData(value:any){
+    let action = entitiesWithActions[selectedActionIndex-1]
+    console.log('selected action is', action)
+    batchActions.push({...entitiesWithActions[selectedActionIndex-1]})
+
+    newActionData.actions = [...batchActions.map(($:any)=> $.id)]
+    updateActionData({actions:newActionData.actions})
+
+    console.log('all entities with actions', batchActions)
+}
+
+function getBatchActionList(){
+    let arr:any[] = []
+    let count = 0
+    console.log('random actions are a', batchActions)
+    for(let i = 0; i < batchActions.length; i++){
+        let action = batchActions[i]
+        if(action){
+            arr.push(<Row data={{name:action.name, actionId:action.id}} rowCount={count} />)
+            count++
+        }
+    }
+    return arr
+}
+
+export function Row(info:any){
     let data:any = info.data
     return(
         <UiEntity
-        key={resources.slug + "trigger-action-row-"+ info.rowCount}
+        key={resources.slug + "random-action-row-"+ info.rowCount}
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '15%',
+                height: '20%',
                 margin:{top:"1%", bottom:'1%', left:"2%", right:'2%'}
             }}
             uiBackground={{
@@ -220,25 +257,12 @@ export function ActionRow(info:any){
                 uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
                 >
 
-            {/* action name column */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40%',
-                height: '100%',
-                margin:{left:'2%'}
-            }}
-            uiText={{value:"" + data.entity, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-            />
-
              <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40%', 
+                width: '80%', 
                 height: '100%',
             }}
             uiText={{value:"" + data.name, fontSize:sizeFont(20,15), color:Color4.White()}}
@@ -272,53 +296,14 @@ export function ActionRow(info:any){
                     uvs: getImageAtlasMapping(uiSizes.trashButton)
                 }}
                 onMouseDown={() => {
-                    // update("deleteaction", {tid:selectedTrigger.id, actionId: data.actionId})
+                    let actionIndex = newActionData.actions.findIndex(($:any)=> $.id === data.actionId)
+                    if(actionIndex >= 0){
+                        newActionData.actions.splice(actionIndex, 1)
+                    }
                 }}
             />
                 </UiEntity>
 
             </UiEntity>
     )
-}
-
-function selectEntityIndex(index:number){
-    selectedEntityIndex = index
-    if(index !== 0){
-        updateEntityActionsRandom(entities[index-1].aid)
-    }
-}
-
-function selectActionIndex(index:number){
-    selectedActionIndex = index
-    if(index !== 0){
-        newAction = entitiesWithActions[index-1]
-        console.log('new action is', newAction)
-    }
-}
-
-function getSceneActions(){
-    let arr:any[] = []
-    let count = 0
-    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-    if(scene){
-        scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((sceneAction:any, aid:string)=>{
-            let entityInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
-            arr.push(<ActionRow data={{entity:entityInfo.value, name:sceneAction.name, actionId:sceneAction.id}} rowCount={count} />)
-            count++
-        })
-    }
-    return arr
-}
-
-export function update(action:string, data:any){
-    console.log('update action data', action, data)
-    // sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
-    //     {
-    //         component:COMPONENT_TYPES.TRIGGER_COMPONENT,
-    //         aid:selectedItem.aid,
-    //         sceneId:selectedItem.sceneId,
-    //         action:action,
-    //         data:triggerData,
-    //     }
-    // )
 }

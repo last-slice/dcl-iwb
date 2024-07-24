@@ -122,6 +122,7 @@ function generateRow(data:any, header?:boolean, rowCount?:number){
                 }}
                 uiText={
                     {
+                        textWrap:'nowrap',
                     value: "" + (header ? data[rowConfig.key] : tableConfig.rowConfig[i].image ? "" : tableConfig.rowConfig[i].overrideKey ? "" + data : tableConfig.rowConfig[i].func ? tableConfig.rowConfig[i].func(data[rowConfig.key]) : data[rowConfig.key]),
                     fontSize: tableConfig.rowConfig[i].fontSize ? tableConfig.rowConfig[i].fontSize : sizeFont(25, 15),
                     textAlign: tableConfig.rowConfig[i].textAlign ? tableConfig.rowConfig[i].textAlign : 'middle-center',

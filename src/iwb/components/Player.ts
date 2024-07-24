@@ -2,7 +2,7 @@ import {getPlayer} from "@dcl/sdk/players";
 import {Player, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
 // import {iwbEvents, sendServerMessage} from "../messaging";
 import {AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
-import resources from "../helpers/resources";
+import resources, { colors } from "../helpers/resources";
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { Room } from "colyseus.js";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
@@ -46,13 +46,17 @@ export function setLocalPlayer(player:any){
 }
 
 export function setPlayerSelectedAsset(player:any, current:any, previous:any){
+    console.log('player selected asset', player.address, previous, current)//
     if(player.address !== localUserId){
         if(current === null){
             otherUserRemovedSeletedItem(player.address)
         }else{
             current.editor = player.address
-            if(current.grabbed){
-                otherUserSelectedItem(current)
+            if(current.sceneId){
+                let scene = colyseusRoom.state.scenes.get(current.sceneId)
+                if(current.grabbed && scene.e && !scene.priv){
+                    otherUserSelectedItem(current)
+                }
             }
         }
     }

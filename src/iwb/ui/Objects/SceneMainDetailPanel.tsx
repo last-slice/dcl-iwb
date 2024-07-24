@@ -20,7 +20,6 @@ import { utils } from '../../helpers/libraries'
 import { displayExpandedMap } from './ExpandedMapView'
 import { displayMainView } from './IWBView'
 import { displayPendingPanel } from './PendingInfoPanel'
-import { loadScene, unloadScene } from '../../components/Scene'
 
 export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
@@ -37,8 +36,19 @@ let buttons:any[] = [
         updateSceneDetailsView("Info")
         }
     },
+    {label:"Access", pressed:false, func:()=>{
+        updateSceneDetailsView("Access")
+        }
+    },
     {label:"Size", pressed:false, func:()=>{
         updateSceneDetailsView("Size")
+        }
+    },
+    {label:"Parcels", pressed:false, func:()=>{
+        playSound(SOUND_TYPES.SELECT_3)
+        editCurrentParcels(scene!.id)
+        displaySceneDetailsPanel(false)
+        displayExpandedMap(true, true)
         }
     },
     {label:"Spawns", pressed:false, func:()=>{
@@ -140,7 +150,7 @@ let spawnTableConfig:any = {
 }
 
 export let sceneBuildersConfig:any = {
-    height:'40%', width:'100%', rowCount:6,
+    height:'30%', width:'100%', rowCount:6,
     headerData:[
         {name:"Name", go:"Del"},
     ],
@@ -229,7 +239,7 @@ export function updateSceneDetailsView(value:string){
         button.pressed = true
     }
 
-    if(sceneInfoDetailView === "Builders"){
+    if(sceneInfoDetailView === "Access"){
         newSceneBuilderWallet = ""
         setTableConfig(sceneBuildersConfig)
         updateIWBTable(scene !== null ? scene.bps : [])
@@ -856,7 +866,7 @@ src: 'assets/atlas2.png'
 uvs: getButtonState("Public")
 }}
 onMouseDown={() => {
-scene!.priv = !scene!.priv        
+    scene!.priv = !scene!.priv
 }}
 />
 
@@ -952,7 +962,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
                 height: '20%',
             }}
             // uiBackground={{color:Color4.White()}}
-        >
+        >        
 
 <UiEntity
         uiTransform={{
@@ -971,68 +981,6 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
         onMouseDown={() => {
-            updateSceneDetailsView("Builders")
-        }}
-        uiText={{value: "Edit Builders", color:Color4.White(), fontSize:sizeFont(20,15)}}
-        />
-
-<UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
-            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
-        }}
-        onMouseDown={() => {
-            setUIClicked(true)
-            playSound(SOUND_TYPES.SELECT_3)
-            editCurrentParcels(scene!.id)
-            displaySceneDetailsPanel(false)
-            displayExpandedMap(true, true)
-        }}
-        onMouseUp={()=>{
-            setUIClicked(false)
-        }}
-        uiText={{value: "Edit Parcels", color:Color4.White(), fontSize:sizeFont(20,15)}}
-        />            
-
-<UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
-            height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
-            margin:{right:"1%"},
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
-        }}
-        onMouseDown={() => {
-            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS,
-                {
-                    sceneId: scene!.id,
-                    name: scene!.n,
-                    desc: scene!.d,
-                    image: scene!.im,
-                    enabled: scene!.e,
-                    priv: scene!.priv,
-                    lim: scene!.lim
-                })
-
             displaySceneDetailsPanel(false)
             updateSceneDetailsView("Info")
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Scene Saved!", animate:{enabled:true, return:true, time:5}})
@@ -1265,7 +1213,7 @@ function EditBuildersPanel() {
         <UiEntity
             key={resources.slug + "scene::edit::builders::panel"}
             uiTransform={{
-                display: sceneInfoDetailView === "Builders" ? 'flex' : 'none',
+                display: sceneInfoDetailView === "Access" ? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -1346,13 +1294,13 @@ function getButtonState(button:string){
     if(scene){
         switch(button){
             case 'Enabled':
-                return scene!.e ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                return scene.e ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
         
             case 'Public':
-                return scene!.priv ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)
+                return scene.priv ? getImageAtlasMapping(uiSizes.toggleOffTrans) : getImageAtlasMapping(uiSizes.toggleOnTrans)
 
             case 'Limits':
-                return scene!.lim ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                return scene.lim ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
     
             default:
                 return getImageAtlasMapping(uiSizes.toggleOnTrans)

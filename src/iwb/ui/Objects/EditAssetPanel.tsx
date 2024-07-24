@@ -2,7 +2,7 @@ import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgro
 import resources from '../../helpers/resources'
 import { localPlayer, settings } from '../../components/Player'
 import { EDIT_MODES, COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
-import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity, resetAdditionalAssetFeatures } from '../../modes/Build'
+import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity, resetAdditionalAssetFeatures, addAllBuildModePointers } from '../../modes/Build'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
@@ -41,6 +41,8 @@ import { EditGameItem, updateGameItemInfo } from './Edit/EditGameItem'
 import { dialogView, EditDialog, updateDialog, updateDialogView } from './Edit/EditDialog'
 import { animationEntity, EditAnimation, updateAssetAnimations } from './Edit/EditAnimation'
 import { Animator } from '@dcl/sdk/ecs'
+import { releaseBatchActions } from './Edit/ActionPanels/AddBatchActionsPanel'
+import { releaseRandomActions } from './Edit/ActionPanels/AddRandomAction'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -252,6 +254,7 @@ export function createEditAssetPanel() {
                                 deleteSelectedItem(selectedItem.aid)
                             }
                             resetAdditionalAssetFeatures()
+                            addAllBuildModePointers()
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)
@@ -282,6 +285,7 @@ export function createEditAssetPanel() {
                                 componentViewType = "basic"
                                 openEditComponent("")
                                 resetAdditionalAssetFeatures()
+                                addAllBuildModePointers()
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)
@@ -497,6 +501,8 @@ function getBackButtonLogic(){
         case COMPONENT_TYPES.ACTION_COMPONENT:
             resetAdditionalAssetFeatures()
             if(actionView === "add"){
+                releaseBatchActions()
+                releaseRandomActions()
                 updateActionView("main")
             }else{
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)

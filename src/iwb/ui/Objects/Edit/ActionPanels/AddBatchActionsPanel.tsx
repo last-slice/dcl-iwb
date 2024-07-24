@@ -8,22 +8,46 @@ import { uiSizes } from '../../../uiConfig'
 import { selectedItem } from '../../../../modes/Build'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { COMPONENT_TYPES } from '../../../../helpers/types'
+import { getAllAssetNames } from '../../../../components/Name'
 
-export let entityActions:any[] = []
-let selectedIndex = 0
+let entities:any[] = []
+let entitiesWithActions:any[] = []
 
-export function updateEntityActions(){
-    entityActions.length = 0
+let selectedEntityIndex:number = 0
+let selectedActionIndex:number = 0
+
+let batchActions:any[] = []
+
+let updated = false
+
+export function releaseBatchActions(){
+    updated = false
+}
+
+export function updateEntityActions(aid:string){
+    entitiesWithActions.length = 0
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-    if(scene){
-        let actions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(selectedItem.aid)
-        if(actions && actions.actions.length > 0){
-            actions.actions.forEach((action:any)=>{
-                entityActions.push({name:action.name, actionId:action.id})
-            })
-        }
+    if(!scene){
+        return
     }
-    selectedIndex = 0
+    
+    let actions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(aid)
+    if(actions && actions.actions.length > 0){
+        actions.actions.forEach((action:any)=>{
+            entitiesWithActions.push(action)
+        })
+    }
+    console.log('entity actions are ', entitiesWithActions,batchActions)
+}
+
+export function updateEntitiesWithActions(){
+    if(!updated){
+        updated = true
+        entities.length = 0
+        entities = getAllAssetNames(selectedItem.sceneId)
+        batchActions.length = 0
+        console.log('updatnig entites wit hactions')
+    }
 }
 
 export function AddBatchActionPanel(){
@@ -52,28 +76,61 @@ export function AddBatchActionPanel(){
         uiText={{value:"Add Batch Action", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
         />
 
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '12%',
-            margin:{bottom:'5%'}
-        }}
+{/* action entity dropdown */}
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '100%',
+        height: '15%',
+    }}
     >
-        <Dropdown
-        options={entityActions.map($=> $.name)}
-        selectedIndex={selectedIndex}
-        onChange={selectActionIndex}
+
+    <Dropdown
+        // options={[...["Select Entity"], ...getEntityList()]}
+        options={[...["Select Entity"], ...entities.map($=> $.name)]}
+        selectedIndex={0}
+        onChange={selectEntityIndex}
         uiTransform={{
             width: '100%',
-            height: '120%',
+            height: '100%',
         }}
         color={Color4.White()}
         fontSize={sizeFont(20, 15)}
-            />
-        </UiEntity>
+    />
+
+    </UiEntity>
+
+            {/* action entity actions dropdown */}
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '100%',
+        height: '15%',
+        margin:{top:"1%"}
+    }}
+    >
+
+    <Dropdown
+        options={[...["Select Action"], ...entitiesWithActions.map(($:any)=> $.name)]}
+        // options={entitiesWithActions.length > 0 ? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
+        selectedIndex={0}
+        onChange={selectActionIndex}
+        uiTransform={{
+            width: '100%',
+            height: '100%',
+            display: selectedEntityIndex !== 0 ? "flex" : "none"
+        }}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}
+    />
+
+    </UiEntity>
 
         {/* add action button */}
         <UiEntity
@@ -100,8 +157,7 @@ export function AddBatchActionPanel(){
             }}
             onMouseDown={() => {
                 setUIClicked(true)
-                console.log(entityActions[selectedIndex].actionId)
-                setData({...entityActions[selectedIndex]}.actionId)
+                setData({...entitiesWithActions[selectedActionIndex]}.id)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
@@ -131,33 +187,52 @@ export function AddBatchActionPanel(){
         }}
         >
 
-            {selectedItem && selectedItem.enabled && newActionData && newActionData.actions && newActionData.actions.length > 0 && getBatchActionList()}
+            {selectedItem && selectedItem.enabled && newActionData && updated && getBatchActionList()}
             
         </UiEntity>
     </UiEntity>
     )
 }
 
+function selectEntityIndex(index:number){
+    console.log('select entity index', index)
+    selectedEntityIndex = index
+    if(index !== 0){
+        updateEntityActions(entities[index-1].aid)
+    }
+}
 
 function selectActionIndex(index:number){
-    selectedIndex = index
+    console.log('select action index', index)
+    selectedActionIndex = index
+    // if(index !== 0){
+    //     newAction = entitiesWithActions[index-1]
+    //     console.log('new action is', newAction)
+    // }
 }
 
 function setData(value:any){
-    console.log(entityActions)
-    
-    let data = {...newActionData}
-    data.actions.push(value)
-    updateActionData(data, true)
+    let action = entitiesWithActions[selectedActionIndex-1]
+    console.log('selected action is', action)
+    batchActions.push({...entitiesWithActions[selectedActionIndex-1]})
+
+    newActionData.actions = [...batchActions.map(($:any)=> $.id)]
+    updateActionData({actions:newActionData.actions})
+
+    console.log('all entities with actions', batchActions)
 }
 
 function getBatchActionList(){
     let arr:any[] = []
     let count = 0
-    newActionData.actions.forEach((actionId:any, i:number)=>{
-        arr.push(<Row data={{name:entityActions.find($=> $.actionId ===actionId).name, actionId:actionId}} rowCount={count} />)
-        count++
-    })
+    console.log('batch actions are a', batchActions)
+    for(let i = 0; i < batchActions.length; i++){
+        let action = batchActions[i]
+        if(action){
+            arr.push(<Row data={{name:action.name, actionId:action.id}} rowCount={count} />)
+            count++
+        }
+    }
     return arr
 }
 
@@ -221,7 +296,7 @@ export function Row(info:any){
                     uvs: getImageAtlasMapping(uiSizes.trashButton)
                 }}
                 onMouseDown={() => {
-                    let actionIndex = newActionData.actions.findIndex(($:any)=> $.actionId === data.actionId)
+                    let actionIndex = newActionData.actions.findIndex(($:any)=> $.id === data.actionId)
                     if(actionIndex >= 0){
                         newActionData.actions.splice(actionIndex, 1)
                     }

@@ -45,6 +45,8 @@ import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetSetPositionEntity } from "../ui/Objects/Edit/ActionPanels/AddSetPositionPanel"
 import { resetSetRotationEntity } from "../ui/Objects/Edit/ActionPanels/AddSetRotationPanel"
 import { resetSetScaleEntity } from "../ui/Objects/Edit/ActionPanels/AddSetScalePanel"
+import { releaseBatchActions } from "../ui/Objects/Edit/ActionPanels/AddBatchActionsPanel"
+import { releaseRandomActions } from "../ui/Objects/Edit/ActionPanels/AddRandomAction"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -385,7 +387,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             user: localUserId,
             catalogId: id,
             assetId: selectedItem.aid,
-            ugc: selectedItem.ugc
+            ugc: selectedItem.ugc,
+            sceneId: selectedItem.sceneId
         })
     } else {
         console.log('item does not exist')
@@ -530,7 +533,7 @@ export function saveItem() {
 
     // PointerEvents.deleteFrom(selectedItem.entity)
     addBuildModePointers(selectedItem.entity)
-    // addAllBuildModePointers()
+    addAllBuildModePointers()
 
     selectedItem.enabled = false
     selectedItem.mode === EDIT_MODES.EDIT ? engine.removeEntity(selectedItem.pointer!) : null
@@ -568,10 +571,13 @@ export function resetAdditionalAssetFeatures(){
     resetSetRotationEntity()
     resetSetScaleEntity()
     displayGrabContextMenu(false)
+    releaseBatchActions()
+    releaseRandomActions()
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     VisibilityComponent.createOrReplace(bbE, {visible: false})
+    displayGrabContextMenu(false)
 
     if (editing || canceled) {
         selectedItem.enabled = false;
@@ -1304,7 +1310,7 @@ function addUseItemPointers(ent: Entity) {
     })
     updateContextEvents([...PointerEvents.get(ent).pointerEvents])
 }
-//
+
 export function addBuildModePointers(ent: Entity) {
     PointerEvents.deleteFrom(ent)
     PointerEvents.createOrReplace(ent, {

@@ -48,18 +48,26 @@ export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
 export const afterLoadActions: Function[] = []
 
-export async function addScene(scene:any){
+export function isPrivateScene(scene:any){
+    return scene.priv
+}
+
+export async function addScene(scene:any){//
     if(scene.e){
-        if(!isGCScene()){
-            deleteCreationEntities(localUserId)
-            await removeEmptyParcels(scene.pcls)
-            refreshMap()
+        if((isPrivateScene(scene) && (localPlayer.hasWorldPermissions || localPlayer.homeWorld)) || !isPrivateScene(scene)){
+            if(!isGCScene()){
+                deleteCreationEntities(localUserId)
+                await removeEmptyParcels(scene.pcls)
+                refreshMap()
+            }
+            await loadScene(scene)
+            scenesLoadedCount++
+            checkAllScenesLoaded()
         }
-        await loadScene(scene)
-
-        scenesLoadedCount++
-        checkAllScenesLoaded()
-
+        else{
+            scenesLoadedCount++
+            checkAllScenesLoaded()
+        }
     }else{
         scenesLoadedCount++
         checkAllScenesLoaded()
@@ -205,68 +213,6 @@ export function deleteAllRealmObjects() {
     for (const [entity] of engine.getEntitiesWith(RealmEntityComponent)) {
         engine.removeEntity(entity)
     }
-}
-
-function addAssetComponents(scene: IWBScene, entity: Entity, item: SceneItem, type: string, name: string) {
-    // console.log('adding asset components')
-
-    // createVisibilityComponent(scene, entity, item)
-    // PointersLoadedComponent.create(entity, {init: false, sceneId: scene.id})
-
-    // if (item.actComp) {
-    //     // let actions = [...item.actComp.actions.values()]
-    //     // console.log('item actions area', actions)
-
-    //     item.actComp.actions.forEach((action: any, key: any) => {
-    //         realmActions.push({id: key, sceneId: scene.id, action})
-    //     })
-
-    // }
-
-    // switch (type) {
-    //     case '3D':
-    //         createGltfComponent(scene, entity, item)
-    //         break;
-
-    //     case '2D':
-    //         if (item.colComp.vMask === 1) {
-    //             MeshCollider.setPlane(entity)
-    //         }
-
-    //         switch (name) {
-    //             case 'Image':
-    //                 MeshRenderer.setPlane(entity)
-    //                 updateImageUrl(item.aid, item.matComp, item.imgComp.url)
-    //                 break;
-
-    //             case 'Video':
-    //                 MeshRenderer.setPlane(entity)
-    //                 createVideoComponent(scene.id, entity, item)
-    //                 break;
-
-    //             case 'NFT Frame':
-    //                 updateNFTFrame(item.aid, item.matComp, item.nftComp)
-    //                 break;
-
-    //             case 'Text':
-    //                 updateTextComponent(item.aid, item.matComp, item.textComp)
-    //                 break;
-
-    //             case 'Plane':
-    //                 updateMaterialComponent(item.aid, item.matComp)
-    //                 break;
-    //         }
-    //         break;
-
-    //     case 'Audio':
-    //         createAudioComponent(scene, entity, item)
-    //         break;
-
-    //     case 'SM':
-    //         createSmartItemComponent(scene, entity, item, name)
-    //         break;
-
-    // }
 }
 
 export function checkSceneVisibility(scene: IWBScene, info: any) {

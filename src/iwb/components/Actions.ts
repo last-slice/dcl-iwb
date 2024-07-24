@@ -19,6 +19,7 @@ import { loadLevelAssets } from "./Level"
 import { attemptGameEnd } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 import { island } from "./Config"
+import { getRandomIntInclusive } from "../helpers/functions"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -248,6 +249,10 @@ function updateActions(scene:any, info:any, action:any){
 
              case Actions.TELEPORT_PLAYER:
                 handleTeleportPlayer(scene, info, action)
+                break;
+
+            case Actions.RANDOM_ACTION:
+                handleRandomAction(scene, info, action)
                 break;
 
         }
@@ -601,9 +606,33 @@ function handleVerifyAccess(scene:any, info:any, action:any){
 }
 
 function handleBatchAction(scene:any, info:any, action:any){
-    const actionEvents = getActionEvents(info.entity)
-    action.actions.forEach((actionId:any)=>{
-        actionEvents.emit(actionId, getActionById(scene, info.aid, actionId))
+    scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+        let entityInfo = getEntity(scene, aid)
+        if(entityInfo){
+            action.actions.forEach((actionId:any)=>{
+                if(actionComponent.actions && actionComponent.actions.length > 0 && actionComponent.actions.find(($:any)=> $.id === actionId)){
+                    const actionEvents = getActionEvents(entityInfo.entity)
+                    actionEvents.emit(actionId, getActionById(scene, entityInfo.aid, actionId))
+                }
+            })
+        }
+    })
+}
+
+function handleRandomAction(scene:any, info:any, action:any){
+    let random = getRandomIntInclusive(0, action.actions.length - 1)
+    let randomActionId = action.actions[random]
+
+    console.log('random action is', randomActionId)
+
+    scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+        let entityInfo = getEntity(scene, aid)
+        if(entityInfo){
+            if(actionComponent.actions && actionComponent.actions.length > 0 && actionComponent.actions.find(($:any)=> $.id === randomActionId)){
+                const actionEvents = getActionEvents(entityInfo.entity)
+                actionEvents.emit(randomActionId, getActionById(scene, entityInfo.aid, randomActionId))
+            }
+        }
     })
 }
 

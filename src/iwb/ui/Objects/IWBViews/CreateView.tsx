@@ -21,7 +21,7 @@ let im = ""
 let enabled = true
 let priv = false
 let age = 'E'
-let cat = ""
+let cat = "art"
 let disablePX = false
 let noVoice = false
 
@@ -156,7 +156,7 @@ export function CreateSceneView(){
             }}
         >
             <Dropdown
-        options={['True', 'False']}
+        options={['True']}
         selectedIndex={0}
         onChange={(index:number)=>{
             if(index === 0){
@@ -491,7 +491,7 @@ export function CreateSceneView(){
         }}
         onMouseDown={() => {
             displayMainView(false)
-            createTempScene(name, desc, im, enabled, priv)
+            createTempScene(name, desc, im, enabled, priv, cat, age, disablePX, noVoice)
             displayExpandedMap(true)
         }}
         uiText={{value: "Create", color:Color4.White(), fontSize:sizeFont(30,20)}}

@@ -25,7 +25,7 @@ export function validateScene(){
 
         : 
         console.log('sending to server')
-        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, {name: tempScene.name, desc:tempScene.description, enabled:tempScene.enabled, private:tempScene.priv, image: tempScene.image})
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, tempScene)
     }    
 }
 
@@ -37,13 +37,17 @@ export function editCurrentParcels(id:string){
     })
 }
 
-export function createTempScene(name:string, desc:string, image:string, enabled:boolean, priv:boolean){
+export function createTempScene(name:string, desc:string, image:string, enabled:boolean, priv:boolean, category:string, rating:any, dPx:boolean, dv:boolean){
     tempScene.name = name
     tempScene.description = desc
     tempScene.enabled = enabled
     tempScene.priv = priv
     tempScene.image = image
-    tempParcels.clear()
+    tempScene.cat = category
+    tempScene.rating = rating
+    tempScene.dPx = dPx
+    tempScene.dv = dv
+    tempParcels.clear()//
     setPlayMode(localUserId, SCENE_MODES.CREATE_SCENE_MODE)
 }
 

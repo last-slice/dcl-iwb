@@ -8,7 +8,7 @@ import { utils } from "../helpers/libraries";
 import { addLocalWorldPermissionsUser, addTutorial, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
-import { addScene, checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
+import { addScene, checkSceneCount, enablePrivateModeForScene, isPrivateScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
 import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel, deleteCreationEntities } from "../modes/Create";
 import { getEntity } from "./IWB";
@@ -94,6 +94,8 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
+        console.log('settings info', info.settings)
+
         // setCatalog(info.catalog)//
         setRealmAssets(info.realmAssets)
 
@@ -113,6 +115,25 @@ export async function createColyseusListeners(room:Room){
                 refreshMap()
             }, 1000 * 5)
         }
+
+        setSettings(info.settings)
+            if(info.settings.firstTime){
+                console.log('first time')
+                // displayWelcomeScreen(true)
+            }
+
+            if (localPlayer!.homeWorld) {
+                let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
+                if (config) {
+                    if (config.v < iwbConfig.v) {
+                        showNotification({
+                            type: NOTIFICATION_TYPES.MESSAGE,
+                            message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
+                            animate: {enabled: true, time: 10, return: true}
+                        })
+                    }
+                }
+            }
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.IWB_VERSION_UPDATE, (info: any) => {
@@ -251,6 +272,7 @@ export async function createColyseusListeners(room:Room){
         }
 
         let scene = colyseusRoom.state.scenes.get(info.sceneId)
+        console.log('scene is', scene)
         if(info.eChanged){
             if(scene && scene.e){
                 console.log('need to load in scene')
@@ -258,13 +280,17 @@ export async function createColyseusListeners(room:Room){
             }else{
                 console.log('need to unload scene')
                 unloadScene(scene)
-                enablePrivateModeForScene(scene)
+                enablePrivateModeForScene(scene)//
             }
         }
 
-        if(info.pChanged && (!localPlayer.homeWorld || !localPlayer.hasWorldPermissions)){
-            if(scene && scene.priv){
-                console.log('need to load in scene')
+        if(info.pChanged){
+            if(localPlayer.homeWorld || localPlayer.hasWorldPermissions){
+                return
+            }
+
+            if(scene && !scene.priv){
+                console.log('need to load in scene', scene)
                 addScene(scene)
             }else{
                 console.log('need to unload scene')
@@ -287,24 +313,24 @@ export async function createColyseusListeners(room:Room){
         switch(info.action){
             case 'load':
                 console.log('load player settings')
-                setSettings(info.value)
+                // setSettings(info.value)
 
-                if(!info.value.firstTime){
-                    // displayWelcomeScreen(true)
-                }
+                // if(!info.value.firstTime){
+                //     // displayWelcomeScreen(true)
+                // }
 
-                if (localPlayer!.homeWorld) {
-                    let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
-                    if (config) {
-                        if (config.v < iwbConfig.v) {
-                            showNotification({
-                                type: NOTIFICATION_TYPES.MESSAGE,
-                                message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
-                                animate: {enabled: true, time: 10, return: true}
-                            })
-                        }
-                    }
-                }
+                // if (ocalPlayer!.homeWorld) {
+                //     let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
+                //     if (config) {
+                //         if (config.v < iwbConfig.v) {
+                //             showNotification({
+                //                 type: NOTIFICATION_TYPES.MESSAGE,
+                //                 message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
+                //                 animate: {enabled: true, time: 10, return: true}
+                //             })
+                //         }
+                //     }
+                // }
 
                 //play music to start
 
@@ -416,11 +442,6 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS, (info:any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS + ' received', info)
-    //     updateSceneEdits(info)
-    // })
-
     // room.onMessage(SERVER_MESSAGE_TYPES.UPDATE_GRAB_Y_AXIS, (info:any) => {
     //     log(SERVER_MESSAGE_TYPES.UPDATE_GRAB_Y_AXIS + ' received', info)
     //     if(info.user !== localUserId){
@@ -491,7 +512,7 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.END_GAME, (info:any) => {
         log(SERVER_MESSAGE_TYPES.END_GAME + ' received', info)
-        attemptGameEnd(info)
+        attemptGameEnd(info)//
     })
 
     room.state.listen("sceneCount", (c:any, p:any)=>{
@@ -508,11 +529,27 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
+    room.state.players.onAdd(async(player:any, userId:any)=>{
+        if(userId === localUserId){
+            await createPlayer(player)
+            setSceneListeners(room)
+        }
+        player.listen("selectedAsset", (current:any, previous:any)=>{
+            setPlayerSelectedAsset(player, current, previous)
+        })
+    })
+
+    room.state.players.onRemove(async(player:any, userId:any)=>{
+        removePlayer(userId)
+    })
+}
+
+function setSceneListeners(room:any){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         console.log('scene added', key, scene)
-
+      
         await addScene(scene)
-    
+        
         scene.listen("si",(current:any, previous:any)=>{
             scene.si = current
         })
@@ -523,23 +560,27 @@ export async function createColyseusListeners(room:Room){
         })
     
         scene.listen("priv",(current:any, previous:any)=>{
+            console.log('scene privacy changed', previous, current)
             // if(previous !== undefined){
-            //     if(current){
-            //         if(scene.o !== localUserId){
-            //             enablePrivateModeForScene(scene)
-            //         }
+            //     if(localPlayer.homeWorld || localPlayer.hasWorldPermissions){
+            //         return
             //     }
-            //     else{
-            //         if(scene.o !== localUserId && scene.e){
-            //             scene.ass.forEach((asset:any)=>{
-            //                 loadSceneAsset(scene.id, asset)
-            //             })
-            //         }
+
+            //     console.log('scene privacy is', scene.priv)
+    
+            //     if(current){
+            //         console.log('need to load in scene', scene)
+            //         addScene(scene)
+            //     }else{
+            //         console.log('need to unload scene')//
+            //         unloadScene(scene)
+            //         enablePrivateModeForScene(scene)
             //     }
             // }
         })
     
         scene.listen("e",(current:any, previous:any)=>{
+            console.log('scene enabled changed', previous, current)
             // if(previous !== undefined){
             //     console.log('scene enabled changed', previous, current)
             //     if(!current){
@@ -562,18 +603,5 @@ export async function createColyseusListeners(room:Room){
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.ona + " just deleted their scene " + scene.n, animate:{enabled:true, return:true, time:5}})
         }
         unloadScene(scene)
-    })
-
-    room.state.players.onAdd(async(player:any, userId:any)=>{
-        if(userId === localUserId){
-            createPlayer(player)
-        }
-        player.listen("selectedAsset", (current:any, previous:any)=>{
-            setPlayerSelectedAsset(player, current, previous)
-        })
-    })
-
-    room.state.players.onRemove(async(player:any, userId:any)=>{
-        removePlayer(userId)
     })
 }
