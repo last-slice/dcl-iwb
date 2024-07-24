@@ -8,8 +8,8 @@ import { COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES } from '../../helpers
 import { sendServerMessage } from '../../components/Colyseus'
 import { localPlayer } from '../../components/Player'
 
-let showLiveControl = false
-let showLiveButton = true
+let showLiveControl = true
+let showLiveButton = false
 let showLivePanel = false
 let forceScene = true
 let message = ""
@@ -22,7 +22,9 @@ let playerIndex:number = 0
 let bounceLocationIndex:number = 0
 let sceneActionIndex:number = 0
 
-export function displayLiveControl(value:boolean, aid?:string){
+let aid:string = ""
+
+export function displayLiveControl(value:boolean){
     showLiveControl = value
 
     if(!value){
@@ -36,7 +38,7 @@ export function displayLiveControl(value:boolean, aid?:string){
                     sceneId: scene.id,
                 }
             )
-    
+
             let live = scene[COMPONENT_TYPES.LIVE_COMPONENT].get(aid)
             console.log('live panel is', live)
             if(live && live.p.length > 0){
@@ -44,6 +46,9 @@ export function displayLiveControl(value:boolean, aid?:string){
                     bounceLocations.push({name: live.n[i], position:position, look:live.l[i]})
                 })
             }
+        }
+        else{
+            console.log('not on active scene')
         }
     }
 }
@@ -62,8 +67,9 @@ function resetPanel(){
     bounceLocationIndex = 0
 }
 
-export function displayLiveButton(value:boolean){
+export function displayLiveButton(value:boolean, assetId?:string){
     showLiveButton = value
+    aid = assetId ? assetId : ""
 }
 
 export function displayLivePanel(value:boolean){
@@ -113,6 +119,7 @@ export function createLiveUI() {
             onMouseDown={() => {
                 setUIClicked(true)
                 showLivePanel = !showLivePanel
+                displayLiveControl(true)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)

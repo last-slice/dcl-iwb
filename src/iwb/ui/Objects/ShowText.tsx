@@ -92,7 +92,7 @@ function ShowText(data:any){
       position:{top:0, right:0},
       margin: {}//getMargins(data.data.textAlign)
     }}
-    uiText={{value:"" + textData.text, fontSize:sizeFont(textData.size, textData.size * 0.6), textAlign:textData.textAlign}}
+    uiText={{value:"" + textData.text, textWrap:'nowrap', fontSize:sizeFont(textData.size, textData.size * 0.6), textAlign:textData.textAlign}}
   />
     )
 }

@@ -1,8 +1,10 @@
+import { deleteRealmAsset } from "../components/Catalog"
 import { sendServerMessage } from "../components/Colyseus"
 import { localPlayer, worldTravel } from "../components/Player"
 import { SERVER_MESSAGE_TYPES } from "../helpers/types"
 import { deleteSelectedItem, selectedAssetId } from "../modes/Build"
-import { displayMainView } from "./Objects/IWBView"
+import { displayMainView, updateMainView } from "./Objects/IWBView"
+import { updateInfoView } from "./Objects/IWBViews/InfoView"
 import { displaySceneDetailsPanel, scene } from "./Objects/SceneMainDetailPanel"
 import { customFunction, displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { UI_VIEW_TYPES } from "./uiConfig"
@@ -195,4 +197,82 @@ export let uiViews:any[] = [
             ]
         }
     },
+    {
+        view:"Init_World",
+        props:{
+            label:"Initialize World",
+            text:"To begin building in this world, you must initiate it.",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Continue",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Init_World_Ready",
+        props:{
+            label:"World Ready!",
+            text:"Your world is deployed. Join now to start building!",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Join",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        },
+    },
+    {
+        view:"Delete_Realm_Asset",
+        props:{
+            label:"Delete Asset",
+            text:"Are you sure you want to delete this asset?",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Delete",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        displayMainView(true)
+                        updateMainView("Info")
+                        updateInfoView("Assets")
+                    }
+                }
+            ]
+        }
+    }
 ]

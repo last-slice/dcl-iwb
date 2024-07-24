@@ -36,7 +36,6 @@ function generateUITextComponents(){
     }
 
     let arr:any[] = []
-    let count = 0
 
     scene[COMPONENT_TYPES.UI_TEXT_COMPONENT].forEach((component:any, aid:string)=>{
         let uiText = UiTexts.get(aid)

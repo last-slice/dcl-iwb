@@ -9,7 +9,6 @@ import { SettingsView, updateSettingsView } from './IWBViews/SettingsView'
 import { currentWorldTableConfig, horiztonalButtons, updateWorldView, WorldsView, worldView } from './IWBViews/WorldView'
 import { displayStoreView } from './StoreView'
 import { CreateSceneView } from './IWBViews/CreateView'
-import { displayExpandedMap } from './ExpandedMapView'
 import { colyseusRoom } from '../../components/Colyseus'
 import { island } from '../../components/Config'
 

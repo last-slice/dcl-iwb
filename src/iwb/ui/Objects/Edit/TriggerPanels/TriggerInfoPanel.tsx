@@ -160,7 +160,7 @@ export function TriggerInfoPanel(){
 
                 <Dropdown
                     options={[...Object.values(POINTER_EVENTS)]}
-                    selectedIndex={selectedTrigger.pointer ? selectedTrigger.pointer : 0}
+                    selectedIndex={selectedTrigger.pointer ? selectedTrigger.pointer : 1}
                     onChange={(index:number)=>{
                         console.log('changing pointer')
                         update("edit", {id:selectedTrigger.id, pointer:index})

@@ -41,7 +41,7 @@ export function displaySceneAssetInfoPanel(value: boolean) {
 
         localScene = true//
 
-        if(localPlayer.activeScene){
+        if(localPlayer.activeScene && localPlayer.activeScene.e){
             let assets:any[] = []
             localPlayer.activeScene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((parentingInfo:any, i:number)=>{
                 if(i > 2){

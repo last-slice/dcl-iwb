@@ -1,11 +1,7 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { Actions } from '../../../../helpers/types'
 import { getImageAtlasMapping, sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
-import { saveItem } from '../../../../modes/Build'
-import { setUIClicked } from '../../../ui'
-import { uiSizes } from '../../../uiConfig'
 import resources from '../../../../helpers/resources'
 
 export function AddLinkActionPanel(){

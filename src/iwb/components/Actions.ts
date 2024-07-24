@@ -5,7 +5,7 @@ import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
 import { getStateComponentByAssetId, setState } from "./States"
 import { getTriggerEvents } from "./Triggers"
-import { movePlayerTo, openExternalUrl, triggerEmote } from "~system/RestrictedActions"
+import { changeRealm, movePlayerTo, openExternalUrl, teleportTo, triggerEmote } from "~system/RestrictedActions"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { getEntity } from "./IWB"
@@ -18,6 +18,7 @@ import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStar
 import { loadLevelAssets } from "./Level"
 import { attemptGameEnd } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
+import { island } from "./Config"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -244,6 +245,11 @@ function updateActions(scene:any, info:any, action:any){
             case Actions.STOP_TWEEN:
                 handleStopTween(scene, info, action)
                 break;
+
+             case Actions.TELEPORT_PLAYER:
+                handleTeleportPlayer(scene, info, action)
+                break;
+
         }
     })
 }
@@ -252,6 +258,8 @@ export function handlePlayAnimation(scene:any, entityInfo:any, action:any){
     Animator.stopAllAnimations(entityInfo.entity)
     const clip = Animator.getClip(entityInfo.entity, action.anim)
     clip.playing = true
+    clip.loop = action.loop ? true : false
+    clip.shouldReset = true
 }
 
 export function handleStopAnimation(scene:any, entityInfo:any, action:any){
@@ -471,25 +479,32 @@ function handleOpenLink(action:any){
 
 function handleMovePlayer(scene:any, action:any){
     console.log('moving playerr', action)
+    let newPosition = {...action}
+    if(island === "world"){
+        newPosition.x = Vector3.add(Transform.get(scene.parentEntity).position, newPosition).x
+        newPosition.z = Vector3.add(Transform.get(scene.parentEntity).position, newPosition).z
+
+        console.log('action is now ', action)
+    }
     if(action.cx){
         movePlayerTo({
             newRelativePosition:{
-                x:action.x, 
-                y:action.y, 
-                z:action.z
+                x:newPosition.x, 
+                y:newPosition.y, 
+                z:newPosition.z
             }, 
             cameraTarget:{
-                x:action.cx, 
-                y:action.cy, 
-                z:action.cz
+                x:newPosition.cx, 
+                y:newPosition.cy, 
+                z:newPosition.cz
             }
         })
     }else{
         movePlayerTo({
             newRelativePosition:{
-                x:action.x, 
-                y:action.y, 
-                z:action.z
+                x:newPosition.x, 
+                y:newPosition.y, 
+                z:newPosition.z
             }
         })
     }
@@ -627,7 +642,7 @@ function handleLoadLevel(scene:any, info:any, action:any){
         displayLoadingScreen(true, levelInfo)
         
         let sceneTransform = Transform.get(scene.parentEntity).position
-        let spawnLocation = Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
+        let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
         handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
         loadLevelAssets(scene, info, action)
     }
@@ -874,3 +889,21 @@ function handleStartTween(scene:any, info:any, action:any){
     }
     return tween
   }
+
+function handleTeleportPlayer(scene:any, info:any, action:any){
+    console.log('handle teleport player', action)
+    switch(action.ttype){
+        case 0:
+            teleportTo({worldCoordinates:{x:action.x, y:action.y}})
+            break;
+
+        case 1:
+            changeRealm({realm:action.text})
+            break;
+
+        case 2:
+            changeRealm({realm:action.url})
+            break;
+    }
+    
+}

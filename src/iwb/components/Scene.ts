@@ -1,7 +1,7 @@
 import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import { getSceneInformation } from '~system/Runtime'
 import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
-import {addBoundariesForParcel, deleteParcelEntities, SelectedFloor} from "../modes/Create"
+import {addBoundariesForParcel, deleteCreationEntities, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
 import { log } from "../helpers/functions"
@@ -33,6 +33,7 @@ import { billboardListener } from "./Billboard"
 import { levelListener } from "./Level"
 import { materialListener } from "./Materials"
 import { gameListener } from "./Game"
+import { refreshMap } from "../ui/Objects/Map"
 
 export let realmActions: any[] = []
 
@@ -46,6 +47,24 @@ export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
 export const afterLoadActions: Function[] = []
+
+export async function addScene(scene:any){
+    if(scene.e){
+        if(!isGCScene()){
+            deleteCreationEntities(localUserId)
+            await removeEmptyParcels(scene.pcls)
+            refreshMap()
+        }
+        await loadScene(scene)
+
+        scenesLoadedCount++
+        checkAllScenesLoaded()
+
+    }else{
+        scenesLoadedCount++
+        checkAllScenesLoaded()
+    }
+}
 
 export function enablePrivateModeForScene(scene:any){
     scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
@@ -63,9 +82,6 @@ export async function loadScene(scene:any) {
 
     await loadSceneBoundaries(scene)
     loadSceneComponents(scene)
-
-    scenesLoadedCount++
-    checkAllScenesLoaded()
 }
 
 async function loadSceneComponents(scene:any){
@@ -334,6 +350,7 @@ export async function checkScenePermissions() {
 
         if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel)) {
             activeScene = scene
+            // console.log('active scene is', activeScene)
         }
     })
 
@@ -353,6 +370,7 @@ export async function checkScenePermissions() {
 
         if (playModeReset) {
             if (activeScene) {
+                // console.log('active scene is', activeScene)
                 if (lastScene) {
                     if (lastScene !== activeScene.id) {
                         await disableSceneEntities(lastScene)

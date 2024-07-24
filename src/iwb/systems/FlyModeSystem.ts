@@ -1,6 +1,5 @@
 import {engine, InputAction, PointerEventType, Transform} from "@dcl/sdk/ecs"
 import { Vector3 } from "@dcl/sdk/math";
-import { localPlayer } from "../components/Player";
 import { VIEW_MODES } from "../helpers/types";
 import { flyBox } from "../modes/Flying";
 import { buttonsPressed } from "./InputSystem";
@@ -31,20 +30,21 @@ export function FlyModeSystem(dt: number) {
 
             if (key === InputAction.IA_JUMP) {
                 jumped = true
-                //console.log('jumped')
+                console.log('jumped')
 
                 if (!shift) {
-                    flyBoxtransform.position = {...flyBoxtransform.position, y: playerPos.y - .5}
+                    flyBoxtransform.position = {...flyBoxtransform.position, y: playerPos.y + 0.1}
                 }
             }
 
             if (key === InputAction.IA_WALK) {
                 shift = true
-                //console.log('shift')
+                console.log('shift')
             }
 
             if (shift && jumped) {
-                flyBoxtransform.position = {...flyBoxtransform.position, y: playerPos.y - 1.5}
+                console.log('holding both down')
+                flyBoxtransform.position = {...flyBoxtransform.position, y: playerPos.y - 0.25}
             }
         }
     })

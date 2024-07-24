@@ -32,6 +32,7 @@ import { AddRandomActionPanel } from './ActionPanels/AddRandomAction'
 import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
 import { resetLevelSpawnEntity } from './EditLevel'
 import { addTweenActionEntity, AddTweenActionPanel, resetTweenActionPanel } from './ActionPanels/AddTweenPanel'
+import { AddTeleport } from './ActionPanels/AddTeleportPanel'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -458,6 +459,9 @@ function getActionDataPanel(){
         case Actions.START_TWEEN.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddTweenActionPanel/>
 
+        case Actions.TELEPORT_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddTeleport/>
+
 
         //play sound - doesnt need any action metadata//
         //stop sound - doesnt need any action metadata
@@ -591,4 +595,10 @@ const ActionDefaults:any = {
         timer:3,
         tloop:0
     },
+    [Actions.TELEPORT_PLAYER]:{
+        fn:()=>{addTweenActionEntity()},
+        x:0,
+        y:0,
+        ttype:0
+    }
 }

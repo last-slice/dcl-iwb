@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { CatalogItemType, EDIT_MODES, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
-import { sortedAll, original, Sorted2D, Sorted3D, SortedAudio, SortedSmartItems, refreshSortedItems, styles, items, deleteRealmAsset } from '../../components/Catalog'
+import { sortedAll, original, Sorted2D, Sorted3D, SortedAudio, SortedSmartItems, refreshSortedItems, styles, items, SortedNewest, confirmDeleteAsset } from '../../components/Catalog'
 import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import { Color4 } from '@dcl/sdk/math'
@@ -125,11 +125,15 @@ export function filterCatalog() {
     let filteredResult: CatalogItemType[] = []
 
     if(styleFilter === "Audio"){
-        let result = sortedAll.filter(item => item.tag.includes("Audio"))
+        let result = [...SortedAudio]
         filteredResult = [...result]
     }else if(styleFilter === "All"){
         filteredResult = [...sortedAll]
-    }else{
+    }
+    else if(styleFilter === "Newest!"){
+    filteredResult = [...SortedNewest]
+    }
+    else{
         let result = sortedAll.filter(item =>
             (item.sty && item.sty.toLowerCase().includes(styleFilter.toLowerCase()))
         );
@@ -464,10 +468,7 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         }}
                         onMouseDown={() => {
                             setUIClicked(true)
-                            deleteRealmAsset(item)
-                            sendServerMessage(SERVER_MESSAGE_TYPES.DELETE_WORLD_ASSETS, [item.id])
-                            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Item removed! Initiate a deployment to remove them from your world.", animate:{enabled:true, return:true, time:7}})
-                            displayPendingPanel(true, "assetsready")//
+                            confirmDeleteAsset(item)
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)

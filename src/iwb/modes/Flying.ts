@@ -7,17 +7,23 @@ import {
     Entity,
     Material,
     MeshCollider,
+    MeshRenderer,
     Transform
 } from "@dcl/sdk/ecs";
 import { localPlayer } from "../components/Player";
 import { log } from "../helpers/functions";
 import { VIEW_MODES } from "../helpers/types";
+import { playerViewMode, setPlayerViewMode } from "../components/Config";
 
 export let isFlyModeEnabled = false
 
 export function toggleFlyMode() {
     isFlyModeEnabled = !isFlyModeEnabled
-    localPlayer.viewMode = isFlyModeEnabled ? VIEW_MODES.GOD : VIEW_MODES.AVATAR
+    if(playerViewMode === VIEW_MODES.GOD){
+        setPlayerViewMode(VIEW_MODES.AVATAR)
+    }else{
+        setPlayerViewMode(VIEW_MODES.GOD)
+    }
 
     if (isFlyModeEnabled) {
         log('God Mode Enabled')
@@ -90,10 +96,10 @@ function createFlyBox() {
         scale: Vector3.create(300, 300, 300),
         parent: invisibleBox
     })
-    CameraModeArea.create(cameraModeE, {
-        area: Vector3.create(4, 3, 4),
-        mode: CameraType.CT_FIRST_PERSON,
-    })
+    // CameraModeArea.create(cameraModeE, {
+    //     area: Vector3.create(300, 300, 300),
+    //     mode: CameraType.CT_FIRST_PERSON,
+    // })
 
     //MeshRenderer.setBox(cameraModeE)
     //MeshRenderer.setPlane(floor)

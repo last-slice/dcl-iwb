@@ -1,6 +1,12 @@
-import { SceneItem } from "../helpers/types";
+import { NOTIFICATION_TYPES, SceneItem, SERVER_MESSAGE_TYPES } from "../helpers/types";
 import { initCatalog, selectedSetting } from "../ui/Objects/CatalogPanel";
+import { showNotification } from "../ui/Objects/NotificationPanel";
+import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
+import { getView } from "../ui/uiViews";
+import { sendServerMessage } from "./Colyseus";
 import { realm, worlds } from "./Config";
+import { settings } from "./Player";
 
 export let items: Map<string, SceneItem> = new Map();
 export let newItems: Map<string, SceneItem> = new Map();
@@ -15,6 +21,7 @@ export let Sorted3D: SceneItem[] = []
 export let Sorted2D: SceneItem[] = []
 export let SortedAudio: SceneItem[] = []
 export let SortedSmartItems: SceneItem[] = []
+export let SortedNewest: SceneItem[] = []
 
 export let styles: string[] = []
 
@@ -25,6 +32,7 @@ export function updateStyles(updates: string[]) {
     styles = styles.sort((a, b) => a.localeCompare(b));
     styles.unshift("Audio")
     styles.unshift("All")
+    styles.unshift("Newest!")
 }
 
 export function setCatalog(catalog:any){
@@ -45,7 +53,23 @@ export function setRealmAssets(assets:any){
     }
 }
 
-export function deleteRealmAsset(item:any){
+export function confirmDeleteAsset(item:any, ugc?:boolean){
+    if(settings.confirms){
+        console.log('confirm delete asset')
+        displaySkinnyVerticalPanel(true, getView("Delete_Realm_Asset"), item.n, ()=>{
+            deleteRealmAsset(item, ugc)
+        })
+    }else{
+        deleteRealmAsset(item, ugc)
+    }
+}
+
+export function deleteRealmAsset(item:any, ugc?:boolean){
+    console.log('delete realm asset', item)
+    sendServerMessage(ugc ? SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET : SERVER_MESSAGE_TYPES.DELETE_WORLD_ASSETS, [item.id])
+    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Item removed! Initiate a deployment to remove them from your world.", animate:{enabled:true, return:true, time:7}})
+    displayPendingPanel(true, "assetsready")
+
     items.delete(item.id)
     refreshSortedItems()
     initCatalog(sortedAll)
@@ -60,6 +84,7 @@ export function refreshSortedItems() {
     Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")
     SortedAudio = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Audio")
     SortedSmartItems = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "SM")
+    SortedNewest = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Newest!")
 }
 
 export function refreshMarketplaceItems() {
@@ -70,6 +95,7 @@ export function refreshMarketplaceItems() {
     Sorted2D = sortByType(marketplaceOriginal, "2D")
     SortedAudio = sortByType(marketplaceOriginal, "Audio")
     SortedSmartItems = sortByType(marketplaceOriginal, "SM")
+    SortedNewest = sortByType(marketplaceOriginal, "Newest!")
 }
 
 export function updateItem(id: string, update: SceneItem) {
@@ -80,9 +106,16 @@ export function updateItem(id: string, update: SceneItem) {
 }
 
 function sortByType(items: SceneItem[], type?: string) {
-    return type ?
-        items.filter((item: any) => item.ty === type).sort((a, b) => a.n.localeCompare(b.n)) :
-        items.sort((a, b) => a.n.localeCompare(b.n))
+    if(type){
+        if(type === "Newest!"){
+            return items.filter((item:any)=> item.time && item. time >= (Date.now() / 1000) - (5 * 24 * 60 * 60))
+        }
+        else{
+            return items.filter((item: any) => item.ty === type).sort((a, b) => a.n.localeCompare(b.n))
+        }
+    }else{
+        return items.sort((a, b) => a.n.localeCompare(b.n))
+    }
 }
 
 export function setNewItems() {

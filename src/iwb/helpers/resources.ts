@@ -1,4 +1,4 @@
-import { engine } from "@dcl/sdk/ecs"
+import { engine, InputAction } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { SOUND_TYPES } from "./types"
 
@@ -29,7 +29,7 @@ export let colors:Color4[] = [
 ]
 
 export default {
-    DEBUG: false,
+    DEBUG: true,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
@@ -55,7 +55,7 @@ export default {
     },
     colors:{
         transparent: Color4.create(0,0,0,0),
-        opaqueGreen: Color4.create(0,1,0,0.4)//
+        opaqueGreen: Color4.create(0,1,0,0.4)
     },
 
     textures:{
@@ -72,3 +72,4 @@ export default {
         {key:SOUND_TYPES.ERROR_2, name:"Error 2 Stereo", loop:false, attach:true, volume:.5},
     ]
 }
+

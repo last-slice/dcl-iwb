@@ -10,12 +10,14 @@ import { displayMainView, mainView } from '../IWBView';
 // import { testData } from '../../../tests/testData';
 import { uiSizes } from '../../uiConfig';
 import { playSound } from '../../../components/Sounds';
-import { SOUND_TYPES } from '../../../helpers/types';
+import { NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../../helpers/types';
 import { teleportToScene } from '../../../modes/Play';
-import { colyseusRoom } from '../../../components/Colyseus';
-import { localPlayer, worldTravel } from '../../../components/Player';
+import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus';
+import { localPlayer, localUserId, worldTravel } from '../../../components/Player';
 import { displaySkinnyVerticalPanel } from '../../Reuse/SkinnyVerticalPanel';
-import { getView } from '../../uiViews';
+import { getView, uiViews } from '../../uiViews';
+import { displayPendingPanel } from '../PendingInfoPanel';
+import { showNotification } from '../NotificationPanel';
 
 export let worldView = "Current World"
 
@@ -30,20 +32,21 @@ export function updateWorldView(view:string){
     if(button){
         button.pressed = true
     }
-}
 
-export let horiztonalButtons:any[] = [
-    {label:"Current World", pressed:false, func:()=>{
-        updateWorldView("Current World")
+    if(view === "Current World"){
         setTableConfig(currentWorldTableConfig)
         let scenes:any[] = []
         colyseusRoom.state.scenes.forEach((sceneInfo:any)=>{
             scenes.push(sceneInfo)
         })
         updateIWBTable(scenes)
-        // playSound(SOUND_TYPES.SELECT_3)
-        // showYourBuilds()
-        // updateExploreView("Current World")
+    }
+}
+
+export let horiztonalButtons:any[] = [
+    {label:"Current World", pressed:false, func:()=>{
+        updateWorldView("Current World")
+        playSound(SOUND_TYPES.SELECT_3)
         },
         height:6,
         width:8,
@@ -54,6 +57,7 @@ export let horiztonalButtons:any[] = [
         updateWorldView("My Worlds")
         setTableConfig(myWorldConfig)
         updateIWBTable(localPlayer.worlds)
+        console.log("player worlds", localPlayer.worlds)
         // playSound(SOUND_TYPES.SELECT_3)
         // showWorlds()
         // updateExploreView("My Worlds")
@@ -67,7 +71,7 @@ export let horiztonalButtons:any[] = [
         updateWorldView("All Worlds")
         setTableConfig(allWorldsConfig)
         updateIWBTable(worlds)
-        // playSound(SOUND_TYPES.SELECT_3)
+        // playSound(SOUND_TYPES.SELECT_3)//
         // // displayStatusView("All Worlds")
         // showAllWorlds()
         // updateExploreView("All Worlds")
@@ -264,6 +268,25 @@ export let myWorldConfig:any = {
                 sourceHeight: 30
             }
         },
+        onClick:(data:any)=>{
+            console.log('data clicked', data)
+            playSound(SOUND_TYPES.SELECT_3)
+            if(!data.init){
+                updateIWBTable([])
+                displayMainView(false)
+                displaySkinnyVerticalPanel(true, getView("Init_World"), data.ens, ()=>{//
+                        sendServerMessage(SERVER_MESSAGE_TYPES.INIT_WORLD, {user:localUserId, world:data})
+                        displayPendingPanel(true, "deployment")
+                        showNotification({type:NOTIFICATION_TYPES.MESSAGE, animate:{enabled:true, return:true, time:5}, message:"Your deployment is pending...please wait for confirmation"})
+                    }
+                )
+            }else{
+                displayMainView(false)
+                displaySkinnyVerticalPanel(true, getView("World Travel"), data.name, ()=>{
+                worldTravel(data)
+            })
+            }
+        }
     },
     ]
 }

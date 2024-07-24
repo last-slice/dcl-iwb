@@ -292,8 +292,6 @@ export enum COMPONENT_TYPES {
     NFT_COMPONENT = "NFT_Shape",
     TEXT_COMPONENT = "Text",
     ANIMATION_COMPONENT = "Animator",
-    NPC_COMPONENT = "NPC",
-    DIALOG_COMPONENT = "Dialog",
     REWARD_COMPONENT = 'Reward',
     ADVANCED_COMPONENT = 'Advanced',
     NAMES_COMPONENT ='Name',
@@ -325,6 +323,8 @@ export enum COMPONENT_TYPES {
     LIVE_COMPONENT = 'Live',
     GAME_ITEM_COMPONENT = 'GameItem',
     TEAM_COMPONENT = 'Team',
+    NPC_COMPONENT = "NPC",
+    DIALOG_COMPONENT = "Dialog",
 }
 
 export enum BLOCKCHAINS {
@@ -380,7 +380,7 @@ export enum Actions {
     PLAY_AUDIO_STREAM = 'play_audio_stream',
     STOP_AUDIO = 'stop_audio',
     STOP_AUDIO_STREAM = 'stop_audio_stream',
-    TELEPORT_PLAYER = 'telport',
+    TELEPORT_PLAYER = 'teleport',
     EMOTE = 'emote',
     OPEN_LINK = 'open_link',
     SHOW_TEXT = 'show_text',
@@ -509,8 +509,8 @@ export let ENTITY_POINTER_LABELS:any[] = [
 ]
 
 export enum POINTER_EVENTS {
-    PET_UP = "On Up",
     PET_DOWN = "On Down",
+    PET_UP = "On Up",
     PET_HOVER_ENTER = "On Hover Enter",
     PET_HOVER_LEAVE = "ON Hover Leave"
 }

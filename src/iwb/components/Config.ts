@@ -2,8 +2,8 @@ import { getRealm } from "~system/Runtime"
 import { colyseusRoom } from "./Colyseus"
 import { localPlayer, localUserId, settings } from "./Player"
 import { COMPONENT_TYPES, SCENE_MODES, VIEW_MODES } from "../helpers/types"
-import { Entity, GltfContainer, Material, engine } from "@dcl/sdk/ecs"
-import { Color4 } from "@dcl/sdk/math"
+import { Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
+import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { hideAllOtherPointers, addBuildModePointers, resetEntityForBuildMode, addAllBuildModePointers } from "../modes/Build"
 import { BuildModeVisibilty, ParcelFloor, redBeam, greenBeam } from "../modes/Create"
@@ -21,6 +21,8 @@ import { PlayTriggerSystem, disableTriggers } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
 import { isLevelAsset } from "./Level"
 import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
+import { getCenterOfParcels } from "../helpers/build"
+import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -31,6 +33,7 @@ export let iwbConfig: any = {}
 
 export let buildModeCheckedAssets: any[] = []
 export let playModeCheckedAssets: any[] = []
+export let sceneRoofAssets:any[] = []
 export let lastScene: any
 
 export let playerMode:SCENE_MODES = SCENE_MODES.PLAYMODE
@@ -45,6 +48,10 @@ export let localConfig:any = {
     parcels:[],
     base:"",
     id:""
+}
+
+export function setPlayerViewMode(view:VIEW_MODES){
+    playerViewMode = view
 }
 
 export async function setRealm(sceneJSON:any, url:any){
@@ -72,47 +79,63 @@ export function setConfig(version:any, updates:any, videos:any, tutorialCID:any)
     iwbConfig.updates = updates
     iwbConfig.tutorials = videos
     iwbConfig.CID = tutorialCID
+
+    console.log('tutorials are', iwbConfig.tutorials)
 }
 
 export function setWorlds(config: any) {
-    config.forEach((world: any) => {
-        if (world.init) {
-            worlds.push({
-                name: world.worldName,
-                v: world.v,
-                owner: world.owner,
-                ens: world.ens,
-                builds: world.builds,
-                updated: world.updated,
-                bps:world.bps ,
-            })
-        } else {
-            let w = worlds.find((wo: any) => wo.ens === world.ens)
-            if (w) {
-                w.updated = world.updated
-                w.v = world.v
-            } else {
-                worlds.push({
-                    name: world.worldName,
-                    v: world.v,
-                    owner: world.owner,
-                    ens: world.ens,
-                    builds: world.builds,
-                    updated: world.updated,
-                    bps:world.bps,
-                    backedUp:world.backedUp
-                })
-            }
-        }
+    console.log('worlds are ', config)
+    // config.forEach((world: any) => {
+    //     if (world.init) {
+    //         worlds.push({
+    //             name: world.worldName,
+    //             v: world.v,
+    //             owner: world.owner,
+    //             ens: world.ens,
+    //             builds: world.builds,
+    //             updated: world.updated,
+    //             bps:world.bps ,
+    //         })
+    //     } else {
+    //         let w = worlds.find((wo: any) => wo.ens === world.ens)
+    //         if (w) {
+    //             w.updated = world.updated
+    //             w.v = world.v
+    //         } else {
+    //             worlds.push({
+    //                 name: world.worldName,
+    //                 v: world.v,
+    //                 owner: world.owner,
+    //                 ens: world.ens,
+    //                 builds: world.builds,
+    //                 updated: world.updated,
+    //                 bps:world.bps,
+    //                 backedUp:world.backedUp
+    //             })
+    //         }
+    //     }
 
-        let playerWorld = localPlayer.worlds.find((w:any) => w.name === world.worldName)
-        if (playerWorld) {
-            playerWorld.v = world.v
-            playerWorld.cv = world.cv
-            playerWorld.updated = world.updated
-            playerWorld.builds = world.builds
-            playerWorld.init = true
-        }
+    //     let playerWorld = localPlayer.worlds.find((w:any) => w.name === world.worldName)
+    //     if (playerWorld) {
+    //         playerWorld.v = world.v
+    //         playerWorld.cv = world.cv
+    //         playerWorld.updated = world.updated
+    //         playerWorld.builds = world.builds
+    //         playerWorld.init = true
+    //     }
+    // })//
+
+    config.forEach((world: any) => {
+        worlds.push({
+            name: world.worldName,
+            v: world.v,
+            owner: world.owner,
+            ens: world.ens,
+            builds: world.builds,
+            updated: world.updated,
+            bps:world.bps,
+            init: true
+        })
     })
 
     let worldPermissions = worlds.find(($:any)=> $.ens === realm)
@@ -120,7 +143,7 @@ export function setWorlds(config: any) {
         localPlayer.worldPermissions = true
     }
 
-    // console.log('worlds are set', worlds)
+    console.log('worlds are set', worlds)
 }
 
 export function addTutorial(info:any){
@@ -139,6 +162,7 @@ export function setPlayerMode(mode:SCENE_MODES){
     playerMode = mode
 
     console.log('setting player mode', playerMode)
+    displayGrabContextMenu(false)
 
     for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
         if(playerMode === SCENE_MODES.CREATE_SCENE_MODE){
@@ -250,4 +274,42 @@ function getURLParameter(url: string, urlKey:string) {
 
 export function isGCScene(){
     return island !== "world"
+}
+
+export function addSceneRoofs(){
+    colyseusRoom.state.scenes.forEach((scene:any)=>{
+
+        // const center = getCenterOfParcels(scene!.pcls)
+        // const parentT = Transform.get(scene!.parentEntity)
+
+        scene.pcls.forEach((parcel:any)=>{
+            let roof = engine.addEntity()
+            sceneRoofAssets.push(roof)
+            MeshRenderer.setPlane(roof)
+
+            let xCorner = parseInt(parcel.split(',')[0]) * 16
+            let yCorner = parseInt(parcel.split(',')[1]) * 16
+
+            // const xPos = center[0] - parentT.position.x
+            const yPos = Math.log2(scene.pcls.length +1) * 20
+            // const zPos = center[1] - parentT.position.z
+    
+            Transform.create(roof, {
+                position: Vector3.create(xCorner + 8, yPos, yCorner + 8),
+                rotation:Quaternion.fromEulerDegrees(90,0,0), 
+                scale: Vector3.create(16,16,1),
+                // parent: scene.parentEntity
+                }
+            )
+
+            Material.setPbrMaterial(roof, {albedoColor: Color4.create(1,0,0,.5)})
+        })
+    })
+}
+
+export function removeSceneRoofs(){
+    sceneRoofAssets.forEach((entity)=>{
+        engine.removeEntity(entity)
+    })
+    sceneRoofAssets.length = 0
 }

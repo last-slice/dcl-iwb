@@ -1,7 +1,7 @@
 import { ColliderLayer, GltfContainer, MeshCollider, MeshRenderer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../helpers/Components"
-import { COMPONENT_TYPES } from "../helpers/types"
+import { COMPONENT_TYPES } from "../helpers/types"//
 
 export function checkMeshRenderComponent(scene:any, entityInfo:any){
     let mesh = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)

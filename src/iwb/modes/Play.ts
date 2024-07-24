@@ -8,7 +8,7 @@ import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
 import { disableVisibilityPlayMode, setVisibilityPlayMode, updateAssetBuildVisibility } from "../components/Visibility"
 import { disableAudioPlayMode, setAudioPlayMode } from "../components/Sounds"
-import { disableAnimationPlayMode } from "../components/Animator"
+import { disableAnimationPlayMode, setAnimationBuildMode } from "../components/Animator"
 import { disableSmartItemsPlayMode, setSmartItemPlaydMode } from "../components/SmartItems"
 import { setPointersPlayMode } from "../components/Pointers"
 import { checkTransformComponent } from "../components/Transform"
@@ -191,6 +191,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableUiImagePlayMode(scene, entityInfo)
         disableLivePanel(scene, entityInfo)
         resetTween(scene, entityInfo)
+        setAnimationBuildMode(scene, entityInfo)
 
         //to do
         // - reset states

@@ -5,14 +5,22 @@ import resources from '../../../../helpers/resources'
 import { Billboard, BillboardMode, Entity, Material, MeshRenderer, TextShape, Transform, engine } from '@dcl/sdk/ecs'
 import { selectedItem } from '../../../../modes/Build'
 import { TransformInputModifiers } from '../EditTransform'
+import { getEntity } from '../../../../components/IWB'
+import { colyseusRoom } from '../../../../components/Colyseus'
+import { Vector3 } from '@dcl/sdk/math'
 
 let setEntity:Entity
 
 export function resetMovePlayerEntity(){
-    engine.removeEntity(setEntity)//
+    engine.removeEntity(setEntity)
 }
 
 export function addMovePlayerEntity(){
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return
+    }
+
     setEntity = engine.addEntity()
     MeshRenderer.setBox(setEntity)
     TextShape.createOrReplace(setEntity, {text: "Move Player Here", fontSize: 2})
@@ -22,7 +30,7 @@ export function addMovePlayerEntity(){
     Billboard.createOrReplace(setEntity, {billboardMode: BillboardMode.BM_Y})
 
     let playerTransform = Transform.get(engine.PlayerEntity)
-    Transform.createOrReplace(setEntity, {position: playerTransform.position})
+    Transform.createOrReplace(setEntity, {position: Vector3.Zero(), parent:scene.parentEntity})
 }
 
 export function updateMovePlayerPosition(direction:string, factor:number, manual?:boolean){

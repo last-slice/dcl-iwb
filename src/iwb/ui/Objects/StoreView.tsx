@@ -7,7 +7,7 @@ import { sendServerMessage } from '../../components/Colyseus'
 import { CatalogItemType, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
 import { HoriztonalButtons } from '../Reuse/HoriztonalButtons'
 import { Color4 } from '@dcl/sdk/math'
-import { marketplaceItems, marketplaceOriginal, refreshMarketplaceItems, sortedAll, styles } from '../../components/Catalog'
+import { marketplaceItems, marketplaceOriginal, refreshMarketplaceItems, sortedAll, SortedNewest, styles } from '../../components/Catalog'
 import { playSound } from '@dcl-sdk/utils'
 import { currentPage, filterByStyle, filterCatalog, filtered, initCatalog, itemsPerPage, itemsToShow, refreshView, totalPages, updateCatalogSizing, updateCurrentPage, updateSearchFilter } from './CatalogPanel'
 import { showNotification } from './NotificationPanel'
@@ -71,7 +71,7 @@ let filterButtons:any[] = [
 let horiztonalButtons:any[] = [
     {label:"Catalog", pressed:true, func:()=>{
         playSound(SOUND_TYPES.SELECT_3)
-        showItems(marketplaceOriginal)
+        showItems(SortedNewest)
         },
         height:4,
         width:6,
@@ -129,7 +129,7 @@ export function updateStoreVisibleItems(){
 
     updateCurrentPage(0)
     updateCatalogSizing(3,3,9)
-    initCatalog(sortedAll)
+    initCatalog(SortedNewest)
 }
 
 export function updateStoreView(view:string){
@@ -347,6 +347,7 @@ function LeftDataView(){
             <Dropdown
             options={[...styles]}
             onChange={filterByStyle}
+            selectedIndex={0}
             uiTransform={{
                 width: '100%',
                 height: '100%',
@@ -674,7 +675,7 @@ function MarketplaceItem({row, item}: { row: string, item: CatalogItemType }){
         }}
         onMouseDown={()=>{
             setUIClicked(true)
-            if(localPlayer && localPlayer.homeWorld){
+            if(localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)){
                 toggleSelectItem(item)
             }
         }}

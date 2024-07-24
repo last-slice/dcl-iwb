@@ -104,6 +104,7 @@ export function EditTrigger(){
 
 
 export function update(action:string, triggerData:any){
+    console.log('trigger data is', triggerData)
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
         {
             component:COMPONENT_TYPES.TRIGGER_COMPONENT,

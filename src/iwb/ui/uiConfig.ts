@@ -1,7 +1,7 @@
 import players from "@dcl/sdk/players"
 import { isLocalPlayer, localPlayer, localUserId } from "../components/Player"
 import resources from "../helpers/resources"
-import { VIEW_MODES } from "../helpers/types"
+import { NOTIFICATION_TYPES, VIEW_MODES } from "../helpers/types"
 import { toggleFlyMode } from "../modes/Flying"
 import { toggleSnapMode } from "../systems/SelectedItemSystem"
 import { getImageAtlasMapping } from "./helpers"
@@ -10,6 +10,7 @@ import { displayMainView } from "./Objects/IWBView"
 import { displayCatalogPanel, showCatalogPanel } from "./Objects/CatalogPanel"
 import { hideAllPanels } from "./ui"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "./Objects/SceneInfoPanel"
+import { showNotification } from "./Objects/NotificationPanel"
 
 export let uiModes: any = {
     0://playmode
@@ -107,6 +108,11 @@ export let topTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
+            if(localPlayer.activeScene && !localPlayer.activeScene.e){
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Please enable this scene before adding assets.", animate:{enabled:true, return:true, time:5}})
+                return
+            }
+
             if (showCatalogPanel) {
                 displayCatalogPanel(false)
             } else {

@@ -1,6 +1,5 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { Actions, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS } from '../../../../helpers/types'
 import { sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
@@ -22,6 +21,10 @@ export function updateAssetAnimations(reset?:boolean){
         return
     }
 
+    if(updated){
+        return
+    }
+
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(!scene){
         return
@@ -34,7 +37,7 @@ export function updateAssetAnimations(reset?:boolean){
         animations = [...catalogItem.anim.map($=> $.name)]
         // updateActionData({loop:0, anim:animations[0], name:newActionData.name, type:newActionData.type}, true)
         updated = true
-        console.log('item has animations', animations)
+        // console.log('item has animations', animations)
         animation = animations[selectedIndex]
     }
     return
@@ -130,8 +133,10 @@ export function AddAnimationActionPanel(){
 }
 
 function selectAnimation(index:number){
+    selectedIndex = index
+    console.log('index is', index)
     animation = animations[index]
-    updateActionData({anim:animation, loop:loop, name:newActionData.name, type:newActionData.type}, true)
+    updateActionData({anim:animation})//, loop:loop, name:newActionData.name, type:newActionData.type}, true)
 }
 
 function selectLoop(index:number){

@@ -420,7 +420,7 @@ function MainRightView(){
 
             {show && mapTiles.length > 0 && generateMapTiles()}
 
-                {navigation && <PlayerArrow/>}
+                <PlayerArrow/>
 
         </UiEntity>
   
@@ -438,7 +438,7 @@ function PlayerArrow(){
           width:calculateSquareImageDimensions(3).width,
           height: calculateSquareImageDimensions(3).height,
           positionType:'absolute',
-          position: navigation ? getPlayerPosition() : {}
+          position: show ? getPlayerPosition() : {}
       }}
       uiBackground={{
         texture:{

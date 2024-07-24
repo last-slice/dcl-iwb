@@ -7,10 +7,12 @@ import { uiSizes } from '../uiConfig'
 import { grabbedModifierType } from '../../systems/GrabChangeSystems'
 import { selectedItem } from '../../modes/Build'
 import { EDIT_MODES, EDIT_MODIFIERS } from '../../helpers/types'
+import { getButton } from './ContextMenu'
 
 let showHover = false
 export function displayGrabContextMenu(value:boolean){
   showHover = value
+  console.log('displaying grab context', value)
 }
 
 export function createGrabContextMenu(){
@@ -19,14 +21,14 @@ export function createGrabContextMenu(){
     key={resources.slug + "grab::context::menu"}
     uiTransform={{
       width: calculateImageDimensions(15, getAspect(uiSizes.smallPill)).width,
-      height:calculateImageDimensions(7, getAspect(uiSizes.smallPill)).height,
+      height:calculateImageDimensions(15, getAspect(uiSizes.smallPill)).height,
       display: showHover ? 'flex' : 'none',
       justifyContent:'center',
       flexDirection:'column',
       alignContent:'center',
       alignItems:'center',
       positionType:'absolute',
-      position:{top:'2%', right:'20%'}
+      position:{top:'1%', right:'20%'}
     }}
     uiBackground={{
       texture:{
@@ -46,41 +48,149 @@ export function createGrabContextMenu(){
       flexDirection:'row',
       margin:{top:"1%", bottom:"1%"},
     }}
-    uiText={{fontSize:sizeFont(25,20), value:"Grab Edit: " + (grabbedModifierType === 0 ? "Positon" : grabbedModifierType === 1 ? "Rotation" : "Scale")}}
-      />
-{/* 
-<UiEntity
-    uiTransform={{
-      width: '90%',
-      height: '15%',
-      justifyContent:'center',
-      flexDirection:'row',
-      margin:{top:"1%", bottom:"1%"},
-    }}
-    uiText={{fontSize:sizeFont(25,20), value:"P: " + getTransform(EDIT_MODIFIERS.POSITION)}}
+    uiText={{fontSize:sizeFont(20,15), value:"Shift: " + (grabbedModifierType === 0 ? "Position" : grabbedModifierType === 1 ? "Rotation" : "Scale")}}
       />
 
 <UiEntity
     uiTransform={{
-      width: '90%',
-      height: '15%',
-      justifyContent:'center',
+      width: '80%',
+      height: '35%',
+      alignContent:'flex-start',
+      justifyContent:'flex-start',
       flexDirection:'row',
       margin:{top:"1%", bottom:"1%"},
     }}
-    uiText={{fontSize:sizeFont(25,20), value:"R: " + getTransform(EDIT_MODIFIERS.ROTATION)}}
-      />
+      >
+
+        {/* context event 1 */}
+  <UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'row',
+    }}
+      >
 
 <UiEntity
     uiTransform={{
-      width: '90%',
-      height: '15%',
+      width: '30%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    >
+
+    {/* button click image */}
+    <UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.threeButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.threeButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: getButton({button:InputAction.IA_ACTION_4})
+    }}
+      />
+      </UiEntity>
+
+      <UiEntity
+    uiTransform={{
+      width: '70%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    >
+
+    {/* click text */}
+  <UiEntity
+      uiTransform={{
+        width: '100%',
+        height: '100%',
+        justifyContent:'center',
+        flexDirection:'column',
+      }}
+      
+          uiText={{value:"Change +", textWrap:'nowrap', fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+      </UiEntity>
+
+      </UiEntity>
+
+
+
+
+
+       {/* context event 2 */}
+  <UiEntity
+    uiTransform={{
+      width: '50%',
+      height: '100%',
       justifyContent:'center',
       flexDirection:'row',
-      margin:{top:"1%", bottom:"1%"},
     }}
-    uiText={{fontSize:sizeFont(25,20), value:"S: "  + getTransform(EDIT_MODIFIERS.SCALE)}}
-      /> */}
+    >
+
+<UiEntity
+    uiTransform={{
+      width: '30%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    >
+      {/* button click image */}
+<UiEntity
+    uiTransform={{
+      width: calculateImageDimensions(1.2, getAspect(uiSizes.fourButtonClick)).width,
+      height:calculateImageDimensions(1.2, getAspect(uiSizes.fourButtonClick)).height,
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: getButton({button:InputAction.IA_ACTION_5})
+    }}
+      />
+      </UiEntity>
+
+
+      <UiEntity
+    uiTransform={{
+      width: '70%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    >
+          {/* click text */}
+<UiEntity
+    uiTransform={{
+      width: '100%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+        uiText={{value:"Change - ", textWrap:'nowrap', fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+      />
+      
+      </UiEntity>
+
+
+
+
+    </UiEntity>
+</UiEntity>
 
   </UiEntity>
 

@@ -20,6 +20,7 @@ import { utils } from '../../helpers/libraries'
 import { displayExpandedMap } from './ExpandedMapView'
 import { displayMainView } from './IWBView'
 import { displayPendingPanel } from './PendingInfoPanel'
+import { loadScene, unloadScene } from '../../components/Scene'
 
 export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
@@ -786,7 +787,12 @@ export function InfoPanel() {
             uvs:  getButtonState("Enabled")
         }}
         onMouseDown={() => {
+            setUIClicked(true)
             scene!.e = !scene!.e
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
         }}
         />
 

@@ -8,6 +8,7 @@ import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping } f
 import { setUIClicked } from '../../../ui'
 import { uiSizes } from '../../../uiConfig'
 import { triggerView, updateTriggerView } from '../EditTrigger'
+import { resetTriggerActionsPanel } from './TriggerActionsPanel'
 
 let selectedIndex = 0
 
@@ -93,6 +94,7 @@ export function AddTriggerPanel(){
 
             addTrigger()
             updateTriggerView("info")
+            resetTriggerActionsPanel()
         }}
         onMouseUp={()=>{
             setUIClicked(false)

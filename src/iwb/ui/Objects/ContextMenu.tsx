@@ -435,7 +435,7 @@ function getButtonText(eventInfo:any){
   }
 }
 
-function getButton(eventInfo:any){
+export function getButton(eventInfo:any){
   switch(eventInfo.button){
     case InputAction.IA_POINTER:
       return getImageAtlasMapping(uiSizes.wButtonClick)

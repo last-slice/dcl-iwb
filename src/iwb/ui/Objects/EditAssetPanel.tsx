@@ -38,6 +38,9 @@ import { EditLevel, levelView, resetLevelSpawnEntity, updateEditLevelView, updat
 import { EditLive, liveView, resetCurrentBouncerSpawns, resetLiveSpawnEntity, updateEditLiveView, updateLiveBouncerPositions } from './Edit/EditLive'
 import { resetTweenActionPanel } from './Edit/ActionPanels/AddTweenPanel'
 import { EditGameItem, updateGameItemInfo } from './Edit/EditGameItem'
+import { dialogView, EditDialog, updateDialog, updateDialogView } from './Edit/EditDialog'
+import { animationEntity, EditAnimation, updateAssetAnimations } from './Edit/EditAnimation'
+import { Animator } from '@dcl/sdk/ecs'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -54,6 +57,12 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.ANIMATION_COMPONENT:
+            updateAssetAnimations()
+            break;
+        case COMPONENT_TYPES.DIALOG_COMPONENT:
+            updateDialog()
+            break;
         case COMPONENT_TYPES.LIVE_COMPONENT:
             updateLiveBouncerPositions()
             break;
@@ -413,6 +422,18 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.ANIMATION_COMPONENT:
+            Animator.stopAllAnimations(animationEntity)
+            openEditComponent("")
+            break;
+        case COMPONENT_TYPES.DIALOG_COMPONENT:
+            if(dialogView === "main"){
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }
+            else if(dialogView === "add"){
+                updateDialogView("main")
+            }
+            break;
         case COMPONENT_TYPES.GAME_ITEM_COMPONENT:
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             break;
@@ -474,10 +495,9 @@ function getBackButtonLogic(){
             break;
 
         case COMPONENT_TYPES.ACTION_COMPONENT:
+            resetAdditionalAssetFeatures()
             if(actionView === "add"){
                 updateActionView("main")
-                resetSetPositionEntity()
-                resetTweenActionPanel()
             }else{
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             }
@@ -665,6 +685,7 @@ function EditObjectData(){
                 <EditMeshRender/>
                 <EditMaterial/>
                 <EditTexture/>
+                <EditAnimation/>
             </UiEntity>
 
                 </UiEntity>
@@ -801,6 +822,7 @@ function EditObjectData(){
                 <EditGameItem/>
                 <EditLevel/>
                 <EditLive/>
+                <EditDialog/>
 
                 {/* <ImageComponentPanel/>
                 <VideoComponentPanel/>
@@ -968,7 +990,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-15).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-17).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1000,6 +1022,13 @@ function getComponents(noUnderscore?:boolean){
             return []
         }
 
+        let omittedAdvancedComponents:any[] = [
+            COMPONENT_TYPES.UI_TEXT_COMPONENT,
+            COMPONENT_TYPES.UI_IMAGE_COMPONENT,
+            COMPONENT_TYPES.CLICK_AREA_COMPONENT,
+            COMPONENT_TYPES.PARENTING_COMPONENT,
+        ]
+
         let components:any[] = []
         Object.values(COMPONENT_TYPES).forEach((component)=>{
             if(scene.hasOwnProperty(component) && scene[component].hasOwnProperty(selectedItem.aid)){
@@ -1007,12 +1036,12 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-15).filter(item => !components.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-17).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")
 
-        return array//
+        return array
     }
     return []
 }

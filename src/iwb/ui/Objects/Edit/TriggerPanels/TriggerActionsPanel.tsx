@@ -46,6 +46,7 @@ export function resetTriggerActionsPanel(){
     selectedEntityIndex = 0
     selectedActionIndex = 0
     newAction = {}
+    console.log('reset trigger action panel')
 }
 
 export function TriggerActionsPanel(){
@@ -88,7 +89,7 @@ export function TriggerActionsPanel(){
     <Dropdown
         // options={[...["Select Entity"], ...getEntityList()]}
         options={[...["Select Entity"], ...entities.map($=> $.name)]}
-        selectedIndex={selectedEntityIndex}
+        selectedIndex={0}
         onChange={selectEntityIndex}
         uiTransform={{
             width: '100%',
@@ -116,7 +117,7 @@ export function TriggerActionsPanel(){
     <Dropdown
         options={[...["Select Action"], ...entitiesWithActions.map(($:any)=> $.name)]}
         // options={entitiesWithActions.length > 0 ? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
-        selectedIndex={selectedActionIndex}
+        selectedIndex={0}
         onChange={selectActionIndex}
         uiTransform={{
             width: '100%',
@@ -285,6 +286,7 @@ export function TriggerActionRow(info:any){
 }
 
 function selectEntityIndex(index:number){
+    console.log('select entity index', index)
     selectedEntityIndex = index
     if(index !== 0){
         updateEntityActions(entities[index-1].aid)
@@ -292,6 +294,7 @@ function selectEntityIndex(index:number){
 }
 
 function selectActionIndex(index:number){
+    console.log('select action index', index)
     selectedActionIndex = index
     if(index !== 0){
         newAction = entitiesWithActions[index-1]

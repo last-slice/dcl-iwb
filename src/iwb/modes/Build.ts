@@ -41,6 +41,10 @@ import { resetCurrentBouncerSpawns, resetLiveSpawnEntity } from "../ui/Objects/E
 import { resetTweenActionPanel } from "../ui/Objects/Edit/ActionPanels/AddTweenPanel"
 import { resetTween } from "./Play"
 import { removeGameTeamEntities, resetGamePanel } from "../ui/Objects/Edit/EditGaming"
+import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
+import { resetSetPositionEntity } from "../ui/Objects/Edit/ActionPanels/AddSetPositionPanel"
+import { resetSetRotationEntity } from "../ui/Objects/Edit/ActionPanels/AddSetRotationPanel"
+import { resetSetScaleEntity } from "../ui/Objects/Edit/ActionPanels/AddSetScalePanel"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -224,6 +228,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
     }
 
     displayCatalogPanel(false)
+    displayGrabContextMenu(true)
     playSound(SOUND_TYPES.SELECT_3)
 
     let itemData = items.get(id)
@@ -344,8 +349,16 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(1,1,1)
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else {
-                if (selectedItem.itemData.pending) {
+            } 
+            else if (selectedItem.itemData.n === "Dialog") {
+                MeshRenderer.setBox(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(1,1,1)
+                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
+            } 
+            else {
+                if (selectedItem.itemData.pending)  {
                     MeshRenderer.setBox(selectedItem.entity)
                 } else {
                     GltfContainer.create(selectedItem.entity, {
@@ -551,6 +564,10 @@ export function resetAdditionalAssetFeatures(){
     resetCurrentBouncerSpawns()
     resetTweenActionPanel()
     resetGamePanel()
+    resetSetPositionEntity()
+    resetSetRotationEntity()
+    resetSetScaleEntity()
+    displayGrabContextMenu(false)
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {

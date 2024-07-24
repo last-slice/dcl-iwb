@@ -256,7 +256,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                             // }}
                             onSubmit={(value) => {
                                 if(props.override){
-                                    props.override('x', parseFloat(value), true)
+                                    props.override('y', parseFloat(value), true)
                                     // updateSetPositionEntityPosition('y', parseFloat(value), true)
                                     return
                                 }
@@ -295,7 +295,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                             // }}
                             onSubmit={(value) => {
                                 if(props.override){
-                                    props.override('x', parseFloat(value), true)
+                                    props.override('z', parseFloat(value), true)
                                     // updateSetPositionEntityPosition('z', parseFloat(value), true)
                                     return
                                 }

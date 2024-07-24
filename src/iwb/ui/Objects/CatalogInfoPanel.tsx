@@ -15,6 +15,7 @@ import { playerMode } from '../../components/Config';
 import { placeCenterCurrentScene, selectCatalogItem } from '../../modes/Build';
 import { playAudioFile, stopAudioFile } from '../../components/Sounds';
 import resources from '../../helpers/resources';
+import { displayGrabContextMenu } from './GrabContextMenu';
 
 export let showCatalogInfoPanel = false
 
@@ -143,6 +144,7 @@ export function createCatalogInfoPanel() {
                             if (playerMode === SCENE_MODES.BUILD_MODE) {
                                 selectCatalogItem(selectedItem?.id, EDIT_MODES.GRAB, false)
                                 displayCatalogInfoPanel(false)
+                                displayGrabContextMenu(true)
                             }
                         }}
                         uiText={{value: "Place", color: Color4.White(), fontSize: sizeFont(25, 20)}}

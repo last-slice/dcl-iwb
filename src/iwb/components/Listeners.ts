@@ -1,14 +1,14 @@
 import { Room } from "colyseus.js";
 import { addInputSystem, createInputListeners } from "../systems/InputSystem";
-import { addPlayerScenes, createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings } from './Player'
+import { addPlayerScenes, createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings, worldTravel } from './Player'
 import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addLocalWorldPermissionsUser, addTutorial, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID } from "./Config";
+import { addLocalWorldPermissionsUser, addTutorial, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
-import { checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
+import { addScene, checkSceneCount, enablePrivateModeForScene, loadScene, loadSceneAsset, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
 import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel, deleteCreationEntities } from "../modes/Create";
 import { getEntity } from "./IWB";
@@ -127,23 +127,27 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
-        if (info.owner.toLowerCase() === localUserId) {
-            if(info.init){
-                // displayWorldReadyPanel(true, info)
-                displayPendingPanel(false, "ready")
+        setWorlds([info])
+
+        let world = worlds.find($=> $.ens === info.ens)
+        if(world ){
+            if (info.owner.toLowerCase() === localUserId || world.bps.includes(localUserId)) {
+                if(info.init){
+                    displaySkinnyVerticalPanel(true, getView("Init_World_Ready"), info.ens, ()=>{
+                      worldTravel(world)  
+                    })
+                    displayPendingPanel(false, "ready")
+                }
+                else{
+                    displayPendingPanel(true, "ready")
+                }
             }
-            else{
-                displayPendingPanel(true, "ready")
-            }
-        } else {
-            log('should display something else')
             showNotification({
                 type: NOTIFICATION_TYPES.MESSAGE,
                 message: (info.init? "New world deployed!\n" : "World Updated!\n") + info.ens + "!",
                 animate: {enabled: true, return: true, time: 5}
             })
         }
-        setWorlds([info])
     })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL, (info: any) => {
@@ -236,8 +240,42 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED + ' received', info)
-        // setPlayerMode(info.mode)//
+        // setPlayerMode(info.mode)
     })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS + ' received', info)
+        // setPlayerMode(info.mode)//
+        if(!info){
+            return
+        }
+
+        let scene = colyseusRoom.state.scenes.get(info.sceneId)
+        if(info.eChanged){
+            if(scene && scene.e){
+                console.log('need to load in scene')
+                addScene(scene)
+            }else{
+                console.log('need to unload scene')
+                unloadScene(scene)
+                enablePrivateModeForScene(scene)
+            }
+        }
+
+        if(info.pChanged && (!localPlayer.homeWorld || !localPlayer.hasWorldPermissions)){
+            if(scene && scene.priv){
+                console.log('need to load in scene')
+                addScene(scene)
+            }else{
+                console.log('need to unload scene')
+                unloadScene(scene)
+                enablePrivateModeForScene(scene)
+            }
+        }
+    })
+
+    
+
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
@@ -473,25 +511,7 @@ export async function createColyseusListeners(room:Room){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         console.log('scene added', key, scene)
 
-        if(!isGCScene()){
-            deleteCreationEntities(localUserId)
-            await removeEmptyParcels(scene.pcls)
-            refreshMap()
-        }
-        
-        await loadScene(scene)
-    
-        // scene.pcls.onAdd((parcel:string, parcelKey:any)=>{
-        //     if(editCurrentSceneParcels){
-        //         addBoundariesForParcel(parcel, true, scene.name === "Realm Lobby" ? true : false)
-        //     }
-        // })//
-    
-        // scene.pcls.onRemove((parcel:string, parcelKey:any)=>{
-        //     if(editCurrentSceneParcels){
-        //         deleteParcelEntities(parcel)
-        //     }
-        // })
+        await addScene(scene)
     
         scene.listen("si",(current:any, previous:any)=>{
             scene.si = current
@@ -503,33 +523,34 @@ export async function createColyseusListeners(room:Room){
         })
     
         scene.listen("priv",(current:any, previous:any)=>{
-            if(previous !== undefined){
-                if(current){
-                    if(scene.o !== localUserId){
-                        enablePrivateModeForScene(scene)
-                    }
-                }
-                else{
-                    if(scene.o !== localUserId && scene.e){
-                        scene.ass.forEach((asset:any)=>{
-                            loadSceneAsset(scene.id, asset)
-                        })
-                    }
-                }
-            }
+            // if(previous !== undefined){
+            //     if(current){
+            //         if(scene.o !== localUserId){
+            //             enablePrivateModeForScene(scene)
+            //         }
+            //     }
+            //     else{
+            //         if(scene.o !== localUserId && scene.e){
+            //             scene.ass.forEach((asset:any)=>{
+            //                 loadSceneAsset(scene.id, asset)
+            //             })
+            //         }
+            //     }
+            // }
         })
     
         scene.listen("e",(current:any, previous:any)=>{
-            if(previous !== undefined){
-                if(!current){
-                    enablePrivateModeForScene(scene)
-                }
-                else{
-                    scene.ass.forEach((asset:any)=>{
-                        loadSceneAsset(scene.id, asset)
-                    })
-                }
-            }
+            // if(previous !== undefined){
+            //     console.log('scene enabled changed', previous, current)
+            //     if(!current){
+            //         enablePrivateModeForScene(scene)
+            //     }
+            //     else{
+            //         scene.ass.forEach((asset:any)=>{
+            //             loadSceneAsset(scene.id, asset)
+            //         })
+            //     }
+            // }
         })
     })
 

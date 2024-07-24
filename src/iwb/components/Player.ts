@@ -1,13 +1,13 @@
 import {getPlayer} from "@dcl/sdk/players";
 import {Player, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
 // import {iwbEvents, sendServerMessage} from "../messaging";
-import {AvatarAnchorPointType, AvatarAttach, engine, Entity, Material, MeshRenderer, Transform, VideoPlayer} from "@dcl/sdk/ecs";
+import {AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
 import resources from "../helpers/resources";
-import {Color4, Vector3} from "@dcl/sdk/math";
+import {Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { Room } from "colyseus.js";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
-import { playerMode, realm, setPlayerMode } from "./Config";
+import { playerMode, realm, setPlayerMode, worlds } from "./Config";
 import { log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
@@ -17,6 +17,9 @@ import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem";
 import { SelectedItemSystem } from "../systems/SelectedItemSystem";
 import { changeRealm } from "~system/RestrictedActions";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
+import { displayMainView, updateMainView } from "../ui/Objects/IWBView";
+import { showTutorials, updateInfoView } from "../ui/Objects/IWBViews/InfoView";
+import { setUIClicked } from "../ui/ui";
 
 export let localUserId: string
 export let localPlayer:any
@@ -77,6 +80,7 @@ export async function createPlayer(player:any){
 function checkPlayerHomeWorld(player:any){
     // if (realm !== "BuilderWorld") {
         player.worlds.forEach(async (world:any) => {
+            console.log('player world', world, realm)
             if ((world.ens === realm)) {
                 player!.homeWorld = true
                 // await getPlayerLand()
@@ -120,15 +124,25 @@ export async function getPlayerNames(player:any) {
     let json = await res.json()
     if (json.data) {
         json.data.nfts.forEach((nft: any) => {
-            player.worlds.push({
-                name: nft.ens.subdomain,
-                owner: localUserId,
-                ens: nft.ens.subdomain + ".dcl.eth",
-                builds: 0,
-                updated: 0,
-                init: false,
-                version: 0
-            })
+            console.log('nft is', nft.ens.subdomain)
+            let world = worlds.find(($:any)=> $.name === nft.ens.subdomain)
+            if(world){
+                console.log('found world config')
+                world.init = true
+                player.worlds.push(world)
+            }
+            else{
+                console.log('no world config, add blank to table')
+                player.worlds.push({
+                    name: nft.ens.subdomain,
+                    owner: localUserId,
+                    ens: nft.ens.subdomain + ".dcl.eth",
+                    builds: 0,
+                    updated: 0,
+                    init: false,
+                    version: 0
+                })
+            }
         })
     }
 
@@ -219,47 +233,64 @@ export function addPendingAsset(info:any){
     // refreshVisibleItems()
 }
 
-// export function createTutorialVideo(video:any){
-//     engine.removeEntity(tutorialVideo)
-//     tutorialVideo = engine.addEntity()
+export let showingTutorial:boolean = false
 
-//     Transform.createOrReplace(tutorialVideo, {parent:engine.PlayerEntity, position:Vector3.create(0, .9, 2), scale: Vector3.create(3.5,2,1)})
-//     MeshRenderer.setPlane(tutorialVideo)
+export function updateShowingTutorial(value:boolean){
+    showingTutorial = value
+}
+export function createTutorialVideo(video:any){
+    engine.removeEntity(tutorialVideo)
 
-//     try{
-//         VideoPlayer.createOrReplace(tutorialVideo, {
-//             src: video.link,
-//             playing: true,
-//             volume:.3
-//         })
-    
-//         const videoTexture = Material.Texture.Video({ videoPlayerEntity: tutorialVideo })
-//         Material.setPbrMaterial(tutorialVideo, {
-//             texture: videoTexture,
-//             roughness: 1.0,
-//             specularIntensity: 0,
-//             metallic: 0,
-//             emissiveColor:Color4.White(),
-//             emissiveIntensity:1,
-//             emissiveTexture:videoTexture
-//           })
-//     }
-//     catch(e){
-//         console.log('error playing video', e)
-//         engine.removeEntity(tutorialVideo)
-//         displayTutorialVideoControls(false)
-//     }
-// }
+    tutorialVideo = engine.addEntity()
+    MeshRenderer.setPlane(tutorialVideo)
+    MeshCollider.setPlane(tutorialVideo, ColliderLayer.CL_POINTER)
+    Transform.create(tutorialVideo, {parent:engine.CameraEntity, rotation:Quaternion.fromEulerDegrees(0,0,0), position: Vector3.create(0,0,2), scale:Vector3.create(4.25,2.25,1)})
 
-// export function stopTutorialVideo(){
-//     try{
-//         VideoPlayer.getMutable(tutorialVideo).playing = false
-//         engine.removeEntity(tutorialVideo)
-//     }
-//     catch(e){
-//         console.log('error stopping video')
-//     }
-// }
+    try{
+        VideoPlayer.createOrReplace(tutorialVideo, {
+            src: video.link,
+            playing: true,
+            volume:.3
+        })
+
+        const videoTexture = Material.Texture.Video({ videoPlayerEntity: tutorialVideo })
+        Material.setPbrMaterial(tutorialVideo, {
+            texture: videoTexture,
+            roughness: 1.0,
+            specularIntensity: 0,
+            metallic: 0,
+            emissiveColor:Color4.White(),
+            emissiveIntensity:1,
+            emissiveTexture:videoTexture
+            }
+        )
+        showingTutorial = true
+        setUIClicked(false)
+        utils.timers.setTimeout(()=>{
+            setUIClicked(false)
+        }, 1000)
+    }
+    catch(e){
+        console.log('error playing video', e)
+        engine.removeEntity(tutorialVideo)
+        // displayTutorialVideoControls(false)
+    }
+}
+
+export function stopTutorialVideo(){
+try{
+    VideoPlayer.getMutable(tutorialVideo).playing = false
+    engine.removeEntity(tutorialVideo)
+    updateShowingTutorial(false)
+    displayMainView(true)
+    updateMainView("Info")
+    updateInfoView("Tutorials")
+    showTutorials()
+}
+catch(e){
+    console.log('error stopping video')
+}
+}
 
 export function setSettings(sets:any){
     settings = sets

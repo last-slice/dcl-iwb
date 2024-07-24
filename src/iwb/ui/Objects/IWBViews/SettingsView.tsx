@@ -11,6 +11,7 @@ import { uiSizes } from '../../uiConfig'
 import { playSound } from '../../../components/Sounds'
 import { setUIClicked } from '../../ui'
 import { utils } from '../../../helpers/libraries'
+import { addSceneRoofs, removeSceneRoofs } from '../../../components/Config'
 
 let settingsView = "Visual"
 
@@ -19,6 +20,7 @@ let labels:any[] = [
     {label:"Popup Confirmations", key:"confirms"},
     {label:"Check Scene Boundaries", key:"sceneCheck"},
     {label:"Enable Trigger Debug", key:"triggerDebug"},
+    {label:"Show Height Limits", key:"heightLimits"},
 ]
 
 export function updateSettingsView(view:string){
@@ -156,6 +158,13 @@ function generateSettingsToggles(){
             settings[setting.key] = !settings[setting.key]
             if(setting.key === "triggerDebug"){
                 utils.triggers.enableDebugDraw(settings[setting.key])
+            }
+            if(setting.key === "heightLimits"){
+                if(settings[setting.key]){
+                    addSceneRoofs()
+                }else{
+                    removeSceneRoofs()
+                }
             }
             sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, {action:"update", key:setting.key, value: settings[setting.key]})
         }}

@@ -21,9 +21,13 @@ export let buttonsPressed: Map<number, { id: number | null }> = new Map()
 
 export let hoveredEntity:Entity
 
-export function setButtonState(button: number, state: number) {
+export function setButtonState(button: number, state: number | null) {
     let b = buttonsPressed.get(button)
     b!.id = state
+}
+
+export function deleteButtonState(button:number){
+    buttonsPressed.delete(button)
 }
 
 export function addInputSystem(){
@@ -80,29 +84,6 @@ export function InputListenSystem(dt:number){
     //     if(selectedItem && !selectedItem.enabled){
     //         displayHover(false)
     //         hoveredEntity = -500 as Entity
-    //     }
-    // }
-
-    //DOWN BUTTON ACTIONS
-    //POINTER
-
-
-
-
-
-    //PRIMARY
-    // if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)) {
-    //     displayHover(false)
-    //     setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-
-    //     if(selectedItem && selectedItem.enabled){
-    //         dropSelectedItem()
-    //         displayGrabContextMenu(false)
-    //         removeNegativeGrabSystem()
-    //         removePositiveGrabSystem()
-    //     }
-    //     else{
-    //         const result = inputSystem.getInputCommand(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)
     //     }
     // }
 
@@ -198,6 +179,7 @@ export function InputListenSystem(dt:number){
 
         if(selectedItem && selectedItem.enabled && selectedItem.mode === EDIT_MODES.GRAB){
             cancelSelectedItem()
+            displayGrabContextMenu(false)
             removeNegativeGrabSystem()
             removePositiveGrabSystem()
         }
@@ -221,7 +203,7 @@ export function InputListenSystem(dt:number){
                         // }
                     }
                 }
-            // }
+            // }//
         }
     }
 
@@ -314,9 +296,12 @@ export function InputListenSystem(dt:number){
         removeNegativeGrabSystem()
     }
 
+
+
         // //SHIFT BUTTON
     if (inputSystem.isTriggered(InputAction.IA_WALK, PointerEventType.PET_DOWN)) {
         setButtonState(InputAction.IA_WALK, PointerEventType.PET_DOWN)
+        console.log('button pressed')//
 
         const result = inputSystem.getInputCommand(InputAction.IA_WALK, PointerEventType.PET_DOWN)
         if (result) {
@@ -325,6 +310,33 @@ export function InputListenSystem(dt:number){
             }else{
                 displayHover(false)
             }
+        }
+    }
+
+    if (inputSystem.isTriggered(InputAction.IA_WALK, PointerEventType.PET_UP)) {
+        setButtonState(InputAction.IA_WALK, null)
+
+        const result = inputSystem.getInputCommand(InputAction.IA_WALK, PointerEventType.PET_UP)
+        if (result) {
+        }
+    }
+
+
+    //JUMP BUTTON
+    if (inputSystem.isTriggered(InputAction.IA_JUMP, PointerEventType.PET_DOWN)) {
+        setButtonState(InputAction.IA_JUMP, PointerEventType.PET_DOWN)
+        displayHover(false)
+
+        const result = inputSystem.getInputCommand(InputAction.IA_JUMP, PointerEventType.PET_DOWN)
+        if (result) {
+        }
+    }
+
+    if (inputSystem.isTriggered(InputAction.IA_JUMP, PointerEventType.PET_UP)) {
+        setButtonState(InputAction.IA_JUMP, null)
+
+        const result = inputSystem.getInputCommand(InputAction.IA_JUMP, PointerEventType.PET_UP)
+        if (result) {
         }
     }
 
