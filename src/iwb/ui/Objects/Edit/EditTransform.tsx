@@ -735,7 +735,10 @@ function getRelativePosition(type: string) {
         switch (selectedItem.mode) {
             case EDIT_MODES.EDIT:
                 // console.log('objec position', selectedCatalogItem)
-                let transform = Transform.get(selectedItem.entity)
+                let transform = Transform.getOrNull(selectedItem.entity)
+                if(!transform){
+                    return {x:0, y:0, z:0}
+                }
 
                 switch (type) {
                     case 'x':
@@ -749,7 +752,13 @@ function getRelativePosition(type: string) {
 
             case EDIT_MODES.GRAB:
                 let scene = localPlayer.activeScene!.parentEntity
-                let sceneTransform = Transform.get(scene).position
+                let gtransform = Transform.getOrNull(scene)
+                
+                if(!gtransform){
+                    return {x:0, y:0, z:0}
+                }
+
+                let sceneTransform = gtransform?.position
                 const {position, rotation} = Transform.get(engine.PlayerEntity)
 
                 const forwardVector = Vector3.rotate(Vector3.scale(Vector3.Forward(), 4), rotation)

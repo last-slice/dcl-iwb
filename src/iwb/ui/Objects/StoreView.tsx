@@ -13,6 +13,7 @@ import { currentPage, filterByStyle, filterCatalog, filtered, initCatalog, items
 import { showNotification } from './NotificationPanel'
 import { displayPendingPanel } from './PendingInfoPanel'
 import { localPlayer } from '../../components/Player'
+import { updateMainView } from './IWBView'
 
 export let showStore = false
 export let storeView = "main"
@@ -117,6 +118,8 @@ export function displayStoreView(value:boolean){
 
     if(showStore){
         storeView = "loading"
+        
+        updateSearchFilter("")
         sendServerMessage(SERVER_MESSAGE_TYPES.GET_MARKETPLACE,{})
     }
 }
@@ -178,10 +181,28 @@ export function createStoreview() {
                 }}
             >
 
+
+                {/* main item container */}
+                <UiEntity
+                uiTransform={{
+                    display: storeView === "item" ? 'flex' : 'none',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignContent:'center',
+                    width: '97%',
+                    height: '93%',
+                    margin:{left:"1%"},
+                    padding:{left:"1%", right:'2%', bottom:'2%'},
+                }}
+                >
+                    <ItemView/>
+                </UiEntity>
+
                 {/* main content container */}
                 <UiEntity
                 uiTransform={{
-                    display:'flex',
+                    display: storeView !== "item" ? 'flex' : 'none',
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -240,7 +261,6 @@ function MainRightView(){
         >
 
             <DataView/>
-            <ItemView/>
             <LoadingView/>
         </UiEntity>
   
@@ -675,9 +695,6 @@ function MarketplaceItem({row, item}: { row: string, item: CatalogItemType }){
         }}
         onMouseDown={()=>{
             setUIClicked(true)
-            if(localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)){
-                toggleSelectItem(item)
-            }
         }}
         onMouseUp={()=>{
             setUIClicked(false)
@@ -730,26 +747,6 @@ function MarketplaceItem({row, item}: { row: string, item: CatalogItemType }){
         }}
         // uiBackground={{color:Color4.Green()}}
         >
-             {/* <UiEntity
-                    uiTransform={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        flexDirection: 'row',
-                        width: calculateSquareImageDimensions(4).width,
-                        height: calculateSquareImageDimensions(4).height,
-                        margin:{bottom:'1%'}
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas1.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.gridButtonTrans)
-                    }}
-                    onMouseDown={() => {
-                    }}
-                /> */}
 
                 <UiEntity
                     uiTransform={{
@@ -770,6 +767,36 @@ function MarketplaceItem({row, item}: { row: string, item: CatalogItemType }){
                     }}
                     onMouseDown={() => {
                         setUIClicked(true)
+                        selectedItem = item
+                        updateStoreView("item")
+                    }}
+                    onMouseUp={()=>{
+                        setUIClicked(false)
+                    }}
+                />
+
+                <UiEntity
+                    uiTransform={{
+                        display: localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? 'flex' : "none",
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        width: calculateSquareImageDimensions(4).width,
+                        height: calculateSquareImageDimensions(4).height,
+                        margin: {top: '1%'},
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: isSelected(item.id) ? getImageAtlasMapping(uiSizes.minusButton) :  getImageAtlasMapping(uiSizes.plusButton)
+                    }}
+                    onMouseDown={() => {
+                        setUIClicked(true)
+                        if(localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)){
+                            toggleSelectItem(item)
+                        }
                     }}
                     onMouseUp={()=>{
                         setUIClicked(false)
@@ -801,7 +828,7 @@ function ItemView(){
         <UiEntity
         key={resources.slug + "store::item::view"}
         uiTransform={{
-            flexDirection: 'column',
+            flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
@@ -812,12 +839,12 @@ function ItemView(){
 
         <UiEntity
             uiTransform={{
-                flexDirection: 'row',
+                flexDirection: 'column',
                 alignContent:'flex-start',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '100%',
-                height: '80%',
+                width: '50%',
+                height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             >
@@ -838,67 +865,177 @@ function ItemView(){
         }}
         />
 
-    <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '80%',
-            height: '10%',
-            margin:{left:"5%"}
-        }}
-        uiText={{value:"" + (selectedItem && selectedItem.n), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
-        />
-
-                </UiEntity>
-
-            <UiEntity
+<UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
             width: '100%',
             height: '20%',
+            margin:{left:"5%"}
         }}
-        // uiBackground={{color:Color4.Blue()}}
         >
 
 <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+        margin:{bottom:'2%'},
+        display: localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? "flex" : "none"
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        if(localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)){
+            toggleSelectItem(selectedItem)
+            updateStoreView("main")
+            selectedItem = undefined
+        }
+    }}
+    onMouseUp={() => {
+        setUIClicked(false)
+    }}
+    uiText={{value:"" + (selectedItem && selectedItems.find(($:any)=> $.id === selectedItem.id) ? "Unselect" : "Select"), fontSize: sizeFont(30, 15)}}
+/>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        updateStoreView("main")
+        selectedItem = undefined
+    }}
+    onMouseUp={() => {
+        setUIClicked(false)
+    }}
+    uiText={{value:"Back", fontSize: sizeFont(30, 15)}}
+/>
+</UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignContent:'flex-start',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '50%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Green()}}
+            >
+
+    <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{bottom:"2%"},
+        }}
+        uiText={{value:"" + (selectedItem && selectedItem.n), fontSize:sizeFont(40,25), textAlign:'middle-left', textWrap:'nowrap'}}
+        />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
         }}
         uiText={{value:"Category: " + (selectedItem && selectedItem.cat), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
         />
+        </UiEntity>
 
         <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '100%',
-            height: '10%',
+            width: '50%',
+            height: '100%',
         }}
-        uiText={{value:"Artist: " + (selectedItem && selectedItem.o), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
-        />
-
-<UiEntity
+        >
+            <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '10%',
+            height: '100%',
         }}
-        uiText={{value:"" + (selectedItem && selectedItem.d), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+        uiText={{value:"Artist: " + (selectedItem && selectedItem.o), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
         />
+        </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            uiText={{value:"Type: " + (selectedItem && selectedItem.ty), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+            />
 
 
-            </UiEntity>
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '20%',
+                }}
+                uiText={{value:"" + (selectedItem && selectedItem.d), fontSize:sizeFont(25,20), textAlign:'top-left'}}
+                />
+
+                </UiEntity>
 
 
             </UiEntity>

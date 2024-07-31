@@ -29,6 +29,7 @@ export function removePositiveGrabSystem(){
     engine.removeSystem(GrabChangePositiveSystem)
     positiveSystemAdded = false
     time = 0
+    console.log('removing positive grab system')
 }
 
 export function GrabChangePositiveSystem(dt:number){

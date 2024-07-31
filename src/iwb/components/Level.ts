@@ -2,8 +2,12 @@ import { Entity, GltfContainerLoadingState, LoadingState, engine } from "@dcl/sd
 import { COMPONENT_TYPES, Triggers } from "../helpers/types"
 import { createAsset, getEntity } from "./IWB"
 import { updatePlayModeReset } from "../modes/Play"
-import { LevelAssetGLTF } from "../helpers/Components"
+import { LevelAssetGLTF, PointersLoadedComponent } from "../helpers/Components"
 import { getTriggerEvents } from "./Triggers"
+import { utils } from "../helpers/libraries"
+import { displayLoadingScreen } from "../ui/Objects/GameStartUI"
+import { handleMovePlayer } from "./Actions"
+import { setPointersPlayMode } from "./Pointers"
 
 let levelAssetsToLoad:number = 0
 let levelAssetsLoaded:number = 0
@@ -34,17 +38,27 @@ export function loadLevelAssets(scene:any, info:any, action:any){
 
     let levelParent = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === info.aid)
     if(levelParent){
+        let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(info.aid)
+
         levelToLoad = info.entity
         levelAssetsToLoad = levelParent.children.length
 
-        levelParent.children.forEach((aid:string, i:number)=>{
-            createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid), true)
+        levelParent.children.forEach(async (aid:string, i:number)=>{
+            let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
+
+            await createAsset(scene, itemInfo, true)
+            PointersLoadedComponent.createOrReplace(itemInfo.entity, {init:false})
+            setPointersPlayMode(scene, itemInfo)
             levelAssetsLoaded++
-            checkLevelLoaded(info.entity)
+            // checkLevelLoaded(info.entity)
         })
 
-        checkLevelLoaded(info.entity)
+        // checkLevelLoaded(info.entity)
         updatePlayModeReset(true)
+
+        utils.timers.setTimeout(()=>{
+            checkLevelLoaded(scene, levelInfo, info.entity)
+        }, levelInfo.loadingMin * 1000)
     }
 }
 
@@ -70,11 +84,16 @@ export function unloadAllSceneGameAssets(scene:any){
 //     }
 // }
 
-export function checkLevelLoaded(level:Entity){
+export function checkLevelLoaded(scene:any, levelInfo:any, level:Entity){
     console.log("checking level loaded", level, levelAssetsLoaded, levelAssetsToLoad)
     if(levelAssetsLoaded >= levelAssetsToLoad){
         console.log('level assets have all loaded')
         engine.removeSystem(LevelAssetLoadingSystem)
+
+        displayLoadingScreen(false)
+
+        let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
+        handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
 
         let triggerEvents = getTriggerEvents(level)
         triggerEvents.emit(Triggers.ON_LEVEL_LOADED, {entity:level, pointer:0, input:0})
@@ -91,7 +110,7 @@ export function LevelAssetLoadingSystem(dt:number){
             case LoadingState.FINISHED:
                 LevelAssetGLTF.deleteFrom(entity)
                 levelAssetsLoaded++
-                checkLevelLoaded(levelToLoad)
+                // checkLevelLoaded(levelToLoad)
             break
     }
     }

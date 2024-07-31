@@ -32,7 +32,6 @@ export async function colyseusConnect(data:any, token:string, world?:any, island
         engine.addSystem(createTimerSystem())
         createColyseusListeners(room)
         
-        
     }).catch((err) => {
         console.error('colyseus connection error', err)
     });
@@ -52,8 +51,6 @@ export async function joinWorld(world?: any) {
             delete playerData.avatar
             delete playerData.emotes
         }
-
-
         await colyseusConnect(playerData, "", world, island)
     }
     catch(e){

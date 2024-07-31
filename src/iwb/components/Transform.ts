@@ -3,12 +3,20 @@ import { Quaternion } from "@dcl/sdk/math"
 import { getEntity } from "./IWB"
 import { findAssetParent } from "./Parenting"
 import { COMPONENT_TYPES } from "../helpers/types"
+import { updateTriggerArea } from "./Triggers"
 
 export function checkTransformComponent(scene:any, entityInfo:any){
     let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
     // console.log('transform is', transform)
     if(transform){
         Transform.createOrReplace(entityInfo.entity, {parent:findAssetParent(scene,entityInfo.aid), position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
+
+        //check if object has trigger
+        // let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
+        // if(triggerInfo){
+        //     console.log('entity has trigger component, need to update')
+        //     updateTriggerArea(scene, entityInfo, transform)
+        // }
     }
 }
 
@@ -93,5 +101,11 @@ export function updateTransform(scene:any, aid:string, transform:any){
                 scale:transform.s, 
             }
         )
+
+        let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(info.aid)
+        if(triggerInfo){
+            console.log('entity has trigger component, need to update')
+            updateTriggerArea(scene, info, transform)
+        }
     }
 }

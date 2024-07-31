@@ -32,7 +32,7 @@ export function updateStyles(updates: string[]) {
     styles = styles.sort((a, b) => a.localeCompare(b));
     styles.unshift("Audio")
     styles.unshift("All")
-    styles.unshift("Newest!")
+    styles.unshift("New")
 }
 
 export function setCatalog(catalog:any){
@@ -84,7 +84,7 @@ export function refreshSortedItems() {
     Sorted2D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "2D")
     SortedAudio = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Audio")
     SortedSmartItems = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "SM")
-    SortedNewest = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "Newest!")
+    SortedNewest = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "New")
 }
 
 export function refreshMarketplaceItems() {
@@ -95,7 +95,7 @@ export function refreshMarketplaceItems() {
     Sorted2D = sortByType(marketplaceOriginal, "2D")
     SortedAudio = sortByType(marketplaceOriginal, "Audio")
     SortedSmartItems = sortByType(marketplaceOriginal, "SM")
-    SortedNewest = sortByType(marketplaceOriginal, "Newest!")
+    SortedNewest = sortByType(marketplaceOriginal, "New")
 }
 
 export function updateItem(id: string, update: SceneItem) {
@@ -107,7 +107,7 @@ export function updateItem(id: string, update: SceneItem) {
 
 function sortByType(items: SceneItem[], type?: string) {
     if(type){
-        if(type === "Newest!"){
+        if(type === "New"){
             return items.filter((item:any)=> item.time && item. time >= (Date.now() / 1000) - (5 * 24 * 60 * 60))
         }
         else{

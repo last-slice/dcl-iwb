@@ -136,14 +136,18 @@ export function AddTeleport(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '15%',
+                height: '50%',
                  display :selectedType === 1 ? "flex" : "none"
             }}
         >
     
     <Input
         onChange={(value) => {
-            updateActionData({text: value.trim()}, true)
+            let input = value.trim()
+            if(!input.includes(".dcl.eth")){
+                input += ".dcl.eth"
+            }
+            updateActionData({text: input}, true)
         }}
         fontSize={sizeFont(20,15)}
         placeholder={'DCL ENS'}
@@ -151,19 +155,59 @@ export function AddTeleport(){
         color={Color4.White()}
         uiTransform={{
             width: '100%',
-            height: '80%',
+            height: '50%',
+            margin:{bottom:"5%"}
         }}
         ></Input>
-            </UiEntity>
 
-            {/* custom world type */}
+<UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:"5%"}
+                }}
+                uiText={{value:"Format DCL Name as either:", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+                />
+
             <UiEntity
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    height: '15%',
+                    height: '10%',
+                    margin:{bottom:"5%"}
+                }}
+                uiText={{value:"dclbuilder", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+                />
+
+<UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:"5%"}
+                }}
+                uiText={{value:"dclbuilder.dcl.eth", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+                />
+
+
+            </UiEntity>
+
+
+            {/* custom world type */}
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '50%',
                     display :selectedType === 2 ? "flex" : "none"
                 }}
             >
@@ -180,9 +224,57 @@ export function AddTeleport(){
                         color={Color4.White()}
                         uiTransform={{
                             width: '100%',
-                            height: '100%',
+                            height: '80%',
+                            margin:{bottom:"5%"}
                         }}
                         ></Input>
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:"5%"}
+                }}
+                uiText={{value:"Format Custom URL as below:", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+                />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:"5%"}
+                }}
+                uiText={{value:"https://customdomain/world/dclname", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+                />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:"5%"}
+                }}
+                uiText={{value:"Example:", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+                />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                uiText={{value:"https://worlds.dcl-iwb.co/world/dclbuilder.dcl.eth", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+                />
 
         </UiEntity>
 

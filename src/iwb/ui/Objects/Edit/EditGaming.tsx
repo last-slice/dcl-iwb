@@ -5,8 +5,8 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { log, paginateArray } from '../../../helpers/functions'
 import resources, { colors, colorsLabels } from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
-import { COMPONENT_TYPES, EDIT_MODIFIERS, GAME_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
-import { cancelEditingItem, editItem, selectedItem } from '../../../modes/Build'
+import { COMPONENT_TYPES, EDIT_MODES, EDIT_MODIFIERS, GAME_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { cancelEditingItem, editItem, saveItem, selectedItem } from '../../../modes/Build'
 import { openEditComponent, visibleComponent } from '../EditAssetPanel'
 import { localPlayer } from '../../../components/Player'
 import { setUIClicked } from '../../ui'
@@ -16,6 +16,7 @@ import { utils } from '../../../helpers/libraries'
 import { Billboard, BillboardMode, engine, Entity, Material, MeshRenderer, TextShape, Transform } from '@dcl/sdk/ecs'
 import { getRandomHexColor } from '../../../../ui_components/utilities'
 import { TransformInputModifiers } from './EditTransform'//
+import { updateLevelInfo } from './EditLevel'
 
 let gamingInfo:any = {}
 let levels:any[] = []
@@ -160,7 +161,7 @@ export function updateGamingInfo(reset?:boolean){
     gamingInfo = {...localPlayer.activeScene[COMPONENT_TYPES.GAME_COMPONENT].get(selectedItem.aid)}
     gameTypes.length = 0
 
-    gameTypes = Object.keys(GAME_TYPES).filter($ => isNaN(parseInt($)))
+    gameTypes = [...Object.keys(GAME_TYPES)]
     gameTypes.unshift("Select Game Type")
 
     if(gamingInfo.type){
@@ -222,7 +223,7 @@ function GameMainView(){
                     width: '100%',
                     height: '10%',
                 }}
-                    uiText={{value:"Game Type", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+                    uiText={{value:"Game Type" + (gameTypeIndex > 0 && gamingInfo && gamingInfo.type ? ": " + gamingInfo.type : ""), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
                 />
 
             <UiEntity
@@ -233,6 +234,7 @@ function GameMainView(){
                     alignContent:'center',
                     width: '100%',
                     height: '8%',
+                    display:gamingInfo && !gamingInfo.type ? 'flex' : 'none'
                 }}
             >
 
@@ -1594,12 +1596,61 @@ function LevelRow(data:any){
 
             <UiEntity
                 uiTransform={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     alignItems: 'center',
                     width: '20%',
                     height: '100%',
                 }}
-                />
+                >
+                    <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).height,
+                    margin:{left:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.pencilEditIcon)
+                }}
+                onMouseDown={() => {
+                    updateGamingInfo(true)//
+                    resetGamePanel()
+                    saveItem()
+                    editItem(levelInfo.aid, EDIT_MODES.EDIT)
+                    openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+                    openEditComponent(COMPONENT_TYPES.LEVEL_COMPONENT)
+                }}
+            />
+
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                    margin:{left:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.trashButton)
+                }}
+                onMouseDown={() => {
+                    // updateTrigger('delete', 'remove', trigger.rowCount)
+                    // update("delete", {id:data.id})
+                }}
+            />
+
+                </UiEntity>
 
             </UiEntity>
     )

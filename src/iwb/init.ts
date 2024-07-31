@@ -27,8 +27,6 @@ export function initIWB() {
                     if(!sceneJson.iwb) return
                     await setRealm(sceneJson, data.clientUri)
         
-                    // getAssetUploadToken()
-        
                     joinWorld(realm)
                 })
             }

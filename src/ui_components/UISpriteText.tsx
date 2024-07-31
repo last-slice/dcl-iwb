@@ -217,7 +217,7 @@ export class CustomUIText {
                 width: '100%',
                 height:"100%"
             }}
-            uiText={{value: "" + this.currentText + this.currentTextData, fontSize: sizeFont(this.size, this.size), color: Color4.White(), textAlign: 'middle-center'}}
+            uiText={{textWrap:'nowrap', value: "" + this.currentText + this.currentTextData, fontSize: sizeFont(this.size, this.size), color: Color4.White(), textAlign: 'middle-center'}}
         />
         )
     }
@@ -240,7 +240,7 @@ export class CustomUIText {
                 textureMode: 'stretch',
                 uvs: props.value.uvs,
                 texture: {
-                    src: props.value.spriteSheet,
+                    src: props.value.spriteSheet,//
                 },
             }}
         >

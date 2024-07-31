@@ -4,7 +4,7 @@ import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions,
 import { setUIClicked } from '../ui'
 import resources from '../../helpers/resources'
 import { uiSizes } from '../uiConfig'
-import { SERVER_MESSAGE_TYPES, Triggers } from '../../helpers/types'
+import { GAME_TYPES, SERVER_MESSAGE_TYPES, Triggers } from '../../helpers/types'
 import { sendServerMessage } from '../../components/Colyseus'
 import { localPlayer } from '../../components/Player'
 import { utils } from '../../helpers/libraries'
@@ -125,7 +125,7 @@ export function createGameStartUI(){
                 alignContent:'center',
                 alignItems:'center',
                 }}
-                uiText={{value:"Type: " + (startGame && startGame.type === 0 ? "SOLO" : "MULTIPLAYER"), fontSize:sizeFont(20,15), textAlign:'top-left'}}
+                uiText={{value:"Type: " + (startGame && startGame.type), fontSize:sizeFont(20,15), textAlign:'top-left'}}
                 />
 
             <UiEntity
@@ -157,7 +157,7 @@ export function createGameStartUI(){
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{
-                value: "" + (!startGame ? "none" : startGame.type === 0 ? "Start Game" : "Join Lobby"),
+                value: "" + (!startGame ? "none" : startGame.type === GAME_TYPES.SOLO ? "Start Game" : "Join Lobby"),
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
                 textAlign: 'middle-center'
@@ -281,9 +281,9 @@ export function displayLoadingScreen(value:boolean, level?:any){
     if(!showLoadingScreen){
         loadingScreen = undefined
     }else{
-        utils.timers.setTimeout(()=>{
-            displayLoadingScreen(false)
-        }, loadingScreen.loadingMin * 1000)
+        // utils.timers.setTimeout(()=>{
+        //     displayLoadingScreen(false)
+        // }, loadingScreen.loadingMin * 1000)
     }
 }
 

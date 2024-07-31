@@ -7,7 +7,6 @@ import { getPlayerPosition, getWorldPosition } from "@dcl-sdk/utils"
 import { island } from "../components/Config"
 
 export function PlayerTrackingSystem(dt: number) {
-    getPlayerPosition
     let playerPos = island === "world" ? Transform.get(engine.PlayerEntity).position : getPlayerPosition()
     // console.log('player position is', playerPos)
     localPlayer.rotation = Quaternion.toEulerAngles(Transform.get(engine.CameraEntity).rotation).y

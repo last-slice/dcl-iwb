@@ -1277,7 +1277,9 @@ function EditBuildersPanel() {
                                 sceneId:scene!.id
                             }
                         )
-                        
+                        utils.timers.setTimeout(()=>{
+                            updateSceneDetailsView("Access")
+                        }, 200)
                     }
                     },
                 }

@@ -50,7 +50,8 @@ export function resetTriggerActionsPanel(){
 }
 
 export function TriggerActionsPanel(){
-    return(<UiEntity
+    return(
+    <UiEntity
     key={resources.slug + "trigger::action::panel"}
     uiTransform={{
     flexDirection: 'column',

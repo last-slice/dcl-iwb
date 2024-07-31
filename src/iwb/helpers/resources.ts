@@ -29,7 +29,7 @@ export let colors:Color4[] = [
 ]
 
 export default {
-    DEBUG: false,
+    DEBUG: false,//
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
@@ -43,7 +43,7 @@ export default {
         deploymentTest: "http://localhost:3525",
         deploymentProd: "https://deployment.dcl-iwb.co",
 
-        toolsetTest: "http://localhost:3000/toolset/",
+        toolsetTest: "http://localhost:3000",
         toolsetProd: "https://dcl-iwb.co/toolset/qa",
 
         validateTest: "http://localhost:2751",

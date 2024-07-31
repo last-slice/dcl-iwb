@@ -22,7 +22,7 @@ import { getEntity } from "../components/IWB"
 import { setVisibilityBuildMode } from "../components/Visibility"
 import { setVideoBuildMode } from "../components/Videos"
 import { hideAllPanels, setUIClicked } from "../ui/ui"
-import { getAssetIdByEntity } from "../components/Parenting"
+import { findAssetParent, getAssetIdByEntity } from "../components/Parenting"
 import { openEditComponent } from "../ui/Objects/EditAssetPanel"
 import { setMeshColliderBuildMode, setMeshRenderBuildMode } from "../components/Meshes"
 import { setSmartItemBuildMode } from "../components/SmartItems"
@@ -274,13 +274,12 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         scale = Vector3.One()
 
         // TODO use configurable parameters for item height and depth//
-        let itemHeight = ITEM_HEIGHT_DEFAULT
+        let itemHeight = ITEM_HEIGHT_DEFAULT//
         let itemDepth = ITEM_DEPTH_DEFAULT
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
 
-        if ((selectedItem.itemData.pending || selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > colyseusRoom.state.cv) || 
-            (!selectedItem.ugc && selectedItem.itemData.v && selectedItem.itemData.v > localPlayer.version)) {
+        if ((selectedItem.itemData.v && selectedItem.itemData.v > colyseusRoom.state.cv)) {
             log('this asset is not ready for viewing, need to add temporary asset')
             MeshRenderer.setBox(selectedItem.entity)
 
@@ -290,7 +289,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                     selectedItem.itemData.bb = JSON.parse(selectedItem.itemData.bb)
                 }
                 console.log('item bb is', selectedItem.itemData.bb)
-                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.z, selectedItem.itemData.bb.y)
+                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.z, selectedItem.itemData.bb.y)//
             }
 
         } else {
@@ -360,16 +359,16 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
             } 
             else {
-                if (selectedItem.itemData.pending)  {
-                    MeshRenderer.setBox(selectedItem.entity)
-                } else {
+                // if (selectedItem.itemData.pending)  {
+                    // MeshRenderer.setBox(selectedItem.entity)
+                // } else {
                     GltfContainer.create(selectedItem.entity, {
                         src: 'assets/' + selectedItem.catalogId + ".glb",//
                         invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
                         visibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
                     })
 
-                }
+                // }
             }
         }
 
@@ -383,13 +382,16 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             Transform.createOrReplace(selectedItem.entity, {position: itemPosition, scale, parent: engine.PlayerEntity})
         }
 
-        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {
-            user: localUserId,
-            catalogId: id,
-            assetId: selectedItem.aid,
-            ugc: selectedItem.ugc,
-            sceneId: selectedItem.sceneId
-        })
+        // if(!already){
+            sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_CATALOG_ASSET, {
+                user: localUserId,
+                catalogId: id,
+                assetId: selectedItem.aid,
+                ugc: selectedItem.ugc,
+                sceneId: selectedItem.sceneId,
+                isCatalogSelect:true
+            })
+        // }
     } else {
         console.log('item does not exist')
     }
@@ -415,32 +417,49 @@ export function otherUserSelectedItem(info: any, catalog?: boolean) {
             anchorPointId: AvatarAnchorPointType.AAPT_POSITION,
         })
 
+        if(info.catalogAsset){
+            let itemData = items.get(info.catalogId)
+            if (itemData) {
+                let entity = engine.addEntity()
+                let scale: any
+                scale = Vector3.create(1, 1, 1)
 
-        let itemData = items.get(info.catalogId)
-        if (itemData) {
-            let entity = engine.addEntity()
-            let scale: any
-            scale = Vector3.create(1, 1, 1)
+                if (itemData.v && itemData.v > localPlayer.version) {
+                    log('this asset is not ready for viewing, need to add temporary asset')
+                    MeshRenderer.setBox(entity)
 
-            if (itemData.v && itemData.v > localPlayer.version) {
-                log('this asset is not ready for viewing, need to add temporary asset')
-                MeshRenderer.setBox(entity)
+                    if (itemData.bb) {
+                        scale = Vector3.create(itemData.bb.x, itemData.bb.y, itemData.bb.z)
+                    }
 
-                if (itemData.bb) {
-                    scale = Vector3.create(itemData.bb.x, itemData.bb.y, itemData.bb.z)
+                } else {
+                    log('this asset is ready for viewing, place object in scene', info.catalogId)
+                    addGrabbedComponent(entity, info.catalogId)
+                    // !info.catalogAsset ? scale = info.componentData.s : null
                 }
 
-            } else {
-                log('this asset is ready for viewing, place object in scene', info.catalogId)
-                addGrabbedComponent(entity, info.catalogId)
-                // !info.catalogAsset ? scale = info.componentData.s : null
+                Transform.createOrReplace(entity, {position: {x: 0, y: .25, z: 4}, scale: scale, parent: parent})
+                playerParentEntities.set(info.editor, parent)
+                grabbedAssets.set(info.assetId, entity)
+            }
+        }else{
+            let scene = colyseusRoom.state.scenes.get(info.sceneId)
+            if(!scene){
+                return
+            }
+    
+            let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(info.assetId)
+            if(!itemInfo){
+                return
             }
 
-            Transform.createOrReplace(entity, {position: {x: 0, y: .25, z: 4}, scale: scale, parent: parent})
-
+            let transformInfo = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(info.assetId)
+            Transform.createOrReplace(itemInfo.entity, {position: {x: 0, y: .25, z: 4}, scale: transformInfo.s, parent: parent})
+    
             playerParentEntities.set(info.editor, parent)
-            grabbedAssets.set(info.assetId, entity)
+            grabbedAssets.set(info.assetId, itemInfo.entity)
         }
+        
     } catch (e) {
         log('error attaching other user item', e)
     }
@@ -467,7 +486,6 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
     hideAllPanels()
 
     let entityInfo = getEntity(localPlayer.activeScene, aid)
-    console.log('entity info is', entityInfo.entity)
     if(entityInfo){
         let itemInfo = localPlayer.activeScene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
         if(itemInfo && itemInfo.locked){
@@ -530,6 +548,7 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
 export function saveItem() {
     hideUIText()
     hideUIImage()
+    removeSelectionPointer()
 
     // PointerEvents.deleteFrom(selectedItem.entity)
     addBuildModePointers(selectedItem.entity)
@@ -575,6 +594,73 @@ export function resetAdditionalAssetFeatures(){
     releaseRandomActions()
 }
 
+export function dropGrabbedItems(){
+    console.log('dropping grabbed items')
+
+     // item was not canceled, drop it in the new position
+    // get current item position
+    const finalPosition: Vector3.MutableVector3 = getWorldPosition(selectedItem.entity);
+
+    // find scene from parcel item is in
+    let parcel = "" + Math.floor(finalPosition.x / 16) + "," + Math.floor(finalPosition.z / 16);
+    const curScene = findSceneByParcel(parcel);
+
+    // check user build permissions for scene
+    const bpsCurScene = checkBuildPermissionsForScene(curScene);
+
+    // if scene found and permissions allowed, add item to scene
+    if (curScene && bpsCurScene && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
+        PointerEvents.deleteFrom(selectedItem.entity);
+        VisibilityComponent.createOrReplace(bbE, {visible: false});
+        addAllBuildModePointers();
+        localPlayer.activeScene = curScene;
+        
+        let t = Transform.getMutable(selectedItem.entity);
+
+        // set rotation to current rotation//
+        if(isSnapEnabled) {
+            t.rotation = getWorldRotation(selectedItem.entity)
+        } else {
+            let eulRot = Quaternion.toEulerAngles(t.rotation);
+            let playerRot = Quaternion.toEulerAngles(Transform.get(engine.PlayerEntity).rotation);
+            t.rotation =  Quaternion.fromEulerDegrees(eulRot.x + playerRot.x, eulRot.y + playerRot.y, eulRot.z + playerRot.z);
+        }
+
+        //
+        // find position relative to scene parent
+        const curSceneParent = curScene.parentEntity;
+        const curSceneParentPosition = Transform.get(curSceneParent).position;
+        finalPosition.x = finalPosition.x - curSceneParentPosition.x;
+        finalPosition.z = finalPosition.z - curSceneParentPosition.z;
+        t.position = finalPosition
+
+        // set parent to scene parent
+        t.parent = curSceneParent;
+        t.scale = Vector3.One()
+
+        // send message to server to add item to scene//
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DROPPED_GRABBED, {
+            entity: selectedItem.entity,
+            sceneId: curScene.id,
+            aid: selectedItem.aid,
+            id: selectedItem.catalogId,
+            position: roundVector(t.position, 2),
+            rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+        });
+
+        // clean up grabbed entity//
+        grabbedAssets.delete(selectedItem.aid);
+
+        selectedItem.enabled = false;
+        selectedItem.sceneId = curScene.id;
+        return;
+    }
+
+    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Asset out of bounds", animate:{enabled:true, return:true, time:3},  noSound:true})
+
+    playSound(SOUND_TYPES.ERROR_2);
+}
+
 export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     VisibilityComponent.createOrReplace(bbE, {visible: false})
     displayGrabContextMenu(false)
@@ -593,21 +679,32 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
                 // add back to scene at previous position
                 console.log('selection was grab mode')
 
-                sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
-                    item: {
-                        entity: selectedItem.entity,
-                        sceneId: selectedItem.sceneId,
-                        aid: selectedItem.aid,
-                        id: selectedItem.catalogId,
-                        position: roundVector(t.position, 2),
-                        rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-                        scale: roundVector(t.scale, 2),
-                        duplicate: selectedItem.duplicate,
-                        ugc: selectedItem.ugc
+                let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+                if(scene){
+                    let transform = selectedItem.transform
+                    if(transform){
+                        transform.parent = findAssetParent(scene, selectedItem.aid)
+                        Transform.createOrReplace(selectedItem.entity, transform)
                     }
-                });
+                }
 
-                engine.removeEntity(selectedItem.entity);
+                // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
+                //     item: {
+                //         entity: selectedItem.entity,
+                //         sceneId: selectedItem.sceneId,
+                //         aid: selectedItem.aid,
+                //         id: selectedItem.catalogId,
+                //         position: roundVector(t.position, 2),
+                //         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+                //         scale: roundVector(t.scale, 2),
+                //         duplicate: selectedItem.duplicate,
+                //         ugc: selectedItem.ugc
+                //     }
+                // });
+                
+                
+
+                // engine.removeEntity(selectedItem.entity);
                 grabbedAssets.delete(selectedItem.aid);
             }
 
@@ -651,6 +748,7 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
             t.rotation =  Quaternion.fromEulerDegrees(eulRot.x + playerRot.x, eulRot.y + playerRot.y, eulRot.z + playerRot.z);
         }
 
+        //
         // find position relative to scene parent
         const curSceneParent = curScene.parentEntity;
         const curSceneParentPosition = Transform.get(curSceneParent).position;
@@ -660,8 +758,9 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
 
         // set parent to scene parent
         t.parent = curSceneParent;
+        t.scale = Vector3.One()
 
-        // send message to server to add item to scene//
+        // send message to server to add item to scene
         sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
             baseParcel: curScene.bpcl,
             item: {
@@ -689,9 +788,9 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
         return;
     }
 
-        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Asset out of bounds", animate:{enabled:true, return:true, time:3},  noSound:true})
+    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Asset out of bounds", animate:{enabled:true, return:true, time:3},  noSound:true})
 
-        playSound(SOUND_TYPES.ERROR_2);
+    playSound(SOUND_TYPES.ERROR_2);
 }
 
 // export function dropSelectedItem2(canceled?: boolean, editing?: boolean) {
@@ -960,7 +1059,9 @@ export function duplicateItemInPlace(aid:string) {
 
 export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
     if(entity){
-        let itemData = items.get(selectedAsset.catalogId)
+        console.log('confirmed grab item has entity')
+        let itemData = items.get(selectedAsset.id)
+        console.log('confirmed grab item item data', itemData)
         if(!itemData){
             return
         }
@@ -972,10 +1073,22 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
         let transScal = Vector3.clone(transform.scale)
         let transRot = Quaternion.toEulerAngles(transform.rotation)
 
-        let grabbedDistance = grabbedItemDistances.get(selectedAsset.assetId)
-        console.log('grabbed distance is', grabbedDistance)
+        let grabbedDistance = grabbedItemDistances.get(selectedAsset.aid)
+        console.log('confirmed grabbed distance is', grabbedDistance)
+
+        let parentAid:any
+        let parentsWithChildren = scene[COMPONENT_TYPES.PARENTING_COMPONENT].filter((obj:any) => obj.children.length > 0);
+        for(let i = 0; i < parentsWithChildren.length; i++){
+            let parent = parentsWithChildren[i]
+            if(parent.children.includes(selectedAsset.aid)){
+                console.log('found parent')
+                parentAid = parent.aid
+                break;
+            }
+        }
 
         selectedItem = {
+            parent:parentAid,
             n: itemData.n,
             duplicate: false,
             mode: EDIT_MODES.GRAB,
@@ -983,9 +1096,10 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
             pFactor: 1,
             sFactor: 1,
             rFactor: 90,
-            entity: engine.addEntity(),
-            aid: selectedAsset.assetId,
-            catalogId: selectedAsset.catalogId,
+            // entity: engine.addEntity(),
+            entity:entity,
+            aid: selectedAsset.aid,
+            catalogId: selectedAsset.id,
             sceneId: scene.id,
             itemData: itemData,
             enabled: true,
@@ -998,7 +1112,7 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
             distance: grabbedDistance ?? 4,
             rotation: transRot.y,
             scale:1,
-            initialHeight: transPos.y - .88,//
+            initialHeight: transPos.y - .88,
             ugc: selectedAsset.ugc
         }
         addUseItemPointers(selectedItem.entity)
@@ -1008,20 +1122,21 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
         scale = transScal
         // log('grabbed scale is', scale)
 
-        let config = localPlayer.worlds.find((w:any) => w.ens === realm)
+        // let config = localPlayer.worlds.find((w:any) => w.ens === realm)
 
-        if (selectedItem.itemData.v && selectedItem.itemData.v > config.v) {
-            // log('this asset is not ready for viewing, need to add temporary asset')//
-            MeshRenderer.setBox(selectedItem.entity)
+        // if (selectedItem.itemData.v && selectedItem.itemData.v > config.v) {
+        //     // log('this asset is not ready for viewing, need to add temporary asset')//
+        //     console.log('grabbed asset not ready for viewing')
+        //     MeshRenderer.setBox(selectedItem.entity)
 
-            if (selectedItem.itemData.bb) {
-                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.y, selectedItem.itemData.bb.z)
-            }
+        //     if (selectedItem.itemData.bb) {
+        //         scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.y, selectedItem.itemData.bb.z)
+        //     }
 
-        } else {
-            // log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
-            addGrabbedComponent(selectedItem.entity, selectedItem.itemData.id)
-        }
+        // } else {
+        //     // log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
+        //     addGrabbedComponent(selectedItem.entity, selectedItem.itemData.id)
+        // }
 
         if (GltfContainer.has(selectedItem.entity)) {
             GltfContainer.getMutable(selectedItem.entity).invisibleMeshesCollisionMask = ColliderLayer.CL_NONE
@@ -1041,6 +1156,14 @@ export function confirmGrabItem(scene:any, entity:Entity, selectedAsset:any) {
             })
 
         grabbedAssets.set(selectedItem.aid, entity)
+
+         sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
+                 user: localUserId,
+                 catalogId: selectedItem.catalogId,
+                 assetId: selectedItem.aid,
+                 sceneId: scene.id,
+             }
+        )//
     }
 }
 
@@ -1080,12 +1203,15 @@ export function grabItem(entity: Entity) {
               hideAllOtherPointers()
               displayHover(true)
               if (PointerEvents.has(entity)) PointerEvents.deleteFrom(entity)
-             sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
-                 user: localUserId,
-                 catalogId: itemInfo.catalogId,
-                 assetId: aid,
-                 sceneId: scene.id,
-             })
+            //  sendServerMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, {
+            //      user: localUserId,
+            //      catalogId: itemInfo.catalogId,
+            //      assetId: aid,
+            //      sceneId: scene.id,
+            //  })
+
+            confirmGrabItem(scene, entity, itemInfo)
+
              playSound(SOUND_TYPES.SELECT_3)
             }
           )
@@ -1096,8 +1222,8 @@ export function grabItem(entity: Entity) {
 export let grabbedItemDistances:Map<string, number> = new Map()
 
 export function deleteGrabbedItem(){
-    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_GRABBED_ITEM, {})
-    removeSelectedItem()//
+    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_GRABBED_ITEM, {sceneId: selectedItem.sceneId, aid:selectedItem.aid})
+    removeSelectedItem()
 }
 
 export function deleteSelectedItem(aid:string) {
@@ -1130,12 +1256,12 @@ export function deleteSelectedItem(aid:string) {
 export function cancelSelectedItem() {
     log('canceled selected item is', selectedItem)
     dropSelectedItem(true)
-    sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_CANCELED_CATALOG_ASSET,
-        {
-            sceneId: selectedItem.sceneId
-        }
-    )
-}//
+    // sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_CANCELED_CATALOG_ASSET,
+    //     {
+    //         sceneId: selectedItem.sceneId
+    //     }
+    // )
+}
 
 export function cancelEditingItem() {
     log('canceled editing item is', selectedItem)
@@ -1400,7 +1526,7 @@ export function sendServerDelete(entity: Entity, data?: any) {
     //             return
     //         }
     //     })
-    // }//
+    // }
 }
 
 export function hideAllOtherPointers() {
@@ -1485,7 +1611,7 @@ export function addEditSelectionPointer(aid: string, itemData: any) {
 }
 
 export function removeSelectionPointer() {
-    // engine.removeEntity(selectedItem.entity)
+    selectedItem && selectedItem.pointer ? engine.removeEntity(selectedItem.pointer) : null
 }
 
 export function removeEditSelectionPointer(aid: string) {

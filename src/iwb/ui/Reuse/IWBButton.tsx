@@ -34,6 +34,7 @@ export function IWBButton(data:any){
         setUIClicked(true)
         playSound(SOUND_TYPES.WOOD_3)
         button.func()
+        setUIClicked(false)
       }}
       onMouseUp={()=>{
         setUIClicked(false)

@@ -100,7 +100,7 @@ export function createIWBMap(){
             {/* map info container */}
           <UiEntity
             uiTransform={{
-                flexDirection: 'row',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '86.5%',
@@ -111,8 +111,18 @@ export function createIWBMap(){
             uiBackground={{color:Color4.Black()}}
             >
 
-            {/* left column info */}
+            {/* top row info */}
           <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '50%',
+            }}
+            >
+
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -120,29 +130,32 @@ export function createIWBMap(){
                 width: '50%',
                 height: '100%',
             }}
-            >
+            uiText={{textWrap:'nowrap', value:"" + (localPlayer && realm.split(".")[0]), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
+            />
 
-            <UiEntity
+        <UiEntity
+              uiTransform={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '25%',
+                  height: '100%',
+              }}
+              uiText={{textWrap:'nowrap', value:"" + (playerMode === SCENE_MODES.PLAYMODE ? "Play" : "Build"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
+              />
+
+      <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
-                height: '50%',
+                width: '25%',
+                height: '100%',
             }}
-            uiText={{value:"" + (localPlayer && realm.split(".")[0]), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
+            uiText={{textWrap:'nowrap', value:"" + (localPlayer && localPlayer.currentParcel), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
             />
 
-    <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            uiText={{value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
-            />
+         
 
               </UiEntity>
 
@@ -153,32 +166,22 @@ export function createIWBMap(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%',
-                height: '100%',
+                width: '100%',
+                height: '50%',
             }}
             >
 
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            uiText={{value:"" + (playerMode === SCENE_MODES.PLAYMODE ? "Play" : "Build"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
-            />
+<UiEntity
+      uiTransform={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+      }}
+      uiText={{textWrap:'nowrap', value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
+      />
 
-    <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            uiText={{value:"" + (localPlayer && localPlayer.currentParcel), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
-            />
 
               </UiEntity>
 

@@ -1,4 +1,4 @@
-import { Entity, InputAction, PointerEventType, PointerEvents, engine, pointerEventsSystem } from "@dcl/sdk/ecs";
+import { Entity, InputAction, PointerEventType, PointerEvents, Transform, engine, pointerEventsSystem } from "@dcl/sdk/ecs";
 import { COMPONENT_TYPES, COUNTER_VALUE, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
 import mitt, { Emitter } from "mitt";
 import { getActionEvents } from "./Actions";
@@ -8,8 +8,9 @@ import { States, getCurrentValue, getPreviousValue } from "./States";
 import { tickSet } from "./Timer";
 import { utils } from "../helpers/libraries";
 import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
-import { Color3 } from "@dcl/sdk/math";
+import { Color3, Vector3 } from "@dcl/sdk/math";
 import { getAssetIdByEntity } from "./Parenting";
+import { colyseusRoom } from "./Colyseus";
 
 export const actionQueue:any[] = []
 
@@ -19,6 +20,14 @@ const triggers = new Map<Entity, any>()
 export function checkTriggerComponent(scene:any, entityInfo:any){
   let itemInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
   if(itemInfo){
+    let hasEnter = false
+    let hasLeave = false
+
+    if(itemInfo.isArea){
+      hasEnter = true
+      hasLeave = true
+    }
+
     itemInfo.triggers.forEach((trigger:any)=>{
       switch(trigger.type){
         case Triggers.ON_TICK:
@@ -28,29 +37,61 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
         case Triggers.ON_INPUT_ACTION:
           initOnInputActionTrigger(entityInfo.entity, trigger)
           break;
+
+        case Triggers.ON_ENTER:
+          hasEnter = true
+          break;
+
+        case Triggers.ON_LEAVE:
+          hasLeave = true
+          break;
       }
     })
 
-    if(itemInfo.isArea){
+    if(hasEnter || hasLeave){
       let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
       if(transform){
-        utils.triggers.addTrigger(entityInfo.entity, NO_LAYERS, LAYER_1,
+        console.log('trigger area scale', transform)
+        itemInfo.trigger = utils.triggers.addTrigger(entityInfo.entity, NO_LAYERS, LAYER_1,
           [{type:'box',
-            scale: transform.scale
+            // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
+            scale: itemInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
           }],
           ()=>{
-            const triggerEvents = getTriggerEvents(entityInfo.entity)
-          triggerEvents.emit(Triggers.ON_ENTER, {input:0, pointer:0, entity:entityInfo.entity})
+            if(hasEnter){
+              const triggerEvents = getTriggerEvents(entityInfo.entity)
+              triggerEvents.emit(Triggers.ON_ENTER, {input:0, pointer:0, entity:entityInfo.entity})
+            }
           },
           ()=>{
-            const triggerEvents = getTriggerEvents(entityInfo.entity)
-          triggerEvents.emit(Triggers.ON_LEAVE, {input:0, pointer:0, entity:entityInfo.entity})
+            if(hasLeave){
+              const triggerEvents = getTriggerEvents(entityInfo.entity)
+              triggerEvents.emit(Triggers.ON_LEAVE, {input:0, pointer:0, entity:entityInfo.entity})
+            }
           },
           Color3.create(236/255,209/255,92/255)
         )
       }
     }
   }
+}
+
+export function updateTriggerArea(scene:any, entityInfo:any, transform:any){
+  console.log('updating trigger area')
+  let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
+  if(!triggerInfo){
+    return
+  }
+  try{
+    utils.triggers.setAreas(entityInfo.entity, [{type:'box',
+      // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
+      scale: triggerInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+    }])
+  }
+  catch(e){
+    console.log('error setting trigger area')
+  }
+
 }
 
 export function getTriggerEvents(entity: Entity) {
@@ -323,8 +364,21 @@ function initOnInputActionTrigger(entity:Entity, trigger:any){
     // )
 }
 
+let isTriggerSystemAdded = false
+export function addPlayTriggerSystem(){
+  if(!isTriggerSystemAdded){
+    isTriggerSystemAdded = true
+    engine.addSystem(PlayTriggerSystem)
+  }
+}
+
+export function removePlayTriggerSystem(){
+  engine.removeSystem(PlayTriggerSystem)
+  isTriggerSystemAdded = false
+}
 export function PlayTriggerSystem(dt:number){
     while (actionQueue.length > 0) {
+      console.log(actionQueue)
         const { entity, action, aid } = actionQueue.shift()!
         const actionEvents = getActionEvents(entity)
         actionEvents.emit(action.id, action)

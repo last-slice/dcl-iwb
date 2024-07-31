@@ -17,7 +17,6 @@ export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any,
     show = value
     variableText = extra
     if(f){
-        console.log('yes function')
         customFunction = f
     }
    
@@ -55,6 +54,7 @@ export function createSkinnyVerticalPanel(){
         }}
         onMouseDown={()=>{
             setUIClicked(true)
+            setUIClicked(false)
         }}
         onMouseUp={()=>{
             setUIClicked(false)

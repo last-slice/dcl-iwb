@@ -5,6 +5,7 @@ import { Quaternion, Vector3 } from "@dcl/sdk/math";
 import { eth, utils } from "./libraries";
 import { openExternalUrl } from "~system/RestrictedActions";
 import resources from "./resources";
+import { localPlayer, localUserId } from "../components/Player";
 
 export function paginateArray(array:any[], page:number, itemsPerPage:number){
   const startIndex = (page - 1) * itemsPerPage;
@@ -171,20 +172,24 @@ export function setUVs(rows: number, cols: number) {
   ]
 }
 
-// export async function getAssetUploadToken(){
-//   let player = players.get(localUserId)
-//   if(player && !player.dclData.isGuest || resources.allowNoWeb3){
-//     log('web3 user, we can get token')
-//     let response = await fetch((resources.DEBUG ? resources.endpoints.deploymentTest : resources.endpoints.deploymentProd) + resources.endpoints.assetSign +  "/" + localUserId)
-//     let json = await response.json()
-//     console.log('asset upload token is', json)
-//     if(json.valid){
-//       player!.uploadToken = json.token
-//     }
-//   }else{
-//     log('non web3 user, we should not do anything')
-//   }
-// }
+export async function getAssetUploadToken(){
+  if(localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)){
+    log('web3 user, we can get token')
+    try{
+      let response = await fetch((resources.DEBUG ? resources.endpoints.deploymentTest : resources.endpoints.deploymentProd) + resources.endpoints.assetSign +  "/" + localUserId)
+      let json = await response.json()
+      console.log('asset upload token is', json)
+      if(json.valid){
+        localPlayer.uploadToken = json.token
+      }
+    }
+    catch(e){
+      console.log('get asset upload token error', e)
+    }
+  }else{
+    console.log('not local user to get asset token')
+  }
+}
 
 // export function attemptAssetUploader(){
 //   let player = players.get(localUserId)

@@ -34,7 +34,7 @@ export function EditMeshRender() {
         >
 
         {/* main row */}
-        <UiEntity
+        {/* <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -82,7 +82,7 @@ export function EditMeshRender() {
 
 
 
-        </UiEntity>
+        </UiEntity> */}
 
         <UiEntity
             uiTransform={{

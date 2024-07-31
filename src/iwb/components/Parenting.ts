@@ -1,22 +1,7 @@
 import { Entity, engine } from "@dcl/sdk/ecs"
 import { localUserId } from "./Player"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
-import { addBuildModePointers, confirmGrabItem, removeItem, resetEntityForBuildMode } from "../modes/Build"
-import { colyseusRoom } from "./Colyseus"
 
-// export function createEntity(item:any){
-//     let ent = engine.addEntity()
-//     item.entity = ent
-//     // item.components = []
-
-//     console.log('creating entity', ent)
-//     RealmEntityComponent.create(ent)
-
-//     if (playerMode === SCENE_MODES.BUILD_MODE) {
-//         addBuildModePointers(ent)
-//     }
-//     console.log('finished creating entity')
-// }
 
 export function getAssetIdByEntity(scene:any, entity:Entity){
     let assetId:any
@@ -26,14 +11,6 @@ export function getAssetIdByEntity(scene:any, entity:Entity){
         }
     })
     return assetId
-
-    // for(let i = 0; i < scene[COMPONENT_TYPES.PARENTING_COMPONENT].length; i++){
-    //     let entityInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT][i]
-    //     if(entityInfo && entityInfo.entity && entityInfo.entity === entity){
-    //         return entityInfo.aid
-    //     }
-    // }
-    // return undefined
 }
 
 export function findAssetParent(scene:any, aid:string){
@@ -100,14 +77,7 @@ export function parentingListener(scene:any){
         // }
     })
 
-    scene[COMPONENT_TYPES.PARENTING_COMPONENT].onRemove(async(item:any, aid:any)=>{
-        console.log('remove parenting item', aid, item)
-        colyseusRoom.state.players.forEach(async (player:any, address:string)=>{
-            if(player.selectedAsset && player.selectedAsset.assetId === item.aid && player.address === localUserId){
-                removeItem(item.entity)
-                await confirmGrabItem(scene, item.entity, player.selectedAsset)
-                return
-            }
-        })
-    })
+    // scene[COMPONENT_TYPES.PARENTING_COMPONENT].onRemove(async(item:any, aid:any)=>{
+
+    // })
 }

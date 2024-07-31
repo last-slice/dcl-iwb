@@ -15,6 +15,7 @@ export function checkMeshRenderComponent(scene:any, entityInfo:any){
                 break;
         }
         MeshRenderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        console.log('setting mesh renderer for entity', entityInfo.aid)
     }
 }
 
@@ -78,7 +79,7 @@ export function setMeshRenderBuildMode(scene:any, entityInfo:any){
 
 export function setMeshRenderPlayMode(scene:any, entityInfo:any){
     let meshInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
-    if(meshInfo && entityInfo.entity){
+    if(meshInfo && entityInfo.entity){//
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }
@@ -107,6 +108,7 @@ export function setMeshColliderPlayMode(scene:any, entityInfo:any){
 export function disableMeshRenderPlayMode(scene:any, entityInfo:any){
     let meshInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
     if(meshInfo && entityInfo.entity){
+        console.log('disabling mesh renderedr play mode', scene.id, entityInfo.aid)
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }

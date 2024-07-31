@@ -560,7 +560,7 @@ export function createSceneInfoPanel() {
                     onMouseUp={() => {
                         setUIClicked(true)
                     }}
-                    uiText={{value: "Copy Place", color: Color4.White(), fontSize: sizeFont(30, 15)}}
+                    uiText={{value: "Copy Place", color: Color4.White(), fontSize: sizeFont(25, 15), textWrap:'nowrap'}}
                 />
 
 
@@ -866,7 +866,8 @@ const SceneAssetList = () => {
                 value: "" + (localScene ? formatDollarAmount(localPlayer.activeScene!.pc)  : ""),
                 fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
-                color: Color4.White()
+                color: Color4.White(),
+                textWrap:'nowrap'
             }}
         />
 
@@ -884,7 +885,8 @@ const SceneAssetList = () => {
                 value: "" + (localScene ? formatSize(localPlayer.activeScene?.si) + "MB" : ""),
                 fontSize: sizeFont(25, 15),
                 textAlign: 'middle-center',
-                color: Color4.White()
+                color: Color4.White(),
+                textWrap:'nowrap'
             }}
         />
 
@@ -1049,7 +1051,7 @@ function SceneAssetRow(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{
-            value: curItem ? name.length > 15 ?  name.substring(0,15) + "..." : name : "Name not found",
+            value: curItem ? name.length > 20 ?  name.substring(0,20) + "..." : name : "Name not found",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
             color: Color4.White()
@@ -1066,12 +1068,13 @@ function SceneAssetRow(data:any){
             width: '15%',
             height: '100%',
         }}
-        // uiBackground={{color:Color4.Green()}}//
+        // uiBackground={{color:Color4.Green()}}
         uiText={{
             value: curItem?.pc ? formatDollarAmount(curItem?.pc) : "0",
             fontSize: sizeFont(20, 15),
             textAlign: "middle-left",
-            color: Color4.White()
+            color: Color4.White(),
+            textWrap:'nowrap'//
         }}
     />
 
@@ -1089,7 +1092,8 @@ function SceneAssetRow(data:any){
             value: curItem?.si ? formatSize(curItem?.si) + "MB" : "",
             fontSize: sizeFont(20, 15),
             textAlign: "middle-left",
-            color: Color4.White()
+            color: Color4.White(),
+            textWrap:'nowrap'
         }}
     />
 

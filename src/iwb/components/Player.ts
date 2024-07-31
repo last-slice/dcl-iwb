@@ -8,7 +8,7 @@ import { Room } from "colyseus.js";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
 import { playerMode, realm, setPlayerMode, worlds } from "./Config";
-import { log } from "../helpers/functions";
+import { getAssetUploadToken, log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
 import { FlyModeSystem } from "../systems/FlyModeSystem";
@@ -20,11 +20,15 @@ import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { displayMainView, updateMainView } from "../ui/Objects/IWBView";
 import { showTutorials, updateInfoView } from "../ui/Objects/IWBViews/InfoView";
 import { setUIClicked } from "../ui/ui";
+import { addScene, pendingSceneLoad } from "./Scene";
 
 export let localUserId: string
 export let localPlayer:any
 export let tutorialVideo:Entity
-export let settings:any
+export let settings:any = {
+    triggerDebug: false,
+    sceneCheck:false
+}
 
 export function isLocalPlayer(userId:string){
     return userId === localUserId
@@ -46,7 +50,7 @@ export function setLocalPlayer(player:any){
 }
 
 export function setPlayerSelectedAsset(player:any, current:any, previous:any){
-    console.log('player selected asset', player.address, previous, current)//
+    console.log('player selected asset', player.address, previous, current)
     if(player.address !== localUserId){
         if(current === null){
             otherUserRemovedSeletedItem(player.address)
@@ -79,6 +83,8 @@ export async function createPlayer(player:any){
     await getPlayerNames(player)
     await getPlayerLand()
     await checkPlayerHomeWorld(player)
+    engine.addSystem(PendingSceneLoadSystem)
+    getAssetUploadToken()//
 }
 
 function checkPlayerHomeWorld(player:any){
@@ -198,20 +204,12 @@ export function removePlayer(player:any) {
      * add other garbage collection and entity clean up here
      */
     if (player.mode === SCENE_MODES.CREATE_SCENE_MODE) {
-        // deleteCreationEntities(player.userId)
-    }
-}
-
-export function addPlayerScenes(userId:string, scenes:any[]) {
-    let player = colyseusRoom.state.players.get(userId)
-    if (player) {
-        scenes.forEach((scene) => {
-            player!.scenes.push(scene)
-        })
+        // deleteCreationEntities(player.userId)//
     }
 }
 
 export function setPlayMode(userId:string, mode:SCENE_MODES) {
+    console.log('setging player mode to', mode)
     let player = colyseusRoom.state.players.get(userId)
     if (player) {
         player.mode = mode
@@ -300,4 +298,16 @@ export function setSettings(sets:any){
     settings = sets
     settings.sceneCheck = true
     settings.triggerDebug = false
+}
+
+export function PendingSceneLoadSystem(){
+    if(pendingSceneLoad.length > 0){
+        if(localPlayer && localPlayer.homeWorld !== undefined && localPlayer.worldPermissions !== undefined){
+            if(localPlayer.homeWorld || localPlayer.worldPermissions){
+                let scene = pendingSceneLoad.shift()
+                console.log('load pending scene', scene)
+                addScene(scene, true)
+            }
+        }
+    }
 }

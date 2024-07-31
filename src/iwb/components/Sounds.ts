@@ -1,7 +1,7 @@
-import { AudioSource, AudioStream, ColliderLayer, Entity, Material, MeshCollider, MeshRenderer, PBTextShape, TextShape, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { AudioSource, AudioStream, AvatarAnchorPointType, AvatarAttach, ColliderLayer, Entity, Material, MeshCollider, MeshRenderer, PBTextShape, TextShape, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import { Color4 } from "@dcl/sdk/math"
-import { AUDIO_TYPES, COMPONENT_TYPES, SOUND_TYPES } from "../helpers/types"
+import { AUDIO_TYPES, CATALOG_IDS, COMPONENT_TYPES, SOUND_TYPES } from "../helpers/types"
 import { log, getRandomIntInclusive } from "../helpers/functions"
 import { utils } from "../helpers/libraries"
 import resources from "../helpers/resources"
@@ -9,12 +9,13 @@ import { items } from "./Catalog"
 import { AudioLoadedComponent } from "../helpers/Components"
 import { updateTransform } from "./Transform"
 import { selectedItem } from "../modes/Build"
+import { localUserId } from "./Player"
 
 export function checkAudioSourceComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         AudioSource.create(entityInfo.entity, {
-            audioClipUrl: "" + itemInfo.url,
+            audioClipUrl: itemInfo.url,
             playing: false,
             volume: itemInfo.volume,
             loop: itemInfo.loop
@@ -43,6 +44,7 @@ export function checkAudioStreamComponent(scene:any, entityInfo:any){
 export function setAudioBuildMode(scene:any, entityInfo:any) {
     let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
+        console.log('setting audio for build mode')
         MeshRenderer.setBox(entityInfo.entity)
         MeshCollider.setBox(entityInfo.entity, ColliderLayer.CL_POINTER)
 
@@ -111,6 +113,7 @@ export function setAudioPlayMode(scene:any, entityInfo:any){
 
         let audioStream = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
         if(audioStream){
+            console.log('setting audio stream play mode')
             MeshRenderer.deleteFrom(entityInfo.entity)
             MeshCollider.deleteFrom(entityInfo.entity)
             TextShape.deleteFrom(entityInfo.entity)
@@ -133,14 +136,23 @@ export function setAudioPlayMode(scene:any, entityInfo:any){
 
 export function disableAudioPlayMode(scene:any, entityInfo:any){
     let audioSource = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
-    if(audioSource){
-        AudioSource.getMutable(entityInfo.entity).playing = false
-    }
+    console.log('disabling audio play mode', audioSource)
+    let audio:any
+    // if(audioSource){
+        audio = AudioSource.getMutableOrNull(entityInfo.entity)
+        // console.log('audio soruce is', audio)
+        if(audio){
+            audio.playing = false
+        }
+    // }
 
     let audioStream = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
-    if(audioStream){
-        AudioStream.getMutable(entityInfo.entity).playing = false
-    }
+    // if(audioStream){
+        audio = AudioStream.getMutableOrNull(entityInfo.entity)
+        if(audio){
+            audio.playing = false
+        }
+    // }
 }
 
 // export function getAudio(scene:any, aid:string){
@@ -308,9 +320,14 @@ export async function createSounds(){
     catalogSoundEntity = engine.addEntity()
     AudioSource.create(catalogSoundEntity)
     AudioStream.create(catalogSoundEntity)
+    // AvatarAttach.create(catalogSoundEntity,
+    //     {avatarId: localUserId,
+    //         anchorPointId: AvatarAnchorPointType.AAPT_HEAD
+    //     }
+    // )
     Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
 
-    let catalog = [...items.values()].filter((it:any)=> !it.ugc)//
+    let catalog = [...items.values()].filter((it:any)=> !it.ugc)
 
     resources.audioClips.forEach((clip)=>{
         audioClips.set(clip.key, catalog.find((item:any)=> item.n === clip.name))
@@ -478,21 +495,38 @@ function loopTrack(){
 export function playAudioFile(catalogId?:string){
     let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
     if(itemData){
-        if(itemData.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
-            // AudioSource.createOrReplace(catalogSoundEntity, {
-            //     audioClipUrl:  "assets/" + itemData.id + ".mp3",
-            //     loop:false,
-            //     playing:true
-            // })
+        if(itemData.id !== CATALOG_IDS.AUDIO_STREAM){
+            console.log('not audio stream', itemData)
+
+            Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
+
+            // let clip = AudioSource.getMutableOrNull(catalogSoundEntity)
+            // if(!clip){
+
+            // }
+            // clip.playing = false
+            // clip.audioClipUrl = "assets/" + itemData.id + ".mp3"
+            // clip.playing = true
+            AudioSource.createOrReplace(catalogSoundEntity, {
+                audioClipUrl:  "assets/" + itemData.id + ".mp3",
+                loop:false,
+                playing:true,
+                volume:1
+            })
+            
+            // clip.volume = 10
+            // clip.playing = true
+
             // AudioSource.playSound(catalogSoundEntity, "asset/" + itemData.id + ".mp3")
             
-            AudioStream.createOrReplace(catalogSoundEntity, {
-                url: "assets/" + itemData.id + ".mp3",
-                playing:true,
-            })
+            // AudioStream.createOrReplace(catalogSoundEntity, {
+            //     url: "assets/" + itemData.id + ".mp3",
+            //     playing:true,
+            // })
             
         }else{
             console.log('trying to preview audio stream')
+            Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
             AudioStream.createOrReplace(catalogSoundEntity, {
                 url: "",
                 playing:true,
@@ -506,17 +540,17 @@ export function playAudioStream(){
 }
 
 export function stopAudioFile(catalogId?:string){
-    // let audio:any
-    // let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
-    // let entity = catalogId ? catalogSoundEntity : selectedItem.entity
+    let audio:any
+    let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
+    let entity = catalogId ? catalogSoundEntity : selectedItem.entity
 
-    // if(itemData){
-    //     if(itemData.id !== "e6991f31-4b1e-4c17-82c2-2e484f53a124"){
-    //         audio = AudioSource.getMutable(entity)
-    //     }else{
-    //         audio = AudioStream.getMutable(entity)
-    //     }
-    //     audio.playing = false
-    // }
-    AudioStream.getMutable(catalogSoundEntity).playing = false
+    if(itemData){
+        if(itemData.id !== CATALOG_IDS.AUDIO_STREAM){
+            audio = AudioSource.getMutable(entity)
+        }else{
+            audio = AudioStream.getMutable(entity)
+        }
+        audio.playing = false
+    }
+    // AudioStream.getMutable(catalogSoundEntity).playing = false
 }

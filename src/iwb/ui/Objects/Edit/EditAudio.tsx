@@ -247,6 +247,9 @@ export function EditAudio() {
                         onChange={(input) => {
                             updateVolume("volume", parseFloat(input))
                         }}
+                        onSubmit={(input) => {
+                            updateVolume("volume", parseFloat(input))
+                        }}
                         value={"" + getVolume()}
 
                     />
@@ -498,5 +501,12 @@ function getVolume(){
 }
 
 function updateVolume(type:string, value:any){
-    sendServerMessage(SERVER_MESSAGE_TYPES.UPDATE_ITEM_COMPONENT, {component:visibleComponent, action:"update", data:{aid:selectedItem.aid, sceneId:selectedItem.sceneId, type:type, value:value}})
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+        {
+            component:visibleComponent,
+            aid:selectedItem.aid,
+            sceneId:selectedItem.sceneId,
+            [type]:value
+        }
+    )
 }

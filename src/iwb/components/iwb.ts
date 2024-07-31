@@ -3,7 +3,7 @@
 import { engine } from "@dcl/sdk/ecs"
 import { PointersLoadedComponent, RealmEntityComponent } from "../helpers/Components"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
-import { addBuildModePointers, removeItem, resetEntityForBuildMode } from "../modes/Build"
+import { addBuildModePointers, confirmGrabItem, removeItem, resetEntityForBuildMode } from "../modes/Build"
 import { checkBillboardComponent } from "./Billboard"
 import { playerMode } from "./Config"
 import { checkCounterComponent } from "./Counter"
@@ -23,6 +23,8 @@ import { checkUIText } from "./UIText"
 import { checkVideoComponent } from "./Videos"
 import { updateAssetBuildVisibility } from "./Visibility"
 import { isLevelAsset } from "./Level"
+import { colyseusRoom } from "./Colyseus"
+import { localUserId } from "./Player"
 
 // export function checkIWBComponent(scene:any, entityInfo:any){
 //   let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
@@ -116,6 +118,15 @@ export async function iwbInfoListener(scene:any){
 
   scene[COMPONENT_TYPES.IWB_COMPONENT].onRemove((iwbInfo:any, aid:string)=>{
     console.log('removing iwb info', aid, iwbInfo)
+
+    let selected = false
+    colyseusRoom.state.players.forEach(async (player:any, address:string)=>{
+      if(player.selectedAsset && player.selectedAsset.assetId === aid && player.address === localUserId && !selected){
+        selected = true
+          await confirmGrabItem(scene, iwbInfo.entity, player.selectedAsset)
+      }
+    })
+    
     removeItem(iwbInfo.entity)
   })
 }
@@ -146,7 +157,7 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
 
   if(playerMode === SCENE_MODES.BUILD_MODE){
       resetEntityForBuildMode(scene, iwbInfo)
-  }
+  } 
 
   let fn = afterLoadActions.pop()
   if (fn) fn(scene.id, iwbInfo.entity)

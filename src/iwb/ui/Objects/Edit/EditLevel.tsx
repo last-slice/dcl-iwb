@@ -184,7 +184,7 @@ export function EditLevel() {
                     justifyContent: 'center',
                     width: '30%',
                     height: '100%',
-                    margin:{left:"2%"}
+                    margin:{left:"2%"}//
                 }}
             >
 
@@ -197,7 +197,7 @@ export function EditLevel() {
                 height: '10%',
                 margin:{bottom:"7%"}
             }}
-        uiText={{value:"Level Number", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"Level Number", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
             <UiEntity

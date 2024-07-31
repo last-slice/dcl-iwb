@@ -97,6 +97,30 @@ export let uiViews:any[] = [
         }
     },
     {
+        view:"Confirm_Delete_Grabbed",
+        props:{
+            label:"Delete Item",
+            text:"Are you sure you want to delete this item?",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Delete",
+                    func:()=>{
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
+    {
         view:"Clear Scene",
         props:{
             label:"Clear Scene",
@@ -274,5 +298,55 @@ export let uiViews:any[] = [
                 }
             ]
         }
-    }
+    },
+    {
+        view:"Upload_Assets",
+        props:{
+            label:"Upload Asset",
+            text:"To upload assets, please click on the link below to launch the Asset Uploader,",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Upload",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Delete_Game",
+        props:{
+            label:"Delete Game",
+            text:"This will remove all levels and entities attached to your game.",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Delete",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
 ]

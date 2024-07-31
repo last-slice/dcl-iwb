@@ -4,7 +4,7 @@ import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
 import { getStateComponentByAssetId, setState } from "./States"
-import { getTriggerEvents } from "./Triggers"
+import { actionQueue, getTriggerEvents } from "./Triggers"
 import { changeRealm, movePlayerTo, openExternalUrl, teleportTo, triggerEmote } from "~system/RestrictedActions"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
@@ -16,10 +16,12 @@ import { UiImages, uiImageDataUpdate } from "./UIImage"
 import { localPlayer } from "./Player"
 import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStartUI"
 import { loadLevelAssets } from "./Level"
-import { attemptGameEnd } from "./Game"
+import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 import { island } from "./Config"
 import { getRandomIntInclusive } from "../helpers/functions"
+import { removedEntities } from "./Scene"
+import { showDialogPanel } from "../ui/Objects/DialogPanel"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -58,7 +60,7 @@ export function actionListener(scene:any){
     })
 }
 
-function updateActions(scene:any, info:any, action:any){
+export function updateActions(scene:any, info:any, action:any){
     const actionEvents = getActionEvents(info.entity)
 
     actionEvents.on(action.id, ()=>{
@@ -89,7 +91,7 @@ function updateActions(scene:any, info:any, action:any){
                 break;
 
             case Actions.PLAY_SOUND:
-                handlePlaySound(info, action)
+                handlePlaySound(scene, info, action)
                 break;
 
             case Actions.STOP_SOUND:
@@ -255,6 +257,10 @@ function updateActions(scene:any, info:any, action:any){
                 handleRandomAction(scene, info, action)
                 break;
 
+            case Actions.SHOW_DIALOG:
+                handleShowDialog(scene, info, action)
+                break;
+
         }
     })
 }
@@ -275,6 +281,14 @@ export function handleStopAnimation(scene:any, entityInfo:any, action:any){
 
 export function handleRemoveEntity(scene:any, entityInfo:any, action:any){
     engine.removeEntity(entityInfo.entity)
+    if(!removedEntities.has(scene.id)){
+        removedEntities.set(scene.id, [])
+    }
+
+    let removed = removedEntities.get(scene.id)
+    let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
+    removed.push(iwbInfo)
+    console.log('removed items are ', removed)
 }
 
 export function handleShowText(scene:any, entityInfo:any, action:any, forceDelay?:number){
@@ -370,7 +384,7 @@ function handleSetNumber(scene:any, info:any, action:any){
         //single player
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
-        //if multiplayer, send to server
+        //if multiplayer, send to server//
         // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
     }
 }
@@ -389,25 +403,35 @@ function handleSubtractNumber(scene:any, info:any, action:any){
     }
 }
 
-function handlePlaySound(info:any, action:any){
-    // let audio = AudioSource.getMutableOrNull(info.entity)
-    // if(audio){
-    //     audio.loop = action.loop
-    //     audio.volume = action.volume ? action.volume : 1
-    //     audio.playing = true
-    // }else{
-    //     console.log('no audio file')
-    // }
+function handlePlaySound(scene:any, info:any, action:any){
+    let audio:any
+    let itemInfo:any 
+    itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(info.aid)
 
-    let audio = AudioStream.getMutableOrNull(info.entity)
-    console.log('audio is', audio)
-    if(audio){
-        // audio.loop = action.loop
-        audio.volume = action.volume ? action.volume : 1
-        audio.playing = true
-    }else{
-        console.log('no audio file')
+    if(itemInfo){
+        audio = AudioSource.getMutableOrNull(info.entity)
+        if(audio){
+            audio.loop = action.loop
+            audio.volume = itemInfo.volume
+            audio.playing = true
+        }else{
+            console.log('no audio file')
+        }
     }
+
+    itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(info.aid)
+    if(itemInfo){
+        audio = AudioStream.getMutableOrNull(info.entity)
+        console.log('audio is', audio)
+        if(audio){
+            // audio.loop = action.loop
+            audio.volume = itemInfo.volume
+            audio.playing = true
+        }else{
+            console.log('no audio file')
+        }
+    }
+
 }
 
 function handleStopSound(info:any){
@@ -482,7 +506,7 @@ function handleOpenLink(action:any){
     openExternalUrl({url: action.url})
 }
 
-function handleMovePlayer(scene:any, action:any){
+export function handleMovePlayer(scene:any, action:any){
     console.log('moving playerr', action)
     let newPosition = {...action}
     if(island === "world"){
@@ -669,10 +693,11 @@ function handleLoadLevel(scene:any, info:any, action:any){
     let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(info.aid)
     if(levelInfo){
         displayLoadingScreen(true, levelInfo)
-        
-        let sceneTransform = Transform.get(scene.parentEntity).position
-        let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
-        handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
+
+        scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((gameInfo:any, aid:string)=>{
+            movePlayerToLobby(scene, gameInfo)
+        })
+    
         loadLevelAssets(scene, info, action)
     }
 }
@@ -806,14 +831,19 @@ function handleStartTween(scene:any, info:any, action:any){
 
   // MOVE_ITEM
   function handleMoveItem(scene:any, info:any, action:any){
-    const transform = Transform.get(info.entity)
+    let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(info.aid)
+    // if(!transform){
+    //     return
+    // }
+
+    // const transform = Transform.get(info.entity)
     const { timer, ip, relative, x,y,z } = action
     const end = Vector3.create(x, y, z)
-    const endPosition = relative ? Vector3.add(transform.position, end) : end
+    const endPosition = relative ? Vector3.add(transform.p, end) : end
 
     let tween = Tween.createOrReplace(info.entity, {
         mode: Tween.Mode.Move({
-          start: transform.position,
+          start: transform.p,
           end: endPosition,
         }),
         duration: timer * 1000, // from secs to ms
@@ -822,6 +852,9 @@ function handleStartTween(scene:any, info:any, action:any){
 
     switch(action.tloop){
         case 0://nothing
+            utils.timers.setTimeout(()=>{
+                Tween.deleteFrom(info.entity)
+            }, timer * 1000)
             break;
 
         case 1://restart
@@ -933,6 +966,34 @@ function handleTeleportPlayer(scene:any, info:any, action:any){
         case 2:
             changeRealm({realm:action.url})
             break;
+    }    
+}
+
+function handleShowDialog(scene:any, info:any, action:any){
+    console.log('handling show dialog', info.aid, info, action)
+    let dialogInfo = scene[COMPONENT_TYPES.DIALOG_COMPONENT].get(info.aid)
+    console.log('dialog info', dialogInfo)
+    if(!dialogInfo){
+        return
     }
-    
+    showDialogPanel(true, {...dialogInfo})
+}
+
+export function runDialogAction(id:string){
+    let scene = localPlayer.activeScene
+    if(!scene){
+        return
+    }
+
+    scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+        if(actionComponent.actions && actionComponent.actions.length > 0){
+            let found = actionComponent.actions.find(($:any)=> $.id === id)
+            if(found){
+                let entityInfo = getEntity(scene, aid)
+                if(entityInfo){
+                    actionQueue.push({aid:aid, action:found, entity:entityInfo.entity})
+                }
+            }
+        }
+    })
 }

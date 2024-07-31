@@ -44,6 +44,7 @@ export enum SERVER_MESSAGE_TYPES {
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
     SCENE_ADD_ITEM = 'scene_add_item',
+    SCENE_DROPPED_GRABBED = 'scene_dropped_grabbed',
     SCENE_ADDED_NEW = "scene_added_new",
     SCENE_LOAD = 'scene_load',
     SCENE_UPDATE_ITEM = 'scene_update_item',
@@ -89,7 +90,9 @@ export enum SERVER_MESSAGE_TYPES {
     VERIFY_ACCESS = 'verify_access',
 
     //GAMING
-    CREATE_GAME_LOBBY = 'create_game_lobby'
+    CREATE_GAME_LOBBY = 'create_game_lobby',
+    HIT_OBJECT = 'hit_object',
+    SHOOT = 'shoot',
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -260,6 +263,7 @@ export interface SceneItem extends CatalogItemType{
 
 export interface SelectedItem {
     n:string
+    parent?:string
     mode:EDIT_MODES
     modifier: EDIT_MODIFIERS
     pFactor: number
@@ -387,15 +391,16 @@ export enum Actions {
     HIDE_TEXT = 'hide_text',
     START_DELAY = 'start_delay',
     STOP_DELAY = 'stop_delay',
-    START_LOOP = 'start_loop',
+    START_LOOP = 'start_loop',//
     STOP_LOOP = 'stop_loop',
     CLONE = 'clone',
     REMOVE = 'remove_entity',
     // SHOW_IMAGE = 'show_image',
     // HIDE_IMAGE = 'hide_image',
-    PLAY_ANIMATION = 'play_animation',
-    STOP_ANIMATION = 'stop_animation',
-    SHOW_DIALOG ='show_dialog',
+    PLAY_ANIMATION = 'animation_start',
+    STOP_ANIMATION = 'animation_stop',
+    SHOW_DIALOG ='dialog_show',
+    HIDE_DIALOG = 'dialog_hide',
     ENABLE_CLICK_AREA = 'enable_click_area',
     DISABLE_CLICK_AREA = 'disable_click_area',
     ENABLE_TRIGGER_AREA = 'enable_trigger_area',
@@ -405,16 +410,16 @@ export enum Actions {
     ADD_NUMBER = 'add_number',
     SET_NUMBER = 'set_number',
     SUBTRACT_NUMBER = 'subtract_number',
-    LOAD_LEVEL = 'load_level',
-    END_LEVEL = 'end_level',
-    COMPLETE_LEVEL = 'complete_level',
-    START_TIMER = 'start_timer',
+    LOAD_LEVEL = 'level_load',
+    END_LEVEL = 'level_lose',
+    COMPLETE_LEVEL = 'level_win',
+    START_TIMER = 'start_timer',//
     STOP_TIMER = 'stop_timer',
     LOCK_PLAYER = 'lock_player',
     UNLOCK_PLAYER = 'unlock_player',
     SET_POSITION = 'set_position',
     SET_ROTATION = 'set_rotation',
-    SET_SCALE = 'set_scale',
+    SET_SCALE = 'set_scale',//
     SET_STATE = 'set_state',
     MOVE_PLAYER = 'move_player',
     SHOW_NOTIFICATION = 'show_notification',
@@ -509,8 +514,8 @@ export let ENTITY_POINTER_LABELS:any[] = [
 ]
 
 export enum POINTER_EVENTS {
-    PET_DOWN = "On Down",
     PET_UP = "On Up",
+    PET_DOWN = "On Down",
     PET_HOVER_ENTER = "On Hover Enter",
     PET_HOVER_LEAVE = "ON Hover Leave"
 }
@@ -716,12 +721,13 @@ export enum SCENE_CATEGORIES {
 
 export enum CATALOG_IDS {
     WHITE_ARROW = "cb3a9e83-4b2d-4b3b-b9c1-2b636a94b36c",
-    BLANK_GRASS = 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb'
+    BLANK_GRASS = 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb',
+    AUDIO_STREAM = "e6991f31-4b1e-4c17-82c2-2e484f53a124"
 }
 
 export enum GAME_TYPES {
-    SOLO,
-    MULTIPLAYER,
+    SOLO = "SOLO",
+    MULTIPLAYER = "MULTIPLAYER",
 }
 
 export enum PLAYER_GAME_STATUSES {
@@ -730,4 +736,9 @@ export enum PLAYER_GAME_STATUSES {
     LOBBY = 'lobby',
     WAITING = 'waiting',
     ELIMINATED = 'eliminated'
+}
+
+export enum GAME_WEAPON_TYPES {
+    GUN = 'gun',
+    SWORD = 'sword'
 }

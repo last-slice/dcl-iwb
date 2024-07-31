@@ -11,6 +11,9 @@ import { displayCatalogPanel, showCatalogPanel } from "./Objects/CatalogPanel"
 import { hideAllPanels } from "./ui"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "./Objects/SceneInfoPanel"
 import { showNotification } from "./Objects/NotificationPanel"
+import { displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
+import { getView } from "./uiViews"
+import { openExternalUrl } from "~system/RestrictedActions"
 
 export let uiModes: any = {
     0://playmode
@@ -169,11 +172,11 @@ export let topTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
-            // if (isLocalPlayer(localUserId) && (!localPlayer.dclData.isGuest || resources.allowNoWeb3) && localPlayer.homeWorld) {
-            //     displayAssetUploadUI(true)
-            // } else {
-            //     displayNoWeb3(true)//
-            // }
+            if(localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)){
+                displaySkinnyVerticalPanel(true, getView("Upload_Assets"), undefined, ()=>{
+                    openExternalUrl({url:(resources.DEBUG ? resources.endpoints.toolsetTest : resources.endpoints.deploymentProd) + "/upload/" + localUserId + "/" + localPlayer.uploadToken})
+                })
+            }
         }
     },
     {
@@ -611,6 +614,30 @@ export let settingsIconData: any =
     }
 
 export let uiSizes: any = {
+    plusButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 718,
+        sourceLeft: 880,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    minusButton: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 718,
+        sourceLeft: 752,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
+    shiftButtonClick: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 907,
+        sourceLeft: 961,
+        sourceWidth: 60,
+        sourceHeight: 60
+    },
     heartIconRed: {
         atlasHeight: 1024,
         atlasWidth: 1024,

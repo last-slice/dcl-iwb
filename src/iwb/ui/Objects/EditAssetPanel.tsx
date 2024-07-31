@@ -63,7 +63,7 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             updateAssetAnimations()
             break;
         case COMPONENT_TYPES.DIALOG_COMPONENT:
-            updateDialog()
+            updateDialog(true)
             break;
         case COMPONENT_TYPES.LIVE_COMPONENT:
             updateLiveBouncerPositions()
@@ -200,8 +200,8 @@ export function createEditAssetPanel() {
                     // uiBackground={{color:Color4.Green()}}// 
                 >
 
-                    {/* save button */}
-                    <UiEntity
+                     {/* save button */}
+                     <UiEntity
                         uiTransform={{
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -217,7 +217,7 @@ export function createEditAssetPanel() {
                             },
                             uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                         }}
-                        uiText={{value: "Save", fontSize: sizeFont(20, 16)}}
+                        uiText={{value: "Close", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
                             setUIClicked(true)
                             saveItem()
@@ -261,8 +261,10 @@ export function createEditAssetPanel() {
                         }}
                     />
 
+            
+
                     {/* cancel button */}
-                    <UiEntity
+                    {/* <UiEntity
                         uiTransform={{
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -290,7 +292,7 @@ export function createEditAssetPanel() {
                         onMouseUp={()=>{
                             setUIClicked(false)
                         }}
-                    />
+                    /> */}
                 </UiEntity>
             </UiEntity>
         </UiEntity>
@@ -436,6 +438,13 @@ function getBackButtonLogic(){
             }
             else if(dialogView === "add"){
                 updateDialogView("main")
+            }
+            else if(dialogView === "addbutton"){
+                updateDialogView('edit')
+            }else if(dialogView === "edit"){
+                updateDialogView('main')
+            }else{
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             }
             break;
         case COMPONENT_TYPES.GAME_ITEM_COMPONENT:
@@ -881,7 +890,6 @@ function generateComponentViews() {
                 uiText={{value: "" + component.replace(/_/g, " "), fontSize: sizeFont(30, 20)}}
                 onMouseDown={() => {
                     setUIClicked(true)
-                    console.log('on clicked')
                     openEditComponent(component)
                 }}
                 onMouseUp={()=>{
@@ -921,13 +929,27 @@ function generateComponentViews() {
                     setUIClicked(true)
                     openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
 
-                    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
-                        {
-                            component:"Delete",
-                            aid:selectedItem.aid,
-                            sceneId:selectedItem.sceneId,
-                            type: component,
+                    if(component === COMPONENT_TYPES.GAME_COMPONENT){
+                        displaySkinnyVerticalPanel(true, getView("Delete_Game"), undefined, ()=>{
+                            sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+                                {
+                                    component:"Delete",
+                                    aid:selectedItem.aid,
+                                    sceneId:selectedItem.sceneId,
+                                    type: component,
+                                })
                         })
+                    }else{
+                        sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
+                            {
+                                component:"Delete",
+                                aid:selectedItem.aid,
+                                sceneId:selectedItem.sceneId,
+                                type: component,
+                            })
+                    }
+
+                    
                 }}
                 onMouseUp={()=>{
                     setUIClicked(false)
@@ -956,7 +978,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.GAME_COMPONENT,
         COMPONENT_TYPES.LEVEL_COMPONENT,
         COMPONENT_TYPES.LIVE_COMPONENT,
-        COMPONENT_TYPES.GAME_ITEM_COMPONENT
+        COMPONENT_TYPES.GAME_ITEM_COMPONENT,
+        COMPONENT_TYPES.DIALOG_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
@@ -1033,6 +1056,7 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.UI_IMAGE_COMPONENT,
             COMPONENT_TYPES.CLICK_AREA_COMPONENT,
             COMPONENT_TYPES.PARENTING_COMPONENT,
+            COMPONENT_TYPES.DIALOG_COMPONENT
         ]
 
         let components:any[] = []

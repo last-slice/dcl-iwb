@@ -174,7 +174,7 @@ export function createCatalogInfoPanel() {
                                 }
                             }
                         }}
-                        uiText={{value: "Place Centered", color: Color4.White(), fontSize: sizeFont(25, 20)}}
+                        uiText={{textWrap:'nowrap', value: "Place Centered", color: Color4.White(), fontSize: sizeFont(25, 20)}}
                     />
 
                     <UiEntity

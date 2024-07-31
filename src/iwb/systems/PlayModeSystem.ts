@@ -3,7 +3,11 @@ import { log } from "../helpers/functions"
 import { handleInputTriggerForEntity } from "../components/Triggers"
 import { uiInput } from "../ui/ui"
 import { setButtonState } from "./InputSystem"
-import { showingTutorial, stopTutorialVideo, updateShowingTutorial } from "../components/Player"
+import { localUserId, showingTutorial, stopTutorialVideo, updateShowingTutorial } from "../components/Player"
+import { createBeam, startAttackCooldown } from "../components/Game"
+import { GAME_WEAPON_TYPES } from "../helpers/types"
+import { colyseusRoom } from "../components/Colyseus"
+import { advanceDialog, showingDialogPanel } from "../ui/Objects/DialogPanel"
 
 export let added = false
 
@@ -45,13 +49,31 @@ export function PlayModeInputSystem(dt: number) {
         setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
         console.log('ui input', uiInput)
-        if(showingTutorial && !uiInput){
-            stopTutorialVideo()
+
+        let player = colyseusRoom.state.players.get(localUserId)
+        if(!player){
             return
         }
-        if (result && !uiInput) {
-            if (result.hit && result.hit.entityId) {
-                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_DOWN)
+
+        // if(showingDialogPanel){
+        //     advanceDialog()
+        // }
+
+        if(player.hasWeaponEquipped){
+            if(!player.inCooldown && player.weaponType === GAME_WEAPON_TYPES.GUN){
+                createBeam(dt)
+                startAttackCooldown(localUserId)
+            }
+        }
+        else{
+            if(showingTutorial && !uiInput){
+                stopTutorialVideo()
+                return
+            }
+            if (result && !uiInput) {
+                if (result.hit && result.hit.entityId) {
+                    handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_DOWN)
+                }
             }
         }
     }

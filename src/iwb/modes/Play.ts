@@ -1,6 +1,6 @@
 import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "../components/Colyseus"
-import { getEntity } from "../components/IWB"
+import { createAsset, createEntity, getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
 import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, Triggers } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
@@ -26,23 +26,35 @@ import { setUIClicked } from "../ui/ui"
 import { localPlayer } from "../components/Player"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { disableLivePanel, setLivePanel } from "../components/Live"
+import { removedEntities } from "../components/Scene"
+import { removeItem } from "./Build"
+import { getActionEvents, updateActions } from "../components/Actions"
+import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
+
+export function updateDisabledEntities(value:boolean){
+    disabledEntities = value
+}
 
 export function updatePlayModeReset(value: boolean) {
     playModeReset = value
 }
 
 export async function disableSceneEntities(sceneId:any) {
-    if (!disabledEntities) {
-        console.log('disabling entities')
-        stopAllIntervals()
-        stopAllTimeouts()
+    // if (!disabledEntities) {
+        // console.log('disabling entities')
+        // stopAllIntervals()
+        // stopAllTimeouts()
 
         let scene = colyseusRoom.state.scenes.get(sceneId)
-        if(scene){
+        if(scene && !scene.checkDisabled && scene.loaded){
+            console.log('disabling scene entities for', sceneId)
+            stopAllTimeouts()
             stopAllIntervals()
+            resetDialog()
+            showDialogPanel(false)
 
             checkGameplay(scene)
 
@@ -88,22 +100,30 @@ export async function disableSceneEntities(sceneId:any) {
                     }
                 }
             })
+            scene.checkDisabled = true
+            scene.checkEnabled = false
+
+            disableDelayedActionTimers()
+            disablePlayUI()
+            disabledEntities = true
         }
 
-        disableDelayedActionTimers()
-        disablePlayUI()
-        disabledEntities = true
-    }
+        // disableDelayedActionTimers()
+        // disablePlayUI()
+        // disabledEntities = true
+    // }
 }
 
-export function enableSceneEntities(sceneId: string) {
+export async function enableSceneEntities(sceneId: string) {
     let scene = colyseusRoom.state.scenes.get(sceneId)
-    if(scene){
-
+    if(scene && !scene.checkEnabled){
+        console.log('enable scene entities', sceneId)
         setUIClicked(false)
         updatePlayModeReset(true)
 
         abortGameTermination(scene)
+
+        await loadRemovedItems(scene)
 
         // findSceneEntryTrigger(scene)//
 
@@ -170,7 +190,8 @@ export function enableSceneEntities(sceneId: string) {
     //     }
     //     disabledEntities = false
     // }
-    disabledEntities = false
+    scene.checkEnabled = true
+    scene.checkDisabled = false
 }
 
 export function disableEntityForPlayMode(scene:any, entityInfo:any){
@@ -252,4 +273,30 @@ export function resetTween(scene:any, entityInfo:any){
     // tweenData ? tweenData.playing = false : null
     TweenSequence.deleteFrom(entityInfo.entity)
     Tween.deleteFrom(entityInfo.entity)
+}
+
+async function loadRemovedItems(scene:any){
+    let removedItems:any[] = removedEntities.get(scene.id)
+    console.log('removed items are ', removedItems)
+    if(removedItems && removedItems.length > 0){
+        for(let i = 0; i < removedItems.length; i++){
+            let removedInfo = removedItems[i]
+            let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(removedInfo.aid)
+            console.log('iwb info is', iwbInfo, iwbInfo.aid, iwbInfo.entity)
+            await createEntity(iwbInfo)
+            console.log('entity is now', iwbInfo.entity)
+            createAsset(scene, iwbInfo)
+
+            let actions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(iwbInfo.aid)
+            if(actions && actions.actions && actions.actions.length > 0){
+                const actionEvents = getActionEvents(iwbInfo.entity)
+                actionEvents.off("*", ()=>{})
+
+                actions.actions.forEach((action:any)=>{
+                    updateActions(scene, iwbInfo, action)
+                })
+            }
+        }
+        removedEntities.delete(scene.id)
+    }
 }

@@ -17,12 +17,13 @@ import { displayHover } from "../ui/Objects/ContextMenu"
 import { clearShowTexts } from "../ui/Objects/ShowText"
 import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
-import { PlayTriggerSystem, disableTriggers } from "./Triggers"
+import { PlayTriggerSystem, addPlayTriggerSystem, disableTriggers, removePlayTriggerSystem } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
 import { isLevelAsset } from "./Level"
 import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
 import { getCenterOfParcels } from "../helpers/build"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
+import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -161,7 +162,6 @@ export function updateTutorialCID(info:any){
 export function setPlayerMode(mode:SCENE_MODES){
     playerMode = mode
 
-    console.log('setting player mode', playerMode)
     displayGrabContextMenu(false)
 
     for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
@@ -187,12 +187,36 @@ export function setPlayerMode(mode:SCENE_MODES){
     // hideAllOtherPointers()//
     hideAllPanels()
 
+    if(playerMode === SCENE_MODES.BUILD_MODE){
+        settings.triggerDebug ? utils.triggers.enableDebugDraw(true) :null 
+        stopAllIntervals()
+        resetDialog()
+        showDialogPanel(false)
+        clearShowTexts()
+        removePlayModSystem()
+        addInputSystem()
+        updatePlayModeReset(false)
+        removePlayTriggerSystem()
+        displayLiveControl(false)
+    }else if(playerMode === SCENE_MODES.PLAYMODE){
+        // utils.triggers.enableDebugDraw(false)
+        hideAllPanels()
+        displayHover(false)
+        removeInputSystem()
+        addPlayModeSystem()
+        addPlayTriggerSystem()
+    }else{
+        utils.triggers.enableDebugDraw(false)
+        removeInputSystem()
+        removePlayModSystem()
+    }
+
     colyseusRoom.state.scenes.forEach((scene:any)=>{
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
             if(i > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
-                    if(playerMode === SCENE_MODES.BUILD_MODE){
+                    if(mode === SCENE_MODES.BUILD_MODE){
                         if(isLevelAsset(scene, item.aid)){
                             createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(item.aid))
                         }else{
@@ -212,28 +236,6 @@ export function setPlayerMode(mode:SCENE_MODES){
     })
 
     updatePlayModeReset(true)
-
-    if(playerMode === SCENE_MODES.BUILD_MODE){
-        settings.triggerDebug ? utils.triggers.enableDebugDraw(true) :null 
-        stopAllIntervals()
-        clearShowTexts()
-        removePlayModSystem()
-        addInputSystem()
-        updatePlayModeReset(false)
-        engine.removeSystem(PlayTriggerSystem)
-        displayLiveControl(false)
-    }else if(playerMode === SCENE_MODES.PLAYMODE){
-        // utils.triggers.enableDebugDraw(false)
-        hideAllPanels()
-        displayHover(false)
-        removeInputSystem()
-        addPlayModeSystem()
-        engine.addSystem(PlayTriggerSystem)
-    }else{
-        utils.triggers.enableDebugDraw(false)
-        removeInputSystem()
-        removePlayModSystem()
-    }
 }
 
 export function addLocalWorldPermissionsUser(user:string){

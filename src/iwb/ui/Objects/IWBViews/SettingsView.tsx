@@ -182,7 +182,7 @@ function generateSettingsToggles(){
             height: '100%',
             margin:{left:"1%",},
         }}
-        uiText={{value: setting.label, color:Color4.White(), fontSize:sizeFont(30,20)}}
+        uiText={{textWrap:'nowrap', value: setting.label, color:Color4.White(), fontSize:sizeFont(30,20)}}
         />
 
         </UiEntity>

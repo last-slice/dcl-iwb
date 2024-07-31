@@ -91,7 +91,7 @@ export function createCustomContextMenu(){
       flexDirection:'column',
       display: contextEvents[0] ? "flex" : "none"
     }}
-        uiText={{value:"" + (contextEvents[0] && getButtonText(contextEvents[0].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"" + (contextEvents[0] && getButtonText(contextEvents[0].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
       />
 
       </UiEntity>
@@ -136,7 +136,7 @@ export function createCustomContextMenu(){
       flexDirection:'column',
       display: contextEvents[1] ? "flex" : "none"
     }}
-        uiText={{value:"" + (contextEvents[1] && getButtonText(contextEvents[1].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"" + (contextEvents[1] && getButtonText(contextEvents[1].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
       />
       
 
@@ -194,7 +194,7 @@ export function createCustomContextMenu(){
       flexDirection:'column',
       display: contextEvents[2] ? "flex" : "none"
     }}
-        uiText={{value:"" + (contextEvents[2] && getButtonText(contextEvents[2].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"" + (contextEvents[2] && getButtonText(contextEvents[2].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
       />
 
       </UiEntity>
@@ -241,7 +241,7 @@ export function createCustomContextMenu(){
       flexDirection:'column',
       display: contextEvents[3] ? "flex" : "none"
     }}
-        uiText={{value:"" + (contextEvents[3] && getButtonText(contextEvents[3].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"" + (contextEvents[3] && getButtonText(contextEvents[3].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
       />
       
 
@@ -300,7 +300,7 @@ export function createCustomContextMenu(){
       flexDirection:'column',
       display: contextEvents[4] ? "flex" : "none"
     }}
-        uiText={{value:"" + (contextEvents[4] && getButtonText(contextEvents[4].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"" + (contextEvents[4] && getButtonText(contextEvents[4].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
       />
 
       </UiEntity>
@@ -347,7 +347,7 @@ export function createCustomContextMenu(){
       flexDirection:'column',
       display: contextEvents[5] ? "flex" : "none"
     }}
-        uiText={{value:"" + (contextEvents[5] && getButtonText(contextEvents[5].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"" + (contextEvents[5] && getButtonText(contextEvents[5].eventInfo)), fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
       />
       
 
@@ -457,5 +457,8 @@ export function getButton(eventInfo:any){
 
       case InputAction.IA_SECONDARY:
         return getImageAtlasMapping(uiSizes.fButtonClick)
+
+      case InputAction.IA_WALK:
+        return getImageAtlasMapping(uiSizes.shiftButtonClick)
   }
 }

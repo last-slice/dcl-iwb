@@ -12,7 +12,7 @@ import { localUserId, localPlayer } from "./Player"
 import { transformListener } from "./Transform"
 import { getCenterOfParcels } from "../helpers/build"
 import { meshListener } from "./Meshes"
-import { disableSceneEntities, enableSceneEntities } from "../modes/Play"
+import { disableSceneEntities, enableSceneEntities, updateDisabledEntities } from "../modes/Play"
 import { playModeReset } from "../modes/Play"
 import { iwbInfoListener } from "./IWB"
 import { nameListener } from "./Name"
@@ -39,6 +39,9 @@ export let realmActions: any[] = []
 
 export let buildModeCheckedAssets: any[] = []
 export let playModeCheckedAssets: any[] = []
+export let pendingSceneLoad:any[] = []
+export const afterLoadActions: Function[] = []
+export let removedEntities:Map<string, any> = new Map()
 export let lastScene: any
 
 
@@ -46,25 +49,27 @@ export let scenesLoaded: boolean = false
 export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
-export const afterLoadActions: Function[] = []
+
 
 export function isPrivateScene(scene:any){
     return scene.priv
 }
 
-export async function addScene(scene:any){//
+export async function addScene(scene:any, loadPending?:boolean){
     if(scene.e){
-        if((isPrivateScene(scene) && (localPlayer.hasWorldPermissions || localPlayer.homeWorld)) || !isPrivateScene(scene)){
+        if(isPrivateScene(scene) && loadPending === undefined){
+            pendingSceneLoad.push(scene)
+            scenesLoadedCount++
+            checkAllScenesLoaded()
+        }
+        else{
             if(!isGCScene()){
                 deleteCreationEntities(localUserId)
                 await removeEmptyParcels(scene.pcls)
                 refreshMap()
             }
             await loadScene(scene)
-            scenesLoadedCount++
-            checkAllScenesLoaded()
-        }
-        else{
+            updateDisabledEntities(true)
             scenesLoadedCount++
             checkAllScenesLoaded()
         }
@@ -83,44 +88,45 @@ export function enablePrivateModeForScene(scene:any){
 }
 
 export async function loadScene(scene:any) {
-    if (scene.bps.includes(localUserId)) {
-        localPlayer.buildingAllowed = true
-        localPlayer.canBuild = true
-    }
-
     await loadSceneBoundaries(scene)
     loadSceneComponents(scene)
+
+    if (scene.bps.includes(localUserId)) {
+        console.log('local player can build')
+        localPlayer.canBuild = true
+    }
 }
 
 async function loadSceneComponents(scene:any){
     scene.components = []
 
-    // await addParenting(scene)//
+    await levelListener(scene)
+    await iwbInfoListener(scene)
+    await parentingListener(scene)
+    
+    await gltfListener(scene)
+    await visibilityListener(scene)
+    await transformListener(scene)
+    await meshListener(scene)
+    await nameListener(scene)
+    await soundsListener(scene)
+    await textShapeListener(scene)
+    await nftShapeListener(scene)
+    await videoListener(scene)
+    await textureListener(scene)
+    await counterListener(scene)
+    await actionListener(scene)
+    await triggerListener(scene)
+    await pointerListener(scene)
+    await stateListener(scene)
+    await uiTextListener(scene)
+    await billboardListener(scene)
+    await materialListener(scene)
+    await gameListener(scene)
 
-    levelListener(scene)
-    iwbInfoListener(scene)
-    parentingListener(scene)
-    
-    
-    gltfListener(scene)
-    visibilityListener(scene)
-    transformListener(scene)
-    meshListener(scene)
-    nameListener(scene)
-    soundsListener(scene)
-    textShapeListener(scene)
-    nftShapeListener(scene)
-    videoListener(scene)
-    textureListener(scene)
-    counterListener(scene)
-    actionListener(scene)
-    triggerListener(scene)
-    pointerListener(scene)
-    stateListener(scene)
-    uiTextListener(scene)
-    billboardListener(scene)
-    materialListener(scene)
-    gameListener(scene)
+    scene.loaded = true
+    console.log('scene loaded', scene.id)
+    await disableSceneEntities(scene.id)
 
     //todo
     //we might not need these since these are only metadata changes and can be pulled auto from colyseus room state
@@ -311,9 +317,9 @@ export async function checkScenePermissions() {
     }
 
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
+        console.log('in build mode')
         playModeCheckedAssets.length = 0
     } else {
-
         if (playModeReset) {
             if (activeScene) {
                 // console.log('active scene is', activeScene)

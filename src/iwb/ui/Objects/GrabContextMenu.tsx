@@ -2,7 +2,7 @@ import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
 import { InputAction, PointerEventType, Transform } from '@dcl/sdk/ecs'
 import resources from '../../helpers/resources'
-import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
+import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { grabbedModifierType } from '../../systems/GrabChangeSystems'
 import { selectedItem } from '../../modes/Build'
@@ -38,23 +38,75 @@ export function createGrabContextMenu(){
       uvs:getImageAtlasMapping(uiSizes.smallPill)
     }}
   >
-
-    {/* context row 1 */}
-        <UiEntity
+        {/* context event 1 */}
+  <UiEntity
     uiTransform={{
-      width: '90%',
-      height: '15%',
-      justifyContent:'center',
+      width: '80%',
+      height: '40%',
+      alignContent:'flex-start',
+      justifyContent:'flex-start',
       flexDirection:'row',
       margin:{top:"1%", bottom:"1%"},
     }}
-    uiText={{fontSize:sizeFont(20,15), value:"Shift: " + (grabbedModifierType === 0 ? "Position" : grabbedModifierType === 1 ? "Rotation" : "Scale")}}
+    // uiBackground={{color:Color4.Green()}}
+      >
+
+<UiEntity
+    uiTransform={{
+      width: '30%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    >
+
+    {/* button click image */}
+    <UiEntity
+    uiTransform={{
+      width: calculateSquareImageDimensions(5).width,
+      height:calculateSquareImageDimensions(10).height,
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    uiBackground={{
+      texture:{
+          src: resources.textures.atlas2
+      },
+      textureMode: 'stretch',
+      uvs: getButton({button:InputAction.IA_WALK})
+    }}
       />
+  </UiEntity>
+
+      <UiEntity
+    uiTransform={{
+      width: '70%',
+      height: '100%',
+      justifyContent:'center',
+      flexDirection:'column',
+    }}
+    >
+
+    {/* click text */}
+  <UiEntity
+      uiTransform={{
+        width: '100%',
+        height: '100%',
+        justifyContent:'center',
+        flexDirection:'column',
+      }}
+      
+          uiText={{value:"" + (grabbedModifierType === 0 ? "Position" : grabbedModifierType === 1 ? "Rotation" : "Scale"), textWrap:'nowrap', fontSize:sizeFont(25,15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+      </UiEntity>
+
+      </UiEntity>
 
 <UiEntity
     uiTransform={{
       width: '80%',
-      height: '35%',
+      height: '40%',
       alignContent:'flex-start',
       justifyContent:'flex-start',
       flexDirection:'row',

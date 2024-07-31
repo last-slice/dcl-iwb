@@ -30,6 +30,7 @@ import { createGrabContextMenu } from './Objects/GrabContextMenu'
 import { createEndGameButton, createGameStartUI, createLoadingScreen } from './Objects/GameStartUI'
 import { createLiveUI } from './Objects/LiveShowPanel'
 import { createGameLobbyPanel } from './Objects/GameLobby'
+import { createDialogPanel } from './Objects/DialogPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -66,6 +67,7 @@ const uiComponent:any = () => [
   createLoadingScreen(),
   createLiveUI(),
   createGameLobbyPanel(),
+  createDialogPanel(),
   // createAdvancedEditPanel(),
 ]
 

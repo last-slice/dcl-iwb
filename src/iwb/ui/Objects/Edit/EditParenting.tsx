@@ -5,7 +5,7 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { log } from '../../../helpers/functions'
 import resources, { colors, colorsLabels } from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { cancelEditingItem, selectedItem } from '../../../modes/Build'
 import { openEditComponent, visibleComponent } from '../EditAssetPanel'
 import { generateButtons, setUIClicked } from '../../ui'
@@ -15,6 +15,7 @@ import { Transform, engine } from '@dcl/sdk/ecs'
 import { getWorldPosition, getWorldRotation } from '@dcl-sdk/utils'
 import { localPlayer } from '../../../components/Player'
 import { getEntity } from '../../../components/IWB'
+import { showNotification } from '../NotificationPanel'
 
 ///parenting
 let parentIndex:number = 0
@@ -148,6 +149,7 @@ export function EditParenting(){
                     onMouseDown={() => {
                         setUIClicked(true)
                         update("edit", {parent: parentIndex})
+                        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Parent updated!", animate:{enabled:true, return:true, time:3}})
                     }}
                     onMouseUp={()=>{
                         setUIClicked(false)
