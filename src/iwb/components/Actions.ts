@@ -4,12 +4,12 @@ import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
 import { getStateComponentByAssetId, setState } from "./States"
-import { actionQueue, getTriggerEvents } from "./Triggers"
+import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers"
 import { changeRealm, movePlayerTo, openExternalUrl, teleportTo, triggerEmote } from "~system/RestrictedActions"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { getEntity } from "./IWB"
-import { startInterval, startTimeout, stopInterval } from "./Timer"
+import { startInterval, startTimeout, stopInterval, stopTimeout } from "./Timer"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
@@ -64,7 +64,7 @@ export function updateActions(scene:any, info:any, action:any){
     const actionEvents = getActionEvents(info.entity)
 
     actionEvents.on(action.id, ()=>{
-        console.log('action received', action)
+        // console.log('action received', action)
         switch(action.type){
             case Actions.SHOW_TEXT:
                 handleShowText(scene, info, action)
@@ -261,6 +261,33 @@ export function updateActions(scene:any, info:any, action:any){
                 handleShowDialog(scene, info, action)
                 break;
 
+            case Actions.HIDE_DIALOG:
+                handleHideDialog(scene, info, action)
+                break;
+
+            case Actions.START_DELAY:
+                handleStartDelay(scene, info, action)
+                break;
+
+            case Actions.STOP_DELAY:
+                handleStopDelay(scene, info, action)
+                break;
+
+            case Actions.END_LEVEL:
+                handleEndLevel(scene, info, action)
+                break;
+
+             case Actions.LOSE_LEVEL:
+                handleLoseLevel(scene, info, action)
+                break;
+
+            case Actions.COMPLETE_LEVEL:
+                handleWinLevel(scene, info, action)
+                break;
+
+             case Actions.PLAY_PLAYLIST:
+                handlePlayPlaylist(scene, info, action)
+                break;
         }
     })
 }
@@ -292,7 +319,7 @@ export function handleRemoveEntity(scene:any, entityInfo:any, action:any){
 }
 
 export function handleShowText(scene:any, entityInfo:any, action:any, forceDelay?:number){
-    // addShowText(action)
+    // addShowText(action)//
 
     // if(forceDelay){
     //     startTimeout(entity, Actions.HIDE_TEXT, forceDelay, () =>
@@ -355,8 +382,9 @@ function handleSetState(scene:any, info:any, action:any){
     if(state){
         setState(state, action.state)
         uiDataUpdate(scene, info)
-        const triggerEvents = getTriggerEvents(info.entity)
-        triggerEvents.emit(Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
+        runGlobalTrigger(scene, Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
+        // const triggerEvents = getTriggerEvents(info.entity)
+        // triggerEvents.emit(Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
     }
 }
 
@@ -375,16 +403,19 @@ function handleAddNumber(scene:any, info:any, action:any){
     }
 }
 
-function handleSetNumber(scene:any, info:any, action:any){
+export function handleSetNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
+    console.log('counter is', counter)
     if(counter){
         setCounter(counter, action.value)
         uiDataUpdate(scene, info)
 
+        runGlobalTrigger(scene, Triggers.ON_COUNTER_CHANGE, {entity:info.entity, input:0, pointer:0})
+
         //single player
-        const triggerEvents = getTriggerEvents(info.entity)
-        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
-        //if multiplayer, send to server//
+        // const triggerEvents = getTriggerEvents(info.entity)
+        // triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
+        //if multiplayer, send to server
         // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
     }
 }
@@ -394,9 +425,11 @@ function handleSubtractNumber(scene:any, info:any, action:any){
     if(counter){
         updateCounter(counter, (-1 * action.value))
         uiDataUpdate(scene, info)
+
+        runGlobalTrigger(scene, Triggers.ON_COUNTER_CHANGE, {entity:info.entity, input:0, pointer:0})
         //single player
-        const triggerEvents = getTriggerEvents(info.entity)
-        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
+        // const triggerEvents = getTriggerEvents(info.entity)
+        // triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {entity:info.entity, input:0, pointer:0})
 
         //if multiplayer, send to server
         // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
@@ -476,6 +509,8 @@ function handleStopVideo(scene:any, info:any, action:any){
 function handleSetVisibility(info:any, action:any){
     let {visible, vMask, iMask} = action
 
+    console.log(visible, vMask, iMask)
+
     const gltf = GltfContainer.getMutableOrNull(info.entity)
     const meshCollider = MeshCollider.getMutableOrNull(info.entity)
 
@@ -486,20 +521,23 @@ function handleSetVisibility(info:any, action:any){
     }
 
     if (vMask !== undefined) {
+        console.log(Object.values(COLLIDER_LAYERS).filter($=> typeof $ === 'number'))
       if (gltf) {
-        gltf.visibleMeshesCollisionMask = vMask === 3 ? ColliderLayer.CL_POINTER | ColliderLayer.CL_PHYSICS : parseInt(Object.values(COLLIDER_LAYERS)[vMask].toString())
+        gltf.visibleMeshesCollisionMask = vMask === 3 ? ColliderLayer.CL_POINTER | ColliderLayer.CL_PHYSICS : Object.values(COLLIDER_LAYERS).filter($=> typeof $ === 'number')[vMask]
       } else if (meshCollider) {
         if(vMask !== 3){
-            meshCollider.collisionMask =  parseInt(Object.values(COLLIDER_LAYERS)[vMask].toString())
+            meshCollider.collisionMask = Object.values(COLLIDER_LAYERS).filter($=> typeof $ === 'number')[vMask]
         }
       }
     }
 
     if (iMask !== undefined) {
         if (gltf) {
-          gltf.invisibleMeshesCollisionMask = iMask === 3 ? ColliderLayer.CL_POINTER | ColliderLayer.CL_PHYSICS : parseInt(Object.values(COLLIDER_LAYERS)[iMask].toString())
+          gltf.invisibleMeshesCollisionMask = iMask === 3 ? ColliderLayer.CL_POINTER | ColliderLayer.CL_PHYSICS : Object.values(COLLIDER_LAYERS).filter($=> typeof $ === 'number')[iMask]
         }
     }
+
+    console.log('glft is', gltf)
 }
 
 function handleOpenLink(action:any){
@@ -620,13 +658,24 @@ function handleDisableTriggerArea(info:any){
 }
 
 function handleGiveReward(scene:any, info:any, action:any){
-    // console.log('give user reward', action, actionId)//
-    // showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Claiming Item...", animate:{enabled:true, return:false, time:7}})
-    // sendServerMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
+    let rewardInfo = scene[COMPONENT_TYPES.REWARD_COMPONENT].get(info.aid)
+    if(!rewardInfo){
+        return
+    }
+
+    if(rewardInfo.not){
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Claiming Item...", animate:{enabled:true, return:false, time:5}})
+    }
+
+    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {
+        sceneId:"" + localPlayer.activeScene?.id, 
+        aid:info.aid, 
+        type:action.type
+    })
 }
 
 function handleVerifyAccess(scene:any, info:any, action:any){
-    // sendServerMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})
+    // sendServerMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})//
 }
 
 function handleBatchAction(scene:any, info:any, action:any){
@@ -669,23 +718,37 @@ function handleAttemptGame(scene:any, info:any, action:any){
     if(!localPlayer.playingGame){
         let game:any = {...scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)}
         game.entity = info.entity
-        displayGameStartUI(true, game)//
+        displayGameStartUI(true, game)
     }
+}
+
+function handleStartDelay(scene:any, info:any, action:any){
+    // console.log("delay actions are", action)
+    const actionEvents = getActionEvents(info.entity)
+    action.actions && action.actions.forEach((actionId:any)=>{
+        startTimeout(info.entity, actionId, action.timer, () => {
+            actionEvents.emit(actionId, getActionById(scene, info.aid, actionId))
+          })
+    })
+}
+
+function handleStopDelay(scene:any, info:any, action:any){
+    stopTimeout(info.entity, action)
 }
 
 function handleStartLoop(scene:any, info:any, action:any){
     const actionEvents = getActionEvents(info.entity)
-
     console.log("loop actions are", action)
     action.actions && action.actions.forEach((actionId:any)=>{
-        startInterval(info.entity, actionId, action.timer, () => {
-            console.log("interval action", actionId)
+        startInterval(info.entity, info.aid, actionId, action.timer, scene.id, () => {
+            // console.log("interval action", actionId)
             actionEvents.emit(actionId, getActionById(scene, info.aid, actionId))
           })
     })
 }
 
 function handleStopLoop(scene:any, info:any, action:any){
+    console.log("stopping loop", action.id)
     stopInterval(info.entity, action.id)
 }
 
@@ -730,7 +793,7 @@ function handleLockPlayer(scene:any, info:any, action:any){
     Transform.create(back, {position: Vector3.create(0, 0, -0.5), scale:Vector3.create(1,100,1), parent:lockbox})
 }
 
-function handleUnlockPlayer(scene:any, info:any, action:any){
+export function handleUnlockPlayer(scene:any, info:any, action:any){
     engine.removeEntityWithChildren(lockbox)
 }
 
@@ -979,10 +1042,15 @@ function handleShowDialog(scene:any, info:any, action:any){
     showDialogPanel(true, {...dialogInfo})
 }
 
+function handleHideDialog(scene:any, info:any, action:any){
+    console.log('handling hide dialog', info.aid, info, action)
+    showDialogPanel(false)
+}
+
 export function runDialogAction(id:string){
     let scene = localPlayer.activeScene
     if(!scene){
-        return
+        return//
     }
 
     scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
@@ -996,4 +1064,38 @@ export function runDialogAction(id:string){
             }
         }
     })
+}
+
+function handleEndLevel(scene:any, info:any, action:any){
+    runGlobalTrigger(scene, Triggers.ON_LEVEL_END, {input:0, pointer:0, entity:0})
+}
+
+function handleLoseLevel(scene:any, info:any, action:any){
+    console.log('handling lose level', )
+    runGlobalTrigger(scene, Triggers.ON_LEVEL_LOSE, {input:0, pointer:0, entity:0})
+}
+
+function handleWinLevel(scene:any, info:any, action:any){
+    console.log('handling win level', )
+    runGlobalTrigger(scene, Triggers.ON_LEVEL_COMPLETE, {input:0, pointer:0, entity:0})
+}
+
+export function handlePlayPlaylist(scene:any, info:any, action:any){
+    console.log('handling playlist', info, action)
+    let entityInfo = getEntity(scene, info.aid)
+    if(!entityInfo){
+        return
+    }
+    let itemInfo = scene[COMPONENT_TYPES.PLAYLIST_COMPONENT].get(info.aid)
+    if(!itemInfo){
+        return
+    }
+
+    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION,
+        {
+            sceneId:scene.id,
+            type:action.type,
+            playlistAid:info.aid,
+        }
+    )
 }

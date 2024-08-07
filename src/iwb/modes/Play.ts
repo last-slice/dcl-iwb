@@ -2,7 +2,7 @@ import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContaine
 import { colyseusRoom } from "../components/Colyseus"
 import { createAsset, createEntity, getEntity } from "../components/IWB"
 import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
-import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, Triggers } from "../helpers/types"
+import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, Triggers } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
 import { setGLTFPlayMode } from "../components/Gltf"
@@ -28,7 +28,7 @@ import { showNotification } from "../ui/Objects/NotificationPanel"
 import { disableLivePanel, setLivePanel } from "../components/Live"
 import { removedEntities } from "../components/Scene"
 import { removeItem } from "./Build"
-import { getActionEvents, updateActions } from "../components/Actions"
+import { getActionEvents, handleUnlockPlayer, updateActions } from "../components/Actions"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 
 export let disabledEntities: boolean = false
@@ -55,6 +55,7 @@ export async function disableSceneEntities(sceneId:any) {
             stopAllIntervals()
             resetDialog()
             showDialogPanel(false)
+            handleUnlockPlayer(null, null, null)
 
             checkGameplay(scene)
 
@@ -142,20 +143,7 @@ export async function enableSceneEntities(sceneId: string) {
                     //         disableEntityForPlayMode(scene, entityInfo)
                     //         updateAssetBuildVisibility(scene, false, entityInfo)
                     //     }else{
-                            setGLTFPlayMode(scene, entityInfo)
-                            setVideoPlayMode(scene, entityInfo)
-                            setMeshColliderPlayMode(scene, entityInfo)
-                            setMeshRenderPlayMode(scene, entityInfo)
-                            setVisibilityPlayMode(scene, entityInfo)
-                            setAudioPlayMode(scene, entityInfo)
-                            setSmartItemPlaydMode(scene, entityInfo)
-                            setPointersPlayMode(scene, entityInfo)
-                            checkTransformComponent(scene, entityInfo)
-                            setTextShapeForPlayMode(scene, entityInfo)
-                            setTriggersForPlayMode(scene, entityInfo)
-                            setUiTextPlayMode(scene, entityInfo)
-                            setUiImagePlayMode(scene, entityInfo)
-                            setLivePanel(scene, entityInfo)
+                    enableEntityForPlayMode(scene, entityInfo)
                         // }
                     // })
 
@@ -194,9 +182,26 @@ export async function enableSceneEntities(sceneId: string) {
     scene.checkDisabled = false
 }
 
+export function enableEntityForPlayMode(scene:any, entityInfo:any){
+    setGLTFPlayMode(scene, entityInfo)
+    setVideoPlayMode(scene, entityInfo)
+    setMeshColliderPlayMode(scene, entityInfo)
+    setMeshRenderPlayMode(scene, entityInfo)
+    setVisibilityPlayMode(scene, entityInfo)
+    setAudioPlayMode(scene, entityInfo)
+    setSmartItemPlaydMode(scene, entityInfo)
+    setPointersPlayMode(scene, entityInfo)
+    checkTransformComponent(scene, entityInfo)
+    setTextShapeForPlayMode(scene, entityInfo)
+    setTriggersForPlayMode(scene, entityInfo)
+    setUiTextPlayMode(scene, entityInfo)
+    setUiImagePlayMode(scene, entityInfo)
+    setLivePanel(scene, entityInfo)
+}
+
 export function disableEntityForPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
-    if(itemInfo){
+    if(itemInfo && localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){
         disableVisibilityPlayMode(scene, entityInfo)
         disableAudioPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)

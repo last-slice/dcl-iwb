@@ -1,10 +1,10 @@
 import { ColliderLayer, GltfContainer, MeshCollider, MeshRenderer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
 import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../helpers/Components"
-import { COMPONENT_TYPES } from "../helpers/types"//
+import { COMPONENT_TYPES } from "../helpers/types"
 
 export function checkMeshRenderComponent(scene:any, entityInfo:any){
-    let mesh = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
+    let mesh = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)//
     if(mesh && entityInfo.entity){
         switch(mesh.shape){
             case 0:
@@ -15,7 +15,7 @@ export function checkMeshRenderComponent(scene:any, entityInfo:any){
                 break;
         }
         MeshRenderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
-        console.log('setting mesh renderer for entity', entityInfo.aid)
+        // console.log('setting mesh renderer for entity', entityInfo.aid)
     }
 }
 
@@ -78,8 +78,8 @@ export function setMeshRenderBuildMode(scene:any, entityInfo:any){
 }
 
 export function setMeshRenderPlayMode(scene:any, entityInfo:any){
-    let meshInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
-    if(meshInfo && entityInfo.entity){//
+    let meshInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)//
+    if(meshInfo && entityInfo.entity){
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }
@@ -100,6 +100,8 @@ export function setMeshColliderPlayMode(scene:any, entityInfo:any){
     if(meshInfo && entityInfo.entity){
         if(!meshInfo.onPlay){
             MeshCollider.deleteFrom(entityInfo.entity)
+        }else{
+            checkMeshColliderComponent(scene, entityInfo)
         }
         MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
@@ -108,7 +110,7 @@ export function setMeshColliderPlayMode(scene:any, entityInfo:any){
 export function disableMeshRenderPlayMode(scene:any, entityInfo:any){
     let meshInfo = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
     if(meshInfo && entityInfo.entity){
-        console.log('disabling mesh renderedr play mode', scene.id, entityInfo.aid)
+        // console.log('disabling mesh renderedr play mode', scene.id, entityInfo.aid)
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }

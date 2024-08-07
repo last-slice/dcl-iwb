@@ -100,7 +100,7 @@ export function refreshMarketplaceItems() {
 
 export function updateItem(id: string, update: SceneItem) {
     if(update.anim){
-        update.tag ? update.tag.push("animation") : update.tag['animation']
+        update.tag ? update.tag.push("animations") : update.tag['animations']
     }
     items.set(id, update)
 }

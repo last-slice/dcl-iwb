@@ -63,7 +63,7 @@ export class CustomUIText {
     spriteSheet: string = "images/customCounter/alpha_sheet.png"
     rows: number
     cols: number
-    currentText: string = "text"
+    currentText: string = ""
     currentTextData: string = " "
     digits: DigitSprite[]
     size: number = 64

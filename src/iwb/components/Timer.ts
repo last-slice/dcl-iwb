@@ -1,6 +1,9 @@
 import { Entity } from '@dcl/sdk/ecs'
 import { getTriggerEvents } from './Triggers'
-import { Triggers } from '../helpers/types'
+import { COMPONENT_TYPES, PLAYER_GAME_STATUSES, Triggers } from '../helpers/types'
+import { localPlayer } from './Player'
+import { scene } from '../ui/Objects/SceneMainDetailPanel'
+import { colyseusRoom } from './Colyseus'
 
 interface DelayAction {
   action: string
@@ -10,6 +13,8 @@ interface DelayAction {
 
 interface IntervalAction {
   action: string
+  aid:string
+  sceneId:string
   timeout: number
   interval: number
   callback: Function
@@ -104,24 +109,38 @@ export function stopAllTimeouts() {
 
 export function startInterval(
   entity: Entity,
+  aid:string,
   action: string,
   interval: number,
+  sceneId:string,
   callback: () => void,
 ) {
   const actionCallbacks = queueInterval.get(entity) ?? []
-  actionCallbacks.push({ timeout: interval, action, callback, interval })
+  actionCallbacks.push({aid:aid, sceneId:sceneId, timeout: interval, action, callback, interval })
   queueInterval.set(entity, actionCallbacks)
 }
 
 export function stopInterval(entity: Entity, action: string) {
-  const intervals = queueInterval.get(entity) ?? []
-  queueInterval.set(
-    entity,
-    intervals.filter(($) => $.action !== action),
-  )
+  // const intervals = queueInterval.get(entity) ?? []
+  // queueInterval.set(
+  //   entity,
+  //   intervals.filter(($) => $.action !== action),
+  // )
+  queueInterval.delete(entity)
 }
 
-export function stopAllIntervals() {
-  queueInterval.clear()
-  console.log('stopped all intervals', queueInterval.size)
+export function stopAllIntervals(gameIntervals?:boolean) {
+  if(localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING || gameIntervals){
+    queueInterval.clear()
+  }
+  else{
+    queueInterval.forEach((interval:any, entity)=>{
+      let scene = colyseusRoom.state.scenes.get(interval.sceneId)
+      if(scene){
+        let gameItem = scene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].get(interval.aid)
+        if(gameItem){
+        }
+      }
+    })
+  }
 }

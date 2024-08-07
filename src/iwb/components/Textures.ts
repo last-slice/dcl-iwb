@@ -6,13 +6,15 @@ import { COMPONENT_TYPES } from "../helpers/types"
 export function checkTextureComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.TEXTURE_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
-        let materialInfo = scene.materials.get(entityInfo.aid)
-        // let emissiveInfo = scene.emissives.get(entityInfo.aid)
+        let materialInfo = scene[COMPONENT_TYPES.MATERIAL_COMPONENT].get(entityInfo.aid)
+        if(!materialInfo){
+            return
+        }
         
         switch(itemInfo.type){
-            case 0:
+            case 0: // texture
                 switch(materialInfo.type){
-                    case 0:
+                    case 0: // pbr material
                         Material.setPbrMaterial(entityInfo.entity, {
                             texture: itemInfo.path ?
                             Material.Texture.Common({
@@ -41,7 +43,7 @@ export function checkTextureComponent(scene:any, entityInfo:any){
                         break;
                 }
                 break;
-            case 1:
+            case 1: //video texture
                 const videoTexture = Material.Texture.Video({ videoPlayerEntity: entityInfo.entity })
                 Material.setPbrMaterial(entityInfo.entity, {
                     texture: videoTexture,
@@ -69,7 +71,7 @@ export function textureListener(scene:any){
         // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
         // if(!iwbInfo.components.includes(COMPONENT_TYPES.TEXTURE_COMPONENT)){
         //   iwbInfo.components.push(COMPONENT_TYPES.TEXTURE_COMPONENT)
-        // }
+        // }//
 
         let entityInfo = getEntity(scene, aid)
         if(!entityInfo){
@@ -79,5 +81,12 @@ export function textureListener(scene:any){
         texture.listen("path", (c:any, p:any)=>{
             checkTextureComponent(scene, entityInfo)
         })
+    })
+
+    scene[COMPONENT_TYPES.TEXTURE_COMPONENT].onRemove((texture:any, aid:any)=>{
+        let entityInfo = getEntity(scene, aid)
+        if(!entityInfo){
+            return
+        }
     })
 }

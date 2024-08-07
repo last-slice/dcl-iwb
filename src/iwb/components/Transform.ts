@@ -9,6 +9,7 @@ export function checkTransformComponent(scene:any, entityInfo:any){
     let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
     // console.log('transform is', transform)
     if(transform){
+        // console.log('transform found for', entityInfo.aid)
         Transform.createOrReplace(entityInfo.entity, {parent:findAssetParent(scene,entityInfo.aid), position:transform.p, scale:transform.s, rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)})
 
         //check if object has trigger
@@ -16,7 +17,7 @@ export function checkTransformComponent(scene:any, entityInfo:any){
         // if(triggerInfo){
         //     console.log('entity has trigger component, need to update')
         //     updateTriggerArea(scene, entityInfo, transform)
-        // }
+        // }//
     }
 }
 
@@ -90,7 +91,7 @@ export function transformListener(scene:any){
 }
 
 export function updateTransform(scene:any, aid:string, transform:any){
-    console.log('updating transform', aid)
+    console.log('updating transform', aid)//
     let info = getEntity(scene, aid)
     if(info){
         Transform.createOrReplace(info.entity, 
@@ -98,7 +99,7 @@ export function updateTransform(scene:any, aid:string, transform:any){
                 parent: findAssetParent(scene, aid),
                 position:transform.p, 
                 rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z),
-                scale:transform.s, 
+                scale:transform.s,
             }
         )
 

@@ -3,14 +3,14 @@ import { getEntity } from "./IWB"
 import { Color4 } from "@dcl/sdk/math"
 import { COMPONENT_TYPES } from "../helpers/types"
 
-function addTextShape(entity:Entity, textShape:any){
-    TextShape.createOrReplace(entity, 
+function addTextShape(scene:any, entityInfo:any, textShape:any){
+    TextShape.createOrReplace(entityInfo.entity, 
         {
-            text: textShape.text,
+            text: textShape.isText ? textShape.text : scene[COMPONENT_TYPES.NAMES_COMPONENT].get(entityInfo.aid).value,
             font: textShape.font,
             fontSize: textShape.fontSize,
             fontAutoSize: textShape.fontAutoSize,
-            // textAlign: textShape.textAlign,
+            // textAlign: textShape.textAlign,//
             paddingTop: textShape.paddingTop,
             paddingBottom: textShape.paddingBottom,
             paddingLeft: textShape.paddingLeft,
@@ -33,7 +33,7 @@ export function updateTextComponent(scene:any, entityInfo:any, newText:string){
 export function checkTextShapeComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(entityInfo.aid)
     if(itemInfo && itemInfo.onPlay){
-        addTextShape(entityInfo.entity, itemInfo)
+        addTextShape(scene, entityInfo, itemInfo)
     }
 }
 
@@ -49,7 +49,7 @@ export function disableTextShapePlayMode(scene:any, entityInfo:any){
 export function setTextShapeForBuildMode(scene:any, entityInfo:any){
     let textInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(entityInfo.aid)
     if(textInfo){
-        addTextShape(entityInfo.entity, textInfo)
+        addTextShape(scene, entityInfo, textInfo)
     }
 }
 

@@ -34,6 +34,7 @@ import { levelListener } from "./Level"
 import { materialListener } from "./Materials"
 import { gameListener } from "./Game"
 import { refreshMap } from "../ui/Objects/Map"
+import { playlistListener } from "./Playlist"
 
 export let realmActions: any[] = []
 
@@ -123,6 +124,7 @@ async function loadSceneComponents(scene:any){
     await billboardListener(scene)
     await materialListener(scene)
     await gameListener(scene)
+    await playlistListener(scene)
 
     scene.loaded = true
     console.log('scene loaded', scene.id)
@@ -313,16 +315,15 @@ export async function checkScenePermissions() {
     } else {
         localPlayer.canBuild = false
         // player.activeScene = null
-        // displaySceneAssetInfoPanel(false)//
+        // displaySceneAssetInfoPanel(false)
     }
 
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
-        console.log('in build mode')
         playModeCheckedAssets.length = 0
     } else {
         if (playModeReset) {
             if (activeScene) {
-                // console.log('active scene is', activeScene)
+                // console.log('active scene is', activeScene)//
                 if (lastScene) {
                     if (lastScene !== activeScene.id) {
                         await disableSceneEntities(lastScene)

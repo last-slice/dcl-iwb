@@ -33,6 +33,8 @@ import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoo
 import { resetLevelSpawnEntity } from './EditLevel'
 import { addTweenActionEntity, AddTweenActionPanel, resetTweenActionPanel } from './ActionPanels/AddTweenPanel'
 import { AddTeleport } from './ActionPanels/AddTeleportPanel'
+import { AddDelayActionPanel, updateDelayEntitiesWithActions } from './ActionPanels/AddDelay'
+import { utils } from '../../../helpers/libraries'
 
 export let actionView = "main"
 export let newActionData:any = {}
@@ -464,6 +466,12 @@ function getActionDataPanel(){
         case Actions.TELEPORT_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddTeleport/>
 
+         case Actions.START_DELAY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateDelayEntitiesWithActions()
+            return <AddDelayActionPanel/>
+
+            
+
 
         //play sound - doesnt need any action metadata//
         //stop sound - doesnt need any action metadata
@@ -488,7 +496,7 @@ async function update(action:string, actionData:any){
 }
 
 async function buildAction(){
-    console.log('final action data is', newActionData)
+    console.log('final action data is', {...newActionData})
     await update("add", newActionData)
     updateActionView("main")
     selectNewActionIndex(0)
@@ -534,7 +542,8 @@ const ActionDefaults:any = {
     },
     [Actions.SET_VISIBILITY]:{
         iMask:0,
-        vMask:0
+        vMask:0,
+        visible:true
     },
     [Actions.PLAY_ANIMATION]:{
         loop:0,
@@ -567,9 +576,6 @@ const ActionDefaults:any = {
     [Actions.CLONE]:{
         fn:()=>{addCloneEntity()},
     },
-    [Actions.SET_STATE]:{
-        state:"",
-    },
     [Actions.SHOW_NOTIFICATION]:{
         message:"",
         return:true,
@@ -597,5 +603,9 @@ const ActionDefaults:any = {
         x:0,
         y:0,
         ttype:0
+    },
+    [Actions.START_DELAY]:{
+        actions:[],
+        timer:5
     }
 }

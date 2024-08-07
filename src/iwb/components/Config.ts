@@ -19,11 +19,13 @@ import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { PlayTriggerSystem, addPlayTriggerSystem, disableTriggers, removePlayTriggerSystem } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
-import { isLevelAsset } from "./Level"
+import { isGameAsset, isLevelAsset } from "./Level"
 import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
 import { getCenterOfParcels } from "../helpers/build"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
+import { checkGameplay, killAllGameplay } from "./Game"
+import { handleUnlockPlayer } from "./Actions"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -184,12 +186,12 @@ export function setPlayerMode(mode:SCENE_MODES){
         }
     }
 
-    // hideAllOtherPointers()//
+    // hideAllOtherPointers()
     hideAllPanels()
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
         settings.triggerDebug ? utils.triggers.enableDebugDraw(true) :null 
-        stopAllIntervals()
+        stopAllIntervals(true)
         resetDialog()
         showDialogPanel(false)
         clearShowTexts()
@@ -198,6 +200,8 @@ export function setPlayerMode(mode:SCENE_MODES){
         updatePlayModeReset(false)
         removePlayTriggerSystem()
         displayLiveControl(false)
+        killAllGameplay()
+        handleUnlockPlayer(null, null, null)
     }else if(playerMode === SCENE_MODES.PLAYMODE){
         // utils.triggers.enableDebugDraw(false)
         hideAllPanels()
@@ -205,25 +209,26 @@ export function setPlayerMode(mode:SCENE_MODES){
         removeInputSystem()
         addPlayModeSystem()
         addPlayTriggerSystem()
+        handleUnlockPlayer(null, null, null)
     }else{
+        killAllGameplay()
         utils.triggers.enableDebugDraw(false)
         removeInputSystem()
         removePlayModSystem()
     }
 
     colyseusRoom.state.scenes.forEach((scene:any)=>{
-        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach(async (item:any, i:number)=>{
             if(i > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
                     if(mode === SCENE_MODES.BUILD_MODE){
-                        if(isLevelAsset(scene, item.aid)){
-                            createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(item.aid))
-                        }else{
-                            resetEntityForBuildMode(scene, entityInfo)
+                        if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
+                            await createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(item.aid))
                         }
+                        resetEntityForBuildMode(scene, entityInfo)
                     }else{
-                        if(isLevelAsset(scene, item.aid)){
+                        if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
                             engine.removeEntity(entityInfo.entity)
                         }
                         else{
@@ -234,6 +239,10 @@ export function setPlayerMode(mode:SCENE_MODES){
             }
         })
     })
+
+    if(mode === SCENE_MODES.BUILD_MODE){
+        addAllBuildModePointers()
+    }
 
     updatePlayModeReset(true)
 }

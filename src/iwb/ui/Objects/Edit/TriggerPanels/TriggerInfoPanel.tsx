@@ -82,8 +82,8 @@ export function TriggerInfoPanel(){
             justifyContent: 'center',
             alignContent:'center',
             width: '100%',
-            height: '10%',
-            display: triggerInfoView !== "main" ? "flex" : "none"
+            height: '10%',//
+            display: triggerInfoView !== "main" && selectedTrigger.type === Triggers.ON_INPUT_ACTION ? "flex" : "none"
             }}
             uiText={{value:"Input Type: " + (ENTITY_POINTER_LABELS[selectedTrigger.input] + (selectedTrigger.type === Triggers.ON_INPUT_ACTION ? ", Button: " + Object.values(POINTER_EVENTS)[selectedTrigger.pointer] : "")), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
         />
@@ -92,7 +92,7 @@ export function TriggerInfoPanel(){
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             alignContent:'center',
             width: '100%',
             height: '30%',

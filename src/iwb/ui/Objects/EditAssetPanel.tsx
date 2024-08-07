@@ -21,7 +21,7 @@ import { EditGltf } from './Edit/EditGltf'
 import { EditVideo } from './Edit/EditVideo'
 import { EditMeshCollider } from './Edit/EditMeshCollider'
 import { EditMeshRender } from './Edit/EditMeshRender'
-import { EditMaterial, updateMaterialComponent } from './Edit/EditMaterial'
+import { EditMaterial, materialView, updateMaterialComponent } from './Edit/EditMaterial'
 import { EditTexture } from './Edit/EditTexture'
 import { EditParenting, updateChildrenAssets } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
@@ -40,9 +40,11 @@ import { resetTweenActionPanel } from './Edit/ActionPanels/AddTweenPanel'
 import { EditGameItem, updateGameItemInfo } from './Edit/EditGameItem'
 import { dialogView, EditDialog, updateDialog, updateDialogView } from './Edit/EditDialog'
 import { animationEntity, EditAnimation, updateAssetAnimations } from './Edit/EditAnimation'
-import { Animator } from '@dcl/sdk/ecs'
+import { Animator, ComponentType } from '@dcl/sdk/ecs'
 import { releaseBatchActions } from './Edit/ActionPanels/AddBatchActionsPanel'
 import { releaseRandomActions } from './Edit/ActionPanels/AddRandomAction'
+import { EditRewards, updateRewardInfo } from './Edit/EditRewards'
+import { EditPlaylist, playlistView, updatePlaylistComponent } from './Edit/EditPlaylist'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -59,6 +61,12 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.PLAYLIST_COMPONENT:
+            updatePlaylistComponent()
+            break;
+        case COMPONENT_TYPES.REWARD_COMPONENT:
+            updateRewardInfo()
+            break;
         case COMPONENT_TYPES.ANIMATION_COMPONENT:
             updateAssetAnimations()
             break;
@@ -228,7 +236,7 @@ export function createEditAssetPanel() {
                     />
 
                     {/* delete button */}
-                    <UiEntity
+                    {/* <UiEntity
                         uiTransform={{
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -259,7 +267,7 @@ export function createEditAssetPanel() {
                         onMouseUp={()=>{
                             setUIClicked(false)
                         }}
-                    />
+                    /> */}
 
             
 
@@ -428,6 +436,23 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.REWARD_COMPONENT:
+            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            break;
+        case COMPONENT_TYPES.MATERIAL_COMPONENT:
+            if(materialView === "main"){
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }else{
+                updateMaterialComponent()
+            }
+            break;
+        case COMPONENT_TYPES.PLAYLIST_COMPONENT:
+            if(playlistView === "main"){
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }else{
+                updatePlaylistComponent()
+            }
+            break;
         case COMPONENT_TYPES.ANIMATION_COMPONENT:
             Animator.stopAllAnimations(animationEntity)
             openEditComponent("")
@@ -646,8 +671,9 @@ function EditObjectData(){
                 width: '95%',
                 height: '75%',
             }}
-            // uiBackground={{color:Color4.Blue()}}
+            // uiBackground={{color:Color4.Blue()}}////
         >
+
 
             {/* basic components container */}
             <UiEntity
@@ -661,82 +687,14 @@ function EditObjectData(){
                 // uiBackground={{color:Color4.Red()}}
             >
 
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    width: '90%',
-                    height: '90%',
-                    margin: {top: "2%"},
-                    display: visibleComponent === "" ? 'flex' : 'none'
-                }}
-                // uiBackground={{color:Color4.Green()}}
-            >
-                {selectedItem && selectedItem.enabled && generateComponentViews()}
-            </UiEntity>
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    width: '90%',
-                    height: '100%',
-                    margin: {top: "2%"},
-                    display: visibleComponent !== "" ? 'flex' : 'none'
-                }}
-                // uiBackground={{color:Color4.Blue()}}
-            >
-                <EditTransform/>
-                <EditVisibility/>
-                <EditName/>
-                <EditAudio/>
-                <EditText/>
-                <EditNftShape/>
-                <EditGltf/>
-                <EditVideo/>
-                <EditMeshCollider/>
-                <EditMeshRender/>
-                <EditMaterial/>
-                <EditTexture/>
-                <EditAnimation/>
-            </UiEntity>
-
-                </UiEntity>
-
-                {/* advanced components container */}
-                <UiEntity
-                uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: '100%',
-                height: '100%',
-                display:componentViewType !== "basic" ? "flex" : "none"
-                }}
-            >
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    width: '90%',
-                    height: '90%',
-                    margin: {top: "2%"},
-                    display: visibleComponent === "Advanced" ? 'flex' : 'none'
-                }}
-                // uiBackground={{color:Color4.Green()}}//
-            >
-
-            {/* add component row */}
+                {/* add component row */}
             <UiEntity
                 uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent:'center',
-                width: '100%',
+                width: '90%',
                 height: '10%',
                 }}
             >
@@ -810,6 +768,18 @@ function EditObjectData(){
 
             </UiEntity>
 
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '90%',
+                    height: '90%',
+                    margin: {top: "2%"},
+                    display: visibleComponent === "" ? 'flex' : 'none'
+                }}
+                // uiBackground={{color:Color4.Green()}}
+            >
                 {selectedItem && selectedItem.enabled && generateComponentViews()}
             </UiEntity>
 
@@ -821,7 +791,144 @@ function EditObjectData(){
                     width: '90%',
                     height: '100%',
                     margin: {top: "2%"},
-                    display: visibleComponent !== "Advanced" ? 'flex' : 'none'
+                    display: visibleComponent !== "" ? 'flex' : 'none'
+                }}
+                // uiBackground={{color:Color4.Blue()}}
+            >
+                <EditTransform/>
+                <EditVisibility/>
+                <EditName/>
+                <EditAudio/>
+                <EditText/>
+                <EditNftShape/>
+                <EditGltf/>
+                <EditVideo/>
+                <EditMeshCollider/>
+                <EditMeshRender/>
+                <EditMaterial/>
+                <EditTexture/>
+                <EditAnimation/>
+            </UiEntity>
+
+                </UiEntity>
+
+                {/* advanced components container */}
+                <UiEntity
+                uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%',
+                display:componentViewType !== "basic" ? "flex" : "none"
+                }}
+            >
+
+                {/* add component row */}
+            <UiEntity
+                uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: '90%',
+                height: '10%',
+                }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
+            <Dropdown
+                options={getComponents(true)}
+                selectedIndex={0}
+                onChange={selectNewAdvancedcComponentIndex}
+                uiTransform={{
+                    width: '100%',
+                    height: '120%',
+                }}
+                // uiBackground={{color:Color4.Purple()}}//
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
+                </UiEntity>
+
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '50%',
+                        height: '100%',
+                    }}
+                >
+
+
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                    }}
+                    uiText={{
+                        value: "Add Component",
+                        fontSize: sizeFont(25, 15),
+                        color: Color4.White(),
+                        textAlign: 'middle-center'
+                    }}
+                    onMouseDown={() => {
+                        setUIClicked(true)
+                        if(newAdvancedComponentIndex !== 0){
+                            addComponent()
+                        }
+                    }}
+                    onMouseUp={()=>{
+                        setUIClicked(false)
+                    }}
+                />
+                </UiEntity>
+
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '90%',
+                    height: '90%',
+                    margin: {top: "2%"},
+                    display: visibleComponent === "Advanced" ? 'flex' : 'none'
+                }}
+                // uiBackground={{color:Color4.Green()}}//
+            >
+
+                {selectedItem && selectedItem.enabled && generateComponentViews()}
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    width: '90%',
+                    height: '100%',
+                    margin: {top: "2%"},
+                    display: visibleComponent !== COMPONENT_TYPES.ADVANCED_COMPONENT ? 'flex' : 'none'
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             >
@@ -838,9 +945,11 @@ function EditObjectData(){
                 <EditLevel/>
                 <EditLive/>
                 <EditDialog/>
+                <EditRewards/>
+                <EditPlaylist/>
 
                 {/* <ImageComponentPanel/>
-                <VideoComponentPanel/>
+                <VideoComponentPanel/>//    
 
                 <MaterialComponentPanel/>
                 <TriggerAreaComponent/>
@@ -979,7 +1088,9 @@ function getBasicComponents(){
         COMPONENT_TYPES.LEVEL_COMPONENT,
         COMPONENT_TYPES.LIVE_COMPONENT,
         COMPONENT_TYPES.GAME_ITEM_COMPONENT,
-        COMPONENT_TYPES.DIALOG_COMPONENT
+        COMPONENT_TYPES.DIALOG_COMPONENT,
+        COMPONENT_TYPES.REWARD_COMPONENT,
+        COMPONENT_TYPES.PLAYLIST_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
@@ -1019,7 +1130,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-17).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-19).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1056,7 +1167,26 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.UI_IMAGE_COMPONENT,
             COMPONENT_TYPES.CLICK_AREA_COMPONENT,
             COMPONENT_TYPES.PARENTING_COMPONENT,
-            COMPONENT_TYPES.DIALOG_COMPONENT
+            COMPONENT_TYPES.DIALOG_COMPONENT,
+            COMPONENT_TYPES.REWARD_COMPONENT,
+            COMPONENT_TYPES.DIALOG_COMPONENT,
+            COMPONENT_TYPES.TRANSFORM_COMPONENT,
+            COMPONENT_TYPES.CLICK_AREA_COMPONENT,
+            COMPONENT_TYPES.TEXTURE_COMPONENT,
+            COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT,
+            COMPONENT_TYPES.AUDIO_STREAM_COMPONENT,
+            COMPONENT_TYPES.IMAGE_COMPONENT,
+            COMPONENT_TYPES.IWB_COMPONENT,
+            COMPONENT_TYPES.LIVE_COMPONENT,
+            COMPONENT_TYPES.NAMES_COMPONENT,
+            COMPONENT_TYPES.NFT_COMPONENT,
+            COMPONENT_TYPES.PARENTING_COMPONENT,
+            COMPONENT_TYPES.PLAYLIST_COMPONENT,
+            COMPONENT_TYPES.TEAM_COMPONENT,
+            COMPONENT_TYPES.REWARD_COMPONENT,
+            COMPONENT_TYPES.LEVEL_COMPONENT,
+            COMPONENT_TYPES.AVATAR_SHAPE_COMPONENT,
+            COMPONENT_TYPES.NPC_COMPONENT
         ]
 
         let components:any[] = []
@@ -1066,7 +1196,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-17).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-19).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

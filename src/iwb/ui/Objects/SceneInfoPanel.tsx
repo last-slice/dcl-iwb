@@ -1054,7 +1054,8 @@ function SceneAssetRow(data:any){
             value: curItem ? name.length > 20 ?  name.substring(0,20) + "..." : name : "Name not found",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
-            color: Color4.White()
+            color: Color4.White(),
+            textWrap:'nowrap'
         }}
 
     />
@@ -1074,7 +1075,7 @@ function SceneAssetRow(data:any){
             fontSize: sizeFont(20, 15),
             textAlign: "middle-left",
             color: Color4.White(),
-            textWrap:'nowrap'//
+            textWrap:'nowrap'
         }}
     />
 

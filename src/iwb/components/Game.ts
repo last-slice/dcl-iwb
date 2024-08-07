@@ -1,6 +1,6 @@
 import { Animator, AvatarAnchorPointType, AvatarAttach, CameraModeArea, CameraType, EasingFunction, engine, Entity, GltfContainer, MeshRenderer, PBAvatarAttach, RaycastQueryType, raycastSystem, Transform, Tween, TweenLoop, TweenSequence, VisibilityComponent } from "@dcl/sdk/ecs"
 import { Actions, COMPONENT_TYPES, GAME_WEAPON_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types"
-import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers"
+import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger } from "./Triggers"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { getEntity } from "./IWB"
@@ -17,6 +17,9 @@ import { GunDataComponent } from "../helpers/Components"
 import { addGunRecoilSystem, isProcessingGunRay, processGunArray } from "../systems/GunSystem"
 import { playSound } from "./Sounds"
 import { displayCooldown } from "../ui/Objects/GameCooldownUI"
+import { stopAllIntervals } from "./Timer"
+import { disableSceneEntities } from "../modes/Play"
+import { handleSetNumber } from "./Actions"
 
 export let gameEndingtimer:any
 export let gameEntities:any[] = []
@@ -37,18 +40,28 @@ export function attemptGameStart(info:any){
     console.log('game start is', gameInfo)
     if(gameInfo.type === "SOLO"){
         if(info && info.canStart && info.level){
-            let entityInfo = getEntity(scene, info.level)
-            let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(info.level)
-            if(actionInfo){
-                if(actionInfo.actions && actionInfo.actions.length > 0){
-                    let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
-                    if(action){
-                        localPlayer.canTeleport = !gameInfo.disableTeleport
-                        actionQueue.push({aid:info.level, action:action, entity:entityInfo.entity})
-                        setUIClicked(false)//
-                    }
-                }
-            }  
+            localPlayer.canTeleport = !gameInfo.disableTeleport
+            attemptLoadLevel(scene, gameInfo.startLevel)
+            // let gameCurrentLevelEntity = getEntity(scene, gameInfo.currentLevelAid)
+            // if(gameCurrentLevelEntity){
+            //     handleSetNumber(scene, gameCurrentLevelEntity, {value: gameInfo.startLevel, counter:{}})
+            // }
+            // else{
+            //     console.log('game current level entity has been deleted or cannot be found')
+            // }
+            
+            // let entityInfo = getEntity(scene, info.level)
+            // let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(info.level)
+            // if(actionInfo){
+            //     if(actionInfo.actions && actionInfo.actions.length > 0){
+            //         let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
+            //         if(action){
+            //             localPlayer.canTeleport = !gameInfo.disableTeleport
+            //             actionQueue.push({aid:info.level, action:action, entity:entityInfo.entity})
+            //             setUIClicked(false)
+            //         }
+            //     }
+            // }  
         }else{
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + gameInfo.name + " does not have a playable level yet!", animate:{enabled:true, return:true, time:5}})
         }
@@ -70,11 +83,44 @@ export function movePlayerToLobby(scene:any, gameInfo:any){
     movePlayerTo({newRelativePosition:spawnPosition})
 }
 
+export function attemptLoadLevel(scene:any, level:number){
+    let foundLevelAid:any
+    scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((levelInfo:any, aid:string) => {
+        if(levelInfo.number === level){
+            foundLevelAid = aid
+        }
+    });
+
+    if(foundLevelAid){
+        let entityInfo = getEntity(scene, foundLevelAid)
+        if(!entityInfo){
+            console.log('error with level entity', foundLevelAid)
+            //todo
+            //end game
+            return
+        }
+
+        let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(foundLevelAid)
+        if(actionInfo){
+            if(actionInfo.actions && actionInfo.actions.length > 0){
+                let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
+                if(action){
+                    actionQueue.push({aid:foundLevelAid, action:action, entity:entityInfo.entity})
+                    setUIClicked(false)
+                }
+            }
+        } 
+    //     runSingleTrigger(entityInfo, Triggers.ON_LEVEL_LOAD, {entity:entityInfo.entity, input:0, pointer:0})
+    }
+}
+
 export function attemptGameEnd(info:any){
     let scene = colyseusRoom.state.scenes.get(info.sceneId)
     // let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
     if(scene){
         unloadAllSceneGameAssets(scene)
+        // disableSceneEntities()
+        stopAllIntervals(true)
         //to do
         //clean up any game timers etc etc
     }
@@ -88,12 +134,19 @@ export function abortGameTermination(scene:any){
     }
 }
 
+export function killAllGameplay(){
+    if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
+        sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+        attemptGameEnd({sceneId: localPlayer.activeScene.id})
+    }
+}
+
 export function checkGameplay(scene:any){
     if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
         gameEndingtimer = utils.timers.setTimeout(()=>{
             hideNotification()
-            attemptGameEnd({sceneId: scene.id})
             sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+            attemptGameEnd({sceneId: scene.id})
         }, 1000 * 5)
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Your Game will auto end in 5 seconds", animate:{enabled:true, return: false, time:5}})
     }

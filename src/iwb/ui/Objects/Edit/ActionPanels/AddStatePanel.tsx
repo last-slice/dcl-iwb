@@ -16,9 +16,14 @@ export function updateEntityStates(){
     if(scene){
         let states = scene[COMPONENT_TYPES.STATE_COMPONENT].get(selectedItem.aid)
         if(states && states.values.length > 0){
-            entityStates = [...states.values]
+            states.values.forEach((value:any)=>{
+                entityStates.push(value)
+            })
         }
-        newActionData.state = entityStates[0]
+        if(!newActionData.state){
+            newActionData.state = entityStates[0]
+        }
+        
     }
     selectedIndex = 0
 }
@@ -80,10 +85,13 @@ export function AddSetStatePanel(){
 
 function selectState(index:number){
     selectedIndex = index
-
-    let data = {...newActionData}
-    newActionData.state = [...entityStates][index]
-    updateActionData(data, true)
-    // newActionData = {...}
+    console.log('index is', index)
+    // console.log('new action data is', newActionData)
+    // let data = {...newActionData}
+    // newActionData.state = entityStates[index]
+    // data.state = entityStates[index]
+    // console.log('data is', data)
+    // updateActionData({...data}, true)
+    // console.log('new action data is', newActionData)
+    updateActionData({state:entityStates[index]})
 }
-    

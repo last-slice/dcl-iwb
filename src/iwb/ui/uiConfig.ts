@@ -1745,7 +1745,7 @@ export let uiSizes: any = {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 180,
-        sourceLeft: 934,
+        sourceLeft: 904,
         sourceWidth: 30,
         sourceHeight: 30
     },

@@ -10,6 +10,7 @@ import { getAllAssetNames } from '../../../../components/Name'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { COMPONENT_TYPES } from '../../../../helpers/types'
 import { selectedTrigger } from './TriggerInfoPanel'
+import { PointerEventType } from '@dcl/sdk/ecs'
 
 let entities:any[] = []
 let entitiesWithActions:any[] = []
@@ -37,7 +38,7 @@ export function updateEntityActions(aid:string){
 
 export function updateTriggerActionsPanel(){
     entities.length = 0
-    entities = getAllAssetNames(selectedItem.sceneId)
+    entities = getAllAssetNames(selectedItem.sceneId, true)
 }
 
 export function resetTriggerActionsPanel(){
@@ -235,7 +236,7 @@ export function TriggerActionRow(info:any){
                 height: '100%',
                 margin:{left:'2%'}
             }}
-            uiText={{value:"" + data.entity, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + data.entity, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
              <UiEntity
@@ -246,7 +247,7 @@ export function TriggerActionRow(info:any){
                 width: '40%', 
                 height: '100%',
             }}
-            uiText={{value:"" + data.name, fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + data.name, fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
             {/* action edit buttons column */}
@@ -287,7 +288,7 @@ export function TriggerActionRow(info:any){
 }
 
 function selectEntityIndex(index:number){
-    console.log('select entity index', index)
+    console.log('select entity index', index)//
     selectedEntityIndex = index
     if(index !== 0){
         updateEntityActions(entities[index-1].aid)

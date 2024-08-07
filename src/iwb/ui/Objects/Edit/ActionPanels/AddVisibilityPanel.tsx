@@ -137,6 +137,6 @@ export function AddVisibilityActionPanel(){
 }
 
 function setData(key:string, value:any){
-    let data = newActionData
-    updateActionData(data, true)
+    console.log('new action data is', newActionData)//
+    updateActionData({[key]:value}, true)
 }

@@ -181,7 +181,7 @@ function TriggerRow(trigger:any){
                 width: '100%',
                 height: '25%',
             }}
-            uiText={{value:"Conditions", fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"Conditions", fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
              <UiEntity
@@ -192,7 +192,7 @@ function TriggerRow(trigger:any){
                 width: '100%',
                 height: '25%',
             }}
-            uiText={{value:"" + data.caid.length, fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + data.caid.length, fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
 

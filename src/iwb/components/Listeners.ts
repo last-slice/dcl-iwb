@@ -490,19 +490,19 @@ export async function createColyseusListeners(room:Room){
     //     items.delete(info.id)
     //     refreshSortedItems()
     //     filterCatalog()
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.CLAIM_REWARD + ' received', info)
-    //     utils.timers.setTimeout(()=>{
-    //         hideNotification()
-    //         if(info.valid){
-    //             showNotification({type:NOTIFICATION_TYPES.IMAGE, message:"Item Claimed!\n" + info.name, image:info.image, animate:{enabled:true, return:true, time:7}})
-    //         }else{
-    //             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error: Claim Response\n" + info.reason, animate:{enabled:true, return:true, time:5}})
-    //         }
-    //     }, 1000 * 2)
     // })//
+
+    room.onMessage(SERVER_MESSAGE_TYPES.CLAIM_REWARD, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.CLAIM_REWARD + ' received', info)
+        utils.timers.setTimeout(()=>{
+            hideNotification()
+            if(info.valid){
+                showNotification({type:NOTIFICATION_TYPES.IMAGE, message:"Item Claimed!\n" + info.name, image:info.image, animate:{enabled:true, return:true, time:7}})
+            }else{
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Error: Claim Response\n" + info.reason, animate:{enabled:true, return:true, time:5}})
+            }
+        }, 1000 * 2)
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.VERIFY_ACCESS + ' received', info)

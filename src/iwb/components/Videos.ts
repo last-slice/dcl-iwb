@@ -61,7 +61,7 @@ export function videoListener(scene:any){
 export function setVideoBuildMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
-        VideoPlayer.getMutable(entityInfo.entity).playing = false
+        stopVideoComponent(entityInfo)
     }
 }
 
@@ -69,13 +69,24 @@ export function setVideoPlayMode(scene:any, entityInfo:any){
     if (VideoLoadedComponent.has(entityInfo.entity) && !VideoLoadedComponent.get(entityInfo.entity).init){
         let videoInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
         if(videoInfo && videoInfo.autostart){
-            let video = VideoPlayer.getMutableOrNull(entityInfo.entity)
-            if(video){
-                video.playing = true
-                video.position = 0
-            }
+            playVideoComponent(entityInfo)
         }
         VideoLoadedComponent.getMutable(entityInfo.entity).init = true
+    }
+}
+
+export function playVideoComponent(entityInfo:any, position?:any){
+    let video = VideoPlayer.getMutableOrNull(entityInfo.entity)
+    if(video){
+        video.playing = true
+        video.position = position ? position : 0
+    }
+}
+
+export function stopVideoComponent(entityInfo:any){
+    let video = VideoPlayer.getMutableOrNull(entityInfo.entity)
+    if(video){
+        video.playing = false
     }
 }
 

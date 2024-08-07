@@ -715,6 +715,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                                 margin: {right: '2%'}
                             }}
                             uiText={{
+                                textWrap:'nowrap',
                                 value: "" + (props.factor ?? ""),
                                 fontSize: sizeFont(15, 12)
                             }}
@@ -746,7 +747,7 @@ function getRelativePosition(type: string) {
                     case 'y':
                         return transform.position.y.toFixed(3)
                     case 'z':
-                        return (transform.position.z).toFixed(3)
+                        return (transform.position.z).toFixed(3)//
                 }
                 break;
 

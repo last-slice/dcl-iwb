@@ -48,9 +48,9 @@ export function disableUiTextPlayMode(scene:any, entityInfo:any){
     }
 }
 export function setUiTextPlayMode(scene:any, entityInfo:any){
-    console.log('setting ui text play mode')
     let uiTextInfo = scene[COMPONENT_TYPES.UI_TEXT_COMPONENT].get(entityInfo.aid)
     if(uiTextInfo){
+        console.log('setting ui text play mode', uiTextInfo)
         let uiTextComponent = UiTexts.get(entityInfo.aid)
         if(uiTextComponent){
             let textData:string = " "
@@ -90,12 +90,12 @@ export function setUiTextPlayMode(scene:any, entityInfo:any){
 }
 
 export function uiDataUpdate(scene:any, entityInfo:any, all?:boolean){
-    console.log('ui update', entityInfo.aid, entityInfo, all)
+    // console.log('ui update', entityInfo.aid, entityInfo, all)
     // setUiTextPlayMode(scene, entityInfo)
     scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((sceneEntity:any)=>{
         if(!["0", "1","2"].includes(entityInfo.aid)){
             let uiTextInfo = scene[COMPONENT_TYPES.UI_TEXT_COMPONENT].get(sceneEntity.aid)
-            console.log('ui text info is', uiTextInfo)
+            // console.log('ui text info is', uiTextInfo)
             if(uiTextInfo){
                 let uiTextComponent = UiTexts.get(sceneEntity.aid)
 
@@ -106,7 +106,7 @@ export function uiDataUpdate(scene:any, entityInfo:any, all?:boolean){
                     }else{
                         if(uiTextInfo.aid === entityInfo.aid){
                             advance = true
-                            console.log('we should have advacned ui data')
+                            // console.log('we should have advacned ui data')
                         }
                     }
 

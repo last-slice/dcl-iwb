@@ -22,7 +22,7 @@ import { checkUIImage } from "./UIImage"
 import { checkUIText } from "./UIText"
 import { checkVideoComponent } from "./Videos"
 import { updateAssetBuildVisibility } from "./Visibility"
-import { isLevelAsset } from "./Level"
+import { isGameAsset, isLevelAsset } from "./Level"
 import { colyseusRoom } from "./Colyseus"
 import { localUserId } from "./Player"
 
@@ -97,21 +97,19 @@ export async function iwbInfoListener(scene:any){
       
       iwbInfo.aid = aid
       if(!["0","1","2"].includes(aid)){
-          await createEntity(iwbInfo)
+          await createEntity(iwbInfo)//
       }
 
-      if(isLevelAsset(scene, aid)){}
+      if(isLevelAsset(scene, aid) || isGameAsset(scene, aid)){}
       else{
         createAsset(scene, iwbInfo)
       }
     }
 
     iwbInfo.listen("buildVis", (c:any, p:any)=>{
-            if(p !== undefined){
-                let entityInfo = getEntity(scene, aid)
-                if(entityInfo && playerMode === SCENE_MODES.BUILD_MODE){
-                  updateAssetBuildVisibility(scene, c, entityInfo)
-                }
+            let entityInfo = getEntity(scene, aid)
+            if(entityInfo && playerMode === SCENE_MODES.BUILD_MODE){
+              updateAssetBuildVisibility(scene, c, entityInfo)
             }
         })
     })

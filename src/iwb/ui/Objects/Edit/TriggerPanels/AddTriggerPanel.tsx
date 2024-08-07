@@ -112,7 +112,7 @@ function addTrigger(){
         sceneId:selectedItem.sceneId,
         action: 'add',
         data:{
-            type:getTriggerList()[selectedIndex].replace(/ /g, "_").toLowerCase()
+            type:getTriggerList()[selectedIndex].replace(/ /g, "_").toLowerCase(),
         }
     })
     return

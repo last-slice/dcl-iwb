@@ -14,11 +14,11 @@ export function getAssetIdByEntity(scene:any, entity:Entity){
 }
 
 export function findAssetParent(scene:any, aid:string){
-    console.log('finding asset parent', aid)
+    // console.log('finding asset parent', aid)
     if(scene[COMPONENT_TYPES.PARENTING_COMPONENT].length > 0){
         for(const parent of scene[COMPONENT_TYPES.PARENTING_COMPONENT]){
             if(parent.children.includes(aid)){
-                console.log('parent info is', parent)
+                // console.log('parent info is', parent)//
                 switch(parent.aid){
                     case '0':
                         return scene.parentEntity

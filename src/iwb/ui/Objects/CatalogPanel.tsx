@@ -11,9 +11,6 @@ import { displayCatalogInfoPanel, setSelectedInfoItem } from './CatalogInfoPanel
 import { selectCatalogItem } from '../../modes/Build'
 import { setUIClicked } from '../ui'
 import { displayStoreView } from './StoreView'
-import { sendServerMessage } from '../../components/Colyseus'
-import { showNotification } from './NotificationPanel'
-import { displayPendingPanel } from './PendingInfoPanel'
 
 let alphabet = [
     "A", "B", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
@@ -130,7 +127,7 @@ export function filterCatalog() {
     }else if(styleFilter === "All"){
         filteredResult = [...sortedAll]
     }
-    else if(styleFilter === "Newest!"){
+    else if(styleFilter === "New"){
     filteredResult = [...SortedNewest]
     }
     else{
@@ -140,6 +137,11 @@ export function filterCatalog() {
         filteredResult = [...result]
     }
 
+    console.log('style filter is', styleFilter)
+    console.log(filteredResult.filter(item=>item.tag.length > 0))
+    console.log(filteredResult.filter(item=>item.tag.map($=> $.toLowerCase())))
+    console.log(filteredResult.filter(item=>item.tag.includes(searchFilter.toLowerCase())))
+
     // if (searchFilter !== "") {//
         let result = filteredResult.filter(item =>
             item.n.toLowerCase().includes(searchFilter.toLowerCase()) ||
@@ -147,7 +149,7 @@ export function filterCatalog() {
             (item.cat && item.cat.toLowerCase().includes(searchFilter.toLowerCase())) ||
             (item.d && item.d.toLowerCase().includes(searchFilter.toLowerCase())) ||
             (item.on && item.on.toLowerCase().includes(searchFilter.toLowerCase())) ||
-            (item.tag && item.tag.includes(searchFilter.toLowerCase()))
+            (item.tag.length > 0 && item.tag.map($=> $.toLowerCase()).includes(searchFilter.toLowerCase()))
         );
         filteredResult = [...result]
     // }
@@ -366,23 +368,25 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                 }}
             >
 
-                <UiEntity
-                    uiTransform={{
-                        display: item.anim ? 'flex' : 'none',
-                        justifyContent: 'flex-start',
-                        width: calculateSquareImageDimensions(2).width,
-                        height: calculateSquareImageDimensions(2).height,
-                        positionType:'absolute',
-                        position:{right:0, bottom:0}
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png',
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.rotateLeftArrow2Trans)
-                    }}
-                />
+<UiEntity
+    uiTransform={{
+        display: item.anim ? 'flex' : 'none',
+        justifyContent: 'center',
+        alignContent: 'center',
+        flexDirection: 'row',
+        width: calculateSquareImageDimensions(2).width,
+        height: calculateSquareImageDimensions(2).height,
+        positionType:'absolute',
+        position:{right:0, bottom:0}
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png',
+        },
+        uvs: getImageAtlasMapping(uiSizes.rotateLeftArrow2Trans)
+    }}
+/>
 
             </UiEntity>
                 </UiEntity>
@@ -396,31 +400,6 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                     height: '100%',
                 }}
                 >
-                     {/* <UiEntity
-                    uiTransform={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        flexDirection: 'row',
-                        width: calculateSquareImageDimensions(4).width,
-                        height: calculateSquareImageDimensions(4).height,
-                        margin: {left: '1%'}
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas1.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.gridButtonTrans)
-                    }}
-                    onMouseDown={() => {
-                        if (players.get(localUserId)?.mode === SCENE_MODES.BUILD_MODE) {
-                            selectCatalogItem(item.id, EDIT_MODES.GRAB, false)
-                        }
-                    }}
-                /> */}
-
-
 
                 <UiEntity
                     uiTransform={{
@@ -475,7 +454,11 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         }}
                     />
 
+                    
+
                 </UiEntity>
+
+        
 
             </UiEntity>
 

@@ -85,7 +85,7 @@ export function updateTriggerArea(scene:any, entityInfo:any, transform:any){
   try{
     utils.triggers.setAreas(entityInfo.entity, [{type:'box',
       // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
-      scale: triggerInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+      scale: triggerInfo.isArea ? transform.r.y === 90 || transform.r.y === 270 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
     }])
   }
   catch(e){
@@ -123,7 +123,7 @@ export function triggerListener(scene:any){
   })
 }
 
-function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
+export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   const triggerEvents = getTriggerEvents(entityInfo.entity)
 
   if(triggerInfo.type === Triggers.ON_INPUT_ACTION && triggerEvents.isListening(triggerInfo.type)){
@@ -132,18 +132,18 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
-      console.log('trigger event', triggerInfo, triggerEvent)
+      // console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent)
       if(!trigger){
         console.log('cant find trigger')
         return
       }
         if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
-          console.log('passed check conditions')
+          // console.log('passed check conditions')
             for(const triggerAction of triggerInfo.actions){
               // console.log('trigger actions area', triggerAction)
                 if(isValidAction(triggerAction)){
-                  console.log('is valid action')
+                  // console.log('is valid action')
                     let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
                     if(aid){
                       // console.log('action info is', {aid:aid, action:action, entity:entity})
@@ -152,7 +152,7 @@ function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
                 }
             }
         }else{
-            console.log('trigger condition not met')
+            // console.log('trigger condition not met')
         }
     })
 }
@@ -210,7 +210,7 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
-          console.log('checking condition', condition)
+          // console.log('checking condition', condition)
           switch (condition.type) {
             case TriggerConditionType.WHEN_STATE_IS: {
               const states = States.getOrNull(entity)
@@ -245,8 +245,8 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
               break
             }
             case TriggerConditionType.WHEN_COUNTER_EQUALS: {
-              let counter = getCounterComponentByAssetId(scene, aid, condition.counter)
-              console.log('condition counter is', counter)
+              let counter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
+              // console.log('condition counter is', counter)
               if(!counter){
                 return false
               }
@@ -261,7 +261,7 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
             }
   
             case TriggerConditionType.WHEN_COUNTER_IS_GREATER_THAN: {
-              let counter = getCounterComponentByAssetId(scene, aid, condition.counter)
+              let counter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
               if(!counter){
                 return false
               }
@@ -275,14 +275,13 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
               break
             }
             case TriggerConditionType.WHEN_COUNTER_IS_LESS_THAN: {
-              let counter = getCounterComponentByAssetId(scene, aid, condition.counter)
+              let counter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
               if(!counter){
                 return false
               }
 
               if(counter.currentValue){
                 const numeric = Number(condition.counter)
-                console.log('numerica is', numeric)
                 if (!isNaN(numeric)) {
                   return counter.currentValue < numeric
                 }
@@ -378,7 +377,7 @@ export function removePlayTriggerSystem(){
 }
 export function PlayTriggerSystem(dt:number){
     while (actionQueue.length > 0) {
-      console.log(actionQueue)
+      // console.log(actionQueue)
         const { entity, action, aid } = actionQueue.shift()!
         const actionEvents = getActionEvents(entity)
         actionEvents.emit(action.id, action)
@@ -422,6 +421,11 @@ export function runGlobalTrigger(scene:any, type:Triggers, data:any){
   })
 }
 
+export function runSingleTrigger(entityInfo:any, type:Triggers, data:any){
+  let triggerEvents = getTriggerEvents(entityInfo.entity)
+  triggerEvents.emit(type, data)
+}
+
 class MittExtender {
   emitter:any
   callbacks:Map<string,Function>
@@ -451,7 +455,6 @@ class MittExtender {
     return this.callbacks.has(type)// && this.listeners.get(type).has(handler);
   }
 }
-
 
 class MittWrapper {
   emitter:any

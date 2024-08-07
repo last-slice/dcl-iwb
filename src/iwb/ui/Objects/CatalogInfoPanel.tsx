@@ -107,7 +107,28 @@ export function createCatalogInfoPanel() {
                                 sourceHeight: 256
                             })
                         }}
-                    />
+                    >
+                        <UiEntity
+                                uiTransform={{
+                                    display: selectedItem && selectedItem.anim ? 'flex' : 'none',
+                                    justifyContent: 'center',
+                                    alignContent: 'center',
+                                    flexDirection: 'row',
+                                    width: calculateSquareImageDimensions(3).width,
+                                    height: calculateSquareImageDimensions(3).height,
+                                    positionType:'absolute',
+                                    position:{right:0, bottom:0}
+                                }}
+                                uiBackground={{
+                                    textureMode: 'stretch',
+                                    texture: {
+                                        src: 'assets/atlas2.png',
+                                    },
+                                    uvs: getImageAtlasMapping(uiSizes.rotateLeftArrow2Trans)
+                                }}
+                            />
+
+                    </UiEntity>
 
                 </UiEntity>
 
@@ -323,7 +344,7 @@ export function createCatalogInfoPanel() {
                         margin: {bottom: "5%"}
                     }}
                     uiText={{
-                        value: `Catalog: ${selectedItem?.cat}`,
+                        value: `Style: ${selectedItem?.cat}`,
                         fontSize: sizeFont(25, 15),
                         textAlign: 'middle-left'
                     }}
@@ -444,7 +465,7 @@ export function createCatalogInfoPanel() {
                     uiText={{
                         value: `Description:   ${selectedItem?.d}`,
                         fontSize: sizeFont(25, 15),
-                        textAlign: 'middle-left'
+                        textAlign: 'top-left'
                     }}
                 />
 

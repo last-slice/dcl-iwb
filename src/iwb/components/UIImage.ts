@@ -47,7 +47,7 @@ export function setUiImagePlayMode(scene:any, entityInfo:any){
 }
 
 export function uiImageDataUpdate(scene:any, entityInfo:any){
-    console.log('ui update')
+    // console.log('ui update')
     // setUiTextPlayMode(scene, entityInfo)
     // scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((sceneEntity:any)=>{
     //     if(!["0", "1","2"].includes(entityInfo.aid)){

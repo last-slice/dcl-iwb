@@ -281,11 +281,11 @@ export function TriggerConditionRow(info:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '30%',
+                width: '50%',
                 height: '100%',
                 margin:{left:'2%'}
             }}
-            uiText={{value:"" + data.entityName.substring(0, 12) + "...", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + (data.entityName.length > 20 ? data.entityName.substring(0, 20) + "..." : data.entityName), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
              <UiEntity
@@ -293,10 +293,10 @@ export function TriggerConditionRow(info:any){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%', 
+                width: '30%', 
                 height: '100%',
             }}
-            uiText={{value:"" + data.type.replace(/_/g, " "), fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + (getConditionValue(data.type)), fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
                 <UiEntity
@@ -307,7 +307,7 @@ export function TriggerConditionRow(info:any){
                 width: '10%', 
                 height: '100%',
             }}
-            uiText={{value:"" + (data.value ? data.value : data.counter ? data.counter : ""), fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + (data.value ? data.value : data.counter ? data.counter : ""), fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
             {/* action edit buttons column */}
@@ -338,7 +338,7 @@ export function TriggerConditionRow(info:any){
                     uvs: getImageAtlasMapping(uiSizes.trashButton)
                 }}
                 onMouseDown={() => {
-                    console.log('data is', data)//
+                    console.log('data is', data)
                     update("deletecondition", {tid: data.triggerId, index:data.index})
                 }}
             />
@@ -346,6 +346,25 @@ export function TriggerConditionRow(info:any){
 
             </UiEntity>
     )
+}
+
+function getConditionValue(condition:any){
+    switch(condition){
+        case TriggerConditionType.WHEN_COUNTER_EQUALS:
+            return "Counter = "
+        case TriggerConditionType.WHEN_COUNTER_IS_GREATER_THAN:
+            return "Counter > "
+        case TriggerConditionType.WHEN_COUNTER_IS_LESS_THAN:
+            return "Counter < "
+        case TriggerConditionType.WHEN_STATE_IS:
+            return "State = "
+        case TriggerConditionType.WHEN_STATE_IS_NOT:
+            return "State != "
+        case TriggerConditionType.WHEN_PREVIOUS_STATE_IS:
+            return "Prev State = "
+        case TriggerConditionType.WHEN_PREVIOUS_STATE_IS_NOT:
+            return "Prev State != "
+    }
 }
 
 function updateEntityConditions(aid:string){

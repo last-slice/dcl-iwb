@@ -1,5 +1,5 @@
 import {getPlayer} from "@dcl/sdk/players";
-import {Player, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
+import {Player, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
 // import {iwbEvents, sendServerMessage} from "../messaging";
 import {AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
 import resources, { colors } from "../helpers/resources";
@@ -116,6 +116,7 @@ function setPlayerDefaults(player:any){
     player.selectedEntity = null
     player.activeSceneId = ""
     player.mode = SCENE_MODES.PLAYMODE
+    player.gameStatus = PLAYER_GAME_STATUSES.NONE
 
     let playerData = getPlayer()
     player.dclData = playerData

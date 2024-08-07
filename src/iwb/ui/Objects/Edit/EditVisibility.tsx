@@ -36,7 +36,7 @@ export function EditVisibility() {
             }}
         >
 
-                    {/* url label */}
+                    {/* url label// */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -45,7 +45,7 @@ export function EditVisibility() {
                 width: '15%',
                 height: '100%',
             }}
-        uiText={{value:"Play Visibility", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap',value:"Play Visibility", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
             <UiEntity
@@ -111,7 +111,7 @@ export function EditVisibility() {
                 width: '15%',
                 height: '100%',
             }}
-        uiText={{value:"Build Visibility", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"Build Visibility", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
             <UiEntity

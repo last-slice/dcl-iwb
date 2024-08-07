@@ -46,7 +46,7 @@ export function addLevelSpawnEntity(){
 
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     Transform.createOrReplace(levelSpawnEntity, {
-        parent:findAssetParent(scene, selectedItem.aid), 
+        parent:scene.parentEntity, 
         position:scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(selectedItem.aid).loadingSpawn,
     }
     )

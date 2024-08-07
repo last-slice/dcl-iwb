@@ -1,4 +1,4 @@
-import { AudioSource, AudioStream, AvatarAnchorPointType, AvatarAttach, Billboard, BillboardMode, ColliderLayer, Entity, GltfContainer, InputAction, Material, MeshCollider, MeshRenderer, NftShape, PointerEventType, PointerEvents, RaycastQueryType, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine, raycastSystem } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, AvatarAnchorPointType, AvatarAttach, Billboard, BillboardMode, ColliderLayer, Entity, GltfContainer, InputAction, Material, MeshCollider, MeshRenderer, NftShape, PointerEventType, PointerEvents, RaycastQueryType, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine, raycastSystem } from "@dcl/sdk/ecs"
 import { Actions, COMPONENT_TYPES, EDIT_MODES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES, SceneItem, SelectedItem } from "../helpers/types"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import players from "@dcl/sdk/players"
@@ -47,6 +47,7 @@ import { resetSetRotationEntity } from "../ui/Objects/Edit/ActionPanels/AddSetRo
 import { resetSetScaleEntity } from "../ui/Objects/Edit/ActionPanels/AddSetScalePanel"
 import { releaseBatchActions } from "../ui/Objects/Edit/ActionPanels/AddBatchActionsPanel"
 import { releaseRandomActions } from "../ui/Objects/Edit/ActionPanels/AddRandomAction"
+import { resetMovePlayerEntity } from "../ui/Objects/Edit/ActionPanels/AddMovePlayerPanel"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -273,8 +274,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
         let scale: any
         scale = Vector3.One()
 
-        // TODO use configurable parameters for item height and depth//
-        let itemHeight = ITEM_HEIGHT_DEFAULT//
+        // TODO use configurable parameters for item height and depth
+        let itemHeight = ITEM_HEIGHT_DEFAULT
         let itemDepth = ITEM_DEPTH_DEFAULT
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
@@ -358,8 +359,16 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 scale = Vector3.create(1,1,1)
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
             } 
+            else if (selectedItem.itemData.n === "Plane Shape") {
+                console.log('selected plane shape')
+                MeshRenderer.setPlane(selectedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                selectedItem.initialHeight = .88
+                scale = Vector3.create(1,1,1)
+                MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
+            } 
             else {
-                // if (selectedItem.itemData.pending)  {
+                // if (selectedItem.itemData.pending)  {//
                     // MeshRenderer.setBox(selectedItem.entity)
                 // } else {
                     GltfContainer.create(selectedItem.entity, {
@@ -367,6 +376,10 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                         invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
                         visibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
                     })
+
+                    if(selectedItem.itemData.hasOwnProperty("anim")){
+                        Animator.createOrReplace(selectedItem.entity)
+                    }
 
                 // }
             }
@@ -577,6 +590,8 @@ export function saveItem() {
     //     }
     // }//
     resetAdditionalAssetFeatures()
+
+    Actions.SHOW_DIALOG
 }
 
 export function resetAdditionalAssetFeatures(){
@@ -592,6 +607,7 @@ export function resetAdditionalAssetFeatures(){
     displayGrabContextMenu(false)
     releaseBatchActions()
     releaseRandomActions()
+    resetMovePlayerEntity()
 }
 
 export function dropGrabbedItems(){
