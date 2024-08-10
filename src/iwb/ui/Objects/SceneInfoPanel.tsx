@@ -92,7 +92,8 @@ export function updateRows() {
                         case 1:
                             let gameAsset = scene[COMPONENT_TYPES.GAME_COMPONENT].get(parentingInfo.aid)
                             let levelAsset = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(parentingInfo.aid)
-                            if(gameAsset || levelAsset){
+                            let gameItem = scene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].get(parentingInfo.aid)
+                            if(gameAsset || levelAsset || gameItem){
                                 assets.push({aid:parentingInfo.aid, id:itemInfo.id, name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(parentingInfo.aid).value})
                             }
                             break;

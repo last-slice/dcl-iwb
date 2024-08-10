@@ -1,13 +1,11 @@
 import { Entity, InputAction, PointerEventType, PointerEvents, engine, inputSystem } from "@dcl/sdk/ecs"
-import { log } from "../helpers/functions"
 import { handleInputTriggerForEntity } from "../components/Triggers"
 import { uiInput } from "../ui/ui"
 import { setButtonState } from "./InputSystem"
-import { localUserId, showingTutorial, stopTutorialVideo, updateShowingTutorial } from "../components/Player"
+import { localUserId} from "../components/Player"
 import { createBeam, startAttackCooldown } from "../components/Game"
 import { GAME_WEAPON_TYPES } from "../helpers/types"
 import { colyseusRoom } from "../components/Colyseus"
-import { advanceDialog, showingDialogPanel } from "../ui/Objects/DialogPanel"
 
 export let added = false
 
@@ -22,6 +20,7 @@ export function addPlayModeSystem(){
 export function removePlayModSystem(){
     engine.removeSystem(PlayModeInputSystem)
     added = false
+    console.log('removed playmode input system')
 }
 
 export function PlayModeInputSystem(dt: number) {
@@ -66,10 +65,10 @@ export function PlayModeInputSystem(dt: number) {
             }
         }
         else{
-            if(showingTutorial && !uiInput){
-                stopTutorialVideo()
-                return
-            }
+            // if(showingTutorial && !uiInput){
+            //     stopTutorialVideo()
+            //     return
+            // }
             if (result && !uiInput) {
                 if (result.hit && result.hit.entityId) {
                     handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_DOWN)
@@ -128,6 +127,82 @@ export function PlayModeInputSystem(dt: number) {
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
                 handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_SECONDARY,  PointerEventType.PET_UP)
+            }
+        }
+    }
+
+    //#1 Button
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)) {
+        setButtonState(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_3, PointerEventType.PET_DOWN)
+        console.log('E button result', result, uiInput)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_3,  PointerEventType.PET_DOWN)
+            }
+        }
+    }
+
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_3, PointerEventType.PET_UP)) {
+        setButtonState(InputAction.IA_ACTION_3, PointerEventType.PET_UP)
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_3, PointerEventType.PET_UP)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_3,  PointerEventType.PET_UP)
+            }
+        }
+    }
+
+    //#2 Button
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)) {
+        setButtonState(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)
+        console.log('E button result', result, uiInput)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_4,  PointerEventType.PET_DOWN)
+            }
+        }
+    }
+
+    //#3 Button
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_5, PointerEventType.PET_UP)) {
+        setButtonState(InputAction.IA_ACTION_5, PointerEventType.PET_UP)
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_5, PointerEventType.PET_UP)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_5,  PointerEventType.PET_UP)
+            }
+        }
+    }
+
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_5, PointerEventType.PET_UP)) {
+        setButtonState(InputAction.IA_ACTION_5, PointerEventType.PET_UP)
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_5, PointerEventType.PET_UP)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_5,  PointerEventType.PET_UP)
+            }
+        }
+    }
+
+    //#4 Button
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_6, PointerEventType.PET_UP)) {
+        setButtonState(InputAction.IA_ACTION_6, PointerEventType.PET_UP)
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_6, PointerEventType.PET_UP)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_6,  PointerEventType.PET_UP)
+            }
+        }
+    }
+
+    if (inputSystem.isTriggered(InputAction.IA_ACTION_6, PointerEventType.PET_UP)) {
+        setButtonState(InputAction.IA_ACTION_6, PointerEventType.PET_UP)
+        const result = inputSystem.getInputCommand(InputAction.IA_ACTION_6, PointerEventType.PET_UP)
+        if (result && !uiInput) {
+            if (result.hit && result.hit.entityId) {
+                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_ACTION_6,  PointerEventType.PET_UP)
             }
         }
     }

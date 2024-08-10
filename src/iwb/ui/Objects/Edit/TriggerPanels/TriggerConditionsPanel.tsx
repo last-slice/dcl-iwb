@@ -10,19 +10,45 @@ import { editingTrigger, triggerInfoView, triggerView, update } from '../EditTri
 import { getAllAssetNames } from '../../../../components/Name'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { selectedTrigger } from './TriggerInfoPanel'
+import { utils } from '../../../../helpers/libraries'
 
 let entities:any[] = []
 let entityConditions:any[] = []
 let entityStates:any[] = []
+let currentConditions:any[] = []
+let operators:any[] = ["AND", "OR"]
 
 let selectedEntityIndex:number = 0
 let selectedConditionIndex:number = 0
+let selectedOperatorIndex:number = 0
 
 let newCondition:any = {}
 
 export function updateTriggerConditionPanel(){
     entities.length = 0
     entities = getAllAssetNames(selectedItem.sceneId)
+
+    getCurrentConditions()
+    selectedOperatorIndex = operators.findIndex($=> selectedTrigger.operator)
+}
+
+function getCurrentConditions(){
+    currentConditions.length = 0
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(scene){
+        let triggerData = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(selectedItem.aid)
+        if(triggerData){
+            let trigger = triggerData.triggers.find((trigger:any) => trigger.id === selectedTrigger.id)
+            if(trigger){
+                trigger.caid.forEach((caid:string, index:number)=>{
+                    let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(caid)
+                    if(itemInfo){
+                        currentConditions.push({triggerId:selectedTrigger.id, index:index, entityName:itemInfo.value, type: trigger.ctype[index], value:trigger.cvalue[index] ? trigger.cvalue[index] : undefined, counter:trigger.ccounter[index] ? trigger.ccounter[index] : undefined})
+                    }
+                })
+            }
+        }
+    }
 }
 
 export function resetTriggerConditionsPanel(){
@@ -47,7 +73,8 @@ export function TriggerConditionsPanel(){
             display: triggerInfoView === "conditions" ? "flex" : "none"
             }}
         >
-         <UiEntity
+
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -55,9 +82,37 @@ export function TriggerConditionsPanel(){
                 alignContent:'center',
                 width: '100%',
                 height: '10%',
+                display: currentConditions.length > 0 ? "flex" : 'none'
             }}
-                uiText={{value:"Add Trigger Condition", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+                uiText={{value:"Add Condition Operator", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
+
+             {/* condition operator dropdown */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: '100%',
+                height: '10%',
+                margin:{top:"1%"}
+            }}
+            >
+
+            <Dropdown
+                options={[...operators]}
+                selectedIndex={selectedOperatorIndex}
+                onChange={selectConditionOperatorIndex}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
+
+            </UiEntity>
 
         {/* condition entity dropdown */}
         <UiEntity
@@ -210,6 +265,8 @@ export function TriggerConditionsPanel(){
                 selectedEntityIndex = 0
                 selectedConditionIndex = 0
                 newCondition = {}
+
+                utils.timers.setTimeout(()=>{getCurrentConditions()}, 200)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
@@ -340,6 +397,7 @@ export function TriggerConditionRow(info:any){
                 onMouseDown={() => {
                     console.log('data is', data)
                     update("deletecondition", {tid: data.triggerId, index:data.index})
+                    utils.timers.setTimeout(()=>{getCurrentConditions()}, 200)
                 }}
             />
                 </UiEntity>
@@ -415,6 +473,11 @@ function selectConditionEntityIndex(index:number){
     }
 }
 
+function selectConditionOperatorIndex(index:number){
+    selectedOperatorIndex = index
+    update("edit", {conditionperator:operators[index]})
+}
+
 function selectConditionIndex(index:number){
     selectedConditionIndex = index
     if(index !== 0){
@@ -423,24 +486,37 @@ function selectConditionIndex(index:number){
     }
 }
 
-function getTriggerConditions(){
+function getTriggerConditions(justCount?:boolean){
     let arr:any[] = []
     let count = 0
-    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-    if(scene){
-        let triggerData = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(selectedItem.aid)
-        if(triggerData){
-            let trigger = triggerData.triggers.find((trigger:any) => trigger.id === selectedTrigger.id)
-            if(trigger){
-                trigger.caid.forEach((caid:string, index:number)=>{
-                    let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(caid)
-                    if(itemInfo){
-                        arr.push(<TriggerConditionRow data={{triggerId:selectedTrigger.id, index:index, entityName:itemInfo.value, type: trigger.ctype[index], value:trigger.cvalue[index] ? trigger.cvalue[index] : undefined, counter:trigger.ccounter[index] ? trigger.ccounter[index] : undefined}} rowCount={count} />)
-                        count++
-                    }
-                })
-            }
-        }
-    }
+    currentConditions.forEach((condition:any, i:number)=>{
+        arr.push(<TriggerConditionRow data={{triggerId:condition.triggerId, index:condition.index, entityName:condition.entityName, type: condition.type, value:condition.value, counter:condition.counter}} rowCount={count} />)
+        count++
+    })
     return arr
+    // let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    // if(scene){
+    //     let triggerData = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(selectedItem.aid)
+    //     if(triggerData){
+    //         let trigger = triggerData.triggers.find((trigger:any) => trigger.id === selectedTrigger.id)
+    //         if(trigger){
+    //             trigger.caid.forEach((caid:string, index:number)=>{
+    //                 let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(caid)
+    //                 if(itemInfo){
+    //                     if(justCount){}
+    //                     else{
+    //                         arr.push(<TriggerConditionRow data={{triggerId:selectedTrigger.id, index:index, entityName:itemInfo.value, type: trigger.ctype[index], value:trigger.cvalue[index] ? trigger.cvalue[index] : undefined, counter:trigger.ccounter[index] ? trigger.ccounter[index] : undefined}} rowCount={count} />)
+    //                     }
+    //                     count++
+    //                 }
+    //             })
+    //         }
+    //     }
+    // }
+    // if(justCount){
+    //     return count
+    // }else{
+    //     return arr
+    // }
+
 }

@@ -148,7 +148,7 @@ function generateSettingsToggles(){
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: 'assets/atlas2.png'
+                src: 'assets/atlas2.png'//
             },
             uvs: getButtonState(setting.key)
         }}
@@ -180,7 +180,7 @@ function generateSettingsToggles(){
             justifyContent: 'center',
             width: '80%',
             height: '100%',
-            margin:{left:"1%",},
+            margin:{left:"5%",},
         }}
         uiText={{textWrap:'nowrap', value: setting.label, color:Color4.White(), fontSize:sizeFont(30,20)}}
         />

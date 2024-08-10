@@ -1,6 +1,7 @@
 import { Entity, engine } from "@dcl/sdk/ecs"
 import { localUserId } from "./Player"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
+import { updateAssetBuildVisibility } from "./Visibility"
 
 
 export function getAssetIdByEntity(scene:any, entity:Entity){

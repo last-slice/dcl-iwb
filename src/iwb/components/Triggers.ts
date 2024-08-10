@@ -132,16 +132,16 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
-      // console.log('trigger event', triggerInfo, triggerEvent)
+      console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent)
       if(!trigger){
         console.log('cant find trigger')
         return
       }
         if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
-          // console.log('passed check conditions')
+          console.log('passed check conditions')
             for(const triggerAction of triggerInfo.actions){
-              // console.log('trigger actions area', triggerAction)
+              console.log('trigger actions area', triggerAction)
                 if(isValidAction(triggerAction)){
                   // console.log('is valid action')
                     let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
@@ -159,7 +159,6 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
 
 function findTrigger(scene:any, triggerEvent:any){
   let aid = getAssetIdByEntity(scene, triggerEvent.entity)
-  // console.log('trigger aid is', aid)
   if(!aid){
     return false
   }

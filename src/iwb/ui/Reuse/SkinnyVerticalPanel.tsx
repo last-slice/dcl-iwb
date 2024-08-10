@@ -9,8 +9,9 @@ let show = false
 let props:any
 let variableText:any
 export let customFunction:()=> void | null
+export let customFunction2:()=> void | null
 
-export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any, f?: ()=> void){
+export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any, f?: ()=> void, f2?: ()=> void){
     if(value){
         props = data
     }
@@ -18,6 +19,10 @@ export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any,
     variableText = extra
     if(f){
         customFunction = f
+    }
+
+    if(f2){
+        customFunction2 = f2
     }
    
 }

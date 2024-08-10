@@ -148,7 +148,8 @@ export let topTools: any[] = [
         toggle: true,
         fn: () => {
             toggleSnapMode()
-        }
+        },
+        always:true
     },
     {
         name: "Upload",

@@ -41,13 +41,14 @@ export function updateSetPositionEntityRotation(direction:string, factor:number,
     let transform:any = Transform.getMutable(setTransformEntity)
     let eulerRotation:any = Quaternion.toEulerAngles(transform.rotation)
 
-    eulerRotation[direction] = manual ? factor : transform[direction] + (factor * selectedItem.rFactor)
+    eulerRotation[direction] = manual ? factor : eulerRotation[direction] + (factor * selectedItem.rFactor)
+    console.log('euler rotation', eulerRotation)
 
     transform.rotation = Quaternion.fromEulerDegrees(eulerRotation.x, eulerRotation.y, eulerRotation.z)
 
-    newActionData.x = transform.x
-    newActionData.y = transform.y
-    newActionData.z = transform.z
+    newActionData.x = eulerRotation.x
+    newActionData.y = eulerRotation.y
+    newActionData.z = eulerRotation.z
 }
 
 export function AddSetRotationPanel(){
@@ -68,7 +69,7 @@ export function AddSetRotationPanel(){
 
                {Transform.has(setTransformEntity) &&
                <TransformInputModifiers modifier={EDIT_MODIFIERS.ROTATION}
-                    override={true}
+                    override={updateSetPositionEntityRotation}
                     rowHeight={'50%'}
                     factor={selectedItem && selectedItem.rFactor}
                     valueFn={(type:string)=>{

@@ -1,5 +1,4 @@
 import { Room } from "colyseus.js";
-import { addInputSystem, createInputListeners } from "../systems/InputSystem";
 import { createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings, worldTravel } from './Player'
 import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { getAssetUploadToken, log } from "../helpers/functions";
@@ -8,7 +7,7 @@ import { utils } from "../helpers/libraries";
 import { addLocalWorldPermissionsUser, addTutorial, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
-import { addScene, checkSceneCount, enablePrivateModeForScene, isPrivateScene, loadScene, loadSceneAsset, pendingSceneLoad, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
+import { addScene, checkAllScenesLoaded, checkSceneCount, enablePrivateModeForScene, isPrivateScene, loadScene, loadSceneAsset, pendingSceneLoad, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
 import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel, deleteCreationEntities } from "../modes/Create";
 import { getEntity } from "./IWB";
@@ -96,46 +95,58 @@ export async function createColyseusListeners(room:Room){
         // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
         // console.log('settings info', info.settings)
-        console.log(info.realmAssets)
+        // console.log(info.realmAssets)
 
         // setCatalog(info.catalog)//
-        setRealmAssets(info.realmAssets)
+        await setRealmAssets(info.realmAssets)
 
-        refreshSortedItems()
+        await refreshSortedItems()
 
-        updateStyles(info.styles)
+        await updateStyles(info.styles)
 
-        setPlayerVersion(info.iwb.v)
-        setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
-        setWorlds(info.worlds)
-        setNewItems()
-        setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
+        await setPlayerVersion(info.iwb.v)
+        await setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
+        await setWorlds(info.worlds)
+        await setNewItems()
+        await setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
 
-        if(!isGCScene()){
-            displayIWBMap(true)
-            utils.timers.setTimeout(()=>{
-                refreshMap()
-            }, 1000 * 5)
-        }
-
-        setSettings(info.settings)
-        if(info.settings.firstTime){
+        await setSettings(info.settings)
+        if(!isGCScene() && info.settings.firstTime){
             console.log('first time')
-            // displayWelcomeScreen(true)
+            displaySkinnyVerticalPanel(true, getView("Welcome_Screen"))
         }
 
-        if (localPlayer!.homeWorld) {
-            let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
-            if (config) {
-                if (config.v < iwbConfig.v) {
-                    showNotification({
-                        type: NOTIFICATION_TYPES.MESSAGE,
-                        message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
-                        animate: {enabled: true, time: 10, return: true}
-                    })
+        room.state.players.onAdd(async(player:any, userId:any)=>{
+            if(userId === localUserId){
+                await createPlayer(player)
+                setSceneListeners(room)
+
+                if(!isGCScene()){
+                    // displayIWBMap(true)
+                    localPlayer.canMap = true
+                    utils.timers.setTimeout(()=>{
+                        refreshMap()
+                    }, 1000 * 10)
                 }
             }
-        }
+    
+            if(player.playingGame){
+                addGamePlayer(player, userId === localUserId)
+            }
+    
+            player.listen("selectedAsset", (current:any, previous:any)=>{
+                setPlayerSelectedAsset(player, current, previous)
+            })
+        })
+    
+        room.state.players.onRemove(async(player:any, userId:any)=>{
+            removePlayer(userId)
+            removeGamePlayer(player)
+        })
+
+        utils.timers.setTimeout(()=>{
+            checkAllScenesLoaded()
+        }, 1000 * 5)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.IWB_VERSION_UPDATE, (info: any) => {
@@ -148,21 +159,27 @@ export async function createColyseusListeners(room:Room){
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "The IWB Platform has an update!", animate:{enabled:true, return:true, time:5}})
     })
 
-    room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, (info: any) => {
+    room.onMessage(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED, async (info: any) => {
         log(SERVER_MESSAGE_TYPES.NEW_WORLD_CREATED + ' received', info)
-        setWorlds([info])
+        await setWorlds([info])
 
-        let world = worlds.find($=> $.ens === info.ens && realm === $.ens)
+        console.log('worlds are ', worlds)
+
+        let world = worlds.find($=> $.ens === info.ens)
         if(world){
             if (info.owner.toLowerCase() === localUserId || world.bps.includes(localUserId)) {
                 if(info.init){
                     displaySkinnyVerticalPanel(true, getView("Init_World_Ready"), info.ens, ()=>{
                       worldTravel(world)  
                     })
-                    displayPendingPanel(false, "ready")
+                    if(info.ens === realm){
+                        displayPendingPanel(false, "ready")
+                    }
                 }
                 else{
-                    displayPendingPanel(true, "ready")//
+                    if(info.ens === realm){
+                        displayPendingPanel(true, "ready")
+                    }   
                 }
             }
             showNotification({
@@ -538,6 +555,9 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
+}
+
+function setSceneListeners(room:any){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         console.log('scene added', key, scene)
         scene.checkEnabled = false
@@ -600,25 +620,5 @@ export async function createColyseusListeners(room:Room){
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.ona + " just deleted their scene " + scene.n, animate:{enabled:true, return:true, time:5}})
         }
         unloadScene(scene)
-    })
-
-    room.state.players.onAdd(async(player:any, userId:any)=>{
-        if(userId === localUserId){
-            await createPlayer(player)
-            // setSceneListeners(room)
-        }
-
-        if(player.playingGame){
-            addGamePlayer(player, userId === localUserId)
-        }
-
-        player.listen("selectedAsset", (current:any, previous:any)=>{
-            setPlayerSelectedAsset(player, current, previous)
-        })
-    })
-
-    room.state.players.onRemove(async(player:any, userId:any)=>{
-        removePlayer(userId)
-        removeGamePlayer(player)
     })
 }

@@ -23,7 +23,9 @@ export let hoveredEntity:Entity
 
 export function setButtonState(button: number, state: number | null) {
     let b = buttonsPressed.get(button)
-    b!.id = state
+    if(b){
+        b.id = state
+    }
 }
 
 export function deleteButtonState(button:number){
@@ -34,12 +36,14 @@ export function addInputSystem(){
     if(!added){
         added = true
         engine.addSystem(InputListenSystem)
+        console.log('adding build mode system')
     }
 }
 
 export function removeInputSystem(){
     engine.removeSystem(InputListenSystem)
     added = false
+    console.log('removing build mode system')
 }
 
 export function createInputListeners() {
@@ -58,7 +62,6 @@ export function createInputListeners() {
     buttonsPressed.set(InputAction.IA_JUMP, {id: null})
 
     // engine.addSystem(InputListenSystem)
-    addInputSystem()
 }
 
 export function InputListenSystem(dt:number){

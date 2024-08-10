@@ -473,7 +473,7 @@ function SizePanel() {
             />
 
             {/* File count size container */}
-                        <UiEntity
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'flex-start',

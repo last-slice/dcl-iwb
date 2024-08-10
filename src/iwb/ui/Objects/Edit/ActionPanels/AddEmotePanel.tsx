@@ -4,8 +4,6 @@ import { Actions, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS } from '../../../../helpers
 import { sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
-import { colyseusRoom } from '../../../../components/Colyseus'
-import { selectedItem } from '../../../../modes/Build'
 
 export function AddEmoteActionPanel(){
     return(

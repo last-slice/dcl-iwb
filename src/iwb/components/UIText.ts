@@ -50,7 +50,6 @@ export function disableUiTextPlayMode(scene:any, entityInfo:any){
 export function setUiTextPlayMode(scene:any, entityInfo:any){
     let uiTextInfo = scene[COMPONENT_TYPES.UI_TEXT_COMPONENT].get(entityInfo.aid)
     if(uiTextInfo){
-        console.log('setting ui text play mode', uiTextInfo)
         let uiTextComponent = UiTexts.get(entityInfo.aid)
         if(uiTextComponent){
             let textData:string = " "

@@ -10,7 +10,7 @@ import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont, ca
 import { uiSizes } from '../uiConfig'
 import { colyseusRoom } from '../../components/Colyseus'
 import { setUIClicked } from '../ui'
-import { displayExpandedMap } from './ExpandedMapView'
+import { displayExpandedMap, expandedMapshow } from './ExpandedMapView'
 
 let showView = false
 let init = false
@@ -55,13 +55,13 @@ export function createIWBMap(){
     uiTransform={{
         width: calculateImageDimensions(12.5, getAspect(uiSizes.vertRectangle)).width,
         height: calculateImageDimensions(12.5,getAspect(uiSizes.vertRectangle)).height,
-      display: showView ? 'flex' : 'none',
+      display: localPlayer && localPlayer.canMap ? 'flex' : 'none',
       justifyContent:'flex-start',
       flexDirection:'column',
       alignContent:'center',
       alignItems:'center',
       positionType:'absolute',
-      position:{top: isPreview ? '25%' : '5%', left:'-0.5%'}
+      position:{top: isPreview ? '45%' : '5%', left:'-0.5%'}
     }}
     uiBackground={{
       texture:{
@@ -72,7 +72,11 @@ export function createIWBMap(){
     }}
     onMouseDown={()=>{
       setUIClicked(true)
-      displayExpandedMap(true, undefined, true)
+      if(expandedMapshow){
+        displayExpandedMap(false)
+      }else{
+        displayExpandedMap(true, undefined, true)
+      }
     }}
     onMouseUp={()=>{
       setUIClicked(false)

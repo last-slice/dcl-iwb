@@ -4,7 +4,7 @@ import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../help
 import { COMPONENT_TYPES } from "../helpers/types"
 
 export function checkMeshRenderComponent(scene:any, entityInfo:any){
-    let mesh = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)//
+    let mesh = scene[COMPONENT_TYPES.MESH_RENDER_COMPONENT].get(entityInfo.aid)
     if(mesh && entityInfo.entity){
         switch(mesh.shape){
             case 0:
@@ -21,13 +21,15 @@ export function checkMeshRenderComponent(scene:any, entityInfo:any){
 
 export function checkMeshColliderComponent(scene:any, entityInfo:any){
     let mesh = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
+    console.log('checking mesh collider component', entityInfo.aid, mesh)
     if(mesh && entityInfo.entity){
+        console.log('setting mesh collider', mesh)
         switch(mesh.shape){
             case 0:
-                MeshCollider.setPlane(entityInfo.entity)
+                MeshCollider.setPlane(entityInfo.entity, mesh.layer)
                 break;
             case 1:
-                MeshCollider.setBox(entityInfo.entity)
+                MeshCollider.setBox(entityInfo.entity, mesh.layer)
                 break;
             
         }
@@ -97,8 +99,9 @@ export function setMeshColliderBuildMode(scene:any, entityInfo:any){
 
 export function setMeshColliderPlayMode(scene:any, entityInfo:any){
     let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
+    console.log('setting mesh collider play mode', entityInfo.aid, meshInfo)
     if(meshInfo && entityInfo.entity){
-        if(!meshInfo.onPlay){
+        if(meshInfo.layer === 0){
             MeshCollider.deleteFrom(entityInfo.entity)
         }else{
             checkMeshColliderComponent(scene, entityInfo)

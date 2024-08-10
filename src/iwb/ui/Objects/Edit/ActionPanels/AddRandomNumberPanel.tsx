@@ -1,50 +1,58 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { sizeFont } from '../../../helpers'
-import { updateActionData } from '../EditAction'
+import { getImageAtlasMapping, sizeFont } from '../../../helpers'
+import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
 
-export function AddShowNotificationPanel(){
+export function AddRandomNumberPanel(){
     return(
         <UiEntity
-        key={resources.slug + "action::show::notification::panel"}
+        key={resources.slug + "action::random::number::panel"}
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '25%',
+        }}
+    >
+
+        <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            width: '100%',
+            width: '50%',
             height: '100%',
         }}
-    >
-
-        <UiEntity
+        >
+ <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{bottom:'1%'}
-        }}
-        uiText={{value:"Notification Text", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
-        />
-
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '15%',
             margin:{bottom:'5%'}
         }}
+        uiText={{value:"Min Number", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '50%',
+        }}
     >
         <Input
             onChange={(value) => {
-                updateActionData({message:value.trim()})
+                updateActionData({min: parseFloat(value.trim())}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'0'}
+            placeholder={'1'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -53,34 +61,44 @@ export function AddShowNotificationPanel(){
             }}
             ></Input>
         </UiEntity>
-
+        </UiEntity>
 
         <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '50%',
+            height: '100%',
+        }}
+        >
+ <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{bottom:'1%'}
+            margin:{bottom:'5%'}
         }}
-        uiText={{value:"Hide After Seconds", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        uiText={{value:"Max Number", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
         />
+
         <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '15%',
+            height: '50%',
         }}
     >
         <Input
             onChange={(value) => {
-                updateActionData({timer:parseInt(value.trim())})
+                updateActionData({max: parseFloat(value.trim())}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'0'}
+            placeholder={'10'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -89,8 +107,8 @@ export function AddShowNotificationPanel(){
             }}
             ></Input>
         </UiEntity>
-
-
+        </UiEntity>
+       
     </UiEntity>
     )
 }

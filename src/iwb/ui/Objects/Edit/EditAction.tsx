@@ -30,13 +30,14 @@ import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from '
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
 import { AddRandomActionPanel, updateEntitiesWithRandomActions } from './ActionPanels/AddRandomAction'
 import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
-import { resetLevelSpawnEntity } from './EditLevel'
-import { addTweenActionEntity, AddTweenActionPanel, resetTweenActionPanel } from './ActionPanels/AddTweenPanel'
+import { addTweenActionEntity, AddTweenActionPanel } from './ActionPanels/AddTweenPanel'
 import { AddTeleport } from './ActionPanels/AddTeleportPanel'
 import { AddDelayActionPanel, updateDelayEntitiesWithActions } from './ActionPanels/AddDelay'
-import { utils } from '../../../helpers/libraries'
+import { AddPopupPanel, showPopupPanel } from './ActionPanels/AddPopupPanel'
+import { AddRandomNumberPanel } from './ActionPanels/AddRandomNumberPanel'
 
 export let actionView = "main"
+export let currentAddActionPanel:string = ""
 export let newActionData:any = {}
 
 export let newActionIndex:number = 0
@@ -470,6 +471,14 @@ function getActionDataPanel(){
             updateDelayEntitiesWithActions()
             return <AddDelayActionPanel/>
 
+        case Actions.POPUP_SHOW.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            currentAddActionPanel = Actions.POPUP_SHOW
+            showPopupPanel()
+            return <AddPopupPanel/>
+
+        case Actions.RANDOM_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddRandomNumberPanel/>
+
             
 
 
@@ -509,7 +518,11 @@ function resetActionData(){
     if(newActionIndex !== 0){
         newActionData.type = getActionList()[newActionIndex].replace(/ /g, "_").toLowerCase()
         newActionData.name = getActionList()[newActionIndex].replace(/ /g, "_").toLowerCase()
-        let actionTemplate:any = {...ActionDefaults[getActionList()[newActionIndex].replace(" ", "_").toLowerCase()]}//
+        console.log('new action index', newActionIndex, newActionData)
+        console.log(getActionList()[newActionIndex])
+        console.log(getActionList()[newActionIndex].replace(/ /g, "_").toLowerCase())
+        let actionTemplate:any = {...ActionDefaults[getActionList()[newActionIndex].replace(/ /g, "_").toLowerCase()]}//
+        console.log('action template is', actionTemplate)
         for(let key in actionTemplate){
             if(key === "actions"){
                 newActionData[key] = []
@@ -607,5 +620,16 @@ const ActionDefaults:any = {
     [Actions.START_DELAY]:{
         actions:[],
         timer:5
-    }
+    },
+    [Actions.POPUP_SHOW]:{
+        label:"Label",
+        variableText:"Variable Text",
+        text:"Longer text here",
+        button1:{enabled:true, label:"Button 1"},
+        button2:{enabled:true, label:"Button 2"},
+    },
+    [Actions.RANDOM_NUMBER]:{
+        min:1,
+        max:10
+    },
 }

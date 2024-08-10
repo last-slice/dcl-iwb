@@ -534,72 +534,6 @@ function GameMetadataView(){
 
     </UiEntity>
 
-    {/* disable teleport options */}
-    <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-            }}
-            >
-                  <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '70%',
-                height: '100%',
-            }}
-            >
-                <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    alignContent:'center',
-                    width: '100%',
-                    height: '10%',
-                }}
-                    uiText={{value:"Disable Teleporting", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-                />
-        </UiEntity>
-
-    <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '30%',
-                height: '100%',
-            }}
-            >
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: calculateSquareImageDimensions(4).width,
-                height: calculateSquareImageDimensions(4).height,
-                margin:{top:"1%", bottom:'1%'},
-            }}
-            uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                    src: 'assets/atlas2.png'
-                },
-                uvs: gamingInfo && gamingInfo.disableTeleport ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
-            }}
-            onMouseDown={() => {
-                gamingInfo.disableTeleport = !gamingInfo.disableTeleport
-                update("edit", "disableTeleport", gamingInfo.disableTeleport)
-            }}
-            />
-    </UiEntity>
-    </UiEntity>
-
     <UiEntity
 uiTransform={{
     flexDirection: 'column',
@@ -770,7 +704,7 @@ function GameConfigurationView(){
         }}
         >
 
-              {/* teams main view */}
+              {/* game configuration view */}
               <UiEntity
     uiTransform={{
         flexDirection: 'column',
@@ -793,6 +727,139 @@ function GameConfigurationView(){
     }}
         uiText={{value:"Game Configuration", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
     />
+
+        {/* disable teleport options */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            >
+                  <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '70%',
+                height: '100%',
+            }}
+            >
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignContent:'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                    uiText={{value:"Disable Teleporting", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+                />
+        </UiEntity>
+
+    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: gamingInfo && gamingInfo.disableTeleport ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+            }}
+            onMouseDown={() => {
+                gamingInfo.disableTeleport = !gamingInfo.disableTeleport
+                update("edit", "disableTeleport", gamingInfo.disableTeleport)
+            }}
+            />
+    </UiEntity>
+    </UiEntity>
+
+    {/* disable map options */}
+    <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            >
+                  <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '70%',
+                height: '100%',
+            }}
+            >
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignContent:'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                    uiText={{value:"Disable Map", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+                />
+        </UiEntity>
+
+    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: gamingInfo && gamingInfo.disableMa ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+            }}
+            onMouseDown={() => {
+                gamingInfo.disableMa = !gamingInfo.disableMa
+                update("edit", "disableMap", gamingInfo.disableMa)
+            }}
+            />
+    </UiEntity>
+    </UiEntity>
+
 
         <UiEntity
             uiTransform={{
@@ -1454,7 +1521,6 @@ function GameTeamsEditSpawnView(){
     )
 }
 
-
 function GameLobbyEditSpawnView(){
     return(
         <UiEntity
@@ -1478,14 +1544,14 @@ function GameLobbyEditSpawnView(){
                 width: '100%',
                 height: '10%',
             }}
-                uiText={{value:"Edit Team " + (editTeam && (editTeam.number + 1)) + " Spawn Region", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+                uiText={{value:"Edit Lobby Spawn Region", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
              {/* position row */}
              {gameView === "lobby-edit-spawns" &&
                <TransformInputModifiers modifier={EDIT_MODIFIERS.POSITION}
                     override={updateLobbySpawnPosition}
-                    rowHeight={'25%'}
+                    rowHeight={'30%'}
                     factor={selectedItem && selectedItem.pFactor}
                     valueFn={(type:string)=>{
                         let transform = Transform.get(teamEntities.find($ => $.id === "" + gamingInfo.id + "-lobby").entity)
@@ -1508,7 +1574,7 @@ function GameLobbyEditSpawnView(){
              {gameView === "lobby-edit-spawns" &&
                <TransformInputModifiers modifier={EDIT_MODIFIERS.SCALE}
                     override={updateLobbySpawnScale}
-                    rowHeight={'25%'}
+                    rowHeight={'30%'}
                     factor={selectedItem && selectedItem.sFactor}
                     valueFn={(type:string)=>{
                         let transform = Transform.get(teamEntities.find($ => $.id === "" + gamingInfo.id + "-lobby").plane)

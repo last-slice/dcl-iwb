@@ -22,65 +22,17 @@ import { checkUIImage } from "./UIImage"
 import { checkUIText } from "./UIText"
 import { checkVideoComponent } from "./Videos"
 import { updateAssetBuildVisibility } from "./Visibility"
-import { isGameAsset, isLevelAsset } from "./Level"
 import { colyseusRoom } from "./Colyseus"
 import { localUserId } from "./Player"
-
-// export function checkIWBComponent(scene:any, entityInfo:any){
-//   let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
-//   if(iwbInfo){
-//     iwbInfo.components = []
-//   }
-// }
+import { disableGameAsset } from "./Game"
 
 export function getEntity(scene:any, aid:string){
   return scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
-  // let entityInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
-  // if(entityInfo){
-  //   return entityInfo.entity
-  // }
-  // return undefined
-  // return scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
 }
-
-// export function addIWBComponent(scene:any){
-//     scene[COMPONENT_TYPES.IWB_COMPONENT].forEach((itemInfo:any, aid:string)=>{
-//         let entity = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
-//         if(entity){
-//           IWBComponent.create(entity,{
-//             aid:aid,
-//             editing:itemInfo.editing,
-//             buildVisibility:itemInfo.buildVis,
-//             locked:itemInfo.locked
-//           })
-//         }
-//     })
-// }
-
-// export function addIWBCatalogComponent(scene:any){
-//   scene.catalogInfo.forEach((catalogInfo:any, aid:string)=>{
-//       let entity = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
-//       if(entity){
-//         IWBCatalogComponent.create(entity,{
-//           id:catalogInfo.id,
-//           name:catalogInfo.name,
-//           description:catalogInfo.description,
-//           owner:catalogInfo.owner,
-//           ownerAddress:catalogInfo.ownerAddress,
-//           category:catalogInfo.category,
-//           type:catalogInfo.type,
-//           style:catalogInfo.style,
-//           ugc:catalogInfo.ugc,
-//           pending:catalogInfo.pending
-//         })
-//       }
-//   })
-// }
 
 export function createEntity(item:any){
   let ent = engine.addEntity()
   item.entity = ent
-  // item.components = []
 
   console.log('creating entity', ent)
   RealmEntityComponent.create(ent)
@@ -100,10 +52,10 @@ export async function iwbInfoListener(scene:any){
           await createEntity(iwbInfo)//
       }
 
-      if(isLevelAsset(scene, aid) || isGameAsset(scene, aid)){}
-      else{
+      // if(isLevelAsset(scene, aid) || isGameAsset(scene, aid)){}
+      // else{
         createAsset(scene, iwbInfo)
-      }
+      // }
     }
 
     iwbInfo.listen("buildVis", (c:any, p:any)=>{
@@ -149,9 +101,8 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
   await checkUIImage(scene, iwbInfo)
   await checkTriggerComponent(scene, iwbInfo)
   await checkBillboardComponent(scene, iwbInfo)
-  
-  // await checkSmartItemComponent()
 
+  await disableGameAsset(scene, iwbInfo)
 
   if(playerMode === SCENE_MODES.BUILD_MODE){
       resetEntityForBuildMode(scene, iwbInfo)

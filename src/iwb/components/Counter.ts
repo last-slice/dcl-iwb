@@ -34,20 +34,20 @@ export function disableCounterForPlayMode(scene:any, entityInfo:any){
 }
 
 
-export function getCounterValue(sceneId:string, aid:string, type:string, current:number){
+export function getCounterValue(sceneId:string, aid:string, type:string, current?:boolean){
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(!scene){ 
-        return ""
+        return undefined
     }
 
     let counters = scene[COMPONENT_TYPES.COUNTER_COMPONENT].get(aid)
     if(!counters){
-        return ""
+        return undefined
     }
 
     let value = counters.values.get(type)
     if(!value){
-        return 0
+        return undefined
     }
 
     return current ? value.currentValue : value.previousValue
@@ -80,7 +80,7 @@ export function getCounterComponentByAssetId(scene:string, aid:string, counter:a
     if(entityInfo){
         return Numbers.getMutableOrNull(entityInfo.entity)
     }
-    return null
+    return undefined
 }
 
 export function updateCounter(counter:any, value:any){

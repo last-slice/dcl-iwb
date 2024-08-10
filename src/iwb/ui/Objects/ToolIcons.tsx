@@ -184,8 +184,11 @@ function CreateToolIcon(data:any){
     }}
     onMouseDown={()=>{
         setUIClicked(true)
-        if(selectedItem && selectedItem.enabled || showStore){
-            return
+        if(config.always){}
+        else{
+            if(selectedItem && selectedItem.enabled || showStore){
+                return
+            }
         }
 
         if(config.toggle){

@@ -2,7 +2,7 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { CatalogItemType, EDIT_MODES, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
-import { sortedAll, original, Sorted2D, Sorted3D, SortedAudio, SortedSmartItems, refreshSortedItems, styles, items, SortedNewest, confirmDeleteAsset } from '../../components/Catalog'
+import { sortedAll, original, Sorted2D, Sorted3D, SortedAudio, SortedSmartItems, refreshSortedItems, styles, items, SortedNewest, confirmDeleteAsset, resetCatalog } from '../../components/Catalog'
 import { log } from '../../helpers/functions'
 import resources from '../../helpers/resources'
 import { Color4 } from '@dcl/sdk/math'
@@ -31,6 +31,7 @@ export let styleFilter = "All"
 export let searchFilter = ""
 
 export let selectedSetting = 0
+export let selectedStyleIndex = 0
 
 export function updateCatalogSizing(row:number, column:number, perPage:number){
     rows = row
@@ -38,7 +39,7 @@ export function updateCatalogSizing(row:number, column:number, perPage:number){
     itemsPerPage = perPage
 }
 
-export function updateSearchFilter(filter:string){//
+export function updateSearchFilter(filter:string){
     searchFilter = filter
 }
 
@@ -50,16 +51,24 @@ export function updateCurrentPage(value:number, force?:boolean){
 
 export function displayCatalogPanel(show: boolean) {
     if (show) {
+        selectedStyleIndex = 0
         itemsToShow.length = 0
         updateCatalogSizing(4,2,8)
 
 
         refreshSortedItems()
 
-        // if (!catalogInitialized) {
+        // if (!catalogInitialized) {//
             initCatalog(sortedAll)
             catalogInitialized = true
         // }
+    }
+    else{
+        styleFilter = "All"
+        resetCatalog()
+        updateCatalogSizing(4,2,8)
+        updateCurrentPage(0, true)
+        updateSearchFilter("")
     }
 
     showCatalogPanel = show
@@ -113,6 +122,7 @@ function findPageForLetter(letter: string): number | null {
 
 export function filterByStyle(index: number) {
     styleFilter = styles[index]
+    selectedStyleIndex = index
     filterCatalog()
 }
 
@@ -471,9 +481,10 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                     margin:{bottom:'3%', left:"5%"}
                 }}
                 uiText={{
-                    value: item.n.length > 20 ? item.n.substring(0, 20) + "..." : item.n,
+                    value: item.n.length > 18 ? item.n.substring(0, 18) + "..." : item.n,
                     fontSize: sizeFont(20, 15),
-                    textAlign:'middle-left'
+                    textAlign:'middle-left',
+                    textWrap:'nowrap'
                 }}
                 // uiBackground={{color:Color4.Blue()}}
             />
@@ -657,6 +668,7 @@ export function createCatalogPanel(){
 
                 <Dropdown
                 options={[...styles]}
+                selectedIndex={selectedStyleIndex}
                 onChange={filterByStyle}
                 uiTransform={{
                     width: '100%',

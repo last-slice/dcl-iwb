@@ -16,7 +16,7 @@ import { rotateUVs } from '../../../ui_components/utilities'
 import { engine, Transform } from '@dcl/sdk/ecs'
 import { teleportToScene } from '../../modes/Play'
 
-let show = false
+export let expandedMapshow = false
 let navigation = false
 export let editCurrentSceneParcels = false
 
@@ -33,7 +33,7 @@ let selectedScene:any
 export let mainView = ""
 
 export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean){
-    show = value
+    expandedMapshow = value
 
     if(nav){
         navigation = true
@@ -48,7 +48,7 @@ export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean
         editCurrentSceneParcels = false
     }
 
-    if(show){
+    if(expandedMapshow){
         createMapTiles()
     }else{
         mapTiles.length = 0
@@ -119,7 +119,7 @@ export function createExpandedMapView() {
         <UiEntity
         key={"" + resources.slug + "expanded-map-ui"}
             uiTransform={{
-                display: show? 'flex' : 'none',
+                display: expandedMapshow? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -249,35 +249,6 @@ function MainLeftView(){
         uiText={{value: "Visit", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />
 
-<UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
-            height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
-            margin:{right:"1%"},
-            display: selectedScene ? "flex" : "none",
-            positionType:'absolute',
-            position:{bottom:0}
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
-        }}
-        onMouseDown={() => {
-            setUIClicked(true)
-            displayExpandedMap(false)
-        }}
-        onMouseUp={()=>{
-            setUIClicked(false)
-        }}
-        uiText={{value: "Close", color:Color4.White(), fontSize:sizeFont(20,15)}}
-        />
-
         </UiEntity>
 
 <UiEntity
@@ -396,7 +367,35 @@ function MainLeftView(){
         </UiEntity>
 
 
-
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            alignSelf:'flex-end',
+            justifyContent: 'center',
+            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{right:"1%"},
+            display: selectedScene ? "flex" : "none",
+            positionType:'absolute',
+            position:{bottom:0}
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            displayExpandedMap(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        uiText={{value: "Close", color:Color4.White(), fontSize:sizeFont(20,15)}}
+        />
 
 
     </UiEntity>
@@ -418,7 +417,7 @@ function MainRightView(){
         // uiBackground={{color:Color4.Blue()}}
         >
 
-            {show && mapTiles.length > 0 && generateMapTiles()}
+            {expandedMapshow && mapTiles.length > 0 && generateMapTiles()}
 
                 <PlayerArrow/>
 
@@ -438,7 +437,7 @@ function PlayerArrow(){
           width:calculateSquareImageDimensions(3).width,
           height: calculateSquareImageDimensions(3).height,
           positionType:'absolute',
-          position: show ? getPlayerPosition() : {}
+          position: expandedMapshow ? getPlayerPosition() : {}
       }}
       uiBackground={{
         texture:{

@@ -142,6 +142,7 @@ export function createCatalogInfoPanel() {
                         justifyContent: 'center',
                         width: '40%',
                         height: '100%',
+                        margin:{left:"2%"}
                     }}
                     // uiBackground={{color:Color4.Blue()}}
                 >
@@ -150,7 +151,7 @@ export function createCatalogInfoPanel() {
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                            width: calculateImageDimensions(10, getAspect(uiSizes.buttonPillBlack)).width,
                             height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                             margin: {bottom: "2%"}
                         }}
@@ -177,7 +178,7 @@ export function createCatalogInfoPanel() {
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
+                            width: calculateImageDimensions(10, getAspect(uiSizes.buttonPillBlack)).width,
                             height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                             margin: {bottom: "2%"}
                         }}
@@ -195,7 +196,7 @@ export function createCatalogInfoPanel() {
                                 }
                             }
                         }}
-                        uiText={{textWrap:'nowrap', value: "Place Centered", color: Color4.White(), fontSize: sizeFont(25, 20)}}
+                        uiText={{textWrap:'nowrap', value: "Place Centered", color: Color4.White(), fontSize: sizeFont(25, 18)}}
                     />
 
                     <UiEntity

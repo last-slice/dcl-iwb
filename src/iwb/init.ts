@@ -1,5 +1,5 @@
 import {getPlayer} from "@dcl/sdk/players";
-import { PointerLock, engine, executeTask} from "@dcl/sdk/ecs";
+import { executeTask} from "@dcl/sdk/ecs";
 import { getSceneInformation } from '~system/Runtime'
 import { joinWorld } from "./components/Colyseus";
 import { realm, setRealm } from "./components/Config";

@@ -1,5 +1,5 @@
 import {getPlayer} from "@dcl/sdk/players";
-import {Player, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
+import {NOTIFICATION_TYPES, Player, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
 // import {iwbEvents, sendServerMessage} from "../messaging";
 import {AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
 import resources, { colors } from "../helpers/resources";
@@ -7,7 +7,7 @@ import {Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { Room } from "colyseus.js";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
-import { playerMode, realm, setPlayerMode, worlds } from "./Config";
+import { iwbConfig, playerMode, realm, setPlayerMode, worlds } from "./Config";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
@@ -21,6 +21,8 @@ import { displayMainView, updateMainView } from "../ui/Objects/IWBView";
 import { showTutorials, updateInfoView } from "../ui/Objects/IWBViews/InfoView";
 import { setUIClicked } from "../ui/ui";
 import { addScene, pendingSceneLoad } from "./Scene";
+import { showNotification } from "../ui/Objects/NotificationPanel";
+import { displayTutorialVideoButton } from "../ui/Objects/TutorialVideo";
 
 export let localUserId: string
 export let localPlayer:any
@@ -84,7 +86,21 @@ export async function createPlayer(player:any){
     await getPlayerLand()
     await checkPlayerHomeWorld(player)
     engine.addSystem(PendingSceneLoadSystem)
-    getAssetUploadToken()//
+    getAssetUploadToken()
+
+
+    if (localPlayer!.homeWorld) {
+        let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
+        if (config) {
+            if (config.v < iwbConfig.v) {
+                showNotification({
+                    type: NOTIFICATION_TYPES.MESSAGE,
+                    message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
+                    animate: {enabled: true, time: 10, return: true}
+                })
+            }
+        }
+    }
 }
 
 function checkPlayerHomeWorld(player:any){
@@ -113,6 +129,7 @@ function setPlayerDefaults(player:any){
     player.homeWorld = false
     player.worldPermissions = false
     player.canTeleport = true
+    player.canMap = false
     player.selectedEntity = null
     player.activeSceneId = ""
     player.mode = SCENE_MODES.PLAYMODE
@@ -124,7 +141,7 @@ function setPlayerDefaults(player:any){
 
 export async function getPlayerNames(player:any) {
     let res = await fetch(resources.endpoints.dclNamesGraph, {
-        headers: {"content-type": "application/json"},
+        headers: {"content-type": "application/json"},//
         method: "POST",
         body: JSON.stringify({
             variables: {offset: 0, owner: localUserId},
@@ -244,12 +261,16 @@ export function updateShowingTutorial(value:boolean){
 export function createTutorialVideo(video:any){
     engine.removeEntity(tutorialVideo)
 
+    displayTutorialVideoButton(true)
+
     tutorialVideo = engine.addEntity()
     MeshRenderer.setPlane(tutorialVideo)
     MeshCollider.setPlane(tutorialVideo, ColliderLayer.CL_POINTER)
     Transform.create(tutorialVideo, {parent:engine.CameraEntity, rotation:Quaternion.fromEulerDegrees(0,0,0), position: Vector3.create(0,0,2), scale:Vector3.create(4.25,2.25,1)})
 
     try{
+
+        
         VideoPlayer.createOrReplace(tutorialVideo, {
             src: video.link,
             playing: true,
@@ -296,9 +317,18 @@ catch(e){
 }
 
 export function setSettings(sets:any){
+    console.log('setings are ', sets)
     settings = sets
-    settings.sceneCheck = true
-    settings.triggerDebug = false
+
+    if(!settings.hasOwnProperty("sceneCheck")){
+        settings.sceneCheck = true
+    }
+
+    if(!settings.hasOwnProperty("triggerDebug")){
+        settings.triggerDebug = false
+    }
+   
+    
 }
 
 export function PendingSceneLoadSystem(){

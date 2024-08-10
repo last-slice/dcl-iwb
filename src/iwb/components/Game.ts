@@ -4,7 +4,7 @@ import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger } fro
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { getEntity } from "./IWB"
-import { unloadAllSceneGameAssets } from "./Level"
+import { isGameAsset, disableLevelAssets, attemptLoadLevel } from "./Level"
 import { localPlayer, localUserId } from "./Player"
 import { utils } from "../helpers/libraries"
 import { setUIClicked } from "../ui/ui"
@@ -12,153 +12,41 @@ import { displayGameLobby, updateLobbyPanel } from "../ui/Objects/GameLobby"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { getDistance, getRandomPointInArea, getRandomString, roundQuaternion, turn } from "../helpers/functions"
 import { movePlayerTo } from "~system/RestrictedActions"
-import { uiDataUpdate } from "./UIText"
+import { disableUiTextPlayMode, uiDataUpdate } from "./UIText"
 import { GunDataComponent } from "../helpers/Components"
 import { addGunRecoilSystem, isProcessingGunRay, processGunArray } from "../systems/GunSystem"
-import { playSound } from "./Sounds"
 import { displayCooldown } from "../ui/Objects/GameCooldownUI"
 import { stopAllIntervals } from "./Timer"
-import { disableSceneEntities } from "../modes/Play"
-import { handleSetNumber } from "./Actions"
+import { updateAssetBuildVisibility } from "./Visibility"
+import { disableCounterForPlayMode } from "./Counter"
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 
 export let gameEndingtimer:any
 export let gameEntities:any[] = []
 export let cooldownStart = 0
+export let pendingGameCleanup = false
 
 const gunFPSPosition = Vector3.create(0.2, -0.25, 0.2)
 const gunFPSScale = Vector3.create(0.8, 0.8, 0.8) 
 const gunFPSRotation = Quaternion.fromEulerDegrees(0,0,0)
 
-
-export function attemptGameStart(info:any){
-    let scene = colyseusRoom.state.scenes.get(info.sceneId)
-    if(!scene){
-        return
-    }
-
-    let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
-    console.log('game start is', gameInfo)
-    if(gameInfo.type === "SOLO"){
-        if(info && info.canStart && info.level){
-            localPlayer.canTeleport = !gameInfo.disableTeleport
-            attemptLoadLevel(scene, gameInfo.startLevel)
-            // let gameCurrentLevelEntity = getEntity(scene, gameInfo.currentLevelAid)
-            // if(gameCurrentLevelEntity){
-            //     handleSetNumber(scene, gameCurrentLevelEntity, {value: gameInfo.startLevel, counter:{}})
-            // }
-            // else{
-            //     console.log('game current level entity has been deleted or cannot be found')
-            // }
-            
-            // let entityInfo = getEntity(scene, info.level)
-            // let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(info.level)
-            // if(actionInfo){
-            //     if(actionInfo.actions && actionInfo.actions.length > 0){
-            //         let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
-            //         if(action){
-            //             localPlayer.canTeleport = !gameInfo.disableTeleport
-            //             actionQueue.push({aid:info.level, action:action, entity:entityInfo.entity})
-            //             setUIClicked(false)
-            //         }
-            //     }
-            // }  
-        }else{
-            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + gameInfo.name + " does not have a playable level yet!", animate:{enabled:true, return:true, time:5}})
-        }
-    }
-    else{
-        console.log('start multiplayer game')
-        runGlobalTrigger(scene, Triggers.ON_JOIN_LOBBY, {input:0, pointer:0, entity:0})
-        updateLobbyPanel(gameInfo)
-        movePlayerToLobby(scene, gameInfo)
-    }
-}
-
-export function movePlayerToLobby(scene:any, gameInfo:any){
-    let position = Transform.get(scene.parentEntity).position
-    let randomPoint = getRandomPointInArea(gameInfo.sp, gameInfo.ss.x, gameInfo.ss.y, gameInfo.ss.z)
-
-    let spawnPosition = Vector3.add(position, randomPoint)
-    console.log('spawn position is', spawnPosition)
-    movePlayerTo({newRelativePosition:spawnPosition})
-}
-
-export function attemptLoadLevel(scene:any, level:number){
-    let foundLevelAid:any
-    scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((levelInfo:any, aid:string) => {
-        if(levelInfo.number === level){
-            foundLevelAid = aid
-        }
-    });
-
-    if(foundLevelAid){
-        let entityInfo = getEntity(scene, foundLevelAid)
-        if(!entityInfo){
-            console.log('error with level entity', foundLevelAid)
-            //todo
-            //end game
-            return
-        }
-
-        let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(foundLevelAid)
-        if(actionInfo){
-            if(actionInfo.actions && actionInfo.actions.length > 0){
-                let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
-                if(action){
-                    actionQueue.push({aid:foundLevelAid, action:action, entity:entityInfo.entity})
-                    setUIClicked(false)
-                }
-            }
-        } 
-    //     runSingleTrigger(entityInfo, Triggers.ON_LEVEL_LOAD, {entity:entityInfo.entity, input:0, pointer:0})
-    }
-}
-
-export function attemptGameEnd(info:any){
-    let scene = colyseusRoom.state.scenes.get(info.sceneId)
-    // let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
-    if(scene){
-        unloadAllSceneGameAssets(scene)
-        // disableSceneEntities()
-        stopAllIntervals(true)
-        //to do
-        //clean up any game timers etc etc
-    }
-    localPlayer.canTeleport = true
-}
-
-export function abortGameTermination(scene:any){
-    if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
-        utils.timers.clearTimeout(gameEndingtimer)
-        hideNotification()
-    }
-}
-
-export function killAllGameplay(){
-    if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
-        sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
-        attemptGameEnd({sceneId: localPlayer.activeScene.id})
-    }
-}
-
-export function checkGameplay(scene:any){
-    if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
-        gameEndingtimer = utils.timers.setTimeout(()=>{
-            hideNotification()
-            sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
-            attemptGameEnd({sceneId: scene.id})
-        }, 1000 * 5)
-        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Your Game will auto end in 5 seconds", animate:{enabled:true, return: false, time:5}})
-    }
+export function updatePendingGameCleanup(value:boolean){
+    pendingGameCleanup = value
 }
 
 export function disableLevelPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(entityInfo.aid)
     console.log('disable level play mode item', itemInfo)
     if(itemInfo){
-        VisibilityComponent.createOrReplace(entityInfo.entity, {
-            visible: false
-        })
+        updateAssetBuildVisibility(scene, false, entityInfo)
+
+        //reset counters
+        disableCounterForPlayMode(scene, entityInfo)
+
+        //reset states
+
+        //reset ui
+        disableUiTextPlayMode(scene, entityInfo)
     }
 }
 
@@ -214,6 +102,127 @@ export function gameListener(scene:any){
             }
         })
     })
+}
+
+export async function disableGameAsset(scene:any, iwbInfo:any){
+
+    // if(isLevelAsset(scene, iwbInfo.aid) || isGameAsset(scene, iwbInfo.aid)){
+    //     console.log('we have game asset to hide')
+    //     disableLevelPlayMode(scene, iwbInfo)
+    // }
+
+    if(scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(iwbInfo.aid)){
+        console.log('we have game level to hide')
+        disableLevelPlayMode(scene, iwbInfo)
+    }
+
+    if(isGameAsset(scene, iwbInfo.aid)){
+        updateAssetBuildVisibility(scene, false, iwbInfo)
+    }
+}
+
+export function attemptGameStart(info:any){
+    let scene = colyseusRoom.state.scenes.get(info.sceneId)
+    if(!scene){
+        return
+    }
+
+    let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
+    console.log('game start is', gameInfo)
+    if(gameInfo.type === "SOLO"){
+        if(info && info.canStart && info.level){
+            localPlayer.canTeleport = !gameInfo.disableTeleport
+            localPlayer.canMap = !gameInfo.disableMap
+
+            let foundLevelAid:any
+            scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((levelInfo:any, aid:string) => {
+                if(levelInfo.number === gameInfo.startLevel){
+                    foundLevelAid = aid
+                }
+            });
+
+            if(foundLevelAid){
+                attemptLoadLevel(scene, gameInfo.currentLevelAid, foundLevelAid)
+            }
+
+            
+            // let gameCurrentLevelEntity = getEntity(scene, gameInfo.currentLevelAid)
+            // if(gameCurrentLevelEntity){
+            //     handleSetNumber(scene, gameCurrentLevelEntity, {value: gameInfo.startLevel, counter:{}})
+            // }
+            // else{
+            //     console.log('game current level entity has been deleted or cannot be found')
+            // }
+            
+            // let entityInfo = getEntity(scene, info.level)
+            // let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(info.level)
+            // if(actionInfo){
+            //     if(actionInfo.actions && actionInfo.actions.length > 0){
+            //         let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
+            //         if(action){
+            //             localPlayer.canTeleport = !gameInfo.disableTeleport
+            //             actionQueue.push({aid:info.level, action:action, entity:entityInfo.entity})
+            //             setUIClicked(false)
+            //         }
+            //     }
+            // }  
+        }else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + gameInfo.name + " does not have a playable level yet!", animate:{enabled:true, return:true, time:5}})
+        }
+    }
+    else{
+        console.log('start multiplayer game')
+        runGlobalTrigger(scene, Triggers.ON_JOIN_LOBBY, {input:0, pointer:0, entity:0})
+        updateLobbyPanel(gameInfo)
+        movePlayerToLobby(scene, gameInfo)
+    }
+}
+
+export function movePlayerToLobby(scene:any, gameInfo:any){
+    let position = Transform.get(scene.parentEntity).position
+    let randomPoint = getRandomPointInArea(gameInfo.sp, gameInfo.ss.x, gameInfo.ss.y, gameInfo.ss.z)
+
+    let spawnPosition = Vector3.add(position, randomPoint)
+    movePlayerTo({newRelativePosition:spawnPosition})
+}
+
+export function attemptGameEnd(info:any){
+    let scene = colyseusRoom.state.scenes.get(info.sceneId)
+    // let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
+    if(scene){
+        stopAllIntervals(true)
+        disableLevelAssets(scene)
+        displaySkinnyVerticalPanel(false)
+        //to do
+        //clean up any game timers etc etc
+    }
+    localPlayer.canTeleport = true
+    localPlayer.canMap = true
+}
+
+export function abortGameTermination(scene:any){
+    if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
+        utils.timers.clearTimeout(gameEndingtimer)
+        hideNotification()
+    }
+}
+
+export function killAllGameplay(){//
+    if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
+        sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+        attemptGameEnd({sceneId: localPlayer.activeScene.id})
+    }
+}
+
+export function checkGameplay(scene:any){
+    if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
+        gameEndingtimer = utils.timers.setTimeout(()=>{
+            hideNotification()
+            sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+            attemptGameEnd({sceneId: scene.id})
+        }, 1000 * 5)
+        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Your Game will auto end in 5 seconds", animate:{enabled:true, return: false, time:5}})
+    }
 }
 
 function prepGame(scene:any, aid:string, info:any, gameComponent:any){

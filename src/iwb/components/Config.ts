@@ -19,13 +19,13 @@ import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { PlayTriggerSystem, addPlayTriggerSystem, disableTriggers, removePlayTriggerSystem } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
-import { isGameAsset, isLevelAsset } from "./Level"
 import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
-import { getCenterOfParcels } from "../helpers/build"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
-import { checkGameplay, killAllGameplay } from "./Game"
+import { disableGameAsset, killAllGameplay, pendingGameCleanup, updatePendingGameCleanup } from "./Game"
 import { handleUnlockPlayer } from "./Actions"
+import { disableLevelAssets } from "./Level"
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -88,45 +88,6 @@ export function setConfig(version:any, updates:any, videos:any, tutorialCID:any)
 
 export function setWorlds(config: any) {
     console.log('worlds are ', config)
-    // config.forEach((world: any) => {
-    //     if (world.init) {
-    //         worlds.push({
-    //             name: world.worldName,
-    //             v: world.v,
-    //             owner: world.owner,
-    //             ens: world.ens,
-    //             builds: world.builds,
-    //             updated: world.updated,
-    //             bps:world.bps ,
-    //         })
-    //     } else {
-    //         let w = worlds.find((wo: any) => wo.ens === world.ens)
-    //         if (w) {
-    //             w.updated = world.updated
-    //             w.v = world.v
-    //         } else {
-    //             worlds.push({
-    //                 name: world.worldName,
-    //                 v: world.v,
-    //                 owner: world.owner,
-    //                 ens: world.ens,
-    //                 builds: world.builds,
-    //                 updated: world.updated,
-    //                 bps:world.bps,
-    //                 backedUp:world.backedUp
-    //             })
-    //         }
-    //     }
-
-    //     let playerWorld = localPlayer.worlds.find((w:any) => w.name === world.worldName)
-    //     if (playerWorld) {
-    //         playerWorld.v = world.v
-    //         playerWorld.cv = world.cv
-    //         playerWorld.updated = world.updated
-    //         playerWorld.builds = world.builds
-    //         playerWorld.init = true
-    //     }
-    // })//
 
     config.forEach((world: any) => {
         worlds.push({
@@ -161,7 +122,7 @@ export function updateTutorialCID(info:any){
     iwbConfig.CID = info
 }
 
-export function setPlayerMode(mode:SCENE_MODES){
+export async function setPlayerMode(mode:SCENE_MODES){
     playerMode = mode
 
     displayGrabContextMenu(false)
@@ -200,10 +161,11 @@ export function setPlayerMode(mode:SCENE_MODES){
         updatePlayModeReset(false)
         removePlayTriggerSystem()
         displayLiveControl(false)
-        killAllGameplay()
+        displaySkinnyVerticalPanel(false)
+        await killAllGameplay()
         handleUnlockPlayer(null, null, null)
     }else if(playerMode === SCENE_MODES.PLAYMODE){
-        // utils.triggers.enableDebugDraw(false)
+        // utils.triggers.enableDebugDraw(false)//
         hideAllPanels()
         displayHover(false)
         removeInputSystem()
@@ -211,7 +173,7 @@ export function setPlayerMode(mode:SCENE_MODES){
         addPlayTriggerSystem()
         handleUnlockPlayer(null, null, null)
     }else{
-        killAllGameplay()
+        await killAllGameplay()
         utils.triggers.enableDebugDraw(false)
         removeInputSystem()
         removePlayModSystem()
@@ -223,17 +185,19 @@ export function setPlayerMode(mode:SCENE_MODES){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
                     if(mode === SCENE_MODES.BUILD_MODE){
-                        if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
-                            await createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(item.aid))
-                        }
+                        // if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
+                        //     await createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(item.aid))
+                        // }
                         resetEntityForBuildMode(scene, entityInfo)
                     }else{
-                        if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
-                            engine.removeEntity(entityInfo.entity)
-                        }
-                        else{
-                            disableEntityForPlayMode(scene, entityInfo)
-                        }
+                        // if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
+                        //     engine.removeEntity(entityInfo.entity)
+                        // }
+                        // else{
+                        //     disableEntityForPlayMode(scene, entityInfo)
+                        // }
+                        disableEntityForPlayMode(scene, entityInfo)
+                        disableGameAsset(scene, entityInfo)
                     }
                 }
             }
@@ -244,6 +208,7 @@ export function setPlayerMode(mode:SCENE_MODES){
         addAllBuildModePointers()
     }
 
+    updatePendingGameCleanup(false)
     updatePlayModeReset(true)
 }
 

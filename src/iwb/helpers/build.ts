@@ -15,8 +15,8 @@ MeshRenderer.setBox(bbE)
 Material.setPbrMaterial(bbE, {albedoColor: Color4.create(1, 1, 0, 0.5)})
 VisibilityComponent.create(bbE, {visible: false})
 
-export function isEntityInScene(entity: Entity, catalogId: string): boolean {
-    if(settings && !settings.sceneCheck){
+export function isEntityInScene(entity: Entity, catalogId: string, centered?:boolean): boolean {
+    if((settings && !settings.sceneCheck) || centered){
         return true
     }
     // check if object inside scene boundaries

@@ -5,7 +5,7 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { log } from '../../../helpers/functions'
 import resources, { colors, colorsLabels } from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
-import { CATALOG_IDS, COMPONENT_TYPES, EDIT_MODIFIERS, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { CATALOG_IDS, COMPONENT_TYPES, EDIT_MODIFIERS, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
 import { localPlayer } from '../../../components/Player'
@@ -15,6 +15,7 @@ import { Billboard, BillboardMode, ColliderLayer, Entity, GltfContainer, Materia
 import { findAssetParent } from '../../../components/Parenting'
 import { TransformInputModifiers } from './EditTransform'
 import { getWorldPosition } from '@dcl-sdk/utils'
+import { showNotification } from '../NotificationPanel'
 
 let levelStatuses:string[] = ["Live", "Edit"]
 
@@ -328,6 +329,7 @@ export function EditLevel() {
                     onMouseDown={() => {
                         setUIClicked(true)
                         updateMetadata(COMPONENT_TYPES.LEVEL_COMPONENT, "live", levelStatusIndex === 0 ? true : false)
+                        showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Level status udpated!", animate:{enabled:true, return:true, time:3}})
                     }}
                     onMouseUp={()=>{
                         setUIClicked(false)

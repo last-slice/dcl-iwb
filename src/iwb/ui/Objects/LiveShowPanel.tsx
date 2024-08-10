@@ -103,10 +103,10 @@ export function createLiveUI() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
                 height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                 positionType:'absolute',
-                position:{left:'10%', top:"15%"}
+                position:{left:'1%', top:"30%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -115,7 +115,7 @@ export function createLiveUI() {
                 },
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
-            uiText={{value: "Live Panel", fontSize: sizeFont(20, 16)}}
+            uiText={{textWrap:'nowrap', value: "Live Panel", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
                 setUIClicked(true)
                 showLivePanel = !showLivePanel

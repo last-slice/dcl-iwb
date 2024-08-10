@@ -430,10 +430,40 @@ function AssetsView(){
                 />
             </UiEntity>
 
+        </UiEntity>
+
+                    {/* File count size container */}
+                    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:"2%"}
+            }}
+            uiBackground={{color:Color4.Gray()}}
+            >
+
+            {/* File count size container */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: `${Math.min(parseFloat(formatSize(totalSize)), 100)}%`,
+                height: '100%',
+            }}
+            uiBackground={{color: parseFloat(formatSize(totalSize)) / 100 > 0.75 ? Color4.Red() : Color4.Green()}}
+            />
+
             </UiEntity>
 
 
+
             <IWBTable />
+
+
             </UiEntity>
     )
 }
@@ -1218,7 +1248,7 @@ function TutorialsList(){
                 margin:{top:"1%", bottom:'1%'},
             }}
             >
-        {generateRowItems(count)}
+            {generateRowItems(count)}
         </UiEntity>
         )
         count++
@@ -1229,7 +1259,8 @@ function TutorialsList(){
 function generateRowItems(count:number){
     let arr:any[] = []
     let rowcount = 0
-    for(let j =0; j < 3; j++){
+
+    for(let j = 0; j < 3; j++){
         arr.push(
         <UiEntity
         uiTransform={{
@@ -1239,7 +1270,7 @@ function generateRowItems(count:number){
             width: '30%',
             height: '100%',
             margin:{right:"1%", left:'1%'},
-            display:visibleTutorials[count + rowcount] ? "flex" : "none"
+            display:visibleTutorials[(count * 3) + rowcount] ? "flex" : "none"
         }}
         >
 
@@ -1255,7 +1286,7 @@ function generateRowItems(count:number){
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: '' + visibleTutorials && visibleTutorials[count + rowcount] ? visibleTutorials[count + rowcount].image : ""
+                src: '' + visibleTutorials && visibleTutorials[(count * 3) + rowcount] ? visibleTutorials[(count * 3) + rowcount].image : ""
             }
         }}
         onMouseDown={()=>{
@@ -1275,7 +1306,7 @@ function generateRowItems(count:number){
             margin:{top:"3%", bottom:'1%'},
         }}
         // uiText={{value:"" + (visibleItems[count + rowcount] &&  visibleItems[count + rowcount].name.substring(0,20) + "..."), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
-        uiText={{value:"" + (visibleTutorials[count + rowcount] && addLineBreak(visibleTutorials[count + rowcount].name, undefined, 25)), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
+        uiText={{value:"" + (visibleTutorials[(count * 3) + rowcount] && addLineBreak(visibleTutorials[(count * 3) + rowcount].name, undefined, 25)), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
 
         />
 
@@ -1287,6 +1318,9 @@ function generateRowItems(count:number){
 }
 
 function updateWorldAssets(){
+    totalAssets = 0
+    totalSize = 0
+
     playerItemsOriginal.forEach((item)=>{
         totalAssets++
         totalSize += item.si

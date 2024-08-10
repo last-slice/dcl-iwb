@@ -413,6 +413,7 @@ export enum Actions {
     END_LEVEL = 'level_end',
     COMPLETE_LEVEL = 'level_win',
     LOSE_LEVEL = 'level_lose',
+    ADVANCED_LEVEL = 'level_advance',
     // START_TIMER = 'timer_start',
     // STOP_TIMER = 'timer_stop',
     LOCK_PLAYER = 'player_lock',
@@ -434,7 +435,10 @@ export enum Actions {
     END_GAME = 'game_end',
     PLAY_PLAYLIST = 'playlist_play',
     SEEK_PLAYLIST = 'playlist_seek',
-    STOP_PLAYLIST = 'playlist_stop'
+    STOP_PLAYLIST = 'playlist_stop',
+    POPUP_SHOW = 'popup_show',
+    POPUP_HIDE = 'popup_hide',
+    RANDOM_NUMBER ='random_number'
 }
 
 InputAction.IA_ACTION_3
@@ -493,7 +497,7 @@ export enum TriggerConditionType {
 
 export enum TriggerConditionOperation {
   AND = 'and',
-  OR = 'or',
+  OR = 'or',//
 }
 
 export enum Materials {

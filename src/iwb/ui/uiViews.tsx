@@ -6,12 +6,20 @@ import { deleteSelectedItem, selectedAssetId } from "../modes/Build"
 import { displayMainView, updateMainView } from "./Objects/IWBView"
 import { updateInfoView } from "./Objects/IWBViews/InfoView"
 import { displaySceneDetailsPanel, scene } from "./Objects/SceneMainDetailPanel"
-import { customFunction, displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
+import { customFunction, customFunction2, displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { UI_VIEW_TYPES } from "./uiConfig"
 
 export function getView(view:string){
     let v = uiViews.find($=> $.view === view)
     return v ? v.props : undefined
+}
+
+export function buildPopupActionView(actionData:any){
+    let data:any = {
+        view:"Popup"
+    }
+
+    return data
 }
 
 export let uiViews:any[] = [
@@ -344,6 +352,64 @@ export let uiViews:any[] = [
                     label:"Cancel",
                     func:()=>{
                         displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Welcome_Screen",
+        props:{
+            label:"Welcome to In World Builder",
+            text:"Begin building inside Decentraland or visit our guided tutorial section!",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Tutorials",
+                    func:(aid:string)=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                },
+                {
+                    label:"Start Building!",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Popup_Action",
+        props:{
+            label:"",
+            text:"",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        try{
+                            customFunction()
+                        }
+                        catch(e){
+                            console.log('custom function button error',e)
+                        }
+                    }
+                },
+                {
+                    label:"",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        try{
+                            customFunction2()
+                        }
+                        catch(e){
+                            console.log('custom function2 button error',e)
+                        }
                     }
                 }
             ]

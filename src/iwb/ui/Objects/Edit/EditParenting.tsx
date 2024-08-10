@@ -144,7 +144,8 @@ export function EditParenting(){
                         value: "Update Parent",
                         fontSize: sizeFont(25, 15),
                         color: Color4.White(),
-                        textAlign: 'middle-center'
+                        textAlign: 'middle-center',
+                        textWrap:'nowrap'
                     }}
                     onMouseDown={() => {
                         setUIClicked(true)

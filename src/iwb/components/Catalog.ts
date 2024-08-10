@@ -1,5 +1,5 @@
 import { NOTIFICATION_TYPES, SceneItem, SERVER_MESSAGE_TYPES } from "../helpers/types";
-import { initCatalog, selectedSetting } from "../ui/Objects/CatalogPanel";
+import { initCatalog, selectedSetting, updateSearchFilter } from "../ui/Objects/CatalogPanel";
 import { showNotification } from "../ui/Objects/NotificationPanel";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
@@ -31,8 +31,8 @@ export function updateStyles(updates: string[]) {
     })
     styles = styles.sort((a, b) => a.localeCompare(b));
     styles.unshift("Audio")
-    styles.unshift("All")
     styles.unshift("New")
+    styles.unshift("All")
 }
 
 export function setCatalog(catalog:any){
@@ -78,6 +78,8 @@ export function deleteRealmAsset(item:any, ugc?:boolean){
 export function refreshSortedItems() {
     original = [...items.values()].filter((it:any)=> !it.ugc)
     playerItemsOriginal = [...items.values()].filter((it:any)=> it.ugc)
+
+    console.log('player items are ', playerItemsOriginal)
 
     sortedAll = sortByType(selectedSetting === 0 ? original : playerItemsOriginal)
     Sorted3D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "3D")
@@ -127,4 +129,9 @@ export function setNewItems() {
             }
         })
     }
+}
+
+export function resetCatalog(){
+    updateSearchFilter("")
+    initCatalog(sortedAll)
 }

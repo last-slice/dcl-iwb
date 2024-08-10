@@ -1,15 +1,14 @@
 import { Entity, GltfContainerLoadingState, LoadingState, engine } from "@dcl/sdk/ecs"
-import { COMPONENT_TYPES, Triggers } from "../helpers/types"
+import { Actions, COMPONENT_TYPES, Triggers } from "../helpers/types"
 import { createAsset, getEntity } from "./IWB"
 import { enableEntityForPlayMode, enableSceneEntities, updatePlayModeReset } from "../modes/Play"
-import { LevelAssetGLTF, PointersLoadedComponent } from "../helpers/Components"
-import { getTriggerEvents, runGlobalTrigger, runSingleTrigger, updateTriggerEvents } from "./Triggers"
+import { LevelAssetGLTF } from "../helpers/Components"
+import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger, updateTriggerEvents } from "./Triggers"
 import { utils } from "../helpers/libraries"
 import { displayLoadingScreen } from "../ui/Objects/GameStartUI"
-import { handleMovePlayer } from "./Actions"
-import { setPointersPlayMode } from "./Pointers"
-import { updateTransform } from "./Transform"
-import { Vector3 } from "@dcl/sdk/math"
+import { disableGameAsset } from "./Game"
+import { updateAssetBuildVisibility } from "./Visibility"
+import { setUIClicked } from "../ui/ui"
 
 let levelAssetsToLoad:number = 0
 let levelAssetsLoaded:number = 0
@@ -94,15 +93,16 @@ export function loadLevelAssets(scene:any, info:any, action:any){
 
         levelParent.children.forEach(async (aid:string, i:number)=>{
             let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
+            enableLevelAsset(scene, itemInfo)
 
-            await createAsset(scene, itemInfo, true)
-            PointersLoadedComponent.createOrReplace(itemInfo.entity, {init:false})
-            enableEntityForPlayMode(scene, itemInfo)
+            // await createAsset(scene, itemInfo, true)
+            // PointersLoadedComponent.createOrReplace(itemInfo.entity, {init:false})
+            // enableEntityForPlayMode(scene, itemInfo)
 
-            let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(itemInfo.aid)
-            if(triggerInfo){
-                updateTriggerEvents(scene, itemInfo, triggerInfo)
-            }
+            // let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(itemInfo.aid)
+            // if(triggerInfo){
+            //     updateTriggerEvents(scene, itemInfo, triggerInfo)
+            // }
             
             levelAssetsLoaded++
             // checkLevelLoaded(info.entity)
@@ -117,14 +117,21 @@ export function loadLevelAssets(scene:any, info:any, action:any){
     }
 }
 
-export function unloadAllSceneGameAssets(scene:any){
+export function enableLevelAsset(scene:any, entityInfo:any){
+    updateAssetBuildVisibility(scene, true, entityInfo)
+    //update anything else for level asset
+}
+
+export function disableLevelAssets(scene:any){
     scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
         if(i > 2){
             let entityInfo = getEntity(scene, item.aid)
             if(entityInfo){
-                if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
-                    engine.removeEntity(entityInfo.entity)
-                }
+                // if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
+                //     engine.removeEntity(entityInfo.entity)
+                // }
+
+                disableGameAsset(scene, entityInfo)
             }
         }
     })
@@ -133,22 +140,16 @@ export function unloadAllSceneGameAssets(scene:any){
     levelToLoad = -500 as Entity
 }
 
-// export function unloadLevelAssets(scene:any, levelAid:string){
-//     if(isLevelAsset(scene, item.aid)){
-//         engine.removeEntity(entityInfo.entity)
-//     }
-// }
-
 export function checkLevelLoaded(scene:any, levelInfo:any, entityInfo:any){
     console.log("checking level loaded", entityInfo.aid, entityInfo.entity, levelAssetsLoaded, levelAssetsToLoad)
     if(levelAssetsLoaded >= levelAssetsToLoad){
         console.log('level assets have all loaded')
-        engine.removeSystem(LevelAssetLoadingSystem)
+        engine.removeSystem(LevelAssetLoadingSystem)//
 
         displayLoadingScreen(false)
 
-        let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
-        handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
+        // let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
+        // handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
 
         // runGlobalTrigger(scene, Triggers.ON_LEVEL_LOADED, {input:0, pointer:0, entity:0})
         runSingleTrigger(entityInfo, Triggers.ON_LEVEL_LOADED, {entity:entityInfo.entity, input:0, pointer:0})
@@ -169,4 +170,33 @@ export function LevelAssetLoadingSystem(dt:number){
             break
     }
     }
+}
+
+
+export function attemptLoadLevel(scene:any, levelCounterAid:string, levelAid:string){
+    let entityInfo = getEntity(scene, levelAid)
+    if(!entityInfo){
+        //todo
+        //end game
+        return
+    }
+
+    let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(levelAid)
+    if(actionInfo){
+        if(actionInfo.actions && actionInfo.actions.length > 0){
+            let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
+            if(action){
+                let counterActions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(levelCounterAid)
+                if(counterActions){
+                    let advanceLevelAction = counterActions.actions.find(($:any)=> $.type === Actions.ADD_NUMBER)
+                    if(advanceLevelAction){
+                        let counterInfo = getEntity(scene, levelCounterAid)
+                        actionQueue.push({aid:levelCounterAid, action:advanceLevelAction, entity:counterInfo.entity})
+                        actionQueue.push({aid:levelAid, action:action, entity:entityInfo.entity})
+                        setUIClicked(false)
+                    }
+                }
+            }
+        }
+    } 
 }

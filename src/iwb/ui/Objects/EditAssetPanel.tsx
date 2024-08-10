@@ -1,7 +1,7 @@
 import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown} from '@dcl/sdk/react-ecs'
 import resources from '../../helpers/resources'
 import { localPlayer, settings } from '../../components/Player'
-import { EDIT_MODES, COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../helpers/types'
+import { EDIT_MODES, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Actions } from '../../helpers/types'
 import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity, resetAdditionalAssetFeatures, addAllBuildModePointers } from '../../modes/Build'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
@@ -26,7 +26,7 @@ import { EditTexture } from './Edit/EditTexture'
 import { EditParenting, updateChildrenAssets } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
 import { EditTrigger, enableTriggerEdit, resetTriggerPanels, triggerInfoView, triggerView, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
-import { EditAction, actionView, updateActionView } from './Edit/EditAction'
+import { EditAction, actionView, currentAddActionPanel, updateActionView } from './Edit/EditAction'
 import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
 import { resetSetPositionEntity } from './Edit/ActionPanels/AddSetPositionPanel'
 import { EditState } from './Edit/EditState'
@@ -45,6 +45,7 @@ import { releaseBatchActions } from './Edit/ActionPanels/AddBatchActionsPanel'
 import { releaseRandomActions } from './Edit/ActionPanels/AddRandomAction'
 import { EditRewards, updateRewardInfo } from './Edit/EditRewards'
 import { EditPlaylist, playlistView, updatePlaylistComponent } from './Edit/EditPlaylist'
+import { updatePopupPanelView } from './Edit/ActionPanels/AddPopupPanel'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -535,9 +536,13 @@ function getBackButtonLogic(){
         case COMPONENT_TYPES.ACTION_COMPONENT:
             resetAdditionalAssetFeatures()
             if(actionView === "add"){
-                releaseBatchActions()
-                releaseRandomActions()
-                updateActionView("main")
+                if(currentAddActionPanel === Actions.POPUP_SHOW){
+                    updatePopupPanelView("main")
+                }else{
+                    releaseBatchActions()
+                    releaseRandomActions()
+                    updateActionView("main")
+                }
             }else{
                 openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             }
@@ -696,6 +701,7 @@ function EditObjectData(){
                 alignContent:'center',
                 width: '90%',
                 height: '10%',
+                display: visibleComponent === "" ? "flex" : "none"
                 }}
             >
 

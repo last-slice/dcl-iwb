@@ -30,6 +30,7 @@ import { removedEntities } from "../components/Scene"
 import { removeItem } from "./Build"
 import { getActionEvents, handleUnlockPlayer, updateActions } from "../components/Actions"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -51,6 +52,7 @@ export async function disableSceneEntities(sceneId:any) {
         let scene = colyseusRoom.state.scenes.get(sceneId)
         if(scene && !scene.checkDisabled && scene.loaded){
             console.log('disabling scene entities for', sceneId)
+            displaySkinnyVerticalPanel(false)
             stopAllTimeouts()
             stopAllIntervals()
             resetDialog()

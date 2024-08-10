@@ -2,7 +2,7 @@ import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, Easing
 import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
-import { getCounterComponentByAssetId, setCounter, updateCounter } from "./Counter"
+import { getCounterComponentByAssetId, getCounterValue, setCounter, updateCounter } from "./Counter"
 import { getStateComponentByAssetId, setState } from "./States"
 import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers"
 import { changeRealm, movePlayerTo, openExternalUrl, teleportTo, triggerEmote } from "~system/RestrictedActions"
@@ -15,13 +15,15 @@ import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
 import { localPlayer } from "./Player"
 import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStartUI"
-import { loadLevelAssets } from "./Level"
+import { attemptLoadLevel, disableLevelAssets, loadLevelAssets } from "./Level"
 import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 import { island } from "./Config"
 import { getRandomIntInclusive } from "../helpers/functions"
 import { removedEntities } from "./Scene"
 import { showDialogPanel } from "../ui/Objects/DialogPanel"
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
+import { getView } from "../ui/uiViews"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -99,7 +101,7 @@ export function updateActions(scene:any, info:any, action:any){
                 break;
 
             case Actions.PLAY_AUDIO_STREAM:
-                handlePlayAudioStream(info)
+                handlePlayAudioStream(info)//
                 break;
 
             case Actions.STOP_AUDIO_STREAM:
@@ -288,6 +290,22 @@ export function updateActions(scene:any, info:any, action:any){
              case Actions.PLAY_PLAYLIST:
                 handlePlayPlaylist(scene, info, action)
                 break;
+
+            case Actions.ADVANCED_LEVEL:
+                handleAdvanceLevel(scene, info, action)
+                break;
+
+            case Actions.RANDOM_NUMBER:
+                handleRandomNumber(scene, info, action)
+                break;
+
+            case Actions.POPUP_SHOW:
+                handlePopupShow(scene, info, action)
+                break;
+
+            case Actions.POPUP_HIDE:
+                handlePopupHide()
+                break;
         }
     })
 }
@@ -389,7 +407,7 @@ function handleSetState(scene:any, info:any, action:any){
 }
 
 function handleAddNumber(scene:any, info:any, action:any){
-    console.log('adding number action', action )
+    console.log('adding number action', info, action)
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         updateCounter(counter, action.value)
@@ -710,7 +728,7 @@ function handleRandomAction(scene:any, info:any, action:any){
 }
 
 function handleShowNotification(scene:any, info:any, action:any){
-    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:action.message, animate:{enabled:true, return: true, time:action.time}})
+    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:action.message, animate:{enabled:true, return: true, time:action.timer}})
 }
 
 function handleAttemptGame(scene:any, info:any, action:any){
@@ -757,9 +775,12 @@ function handleLoadLevel(scene:any, info:any, action:any){
     if(levelInfo){
         displayLoadingScreen(true, levelInfo)
 
-        scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((gameInfo:any, aid:string)=>{
-            movePlayerToLobby(scene, gameInfo)
-        })
+        let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
+        handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
+
+        // scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((gameInfo:any, aid:string)=>{
+        //     movePlayerToLobby(scene, gameInfo)
+        // })
     
         loadLevelAssets(scene, info, action)
     }
@@ -1098,4 +1119,77 @@ export function handlePlayPlaylist(scene:any, info:any, action:any){
             playlistAid:info.aid,
         }
     )
+}
+
+async function handleAdvanceLevel(scene:any, info:any, action:any){
+    let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
+    if(!gameInfo){
+        console.log('error finding game, reset?')
+        //end current game?
+    }
+
+    // let currentLevel = getCounterValue(scene, gameInfo.currentLevelAid, "currentValue", true)
+    let currentLevel = getCounterComponentByAssetId(scene, gameInfo.currentLevelAid, {})
+    console.log('current level counter is', currentLevel)
+
+    if(!currentLevel){
+        console.log('error finding game, reset?')
+    }
+
+    let foundLevelAid:any
+    scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((levelInfo:any, aid:string) => {
+        if(currentLevel && (levelInfo.number ===  currentLevel.currentValue + 1)){
+            foundLevelAid = aid
+        }
+    });
+
+    if(foundLevelAid){
+        console.log('fund leve to advance')
+        await disableLevelAssets(scene)
+        attemptLoadLevel(scene, gameInfo.currentLevelAid, foundLevelAid)
+    }
+}
+
+function handleRandomNumber(scene:any, info:any, action:any){
+    console.log('handling random number')
+    let rand = getRandomIntInclusive(action.min, action.max)
+    console.log('random number is', rand)
+}
+
+function handlePopupHide(){
+    displaySkinnyVerticalPanel(false)
+}
+
+function handlePopupShow(scene:any, info:any, action:any){
+    console.log('handling popup show', info.aid, info.entity, info, action)
+    let actionPopupView = {...getView("Popup_Action")}
+    actionPopupView.label = action.label
+    actionPopupView.text = action.text
+
+    let button1Action:any
+    let button2Action:any
+
+    if(action.button1){
+        actionPopupView.buttons[0].label = action.button1Label
+        if(action.button1Actions){
+            button1Action = ()=>{
+                handleBatchAction(scene, info, {actions:action.button1Actions})
+            }
+        }
+    }else{
+        actionPopupView.buttons.splice(0,1)
+    }
+
+    if(action.button2){
+        actionPopupView.buttons[actionPopupView.buttons.length-1].label = action.button2Label
+        if(action.button2Actions){
+            button2Action = ()=>{
+                handleBatchAction(scene, info, {actions:action.button2Actions})
+            }
+        }
+    }else{
+        actionPopupView.buttons.splice(actionPopupView.buttons.length-1,1)
+    }
+
+    displaySkinnyVerticalPanel(true, actionPopupView, action.variableText, button1Action, button2Action)
 }

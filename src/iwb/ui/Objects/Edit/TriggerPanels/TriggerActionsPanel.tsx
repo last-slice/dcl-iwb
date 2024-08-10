@@ -10,7 +10,6 @@ import { getAllAssetNames } from '../../../../components/Name'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { COMPONENT_TYPES } from '../../../../helpers/types'
 import { selectedTrigger } from './TriggerInfoPanel'
-import { PointerEventType } from '@dcl/sdk/ecs'
 
 let entities:any[] = []
 let entitiesWithActions:any[] = []
@@ -33,7 +32,7 @@ export function updateEntityActions(aid:string){
             entitiesWithActions.push(action)
         })
     }
-    console.log('entity actions are ', entitiesWithActions)
+    entitiesWithActions.sort((a:any, b:any)=> a.name.localeCompare(b.name))
 }
 
 export function updateTriggerActionsPanel(){

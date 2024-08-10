@@ -1,17 +1,14 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
+import { Color4 } from '@dcl/sdk/math'
+import { sizeFont } from '../../helpers'
 import resources from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
-import { openEditComponent, visibleComponent } from '../EditAssetPanel'
+import {  visibleComponent } from '../EditAssetPanel'
 import { localPlayer } from '../../../components/Player'
-import { displaySkinnyVerticalPanel } from '../../Reuse/SkinnyVerticalPanel'
 import { setUIClicked } from '../../ui'
-import { uiSizes } from '../../uiConfig'
-import { getView } from '../../uiViews'
 
 let typeIndex = 0
 let textureIndex = 0

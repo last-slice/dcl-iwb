@@ -18,7 +18,7 @@ export function IWBButton(data:any){
           justifyContent: 'center',
           width: calculateImageDimensions(button.width ? button.width : 7, getAspect(uiSizes.buttonPillBlue)).width,
           height: calculateImageDimensions(button.height ? button.height : 7,getAspect(uiSizes.buttonPillBlue)).height,
-          margin:{top:"1%", bottom:'1%'},
+          margin: button.margin? button.margin : {top:"1%", bottom:'1%'},
           positionType: button.positionType ? button.positionType : undefined,
           position: button.position ? button.position : undefined,
           display: button.hasOwnProperty("displayCondition") ? button.displayCondition() ? 'flex':'none' : 'flex'
@@ -26,9 +26,9 @@ export function IWBButton(data:any){
       uiBackground={{
           textureMode: 'stretch',
           texture: {
-              src: 'assets/atlas2.png'
+              src: button.customImage ? button.customImage : 'assets/atlas2.png'
           },
-          uvs: getButtonState(data.buttons, button.label)
+          uvs: button.customImage ? getImageAtlasMapping(button.uvs) : getButtonState(data.buttons, button.label)
       }}
       onMouseDown={() => {
         setUIClicked(true)
@@ -39,7 +39,7 @@ export function IWBButton(data:any){
       onMouseUp={()=>{
         setUIClicked(false)
       }}
-      uiText={{value: button.label, color:Color4.White(), fontSize:sizeFont(button.fontBigScreen ? button.fontBigScreen : 30,button.fontSmallScreen ? button.fontSmallScreen : 20)}}
+      uiText={{value: button.customImage ? "" : button.label, color:Color4.White(), fontSize:sizeFont(button.fontBigScreen ? button.fontBigScreen : 30,button.fontSmallScreen ? button.fontSmallScreen : 20)}}
       />
     )
 }

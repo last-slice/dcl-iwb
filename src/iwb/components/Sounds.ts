@@ -50,10 +50,6 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
 
         let audio = AudioSource.getMutableOrNull(entityInfo.entity)
 
-        Material.setPbrMaterial(entityInfo.entity, {
-            albedoColor: Color4.create(0, 0, 1, .5)
-        })
-
         let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(entityInfo.aid)
         if(name){
             TextShape.createOrReplace(entityInfo.entity, {text: "" + name.value, fontSize: 3})
@@ -204,97 +200,87 @@ export function updateSoundAutostart(entity:Entity, auto:boolean){
 
 export function soundsListener(scene:any){
     scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].onAdd((sound:any, aid:any)=>{
-        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
-        // if(!iwbInfo.components.includes(COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT)){
-        //   iwbInfo.components.push(COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT)
-        // }
-
         let info = getEntity(scene, aid)
         if(!info){
             return
         }
 
-        sound.listen("url", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundURL(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("url", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundURL(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("attach", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundAttachView(scene, aid, c, info)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("attach", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundAttachView(scene, aid, c, info)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("volume", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundVolume(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("volume", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundVolume(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("loop", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundLoop(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("loop", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundLoop(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("autostart", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundAutostart(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("autostart", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundAutostart(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
     })
 
     scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].onAdd((sound:any, aid:any)=>{
-        let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
-        if(!iwbInfo.components.includes(COMPONENT_TYPES.AUDIO_STREAM_COMPONENT)){
-          iwbInfo.components.push(COMPONENT_TYPES.AUDIO_STREAM_COMPONENT)
-        }
-
         let info = getEntity(scene, aid)
         if(!info){
             return
         }
 
-        sound.listen("url", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundURL(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("url", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundURL(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("attach", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundAttachView(scene, aid, c, info)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("attach", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundAttachView(scene, aid, c, info)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("volume", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundVolume(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("volume", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundVolume(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("loop", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundLoop(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("loop", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundLoop(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
 
-        sound.listen("autostart", (c:any, p:any)=>{
-            if(p !== undefined){
-                updateSoundAutostart(info.entity, c)
-                AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-            }
-        })
+        // sound.listen("autostart", (c:any, p:any)=>{
+        //     if(p !== undefined){
+        //         updateSoundAutostart(info.entity, c)
+        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
+        //     }
+        // })
     })
 }
 

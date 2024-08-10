@@ -269,14 +269,16 @@ export let myWorldConfig:any = {
             }
         },
         onClick:(data:any)=>{
-            console.log('data clicked', data)
+            console.log('data clicked', data)//
             playSound(SOUND_TYPES.SELECT_3)
             if(!data.init){
                 updateIWBTable([])
                 displayMainView(false)
                 displaySkinnyVerticalPanel(true, getView("Init_World"), data.ens, ()=>{//
                         sendServerMessage(SERVER_MESSAGE_TYPES.INIT_WORLD, {user:localUserId, world:data})
-                        displayPendingPanel(true, "deployment")
+                        if(data.ens === realm){
+                            displayPendingPanel(true, "deployment")
+                        }
                         showNotification({type:NOTIFICATION_TYPES.MESSAGE, animate:{enabled:true, return:true, time:5}, message:"Your deployment is pending...please wait for confirmation"})
                     }
                 )

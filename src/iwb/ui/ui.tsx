@@ -18,7 +18,6 @@ import { createCustomContextMenu } from './Objects/ContextMenu'
 import { createNotificationUI } from './Objects/NotificationPanel'
 import { createSceneInfoPanel, displaySceneAssetInfoPanel } from './Objects/SceneInfoPanel'
 import { createEditAssetPanel } from './Objects/EditAssetPanel'
-import { createAdvancedEditPanel } from './Objects/EditAdvanced'
 import { createShowTextComponent } from './Objects/ShowText'
 import { createExpandedMapView } from './Objects/ExpandedMapView'
 import { createSceneDetailsPanel } from './Objects/SceneMainDetailPanel'
@@ -31,6 +30,8 @@ import { createEndGameButton, createGameStartUI, createLoadingScreen } from './O
 import { createLiveUI } from './Objects/LiveShowPanel'
 import { createGameLobbyPanel } from './Objects/GameLobby'
 import { createDialogPanel } from './Objects/DialogPanel'
+import { createTutorialVideoButton } from './Objects/TutorialVideo'
+import { createMainLoadingScreen } from './Objects/LoadingScreen'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -68,6 +69,8 @@ const uiComponent:any = () => [
   createLiveUI(),
   createGameLobbyPanel(),
   createDialogPanel(),
+  createTutorialVideoButton(),
+  createMainLoadingScreen(),
   // createAdvancedEditPanel(),
 ]
 
@@ -76,7 +79,7 @@ export function generateButtons(data:any){
   data.buttons.forEach((button:any)=>{
       arr.push(<IWBButton button={button} buttons={data.buttons} />)
   })
-  return arr//
+  return arr
 }
 
 export function hideAllPanels(){

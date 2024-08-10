@@ -2,13 +2,14 @@ import ReactEcs, {Dropdown, Input, UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4} from '@dcl/sdk/math'
 import {calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont} from '../../helpers'
 import resources, { colors } from '../../../helpers/resources'
-import { COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, EDIT_MODES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { visibleComponent } from '../EditAssetPanel'
 import { UiTexts } from '../../../components/UIText'
 import { selectedItem } from '../../../modes/Build'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
+import { showNotification } from '../NotificationPanel'
 
 let dataEntities:any[] = []
 let selectedEntityIndex:number = 0
@@ -465,6 +466,7 @@ uiText={{
 onMouseDown={() => {
     setUIClicked(true)
     updateUi()
+    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "UI Text updated!", animate:{enabled:true, return:true, time:3}})
 }}
 onMouseUp={()=>{
     setUIClicked(false)

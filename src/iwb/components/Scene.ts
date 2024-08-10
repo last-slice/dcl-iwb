@@ -380,6 +380,7 @@ export function checkSceneCount(count:number){
 }
 
 async function loadBlankParcels(){
+    console.log('loading blank parcels')
     const sceneInfo = await getSceneInformation({})
 
 	if (!sceneInfo) return

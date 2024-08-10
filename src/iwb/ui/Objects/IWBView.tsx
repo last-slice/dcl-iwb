@@ -11,6 +11,8 @@ import { displayStoreView } from './StoreView'
 import { CreateSceneView } from './IWBViews/CreateView'
 import { colyseusRoom } from '../../components/Colyseus'
 import { island } from '../../components/Config'
+import { addStreamEntity, MusicView, streamEntity, updateMusicView } from './IWBViews/MusicView'
+import { engine } from '@dcl/sdk/ecs'
 
 let show = false
 
@@ -43,24 +45,33 @@ let buttons:any[] = [
     {label:"Info", pressed:false, func:()=>{
         updateMainView("Info")
         updateInfoView("Version")
-        // updateTutorialsView("list")
-        // updateHelpView("main")
-        // displayStatusView("Version")
-        // displaySetting(button.label)
         },
         displayCondition:()=>{
             return island === "world"
         }
     },
+    {label:"Audius", pressed:false, func:()=>{
+        if(!streamEntity){
+            addStreamEntity()
+        }
+        updateMusicView()
+        updateMainView("Audius")
+        },
+        // displayCondition:()=>{
+        //     return island === "world"
+        // },
+        width: 3.5,
+        height:8,
+        customImage:resources.textures.audiusIcon,
+        margin:{top:"5%"},
+        uvs:resources.uvs.audiusIcon
+    },
     {label:"Close", pressed:false, func:()=>{
-        // displaySettingsPanel(false)
-        // displaySetting('Builds')
         updateIWBTable([])
         displayMainView(false)
-        // updateMainView("main")
         },
         position:{bottom:0},
-        positionType:'absolute'//
+        positionType:'absolute'
     },
 ]
 
@@ -216,6 +227,7 @@ function MainRightView(){
             <SettingsView/>
             <InfoView/>
             <CreateSceneView/>
+            <MusicView/>
 
         </UiEntity>
   

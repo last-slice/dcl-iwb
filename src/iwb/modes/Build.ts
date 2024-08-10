@@ -48,6 +48,7 @@ import { resetSetScaleEntity } from "../ui/Objects/Edit/ActionPanels/AddSetScale
 import { releaseBatchActions } from "../ui/Objects/Edit/ActionPanels/AddBatchActionsPanel"
 import { releaseRandomActions } from "../ui/Objects/Edit/ActionPanels/AddRandomAction"
 import { resetMovePlayerEntity } from "../ui/Objects/Edit/ActionPanels/AddMovePlayerPanel"
+import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -323,11 +324,11 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
             } else if (selectedItem.itemData.ty === "SM") {
                 MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
+                itemPosition = {x: 0, y: .5, z: itemDepth}//
                 selectedItem.initialHeight = .88
                 scale = Vector3.create(1, 1, 1)
                 MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.ty === "Audio") {
+            } else if (selectedItem.itemData.ty === "Audio" || selectedItem.itemData.ty === "Audio Stream") {
                 MeshRenderer.setBox(selectedItem.entity)
                 itemPosition = {x: 0, y: .5, z: itemDepth}
                 selectedItem.initialHeight = .88
@@ -608,6 +609,7 @@ export function resetAdditionalAssetFeatures(){
     releaseBatchActions()
     releaseRandomActions()
     resetMovePlayerEntity()
+    displaySkinnyVerticalPanel(false)
 }
 
 export function dropGrabbedItems(){
@@ -677,7 +679,7 @@ export function dropGrabbedItems(){
     playSound(SOUND_TYPES.ERROR_2);
 }
 
-export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
+export function dropSelectedItem(canceled?: boolean, editing?: boolean, centered?:boolean) {
     VisibilityComponent.createOrReplace(bbE, {visible: false})
     displayGrabContextMenu(false)
 
@@ -747,7 +749,7 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean) {
     const bpsCurScene = checkBuildPermissionsForScene(curScene);
 
     // if scene found and permissions allowed, add item to scene
-    if (curScene && bpsCurScene && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
+    if (curScene && bpsCurScene && isEntityInScene(selectedItem.entity, selectedItem.catalogId, centered)) {
         PointerEvents.deleteFrom(selectedItem.entity);
         VisibilityComponent.createOrReplace(bbE, {visible: false});
         addAllBuildModePointers();
@@ -986,7 +988,7 @@ export function placeCenterCurrentScene(id?: string) {
     displayCatalogInfoPanel(false)
     displayHover(false)
 
-    dropSelectedItem()
+    dropSelectedItem(undefined, undefined, true)
 
     const {position: playerPosition, rotation: playerRotation} = Transform.get(engine.PlayerEntity)
     let parcel = "" + Math.floor(playerPosition.x / 16) + "," + Math.floor(playerPosition.z / 16)
