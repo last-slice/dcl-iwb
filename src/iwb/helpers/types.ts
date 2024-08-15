@@ -276,12 +276,12 @@ export interface SelectedItem {
     itemData:SceneItem
     enabled:boolean
     already?:boolean
+    grabbedTransform?:any
     transform?:TransformType
     pointer?:Entity
     initialHeight: number
     duplicate:boolean
     ugc:boolean
-    isCatalogSelect?:boolean
     distance:number
     rotation:number
     scale:number
@@ -438,7 +438,8 @@ export enum Actions {
     STOP_PLAYLIST = 'playlist_stop',
     POPUP_SHOW = 'popup_show',
     POPUP_HIDE = 'popup_hide',
-    RANDOM_NUMBER ='random_number'
+    RANDOM_NUMBER ='random_number',
+    OPEN_NFT_DIALOG = 'nft_dialog_popup'
 }
 
 InputAction.IA_ACTION_3
@@ -465,9 +466,9 @@ export enum Triggers {
     ON_GAME_START = 'on_game_start',
     ON_LEVEL_LOADED = 'on_level_loaded',
     // ON_LEVEL_LOAD = 'on_level_load',
-    ON_LEVEL_COMPLETE = 'on_level_win',
+    // ON_LEVEL_COMPLETE = 'on_level_win',
     ON_LEVEL_END = 'on_level_end',
-    ON_LEVEL_LOSE = 'on_level_lose',
+    // ON_LEVEL_LOSE = 'on_level_lose',
     ON_ENTER_SCENE = 'on_enter_scene',
     ON_LEAVE_SCENE = 'on_leave_scene',
     ON_ATTEMPT_START_GAME = 'on_attempt_start_game',

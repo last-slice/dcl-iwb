@@ -7,6 +7,9 @@ import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
+import { getOnPlay } from './EditMeshRender'
+import { localPlayer } from '../../../components/Player'
+import { uiSizes } from '../../uiConfig'
 
 let shapeIndex = 0
 let collisionIndex = 1
@@ -53,7 +56,7 @@ export function EditMeshCollider() {
                 flexDirection: 'row',
                 justifyContent: 'center',
                 width: '100%',
-                height: '20%',
+                height: '15%',
                 margin:{top:"5%"}
             }}
         >
@@ -159,6 +162,69 @@ export function EditMeshCollider() {
 
 
             </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '70%',
+                height: '100%',
+            }}
+        uiText={{value:"Show On Play", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: selectedItem && selectedItem.enabled && getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.MESH_COLLIDER_COMPONENT ,selectedItem.aid) ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+            }}
+            onMouseDown={() => {
+                sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+                    {
+                        component:COMPONENT_TYPES.MESH_RENDER_COMPONENT,
+                        aid:selectedItem.aid, 
+                        sceneId:selectedItem.sceneId,
+                        onPlay: !getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.MESH_COLLIDER_COMPONENT ,selectedItem.aid)
+                    }
+                )
+
+            }}
+            />
+        </UiEntity>
+
 
         </UiEntity>
      

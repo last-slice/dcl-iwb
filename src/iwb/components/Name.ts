@@ -49,9 +49,15 @@ export function getAllAssetNames(sceneId:string, sort?:boolean){
     }
 
     let names:any[] = []
-    scene[COMPONENT_TYPES.NAMES_COMPONENT].forEach((nameComponent:any, aid:string) => {
-        names.push({name:nameComponent.value, aid:aid})
+
+    scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string) => {
+        let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
+        names.push({name:name.value, aid:aid})
     });
+
+    // scene[COMPONENT_TYPES.NAMES_COMPONENT].forEach((nameComponent:any, aid:string) => {
+    //     names.push({name:nameComponent.value, aid:aid})
+    // });
 
     if(sort){
         names.sort((a:any, b:any)=> a.name.localeCompare(b.name))

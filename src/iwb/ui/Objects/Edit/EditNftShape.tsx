@@ -30,45 +30,108 @@ export function EditNftShape() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '15%',
-                margin:{top:"5%"}
             }}
         >
 
-             <UiEntity
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+            >
+
+         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
                 height: '10%',
+                margin:{bottom:'5%'}
             }}
         uiText={{value:"NFT Chain", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
-            <UiEntity
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '50%',
+    }}
+>
+
+        <Dropdown
+    options={Object.values(BLOCKCHAINS)}
+    selectedIndex={getChainIndex()}
+    onChange={selectChain}
+    uiTransform={{
+        width: '100%',
+        height: '100%',
+    }}
+    // uiBackground={{color:Color4.Purple()}}
+    color={Color4.White()}
+    fontSize={sizeFont(20, 15)}
+/>
+
+        </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+            >
+
+         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '90%',
+                height: '10%',
+                margin:{bottom:'5%'}
             }}
-        >
+        uiText={{value:"NFT Type", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
 
-                        <Dropdown
-                    options={Object.values(BLOCKCHAINS)}
-                    selectedIndex={getChainIndex()}
-                    onChange={selectChain}
-                    uiTransform={{
-                        width: '100%',
-                        height: '120%',
-                    }}
-                    // uiBackground={{color:Color4.Purple()}}
-                    color={Color4.White()}
-                    fontSize={sizeFont(20, 15)}
-                />
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '50%',
+    }}
+>
+
+        <Dropdown
+    options={Object.values(NFT_TYPES)}
+    selectedIndex={getTypeIdex()}
+    onChange={selectType}
+    uiTransform={{
+        width: '100%',
+        height: '100%',
+    }}
+    // uiBackground={{color:Color4.Purple()}}
+    color={Color4.White()}
+    fontSize={sizeFont(20, 15)}
+/>
 
         </UiEntity>
+
+        </UiEntity>
+
+
 
         </UiEntity>
 
@@ -79,7 +142,7 @@ export function EditNftShape() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '15%',
-                margin:{top:"5%"}
+                margin:{top:"1%"}
             }}
         >
 
@@ -90,6 +153,7 @@ export function EditNftShape() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '10%',
+                margin:{bottom:'5%'}
             }}
         uiText={{value:"Frame Style", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
@@ -100,7 +164,7 @@ export function EditNftShape() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '90%',
+                height: '50%',
             }}
         >
 
@@ -110,7 +174,7 @@ export function EditNftShape() {
                     onChange={selectFrame}
                     uiTransform={{
                         width: '100%',
-                        height: '120%',
+                        height: '100%',
                     }}
                     // uiBackground={{color:Color4.Purple()}}
                     color={Color4.White()}
@@ -167,7 +231,6 @@ export function EditNftShape() {
                 width: '100%',
                 height: '100',
             }}
-            value={selectedItem && selectedItem.enabled && selectedItem.itemData.nftComp ? selectedItem.itemData.nftComp.contract : ""}
             ></Input>
 
         </UiEntity>
@@ -211,7 +274,6 @@ export function EditNftShape() {
             onChange={(value)=>{
                 updateNFT("tokenId", value)
             }}
-            value={selectedItem && selectedItem.enabled && selectedItem.itemData.nftComp ? selectedItem.itemData.nftComp.tokenId : ""}
             fontSize={sizeFont(20,15)}
             placeholder={'token id'}
             placeholderColor={Color4.White()}
@@ -231,12 +293,27 @@ export function EditNftShape() {
 }
 
 function getChainIndex(){
-    if(selectedItem && selectedItem.enabled){
+    if(selectedItem && selectedItem.enabled && visibleComponent === COMPONENT_TYPES.NFT_COMPONENT){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
             let itemInfo = scene[COMPONENT_TYPES.NFT_COMPONENT].get(selectedItem.aid)
             if(itemInfo){
-                return Object.values(BLOCKCHAINS).findIndex((c)=> c === itemInfo.urn.split(":")[1])
+                return Object.values(BLOCKCHAINS).findIndex((c)=> c === itemInfo.chain.split(":")[1])
+            }
+            return 0
+        }
+        return 0
+    }
+    return 0
+}
+
+function getTypeIdex(){
+    if(selectedItem && selectedItem.enabled && visibleComponent === COMPONENT_TYPES.NFT_COMPONENT){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(scene){
+            let itemInfo = scene[COMPONENT_TYPES.NFT_COMPONENT].get(selectedItem.aid)
+            if(itemInfo){
+                return Object.values(BLOCKCHAINS).findIndex((c)=> c === itemInfo.chain.split(":")[1])
             }
             return 0
         }
@@ -246,7 +323,7 @@ function getChainIndex(){
 }
 
 function getFrameIndex(){
-    if(selectedItem && selectedItem.enabled){
+    if(selectedItem && selectedItem.enabled && visibleComponent === COMPONENT_TYPES.NFT_COMPONENT){
         let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(scene){
             let itemInfo = scene[COMPONENT_TYPES.NFT_COMPONENT].get(selectedItem.aid)
@@ -269,6 +346,12 @@ function selectChain(index: number) {
 function selectFrame(index: number) {
     if(index !== getChainIndex()){
         updateNFT("style", index)
+    }  
+}
+
+function selectType(index: number) {
+    if(index !== getTypeIdex()){
+        updateNFT("standard", Object.values(NFT_TYPES)[index])
     }  
 }
 

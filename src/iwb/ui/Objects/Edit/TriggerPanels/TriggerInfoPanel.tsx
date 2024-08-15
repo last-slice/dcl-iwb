@@ -2,14 +2,17 @@ import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import resources from '../../../../helpers/resources'
 import { COMPONENT_TYPES, ENTITY_POINTER_LABELS, POINTER_EVENTS, Triggers } from '../../../../helpers/types'
-import { sizeFont } from '../../../helpers'
-import { triggerInfoView, triggerView, update, updateTriggerInfoView } from '../EditTrigger'
+import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../../helpers'
+import { editingTrigger, triggerInfoView, triggerView, update, updateTriggerInfoView, updateTriggerView } from '../EditTrigger'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { selectedItem } from '../../../../modes/Build'
 import { TriggerConditionsPanel } from './TriggerConditionsPanel'
 import { TriggerActionsPanel } from './TriggerActionsPanel'
 import { setUIClicked } from '../../../ui'
 import { utils } from '../../../../helpers/libraries'
+import { newDecision, TriggerDecisionPanel } from './TriggerDecisionPanel'
+import { uiSizes } from '../../../uiConfig'
+import { visibleComponent } from '../../EditAssetPanel'
 
 export let selectedTrigger:any = {}
 
@@ -88,6 +91,8 @@ export function TriggerInfoPanel(){
             uiText={{value:"Input Type: " + (ENTITY_POINTER_LABELS[selectedTrigger.input] + (selectedTrigger.type === Triggers.ON_INPUT_ACTION ? ", Button: " + Object.values(POINTER_EVENTS)[selectedTrigger.pointer] : "")), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
         />
 
+
+            {/* trigger summary */}
         <UiEntity
         uiTransform={{
             flexDirection: 'column',
@@ -114,8 +119,8 @@ export function TriggerInfoPanel(){
                 uiText={{value:"Input Button Type", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
-                    {/* trigger pointer button dropdown */}
-                    <UiEntity
+            {/* trigger pointer button dropdown */}
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -145,8 +150,8 @@ export function TriggerInfoPanel(){
 
             </UiEntity>
 
-                                {/* trigger pointer button dropdown */}
-                                <UiEntity
+            {/* trigger pointer button dropdown */}
+            <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -182,11 +187,15 @@ export function TriggerInfoPanel(){
 {/* trigger info main panel view */}
     <TriggerMainInfoPanel/>
 
+
+
      {/* trigger info conditions panel view */}
      <TriggerConditionsPanel/>
 
 {/* trigger info actions panel view */}
         <TriggerActionsPanel/>
+
+        <TriggerDecisionPanel/>
 
 
         </UiEntity>
@@ -207,44 +216,184 @@ function TriggerMainInfoPanel(){
         display: triggerInfoView === "main" ? "flex" : "none"
         }}
     >
+
+        {/* add decision button */}
         <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-                margin: {top: "2%"}
-            }}
-            uiBackground={{color: Color4.Black()}}
-            uiText={{value: "Conditions", fontSize: sizeFont(30, 20)}}
-            onMouseDown={() => {
-                setUIClicked(true)
-                updateTriggerInfoView("conditions")
-            }}
-            onMouseUp={()=>{
-                setUIClicked(false)
-            }}
-        />
-                    <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '10%',
-                margin: {top: "2%"}
-            }}
-            uiBackground={{color: Color4.Black()}}
-            uiText={{value: "Actions", fontSize: sizeFont(30, 20)}}
-            onMouseDown={() => {
-                setUIClicked(true)
-                updateTriggerInfoView("actions")
-            }}
-            onMouseUp={()=>{
-                setUIClicked(false)
-            }}
-        />
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf:'flex-start',
+        margin:{top:"1%"},
+        width: calculateImageDimensions(10, getAspect(uiSizes.buttonPillBlack)).width,
+        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+    }}
+    uiText={{
+        value: "Add Decision",
+        fontSize: sizeFont(25, 15),
+        color: Color4.White(),
+        textAlign: 'middle-center'
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        updateTriggerInfoView("decisions")
+        update("adddecision", {tid:selectedTrigger.id, did:newDecision.id})
+        
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+/>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent:'center',
+    width: '100%',
+    height: '10%',
+}}
+    uiText={{value:"Current Decisions", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+/>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignContent:'center',
+    width: '100%',
+    height: '80%',
+}}
+>
+{selectedItem && 
+    selectedItem.enabled && 
+    editingTrigger && 
+    visibleComponent === COMPONENT_TYPES.TRIGGER_COMPONENT &&
+    triggerView === "info" && 
+    triggerInfoView === "main" && 
+
+    getDecisions()
+    }
+
+</UiEntity>
+
         </UiEntity>
+    )
+}
+
+function getDecisions(){
+    let arr:any[] = []
+    let count = 0
+    if(selectedTrigger && selectedTrigger.decisions){
+        selectedTrigger.decisions.forEach((decision:any, i:number)=>{
+            arr.push(<TriggerDecisionRow data={{triggerId:selectedTrigger.id, decision:decision}} rowCount={count} />)
+            count++
+        })
+    }
+    return arr
+}
+
+export function TriggerDecisionRow(info:any){
+    let data:any = info.data
+    let decision = data.decision
+    // console.log('decision is', decision)
+    return(
+        <UiEntity
+        key={resources.slug + "trigger-decision-row-"+ info.rowCount}
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+                margin:{top:"1%", bottom:'1%', left:"2%", right:'2%'}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
+                >
+
+                    {/* decision name column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '100%',
+                margin:{left:'2%'}
+            }}
+            uiText={{textWrap:'nowrap', value:"" + (decision.name.length > 20 ? decision.name.substring(0, 20) + "..." : decision.name), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            />
+
+            {/* action edit buttons column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).height,
+                    margin:{right:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.pencilEditIcon)
+                }}
+                onMouseDown={() => {
+                    updateTriggerInfoView("decisions", decision)
+                }}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                    margin:{left:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.trashButton)
+                }}
+                onMouseDown={() => {
+                    console.log('data is', data)
+                    update("deletedecision", {tid: data.triggerId, did:decision.id})
+                    utils.timers.setTimeout(()=>{selectTriggerDetails(data.triggerId)}, 200)
+                }}
+            />
+                </UiEntity>
+
+            </UiEntity>
     )
 }

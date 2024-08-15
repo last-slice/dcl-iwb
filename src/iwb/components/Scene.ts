@@ -327,6 +327,10 @@ export async function checkScenePermissions() {
                 if (lastScene) {
                     if (lastScene !== activeScene.id) {
                         await disableSceneEntities(lastScene)
+
+                        //let triggerEvents = getTriggerEvents(entityInfo.entity)
+                        //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+                        
                         enableSceneEntities(activeScene.id)
                     }
                 } else {

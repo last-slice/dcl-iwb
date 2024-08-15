@@ -1,7 +1,7 @@
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { SOUND_TYPES } from "./types"
 
-export let colorsLabels:string[] = [
+export let colorsLabels:string[] = [//
     "Black",
     "Blue",
     "Gray",
@@ -67,7 +67,7 @@ export let audiusMoodEndpoints:any = {
 }
 
 export default {
-    DEBUG: true,
+    DEBUG: false,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
@@ -97,6 +97,7 @@ export default {
     },
 
     textures:{
+        iwbLogo: "https://lsnft.mypinata.cloud/ipfs/QmdMHovmwDtjWyZURMKVXphZxLPsL6MVMrvd2fSBFMwM1o",
         atlas1:"assets/atlas1.png",
         atlas2:"assets/atlas2.png",
         audiusIcon:"https://lsnft.mypinata.cloud/ipfs/QmWTASViZ1XGXqeRqJJjdBgAr98rcDXbwurjhBHJNCBuBC",
@@ -107,9 +108,11 @@ export default {
         audiusTrendingItemBG:"https://lsnft.mypinata.cloud/ipfs/QmZvYkYC9gSFw3gveGG7jRs3vQnh2uF8PoFxYkRGYdYSxB",
         audiusPlayButton:"https://lsnft.mypinata.cloud/ipfs/QmRX4KUUJgfiBdJGiV1m77avWmTUo2naxsh4q3KNMhGQQe",
         audiusShuffleButton:"https://lsnft.mypinata.cloud/ipfs/QmZbNTAeZxaJDHefGDscjyz2hLHdG3692SY4X16oWLeekj",
+        audiusShuffleButtonOn:"https://lsnft.mypinata.cloud/ipfs/QmYNNUQp8GCcaP2i1JbsR3STPjqExDai5D4WfF5LzhK4d2",
         audiusRewindButton:"https://lsnft.mypinata.cloud/ipfs/QmVf9tV7JDCM4oVtuUUKAksW6CvyPLCVC3yPLFLz1ymHK7",
         audiusSeekButton:"https://lsnft.mypinata.cloud/ipfs/QmPt7bxKndTR812mUAvcMqg9bXaTgxxoFxrHZy5T47mhwC",
         audiusRepeatButton:"https://lsnft.mypinata.cloud/ipfs/QmcDc7ketU77r2bgLCKm1FjRuSMpXxPkyLGX3wZserNTVh",
+        audiusRepeatButtonOn:"https://lsnft.mypinata.cloud/ipfs/QmTYunrPsFcUefayKnMGijddBBt32n9AQFoyfA9iPBu9MS",
         audiusPauseButton:"https://lsnft.mypinata.cloud/ipfs/QmRP5gx5MRRPRKt7SsnmkQ58o5FZQnfJkmJKHuMBCVqF1c",
         audiusVolumeIcon:"https://lsnft.mypinata.cloud/ipfs/QmeiPHeTKJMEXtqE6T9gu9QGLgfLpAwtE39KYfZTjTScyf",
         audiusVolumeBG:"https://lsnft.mypinata.cloud/ipfs/QmPtkGm5ha9gfQii1M8F373pbaApKWijmz32c7dZcNsnY3",
@@ -261,6 +264,7 @@ export default {
             playlistInfo: "v1/playlists",
             trackInfo:"v1/tracks",
             feelingLucky:"v1/full/tracks/feeling_lucky?limit=25&with_users=false",
+            search:"v1/playlists/search?query="
         },
         servers:[
             "https://audius-discovery-6.cultur3stake.com",
@@ -327,4 +331,3 @@ export default {
           ]
     }
 }
-

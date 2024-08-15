@@ -41,6 +41,7 @@ export function AddShowTextPanel(){
             justifyContent: 'flex-start',
             width: '100%',
             height: '100%',
+            display:'none'//
         }}
         // uiBackground={{color:Color4.Green()}}
     >

@@ -42,6 +42,12 @@ export function formatDollarAmount(amount: number, decimal?:number): string {
   return amount.toLocaleString('en-US', { maximumFractionDigits: decimal ? decimal : 0 });
 }
 
+export function formatSecondsToString(seconds:number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
 export function convertETHNumber(amount:any){
   return new eth.BigNumber(eth.fromWei(amount, "ether")).toFormat(2)
 }

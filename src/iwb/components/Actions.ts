@@ -5,7 +5,7 @@ import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, getCounterValue, setCounter, updateCounter } from "./Counter"
 import { getStateComponentByAssetId, setState } from "./States"
 import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers"
-import { changeRealm, movePlayerTo, openExternalUrl, teleportTo, triggerEmote } from "~system/RestrictedActions"
+import { changeRealm, movePlayerTo, openExternalUrl, openNftDialog, teleportTo, triggerEmote } from "~system/RestrictedActions"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { getEntity } from "./IWB"
@@ -24,6 +24,7 @@ import { removedEntities } from "./Scene"
 import { showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { getView } from "../ui/uiViews"
+import { buildNFTURN } from "./NftShape"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -60,13 +61,15 @@ export function actionListener(scene:any){
             updateActions(scene, info, newAction)
         }, )
     })
-}
+}//
 
 export function updateActions(scene:any, info:any, action:any){
     const actionEvents = getActionEvents(info.entity)
 
+    console.log('updating actions for entity', info.entity)
+
     actionEvents.on(action.id, ()=>{
-        // console.log('action received', action)
+        console.log('action received', action)
         switch(action.type){
             case Actions.SHOW_TEXT:
                 handleShowText(scene, info, action)
@@ -279,14 +282,6 @@ export function updateActions(scene:any, info:any, action:any){
                 handleEndLevel(scene, info, action)
                 break;
 
-             case Actions.LOSE_LEVEL:
-                handleLoseLevel(scene, info, action)
-                break;
-
-            case Actions.COMPLETE_LEVEL:
-                handleWinLevel(scene, info, action)
-                break;
-
              case Actions.PLAY_PLAYLIST:
                 handlePlayPlaylist(scene, info, action)
                 break;
@@ -306,16 +301,22 @@ export function updateActions(scene:any, info:any, action:any){
             case Actions.POPUP_HIDE:
                 handlePopupHide()
                 break;
+
+            case Actions.OPEN_NFT_DIALOG:
+                handleNFTDialogPopup(scene, info, action)
+                break;
         }
     })
 }
 
 export function handlePlayAnimation(scene:any, entityInfo:any, action:any){
+    console.log('handl')
     Animator.stopAllAnimations(entityInfo.entity)
     const clip = Animator.getClip(entityInfo.entity, action.anim)
     clip.playing = true
     clip.loop = action.loop ? true : false
-    clip.shouldReset = true
+    clip.speed = action.speed ? action.speed : 1
+    clip.shouldReset = true//
 }
 
 export function handleStopAnimation(scene:any, entityInfo:any, action:any){
@@ -407,14 +408,14 @@ function handleSetState(scene:any, info:any, action:any){
 }
 
 function handleAddNumber(scene:any, info:any, action:any){
-    console.log('adding number action', info, action)
+    console.log('adding number action', info, action)//
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
         updateCounter(counter, action.value)
         uiDataUpdate(scene, info)
         //single player
         const triggerEvents = getTriggerEvents(info.entity)
-        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
+        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {input:0, pointer:0, entity:info.entity})
 
         //if multiplayer, send to server
         // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
@@ -1091,16 +1092,6 @@ function handleEndLevel(scene:any, info:any, action:any){
     runGlobalTrigger(scene, Triggers.ON_LEVEL_END, {input:0, pointer:0, entity:0})
 }
 
-function handleLoseLevel(scene:any, info:any, action:any){
-    console.log('handling lose level', )
-    runGlobalTrigger(scene, Triggers.ON_LEVEL_LOSE, {input:0, pointer:0, entity:0})
-}
-
-function handleWinLevel(scene:any, info:any, action:any){
-    console.log('handling win level', )
-    runGlobalTrigger(scene, Triggers.ON_LEVEL_COMPLETE, {input:0, pointer:0, entity:0})
-}
-
 export function handlePlayPlaylist(scene:any, info:any, action:any){
     console.log('handling playlist', info, action)
     let entityInfo = getEntity(scene, info.aid)
@@ -1154,6 +1145,17 @@ function handleRandomNumber(scene:any, info:any, action:any){
     console.log('handling random number')
     let rand = getRandomIntInclusive(action.min, action.max)
     console.log('random number is', rand)
+    let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
+    if(counter){
+        setCounter(counter, rand)
+        uiDataUpdate(scene, info)
+        //single player
+        const triggerEvents = getTriggerEvents(info.entity)
+        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {input:0, pointer:0, entity:info.entity})
+
+        //if multiplayer, send to server
+        // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
+    }
 }
 
 function handlePopupHide(){
@@ -1192,4 +1194,13 @@ function handlePopupShow(scene:any, info:any, action:any){
     }
 
     displaySkinnyVerticalPanel(true, actionPopupView, action.variableText, button1Action, button2Action)
+}
+
+function handleNFTDialogPopup(scene:any, info:any, action:any){
+    let itemInfo = scene[COMPONENT_TYPES.NFT_COMPONENT].get(info.aid)
+    if(!itemInfo){
+        return
+    }
+
+    openNftDialog({urn: buildNFTURN(itemInfo)})
 }

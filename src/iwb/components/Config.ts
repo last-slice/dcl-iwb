@@ -2,29 +2,28 @@ import { getRealm } from "~system/Runtime"
 import { colyseusRoom } from "./Colyseus"
 import { localPlayer, localUserId, settings } from "./Player"
 import { COMPONENT_TYPES, SCENE_MODES, VIEW_MODES } from "../helpers/types"
-import { Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
+import { AvatarModifierArea, AvatarModifierType, Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
-import { hideAllOtherPointers, addBuildModePointers, resetEntityForBuildMode, addAllBuildModePointers } from "../modes/Build"
+import { resetEntityForBuildMode, addAllBuildModePointers } from "../modes/Build"
 import { BuildModeVisibilty, ParcelFloor, redBeam, greenBeam } from "../modes/Create"
 import { addInputSystem, removeInputSystem } from "../systems/InputSystem"
 import { hideAllPanels } from "../ui/ui"
 import { updatePlayModeReset } from "../modes/Play"
-import { createAsset, getEntity } from "./IWB"
+import { getEntity } from "./IWB"
 import { removePlayModSystem, addPlayModeSystem } from "../systems/PlayModeSystem"
 import { disableEntityForPlayMode } from "../modes/Play"
 import { displayHover } from "../ui/Objects/ContextMenu"
 import { clearShowTexts } from "../ui/Objects/ShowText"
 import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
-import { PlayTriggerSystem, addPlayTriggerSystem, disableTriggers, removePlayTriggerSystem } from "./Triggers"
+import { addPlayTriggerSystem, removePlayTriggerSystem } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
 import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
-import { disableGameAsset, killAllGameplay, pendingGameCleanup, updatePendingGameCleanup } from "./Game"
+import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./Game"
 import { handleUnlockPlayer } from "./Actions"
-import { disableLevelAssets } from "./Level"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 
 export let realm: string = ""
@@ -37,6 +36,8 @@ export let iwbConfig: any = {}
 export let buildModeCheckedAssets: any[] = []
 export let playModeCheckedAssets: any[] = []
 export let sceneRoofAssets:any[] = []
+export let excludeHidingUsers:any[] = []
+
 export let lastScene: any
 
 export let playerMode:SCENE_MODES = SCENE_MODES.PLAYMODE
@@ -47,10 +48,44 @@ export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
 
+export let hideOthersEntity:Entity
+
 export let localConfig:any = {
     parcels:[],
     base:"",
     id:""
+}
+
+export function setHidPlayersArea(){
+    excludeHidingUsers.length = 0
+    addPlayerToHideArray(localUserId)
+
+    engine.removeEntity(hideOthersEntity)
+    // hideOthersEntity = engine.addEntity()
+
+    // AvatarModifierArea.create(hideOthersEntity, {
+    //     area: Vector3.create(800,100,800),
+    //     modifiers: [AvatarModifierType.AMT_HIDE_AVATARS],
+    //     excludeIds: excludeHidingUsers.sort()
+    // })
+    // Transform.create(hideOthersEntity, {position:Vector3.create(0,0,0)})
+}
+
+export function setExcludePlayersToSoloGame(excluded:string[]){
+    excludeHidingUsers = excluded
+}
+
+export function addPlayerToHideArray(userId:string){
+    console.log('adding player to hide exclude array', userId)
+    excludeHidingUsers.find(($:any)=> $ !== userId) ? excludeHidingUsers.push(userId) : null
+}
+
+export function removePlayerFromHideArray(userId:string){
+    console.log('removing playing from hide exxclue array', userId)
+    let playerIndex = excludeHidingUsers.findIndex(($:any)=> $ === userId)
+    if(playerIndex >= 0){
+        excludeHidingUsers.splice(playerIndex,1)
+    }
 }
 
 export function setPlayerViewMode(view:VIEW_MODES){
@@ -89,7 +124,8 @@ export function setConfig(version:any, updates:any, videos:any, tutorialCID:any)
 export function setWorlds(config: any) {
     console.log('worlds are ', config)
 
-    config.forEach((world: any) => {
+    for(let i = 0; i < config.length; i++){
+        let world = config[i]
         worlds.push({
             name: world.worldName,
             v: world.v,
@@ -100,7 +136,9 @@ export function setWorlds(config: any) {
             bps:world.bps,
             init: true
         })
-    })
+    }
+
+    console.log('local player is', localPlayer)
 
     let worldPermissions = worlds.find(($:any)=> $.ens === realm)
     if(worldPermissions && worldPermissions.bps.includes(localUserId)){

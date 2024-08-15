@@ -1,4 +1,4 @@
-import { Animator, AvatarAnchorPointType, AvatarAttach, CameraModeArea, CameraType, EasingFunction, engine, Entity, GltfContainer, MeshRenderer, PBAvatarAttach, RaycastQueryType, raycastSystem, Transform, Tween, TweenLoop, TweenSequence, VisibilityComponent } from "@dcl/sdk/ecs"
+import { Animator, AvatarAnchorPointType, AvatarAttach, AvatarModifierArea, AvatarModifierType, CameraModeArea, CameraType, EasingFunction, engine, Entity, GltfContainer, MeshRenderer, PBAvatarAttach, RaycastQueryType, raycastSystem, Transform, Tween, TweenLoop, TweenSequence, VisibilityComponent } from "@dcl/sdk/ecs"
 import { Actions, COMPONENT_TYPES, GAME_WEAPON_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types"
 import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger } from "./Triggers"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
@@ -7,7 +7,6 @@ import { getEntity } from "./IWB"
 import { isGameAsset, disableLevelAssets, attemptLoadLevel } from "./Level"
 import { localPlayer, localUserId } from "./Player"
 import { utils } from "../helpers/libraries"
-import { setUIClicked } from "../ui/ui"
 import { displayGameLobby, updateLobbyPanel } from "../ui/Objects/GameLobby"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { getDistance, getRandomPointInArea, getRandomString, roundQuaternion, turn } from "../helpers/functions"
@@ -17,14 +16,19 @@ import { GunDataComponent } from "../helpers/Components"
 import { addGunRecoilSystem, isProcessingGunRay, processGunArray } from "../systems/GunSystem"
 import { displayCooldown } from "../ui/Objects/GameCooldownUI"
 import { stopAllIntervals } from "./Timer"
-import { updateAssetBuildVisibility } from "./Visibility"
+import { setVisibilityPlayMode, updateAssetBuildVisibility } from "./Visibility"
 import { disableCounterForPlayMode } from "./Counter"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
+import { disableEntityForPlayMode, disableSceneEntities } from "../modes/Play"
+import { setExcludePlayersToSoloGame } from "./Config"
 
 export let gameEndingtimer:any
 export let gameEntities:any[] = []
+export let gameUiEntities:any[] = []
+
 export let cooldownStart = 0
 export let pendingGameCleanup = false
+
 
 const gunFPSPosition = Vector3.create(0.2, -0.25, 0.2)
 const gunFPSScale = Vector3.create(0.8, 0.8, 0.8) 
@@ -40,13 +44,23 @@ export function disableLevelPlayMode(scene:any, entityInfo:any){
     if(itemInfo){
         updateAssetBuildVisibility(scene, false, entityInfo)
 
-        //reset counters
-        disableCounterForPlayMode(scene, entityInfo)
+        let parentInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === entityInfo.aid)
+        if(parentInfo){
+            parentInfo.children.forEach((childAid:string)=>{
+                let childInfo = getEntity(scene, childAid)
+                if(childInfo){
+                    updateAssetBuildVisibility(scene, false, entityInfo)
 
-        //reset states
+                    //reset counters
+                    disableCounterForPlayMode(scene, entityInfo)
 
-        //reset ui
-        disableUiTextPlayMode(scene, entityInfo)
+                    //reset states
+
+                    //reset ui
+                    disableUiTextPlayMode(scene, entityInfo)
+                }
+            })
+        }
     }
 }
 
@@ -143,6 +157,7 @@ export function attemptGameStart(info:any){
 
             if(foundLevelAid){
                 attemptLoadLevel(scene, gameInfo.currentLevelAid, foundLevelAid)
+                hideWorldDuringGame(scene.id, [localUserId])
             }
 
             
@@ -175,6 +190,8 @@ export function attemptGameStart(info:any){
         runGlobalTrigger(scene, Triggers.ON_JOIN_LOBBY, {input:0, pointer:0, entity:0})
         updateLobbyPanel(gameInfo)
         movePlayerToLobby(scene, gameInfo)
+
+        //hide all other scenes and players
     }
 }
 
@@ -187,6 +204,8 @@ export function movePlayerToLobby(scene:any, gameInfo:any){
 }
 
 export function attemptGameEnd(info:any){
+    localPlayer.gameStatus = PLAYER_GAME_STATUSES.NONE
+
     let scene = colyseusRoom.state.scenes.get(info.sceneId)
     // let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
     if(scene){
@@ -194,10 +213,11 @@ export function attemptGameEnd(info:any){
         disableLevelAssets(scene)
         displaySkinnyVerticalPanel(false)
         //to do
-        //clean up any game timers etc etc
+        //clean up any game timers etc etc//
     }
     localPlayer.canTeleport = true
     localPlayer.canMap = true
+    showScenesAfterGame(scene.id)
 }
 
 export function abortGameTermination(scene:any){
@@ -207,10 +227,10 @@ export function abortGameTermination(scene:any){
     }
 }
 
-export function killAllGameplay(){//
+export function killAllGameplay(){
     if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
         sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
-        attemptGameEnd({sceneId: localPlayer.activeScene.id})
+        // attemptGameEnd({sceneId: localPlayer.activeScene.id})
     }
 }
 
@@ -218,8 +238,9 @@ export function checkGameplay(scene:any){
     if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
         gameEndingtimer = utils.timers.setTimeout(()=>{
             hideNotification()
-            sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
-            attemptGameEnd({sceneId: scene.id})
+            killAllGameplay()
+            // sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+            // attemptGameEnd({sceneId: scene.id})
         }, 1000 * 5)
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Your Game will auto end in 5 seconds", animate:{enabled:true, return: false, time:5}})
     }
@@ -716,4 +737,46 @@ export function checkEnemyHit(hitEntity:Entity){
         //     }
         // })
     // }
+}
+
+function hideWorldDuringGame(sceneId:string, excludedIds:string[]){
+    hideOtherScenes(sceneId)
+    hideOtherPlayers(excludedIds)
+}
+
+function hideOtherScenes(sceneId:string){
+    colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
+        if(aid !== sceneId){
+            scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+                if(index > 2){
+                    let entityInfo = getEntity(scene, item.aid)
+                    if(entityInfo){
+                        disableEntityForPlayMode(scene, entityInfo)
+                        updateAssetBuildVisibility(scene, false, entityInfo)
+                    }
+                }
+            })
+            scene.hiddenForGame = true
+        }
+    })
+}
+
+function hideOtherPlayers(excludedIds:string[]){
+    setExcludePlayersToSoloGame(excludedIds)
+}
+
+function showScenesAfterGame(sceneId:string){
+    colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
+        if(aid !== sceneId && scene.hiddenForGame){
+            scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+                if(index > 2){
+                    let entityInfo = getEntity(scene, item.aid)
+                    if(entityInfo){
+                        disableEntityForPlayMode(scene, entityInfo)
+                    }
+                }
+            })
+            scene.hiddenForGame = false
+        }
+    })
 }

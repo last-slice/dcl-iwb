@@ -8,7 +8,6 @@ import { colyseusRoom } from '../../../../components/Colyseus'
 import { items } from '../../../../components/Catalog'
 
 let animations:any[] = []
-let loop:number = 0
 let animation:string = ""
 let selectedIndex = 0
 
@@ -75,8 +74,8 @@ export function AddAnimationActionPanel(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '12%',
-            margin:{bottom:'5%'}
+            height: '15%',
+            margin:{bottom:'1%'}
         }}
     >
         <Dropdown
@@ -95,12 +94,31 @@ export function AddAnimationActionPanel(){
 
         <UiEntity
         uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '30%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            margin:{right:'1%'}
+        }}
+        >
+            <UiEntity
+        uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{bottom:'1%'}
+            margin:{bottom:'5%'}
         }}
         uiText={{value:"Set Animation Loop", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
         />
@@ -111,8 +129,7 @@ export function AddAnimationActionPanel(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '12%',
-            margin:{bottom:'5%'}
+            height: '50%',
         }}
     >
         <Dropdown
@@ -128,6 +145,72 @@ export function AddAnimationActionPanel(){
             />
         </UiEntity>
 
+        </UiEntity>
+
+
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '30%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            margin:{right:'1%'}
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'5%'}
+        }}
+        uiText={{value:"Set Animation Speed", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '50%',
+        }}
+    >
+        <Input
+            onChange={(value) => {
+                let speed = parseFloat(value.trim())
+                updateActionData({speed:isNaN(speed) ? 1 : speed})
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'Enter Action Name'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+            ></Input>
+        </UiEntity>
+
+        </UiEntity>
+
+
+        </UiEntity>
+
     </UiEntity>
     )
 }
@@ -140,6 +223,5 @@ function selectAnimation(index:number){
 }
 
 function selectLoop(index:number){
-    loop = index
-    updateActionData({loop:index === 0 ? false : true, anim:animation, name:newActionData.name, type:newActionData.type}, true)
+    updateActionData({loop:index <= 1 ? false : true, anim:animation, name:newActionData.name, type:newActionData.type}, true)
 }

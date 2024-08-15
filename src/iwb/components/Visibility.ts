@@ -95,6 +95,7 @@ export function setVisibilityPlayMode(scene:any, entityInfo:any){
 
 export function disableVisibilityPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.VISBILITY_COMPONENT].get(entityInfo.aid)
+    console.log("item visibility is", itemInfo)
     if(itemInfo){
         VisibilityComponent.createOrReplace(entityInfo.entity, {
             visible: itemInfo.visible

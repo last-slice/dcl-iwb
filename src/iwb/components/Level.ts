@@ -181,6 +181,8 @@ export function attemptLoadLevel(scene:any, levelCounterAid:string, levelAid:str
         return
     }
 
+    console.log('attempting loading level', levelAid)
+
     let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(levelAid)
     if(actionInfo){
         if(actionInfo.actions && actionInfo.actions.length > 0){

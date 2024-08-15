@@ -1,5 +1,5 @@
 import { Entity, InputAction, PointerEventType, PointerEvents, Transform, engine, pointerEventsSystem } from "@dcl/sdk/ecs";
-import { COMPONENT_TYPES, COUNTER_VALUE, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
+import { COMPONENT_TYPES, COUNTER_VALUE, SERVER_MESSAGE_TYPES, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
 import mitt, { Emitter } from "mitt";
 import { getActionEvents } from "./Actions";
 import { getCounterComponentByAssetId } from "./Counter";
@@ -10,9 +10,10 @@ import { utils } from "../helpers/libraries";
 import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
 import { Color3, Vector3 } from "@dcl/sdk/math";
 import { getAssetIdByEntity } from "./Parenting";
-import { colyseusRoom } from "./Colyseus";
+import { colyseusRoom, sendServerMessage } from "./Colyseus";
 
 export const actionQueue:any[] = []
+export const decisionQueue:any[] = []
 
 // const triggers = new Map<Entity, Emitter<Record<Triggers, any>>>()
 const triggers = new Map<Entity, any>()
@@ -138,23 +139,16 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
         console.log('cant find trigger')
         return
       }
-        if(checkConditions(scene, trigger, entityInfo.aid, entityInfo.entity)){
-          console.log('passed check conditions')
-            for(const triggerAction of triggerInfo.actions){
-              console.log('trigger actions area', triggerAction)
-                if(isValidAction(triggerAction)){
-                  // console.log('is valid action')
-                    let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
-                    if(aid){
-                      // console.log('action info is', {aid:aid, action:action, entity:entity})
-                        actionQueue.push({aid:aid, action:action, entity:entity})
-                    }
-                }
-            }
-        }else{
-            // console.log('trigger condition not met')
-        }
+
+      checkDecisionPaths(scene, trigger, entityInfo)
     })
+}
+
+function checkDecisionPaths(scene:any, trigger:any, entityInfo:any){
+  trigger.decisions.forEach(async (decision:any, i:number)=>{
+    console.log('decisin is', decision)
+    decisionQueue.push({sceneId:scene.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision})
+  })
 }
 
 function findTrigger(scene:any, triggerEvent:any){
@@ -176,41 +170,101 @@ function isValidAction(action: string /*TriggerAction*/) {
     return !!action //&& !!name
 }
 
-function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
-    if (trigger.caid && trigger.caid.length > 0) {
-      let triggerConditions:any[] = []
-      trigger.caid.forEach((caid:string, index:number)=>{
-        triggerConditions.push(
-          {
-            aid:caid, 
-            type:trigger.ctype[index], 
-            value:trigger.cvalue[index],
-            counter: trigger.ccounter[index]
-          })
-      })
-      const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition))
-      const isTrue = (result?: boolean) => !!result
-      const operation = trigger.operation || TriggerConditionOperation.AND
-      switch (operation) {
-        case TriggerConditionOperation.AND: {
-          return conditions.every(isTrue)
-        }
-        case TriggerConditionOperation.OR: {
-          return conditions.some(isTrue)
-        }
+async function evaluateDecision(decisionItem:any){
+  let {sceneId, aid, entity, decision} = decisionItem
+  let scene = colyseusRoom.state.scenes.get(sceneId)
+  if(!scene){
+    return
+  }
+
+  if(await checkConditions(scene, decision, aid, entity)){
+    console.log('passed check conditions')
+      for(const triggerAction of decision.actions){
+        console.log('trigger actions area', triggerAction)
+          if(isValidAction(triggerAction)){
+            // console.log('is valid action')
+              let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
+              if(aid){
+                // actionQueue.push({aid:aid, action:action, entity:entity, decisionId:decision.id, sceneId:scene.id})
+                // decisionActions.push({aid:aid, action:action, entity:entity})
+
+                // const { entity, action, aid, decisionId } = actionQueue.shift()!
+                const actionEvents = getActionEvents(entity)
+                switch(action.channel){
+                  case 0:
+                    console.log('running individual channel action')
+                    actionEvents.emit(action.id, action)
+                    break;
+
+                  case 1:
+                    console.log('running global channel action')
+                    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {
+                      type:'live-action',
+                      aid:aid,
+                      sceneId:sceneId,
+                      actionId:action.id,
+                      forceScene:true
+                    })
+                    break;
+
+                  case 2:
+                    console.log('running team channel action')
+                    break;
+
+                  default:
+                    console.log('no channel specified, run locally')
+                    actionEvents.emit(action.id, action)
+                    break;
+                }
+              }
+          }
       }
-      return true
+      runningDecision = false
+      // decisionQueue.push({id:decision.id, actions:decisionActions}) 
+  }else{
+      // console.log('trigger condition not met')
+      runningDecision = false
+  }
+}
+
+async function checkConditions(scene:any, decision:any, aid:string, entity:Entity) {
+  if(decision.conditions && decision.conditions.length > 0){
+    let triggerConditions:any[] = []
+    decision.conditions.forEach(async (condition:any, i:number)=>{
+      triggerConditions.push(
+        {
+          aid:condition.aid, 
+          type:condition.type, 
+          condition:condition.condition,
+          value:condition.value,
+          counter:condition.counter
+        })
+    })
+    const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition))
+    console.log('condition evaluations', conditions)
+    const isTrue = (result?: boolean) => !!result
+    const operation = decision.operator || TriggerConditionOperation.AND
+    switch (operation) {
+      case TriggerConditionOperation.AND: {
+        return conditions.every(isTrue)
+      }
+      case TriggerConditionOperation.OR: {
+        return conditions.some(isTrue)
+      }
     }
     return true
   }
+  return true
+}
 
-  function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:any) {
+function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:any) {
       try {
+        console.log('checking condition', condition)
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
           // console.log('checking condition', condition)
-          switch (condition.type) {
+          switch (condition.condition) {
             case TriggerConditionType.WHEN_STATE_IS: {
               const states = States.getOrNull(entity)
               if (states !== null) {
@@ -311,7 +365,7 @@ function checkConditions(scene:any, trigger:any, aid:string, entity:Entity) {
         console.error('Error in condition', condition)
       }
     return false
-  }
+}
 
 function getActionsByActionId(scene:any, actionId:string) {
     let assets = scene[COMPONENT_TYPES.ACTION_COMPONENT].toJSON()
@@ -367,21 +421,54 @@ export function addPlayTriggerSystem(){
   if(!isTriggerSystemAdded){
     isTriggerSystemAdded = true
     engine.addSystem(PlayTriggerSystem)
+    engine.addSystem(PlayTriggerDecisionSystem)
   }
 }
 
 export function removePlayTriggerSystem(){
   engine.removeSystem(PlayTriggerSystem)
+  engine.removeSystem(PlayTriggerDecisionSystem)
   isTriggerSystemAdded = false
 }
 export function PlayTriggerSystem(dt:number){
     while (actionQueue.length > 0) {
-      // console.log(actionQueue)
-        const { entity, action, aid } = actionQueue.shift()!
+      let potentialAction = actionQueue[0]
+      if(potentialAction.force || runningDecision){
+        // console.log(actionQueue)
+        const { entity, action, aid, decisionId } = actionQueue.shift()!
         const actionEvents = getActionEvents(entity)
         actionEvents.emit(action.id, action)
+        checkDecisionActions(decisionId)
+      }
       }
 }
+
+let runningDecision = false
+export function checkDecisionActions(decisionId:string){
+  console.log('checking decision actions', decisionId)
+  if(!decisionId){
+    runningDecision = false
+    return
+  }
+
+  if(actionQueue.filter(($:any)=> $.decisionId === decisionId).length === 0){
+    console.log('decision actions are over, we can run new decision')
+    runningDecision = false
+  }
+}
+
+export function PlayTriggerDecisionSystem(dt:number){
+  while (decisionQueue.length > 0 && !runningDecision) {
+      runningDecision = true
+
+      // console.log('decision queue is', decisionQueue)
+      const decisionItem  = decisionQueue.shift()!
+      // console.log('decision item is', decisionItem)
+
+      evaluateDecision(decisionItem)
+    }
+}
+
 
 function initOnTick(entity:Entity){
   tickSet.add(entity)

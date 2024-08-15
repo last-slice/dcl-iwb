@@ -192,8 +192,8 @@ export function InputListenSystem(dt:number){
                 if (selectedItem && selectedItem.enabled) {
                     if (selectedItem.mode === EDIT_MODES.GRAB) {
                         console.log('dropping item')
-                        if(selectedItem.isCatalogSelect){
-                            dropSelectedItem()
+                        if(selectedItem.already){
+                            dropSelectedItem(undefined, selectedItem.already)
                         }else{
                             dropGrabbedItems()
                         }
@@ -213,8 +213,8 @@ export function InputListenSystem(dt:number){
                 log('player pressed #E in Build mode')
                 if (selectedItem && selectedItem.enabled) {
                     if (selectedItem.mode === EDIT_MODES.GRAB) {
-                        if(selectedItem.isCatalogSelect){
-                            dropSelectedItem()
+                        if(selectedItem.already){
+                            dropSelectedItem(undefined, selectedItem.already)
                         }else{
                             dropGrabbedItems()
                         }

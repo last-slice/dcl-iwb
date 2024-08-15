@@ -5,12 +5,12 @@ import { selectedItem } from '../../../../modes/Build'
 import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping } from '../../../helpers'
 import { setUIClicked } from '../../../ui'
 import { uiSizes } from '../../../uiConfig'
-import { editingTrigger, triggerInfoView, triggerView, update } from '../EditTrigger'
+import { editingTrigger, triggerInfoView, triggerView, update, updateTriggerInfoView } from '../EditTrigger'
 import { getAllAssetNames } from '../../../../components/Name'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { COMPONENT_TYPES } from '../../../../helpers/types'
 import { selectedTrigger } from './TriggerInfoPanel'
-import { newDecision } from './TriggerDecisionPanel'
+import { getRandomString } from '../../../../helpers/functions'
 
 let entities:any[] = []
 let entitiesWithActions:any[] = []
@@ -19,6 +19,19 @@ let selectedEntityIndex:number = 0
 let selectedActionIndex:number = 0
 
 let newAction:any = {}
+
+export let newDecision:any = {}
+
+export function updateTriggerDecisionPanel(data?:any){
+    if(data){
+        newDecision = {...data}
+        return
+    }
+    newDecision.id = getRandomString(6)
+    newDecision.conditions = []
+    newDecision.actions = []
+    newDecision.name = newDecision.id
+}
 
 export function updateEntityActions(aid:string){
     entitiesWithActions.length = 0
@@ -50,10 +63,10 @@ export function resetTriggerActionsPanel(){
     console.log('reset trigger action panel')
 }
 
-export function TriggerActionsPanel(){
+export function TriggerDecisionPanel(){
     return(
     <UiEntity
-    key={resources.slug + "trigger::action::panel"}
+    key={resources.slug + "trigger::decision::panel"}
     uiTransform={{
     flexDirection: 'column',
     alignItems: 'center',
@@ -61,7 +74,7 @@ export function TriggerActionsPanel(){
     alignContent:'center',
     width: '100%',
     height: '100%',
-    display: triggerInfoView === "actions" ? "flex" : "none"
+    display: triggerInfoView === "decisions" ? "flex" : "none"
     }}
 >
             <UiEntity
@@ -73,135 +86,74 @@ export function TriggerActionsPanel(){
         width: '100%',
         height: '10%',
     }}
-        uiText={{value:"Add Trigger Action", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+        uiText={{value:"Current Decision: " + (newDecision && newDecision.name), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
     />
 
-{/* action entity dropdown */}
 <UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignContent:'center',
-        width: '100%',
-        height: '10%',
-    }}
-    >
-
-    <Dropdown
-        // options={[...["Select Entity"], ...getEntityList()]}
-        options={[...["Select Entity"], ...entities.map($=> $.name)]}
-        selectedIndex={0}
-        onChange={selectEntityIndex}
         uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             width: '100%',
-            height: '100%',
+            height: '10%',
         }}
-        color={Color4.White()}
-        fontSize={sizeFont(20, 15)}
-    />
-
-    </UiEntity>
-
-            {/* action entity actions dropdown */}
-<UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignContent:'center',
-        width: '100%',
-        height: '10%',
-        margin:{top:"1%"}
-    }}
     >
+        <Input
+            onChange={(value) => {
+                newDecision.name = value.trim()
+                update('decisionname', {tid:selectedTrigger.id, did:newDecision.id, name:newDecision.name})//
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'Edit decision name'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100',
+            }}
+            ></Input>
+        </UiEntity>
 
-    <Dropdown
-        options={[...["Select Action"], ...entitiesWithActions.map(($:any)=> $.name)]}
-        // options={entitiesWithActions.length > 0 ? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
-        selectedIndex={0}
-        onChange={selectActionIndex}
-        uiTransform={{
-            width: '100%',
-            height: '100%',
-            display: selectedEntityIndex !== 0 ? "flex" : "none"
-        }}
-        color={Color4.White()}
-        fontSize={sizeFont(20, 15)}
-    />
+     <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin: {top: "2%"}
+            }}
+            uiBackground={{color: Color4.Black()}}
+            uiText={{value: "Conditions", fontSize: sizeFont(30, 20)}}
+            onMouseDown={() => {
+                setUIClicked(true)
+                updateTriggerInfoView("conditions")
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
+                    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin: {top: "2%"}
+            }}
+            uiBackground={{color: Color4.Black()}}
+            uiText={{value: "Actions", fontSize: sizeFont(30, 20)}}
+            onMouseDown={() => {
+                setUIClicked(true)
+                updateTriggerInfoView("actions")
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
 
-    </UiEntity>
 
-        {/* add action button */}
-        <UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf:'flex-start',
-        margin:{top:"1%"},
-        display: selectedEntityIndex !== 0 ? "flex" : "none",
-        width: calculateImageDimensions(10, getAspect(uiSizes.buttonPillBlack)).width,
-        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-    }}
-    uiBackground={{
-        textureMode: 'stretch',
-        texture: {
-            src: 'assets/atlas2.png'
-        },
-        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-    }}
-    uiText={{
-        value: "Add Action",
-        fontSize: sizeFont(25, 15),
-        color: Color4.White(),
-        textAlign: 'middle-center'
-    }}
-    onMouseDown={() => {
-        setUIClicked(true)
-        let info:any = {...newAction}
-        info.tid = selectedTrigger.id
-        info.did = newDecision.id
-        update("addaction", info)
-    }}
-    onMouseUp={()=>{
-        setUIClicked(false)
-    }}
-/>
-
-<UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignContent:'center',
-    width: '100%',
-    height: '10%',
-}}
-    uiText={{value:"Current Actions", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-/>
-
-<UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    alignContent:'center',
-    width: '100%',
-    height: '45%',
-}}
->
-
-    {selectedItem && 
-    selectedItem.enabled && 
-    editingTrigger && 
-    triggerView === "info" && 
-    triggerInfoView === "actions" && 
-    
-    getTriggerActions()
-    }
-    
-</UiEntity>
     </UiEntity>
     )
 }
@@ -237,7 +189,7 @@ export function TriggerActionRow(info:any){
                 height: '100%',
                 margin:{left:'2%'}
             }}
-            uiText={{textWrap:'nowrap', value:"" + (data.entity.length > 20 ? data.entity.substring(0,20) + "..." : data.entity), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + data.entity, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
              <UiEntity
@@ -248,7 +200,7 @@ export function TriggerActionRow(info:any){
                 width: '40%', 
                 height: '100%',
             }}
-            uiText={{textWrap:'nowrap', value:"" + data.name, fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
+            uiText={{textWrap:'nowrap', value:"" + data.name, fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
             {/* action edit buttons column */}
@@ -279,7 +231,7 @@ export function TriggerActionRow(info:any){
                     uvs: getImageAtlasMapping(uiSizes.trashButton)
                 }}
                 onMouseDown={() => {
-                    update("deleteaction", {tid:selectedTrigger.id, did:data.did, actionId: data.actionId})
+                    update("deleteaction", {tid:selectedTrigger.id, actionId: data.actionId})
                 }}
             />
                 </UiEntity>
@@ -289,7 +241,7 @@ export function TriggerActionRow(info:any){
 }
 
 function selectEntityIndex(index:number){
-    console.log('select entity index', index)
+    console.log('select entity index', index)//
     selectedEntityIndex = index
     if(index !== 0){
         updateEntityActions(entities[index-1].aid)
@@ -314,21 +266,18 @@ function getTriggerActions(){
         if(triggerData){
             let trigger = triggerData.triggers.find((trigger:any) => trigger.id === selectedTrigger.id)
             if(trigger){
-                let decision = trigger.decisions.find(($:any)=> $.id === newDecision.id)
-                if(decision){
-                    decision.actions.forEach((actionId:string)=>{
-                        scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((sceneAction:any, aid:string)=>{
-                            let action = sceneAction.actions.find((act:any) => act.id === actionId)
-                            if(action){
-                                let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
-                                if(itemInfo){
-                                    arr.push(<TriggerActionRow data={{entity:itemInfo.value, did:decision.id, name:action.name, actionId:actionId}} rowCount={count} />)
-                                    count++
-                                }
+                trigger.actions.forEach((actionId:string)=>{
+                    scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((sceneAction:any, aid:string)=>{
+                        let action = sceneAction.actions.find((act:any) => act.id === actionId)
+                        if(action){
+                            let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
+                            if(itemInfo){
+                                arr.push(<TriggerActionRow data={{entity:itemInfo.value, name:action.name, actionId:actionId}} rowCount={count} />)
+                                count++
                             }
-                        })
+                        }
                     })
-                }
+                })
             }
         }
     }

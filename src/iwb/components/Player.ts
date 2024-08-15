@@ -4,10 +4,9 @@ import {NOTIFICATION_TYPES, Player, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_ME
 import {AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
 import resources, { colors } from "../helpers/resources";
 import {Color4, Quaternion, Vector3} from "@dcl/sdk/math";
-import { Room } from "colyseus.js";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
-import { iwbConfig, playerMode, realm, setPlayerMode, worlds } from "./Config";
+import { iwbConfig, realm, removePlayerFromHideArray, setPlayerMode, worlds } from "./Config";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
@@ -216,7 +215,7 @@ export async function getPlayerLand(){
 }
 
 
-export function removePlayer(player:any) {
+export function removePlayer(userId:string, player:any) {
     /**
      * todo
      * add other garbage collection and entity clean up here
@@ -224,6 +223,7 @@ export function removePlayer(player:any) {
     if (player.mode === SCENE_MODES.CREATE_SCENE_MODE) {
         // deleteCreationEntities(player.userId)//
     }
+    removePlayerFromHideArray(userId)
 }
 
 export function setPlayMode(userId:string, mode:SCENE_MODES) {

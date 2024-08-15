@@ -83,6 +83,7 @@ export function showPopupPanel(){
         return
     }
     init = true
+    popupPanelview = "main"
     updatePopupPanel()
     updateTriggerActionsPanel()
 }
@@ -602,7 +603,7 @@ export function AddPopupPanel(){
 
     <Dropdown
         options={[...["Select Action"], ...entitiesWithActions2.map(($:any)=> $.name)]}
-        // options={entitiesWithActions.length > 0 ? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
+        // options={entitiesWithActions.length > 0 //? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
         selectedIndex={0}
         onChange={selectAction2Index}
         uiTransform={{

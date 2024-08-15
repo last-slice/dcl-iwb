@@ -176,7 +176,7 @@ export class CustomUIText {
 
     resetDigits(){
         this.digits.length = 0
-        console.log('string is', (this.currentText + this.currentTextData).toLowerCase().split(''))
+        // console.log('string is', (this.currentText + this.currentTextData).toLowerCase().split(''))
         let digits = (this.currentText + this.currentTextData).toLowerCase().split('');
         let realDigits = digits.map(String)
 

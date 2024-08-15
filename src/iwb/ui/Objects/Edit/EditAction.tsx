@@ -41,6 +41,7 @@ export let currentAddActionPanel:string = ""
 export let newActionData:any = {}
 
 export let newActionIndex:number = 0
+export let newActionPipelineIndex:number = 0
 
 export function updateActionView(value:string){
     actionView = value
@@ -51,6 +52,7 @@ export function updateActionView(value:string){
 
     if(actionView === "add"){
         newActionIndex = 0
+        newActionPipelineIndex = 0
     }
 }
 
@@ -162,17 +164,6 @@ export function EditAction(){
             }}
         >
 
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent:'center',
-                width: '100%',
-                height: '10%',
-            }}
-                uiText={{value:"Add Action", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
-            />
 
             <UiEntity
             uiTransform={{
@@ -226,6 +217,47 @@ export function EditAction(){
             ></Input>
 
         </UiEntity>
+
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: '100%',
+                height: '10%',
+                display: newActionIndex !== 0 ? "flex" : "none"
+            }}
+                uiText={{value:"Choose Message Pipeline", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:'1%'},
+                display: newActionIndex !== 0 ? "flex" : "none"
+            }}
+            >
+
+                <Dropdown
+                    options={["Individual", "All", "Team"]}
+                    selectedIndex={0}
+                    onChange={selectActionPipeline}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    // uiBackground={{color:Color4.Purple()}}
+                    color={Color4.White()}
+                    fontSize={sizeFont(20, 15)}
+                />
+
+            </UiEntity>
 
         {/* action subpanel container */}
             <UiEntity
@@ -392,9 +424,14 @@ export function getActionList(){
     return [...["Select New Action"],...Object.values(Actions).map(str => str.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())).sort((a,b)=> a.localeCompare(b))]
 }
 
+
 function selectNewActionIndex(index:number){
     newActionIndex = index
     resetActionData()
+}
+
+function selectActionPipeline(index:number){
+    newActionPipelineIndex = index
 }
 
 function getActionDataPanel(){
@@ -506,11 +543,12 @@ async function update(action:string, actionData:any){
 
 async function buildAction(){
     console.log('final action data is', {...newActionData})
+    newActionData.channel = newActionPipelineIndex
     await update("add", newActionData)
     updateActionView("main")
     selectNewActionIndex(0)
 
-    //clean up actions
+    //clean up actions//
     resetAdditionalAssetFeatures()
 }
 

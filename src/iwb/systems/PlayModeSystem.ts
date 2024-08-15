@@ -6,6 +6,7 @@ import { localUserId} from "../components/Player"
 import { createBeam, startAttackCooldown } from "../components/Game"
 import { GAME_WEAPON_TYPES } from "../helpers/types"
 import { colyseusRoom } from "../components/Colyseus"
+import { excludeHidingUsers } from "../components/Config"
 
 export let added = false
 
@@ -13,7 +14,7 @@ export function addPlayModeSystem(){
     if(!added){
         added = true
         engine.addSystem(PlayModeInputSystem)
-        console.log('adding playmode input system')
+        console.log('adding playmode input system')//
     }
 }
 
@@ -24,6 +25,7 @@ export function removePlayModSystem(){
 }
 
 export function PlayModeInputSystem(dt: number) {
+    // console.log(excludeHidingUsers)
     //DOWN BUTTON ACTIONS
     //POINTER//
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)) {

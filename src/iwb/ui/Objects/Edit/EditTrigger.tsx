@@ -10,6 +10,7 @@ import { AddTriggerPanel } from './TriggerPanels/AddTriggerPanel'
 import { resetTriggerConditionsPanel, updateTriggerConditionPanel } from './TriggerPanels/TriggerConditionsPanel'
 import { visibleComponent } from '../EditAssetPanel'
 import { resetTriggerActionsPanel, updateTriggerActionsPanel } from './TriggerPanels/TriggerActionsPanel'
+import { updateTriggerDecisionPanel } from './TriggerPanels/TriggerDecisionPanel'
 
 export let triggerView = "main"
 export let triggerInfoView = "main"
@@ -39,12 +40,16 @@ export function updateTriggerView(value:string, triggerId?:string){
     }
 }
 
-export function updateTriggerInfoView(value:string){
+export function updateTriggerInfoView(value:string, data?:any){
     triggerInfoView = value
 
     switch(triggerInfoView){
         case 'conditions':
             updateTriggerConditionPanel()
+            break;
+
+        case 'decisions':
+            updateTriggerDecisionPanel(data)
             break;
 
         case 'actions':

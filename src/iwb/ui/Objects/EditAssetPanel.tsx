@@ -152,6 +152,7 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
     }
 
     visibleComponent = value
+    console.log('visible component is', visibleComponent)
 }
 
 export function createEditAssetPanel() {
@@ -559,11 +560,11 @@ function getBackButtonLogic(){
 
                     case 'conditions':
                         resetTriggerPanels()
-                        updateTriggerInfoView("main")
+                        updateTriggerInfoView("decisions")
                         break;
 
                     case 'actions':
-                        updateTriggerInfoView("main")
+                        updateTriggerInfoView("decisions")
                         break;
 
                     default:
@@ -693,7 +694,7 @@ function EditObjectData(){
             >
 
                 {/* add component row */}
-            <UiEntity
+            {/* <UiEntity
                 uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -701,7 +702,7 @@ function EditObjectData(){
                 alignContent:'center',
                 width: '90%',
                 height: '10%',
-                display: visibleComponent === "" ? "flex" : "none"
+                display: "none"
                 }}
             >
 
@@ -772,7 +773,7 @@ function EditObjectData(){
                 />
                 </UiEntity>
 
-            </UiEntity>
+            </UiEntity> */}
 
             <UiEntity
                 uiTransform={{
@@ -838,6 +839,7 @@ function EditObjectData(){
                 alignContent:'center',
                 width: '90%',
                 height: '10%',
+                display:visibleComponent === COMPONENT_TYPES.ADVANCED_COMPONENT ? "flex" : "none"
                 }}
             >
 

@@ -101,7 +101,7 @@ export function setMeshColliderPlayMode(scene:any, entityInfo:any){
     let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
     console.log('setting mesh collider play mode', entityInfo.aid, meshInfo)
     if(meshInfo && entityInfo.entity){
-        if(meshInfo.layer === 0){
+        if(meshInfo.layer === 0 || !meshInfo.onPlay){
             MeshCollider.deleteFrom(entityInfo.entity)
         }else{
             checkMeshColliderComponent(scene, entityInfo)

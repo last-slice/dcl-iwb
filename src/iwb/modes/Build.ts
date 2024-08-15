@@ -225,7 +225,7 @@ export function toggleModifier(mod: EDIT_MODIFIERS) {
 //     console.log('modifier is now', selectedItem)
 // }//
 
-export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, duplicate?: any) {
+export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, duplicate?: any, grabbedTransform?:any) {
     if (selectedItem && selectedItem.enabled && selectedItem.entity && selectedItem.mode === EDIT_MODES.GRAB) {
         log("Already holding item")
         return
@@ -255,8 +255,8 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             already: already,
             initialHeight: ITEM_HEIGHT_DEFAULT,
             duplicate: duplicate ? duplicate : false,
+            grabbedTransform: grabbedTransform ? grabbedTransform : undefined,
             ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false,
-            isCatalogSelect: true,
             distance:4,
             rotation:0,
             scale: 1
@@ -272,8 +272,6 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
         displayHover(true)
 
-        let scale: any
-        scale = Vector3.One()
 
         // TODO use configurable parameters for item height and depth
         let itemHeight = ITEM_HEIGHT_DEFAULT
@@ -281,119 +279,63 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
 
         let itemPosition = {x: 0, y: itemHeight, z: itemDepth}
 
-        if ((selectedItem.itemData.v && selectedItem.itemData.v > colyseusRoom.state.cv)) {
-            log('this asset is not ready for viewing, need to add temporary asset')
-            MeshRenderer.setBox(selectedItem.entity)
+        selectVisualGrabbedItem(selectedItem, itemHeight, itemDepth, itemPosition)
 
-            if (selectedItem.itemData.bb) {
-                if (typeof selectedItem.itemData.bb === "string") {
-                    console.log('bb is a string')
-                    selectedItem.itemData.bb = JSON.parse(selectedItem.itemData.bb)
-                }
-                console.log('item bb is', selectedItem.itemData.bb)
-                scale = Vector3.create(selectedItem.itemData.bb.x, selectedItem.itemData.bb.z, selectedItem.itemData.bb.y)//
-            }
-
-        } else {
-            log('this asset is ready for viewing, place object in scene', selectedItem.catalogId)
-
-            //add different asset types here
-            if (selectedItem.itemData.n === "Image" || selectedItem.itemData.n === "NFT Frame") {
-                MeshRenderer.setPlane(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(2, 2, 1)
-                MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.n === "Text") {
-                log('dropping text item')
-                TextShape.create(selectedItem.entity, {text: "Text", fontSize: 3})
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(2, 2, 1)
-            } else if (selectedItem.itemData.n === "Video") {
-                MeshRenderer.setPlane(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(2, 2, 1)
-                MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.n === "Custom Sound") {
-                MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(.5, .5, .5)
-                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.ty === "SM") {
-                MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}//
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(1, 1, 1)
-                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.ty === "Audio" || selectedItem.itemData.ty === "Audio Stream") {
-                MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(1,1,1)
-                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.n === "UI Text") {
-                MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(1,1,1)//
-                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.n === "UI Image") {
-                MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(1, 1, 1)
-                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } else if (selectedItem.itemData.n === "Trigger Area") {
-                MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(1,1,1)
-                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } 
-            else if (selectedItem.itemData.n === "Dialog") {
-                MeshRenderer.setBox(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(1,1,1)
-                MeshCollider.setBox(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } 
-            else if (selectedItem.itemData.n === "Plane Shape") {
-                console.log('selected plane shape')
-                MeshRenderer.setPlane(selectedItem.entity)
-                itemPosition = {x: 0, y: .5, z: itemDepth}
-                selectedItem.initialHeight = .88
-                scale = Vector3.create(1,1,1)
-                MeshCollider.setPlane(selectedItem.entity, ColliderLayer.CL_POINTER)
-            } 
-            else {
-                // if (selectedItem.itemData.pending)  {//
-                    // MeshRenderer.setBox(selectedItem.entity)
-                // } else {
-                    GltfContainer.create(selectedItem.entity, {
-                        src: 'assets/' + selectedItem.catalogId + ".glb",//
-                        invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
-                        visibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
-                    })
-
-                    if(selectedItem.itemData.hasOwnProperty("anim")){
-                        Animator.createOrReplace(selectedItem.entity)
-                    }
-
-                // }
-            }
-        }
-
-        if (duplicate) {
+        if (grabbedTransform) {
             Transform.createOrReplace(selectedItem.entity, {
                 position: itemPosition,
-                scale: duplicate.s,
+                scale: grabbedTransform.s,
                 parent: engine.PlayerEntity
             })
+
+            console.log('need to add children')//
+            let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+            if(scene){
+                let parent = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === selectedItem.duplicate)
+                if(parent){
+                    console.log('found parent, need to loop through every child and add to grab')
+                    parent.children.forEach(async (childAid:any)=>{
+                        console.log('child aid is', childAid)
+                        let iwbData = scene[COMPONENT_TYPES.IWB_COMPONENT].get(childAid)
+                        console.log('iwbdat is ', iwbData)
+                        let transformData = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(childAid)
+                        console.log('transform data  is', transformData)
+                        if(iwbData && transformData){
+                            let itemData = items.get(iwbData.id)
+                            console.log('item data is', itemData)
+                            if(itemData){
+                                let childItem:any = {
+                                    n: itemData.n,
+                                    mode: mode,
+                                    modifier: EDIT_MODIFIERS.POSITION,
+                                    pFactor: 1,
+                                    sFactor: 1,
+                                    rFactor: 90,
+                                    entity: engine.addEntity(),
+                                    aid: getRandomString(6),
+                                    catalogId: iwbData.id,
+                                    sceneId: localPlayer.activeScene.id,
+                                    itemData: itemData,
+                                    enabled: true,
+                                    already: true,
+                                    initialHeight: ITEM_HEIGHT_DEFAULT,
+                                    duplicate: duplicate ? duplicate : false,
+                                    grabbedTransform: grabbedTransform ? grabbedTransform : undefined,
+                                    ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false,
+                                    distance:4,
+                                    rotation:0,
+                                    scale: 1
+                                }
+                                await selectVisualGrabbedItem(childItem, itemHeight, itemDepth, itemPosition, transformData.p)
+                            }
+                        }
+                        
+                        
+                    })
+                }
+            }
         } else {
-            Transform.createOrReplace(selectedItem.entity, {position: itemPosition, scale, parent: engine.PlayerEntity})
+            Transform.createOrReplace(selectedItem.entity, {position: itemPosition, parent: engine.PlayerEntity})
         }
 
         // if(!already){
@@ -405,12 +347,125 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
                 sceneId: selectedItem.sceneId,
                 isCatalogSelect:true
             })
-        // }
+        // }//
     } else {
         console.log('item does not exist')
     }
 
     setUIClicked(false)
+}
+
+function selectVisualGrabbedItem(grabbedItem:any, itemHeight:any, itemDepth:any, itemPosition:any, childPosition?:any){
+    let scale:any = Vector3.One()
+
+    if(childPosition){
+        Transform.createOrReplace(grabbedItem.entity, {parent:selectedItem.entity, position:childPosition})
+        console.log('adding child to copied grabbed items')
+    }
+
+    if ((grabbedItem.itemData.v && grabbedItem.itemData.v > colyseusRoom.state.cv)) {
+        log('this asset is not ready for viewing, need to add temporary asset')
+        MeshRenderer.setBox(grabbedItem.entity)
+
+        if (grabbedItem.itemData.bb) {
+            if (typeof grabbedItem.itemData.bb === "string") {
+                console.log('bb is a string')
+                grabbedItem.itemData.bb = JSON.parse(grabbedItem.itemData.bb)
+            }
+            console.log('item bb is', grabbedItem.itemData.bb)
+            scale = Vector3.create(grabbedItem.itemData.bb.x, grabbedItem.itemData.bb.z, grabbedItem.itemData.bb.y)//
+        }
+
+    } else {
+        log('this asset is ready for viewing, place object in scene', grabbedItem.catalogId)
+        //add different asset types here
+        if (grabbedItem.itemData.n === "Image" || grabbedItem.itemData.n === "NFT Frame") {
+            MeshRenderer.setPlane(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(2, 2, 1)
+            MeshCollider.setPlane(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } else if (grabbedItem.itemData.n === "Text") {
+            log('dropping text item')
+            TextShape.create(grabbedItem.entity, {text: "Text", fontSize: 3})
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(2, 2, 1)
+        } else if (grabbedItem.itemData.n === "Video") {
+            MeshRenderer.setPlane(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(2, 2, 1)
+            MeshCollider.setPlane(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } else if (grabbedItem.itemData.n === "Custom Sound") {
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(.5, .5, .5)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } else if (grabbedItem.itemData.ty === "SM") {
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}//
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1, 1, 1)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } else if (grabbedItem.itemData.ty === "Audio" || grabbedItem.itemData.ty === "Audio Stream") {
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1,1,1)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } else if (grabbedItem.itemData.n === "UI Text") {
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1,1,1)//
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } else if (grabbedItem.itemData.n === "UI Image") {
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1, 1, 1)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } else if (grabbedItem.itemData.n === "Trigger Area") {
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1,1,1)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } 
+        else if (grabbedItem.itemData.n === "Dialog") {
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1,1,1)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } 
+        else if (grabbedItem.itemData.n === "Plane Shape") {
+            console.log('selected plane shape')
+            MeshRenderer.setPlane(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1,1,1)
+            MeshCollider.setPlane(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } 
+        else {
+            // if (grabbedItem.itemData.pending)  {//
+                // MeshRenderer.setBox(grabbedItem.entity)
+            // } else {
+                GltfContainer.create(grabbedItem.entity, {
+                    src: 'assets/' + grabbedItem.catalogId + ".glb",//
+                    invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
+                    visibleMeshesCollisionMask: ColliderLayer.CL_POINTER,
+                })
+
+                if(grabbedItem.itemData.hasOwnProperty("anim")){
+                    Animator.createOrReplace(grabbedItem.entity)
+                }
+
+            // }
+        }
+    }
 }
 
 export function otherUserPlaceditem(info: any) {
@@ -655,22 +710,35 @@ export function dropGrabbedItems(){
         // set parent to scene parent
         t.parent = curSceneParent;
         t.scale = Vector3.One()
+        selectedItem.grabbedTransform ? t.scale = selectedItem.grabbedTransform.s : null
 
-        // send message to server to add item to scene//
-        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DROPPED_GRABBED, {
-            entity: selectedItem.entity,
-            sceneId: curScene.id,
-            aid: selectedItem.aid,
-            id: selectedItem.catalogId,
-            position: roundVector(t.position, 2),
-            rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+
+        console.log('t is', t)
+
+        // send message to server to add item to scene
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
+            baseParcel: curScene.bpcl,
+            item: {
+                entity: selectedItem.entity,
+                sceneId: curScene.id,
+                aid: selectedItem.aid,
+                id: selectedItem.catalogId,
+                position: roundVector(t.position, 2),
+                rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+                scale: roundVector(t.scale, 2),
+                duplicate: selectedItem.duplicate,
+                ugc: selectedItem.ugc
+            }
         });
 
         // clean up grabbed entity//
+        engine.removeEntity(selectedItem.entity);
         grabbedAssets.delete(selectedItem.aid);
 
         selectedItem.enabled = false;
         selectedItem.sceneId = curScene.id;
+
+        console.log('selected item aid is', selectedItem.aid)
         return;
     }
 
@@ -680,6 +748,7 @@ export function dropGrabbedItems(){
 }
 
 export function dropSelectedItem(canceled?: boolean, editing?: boolean, centered?:boolean) {
+    console.log('dropping selected item',)
     VisibilityComponent.createOrReplace(bbE, {visible: false})
     displayGrabContextMenu(false)
 
@@ -688,8 +757,8 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean, centered
 
         if (selectedItem.pointer) engine.removeEntity(selectedItem.pointer);
 
-        if (canceled && !selectedItem.isCatalogSelect) {
-            // item was in existing scene, restore it to previous position
+        if (canceled && selectedItem.already) {
+            console.log("item was in existing scene, restore it to previous position")
             let t = Transform.getMutable(selectedItem.entity);
             t = selectedItem.transform!;
 
@@ -706,32 +775,19 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean, centered
                     }
                 }
 
-                // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
-                //     item: {
-                //         entity: selectedItem.entity,
-                //         sceneId: selectedItem.sceneId,
-                //         aid: selectedItem.aid,
-                //         id: selectedItem.catalogId,
-                //         position: roundVector(t.position, 2),
-                //         rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-                //         scale: roundVector(t.scale, 2),
-                //         duplicate: selectedItem.duplicate,
-                //         ugc: selectedItem.ugc
-                //     }
-                // });
-                
-                
-
                 // engine.removeEntity(selectedItem.entity);
                 grabbedAssets.delete(selectedItem.aid);
+                addAllBuildModePointers()
             }
+            return
 
         } else {
             console.log('item was catalog item, just remove it')
-            engine.removeEntity(selectedItem.entity);
+            // engine.removeEntity(selectedItem.entity);
+
             grabbedAssets.delete(selectedItem.aid);
         }
-        return;
+        // return;
     }
 
     console.log('selected item is ', selectedItem)
@@ -778,24 +834,41 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean, centered
         t.parent = curSceneParent;
         t.scale = Vector3.One()
 
-        // send message to server to add item to scene
-        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
-            baseParcel: curScene.bpcl,
-            item: {
-                entity: selectedItem.entity,
-                sceneId: curScene.id,
-                aid: selectedItem.aid,
-                id: selectedItem.catalogId,
-                position: roundVector(t.position, 2),
-                rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-                scale: roundVector(t.scale, 2),
-                duplicate: selectedItem.duplicate,
-                ugc: selectedItem.ugc
-            }
-        });
+        if(editing){
+            let rotation = Quaternion.toEulerAngles(t.rotation)
+            sendServerEdit(EDIT_MODIFIERS.POSITION, "x", 1, true, EDIT_MODIFIERS.POSITION, t.position.x)
+            sendServerEdit(EDIT_MODIFIERS.POSITION, "y", 1, true, EDIT_MODIFIERS.POSITION, t.position.y)
+            sendServerEdit(EDIT_MODIFIERS.POSITION, "z", 1, true, EDIT_MODIFIERS.POSITION, t.position.z)
 
-        // clean up grabbed entity//
-        engine.removeEntity(selectedItem.entity);
+            sendServerEdit(EDIT_MODIFIERS.POSITION, "x", 1, true, EDIT_MODIFIERS.ROTATION, rotation.x)
+            sendServerEdit(EDIT_MODIFIERS.POSITION, "y", 1, true, EDIT_MODIFIERS.ROTATION, rotation.y)
+            sendServerEdit(EDIT_MODIFIERS.POSITION, "z", 1, true, EDIT_MODIFIERS.ROTATION, rotation.z)
+        }
+        else if (canceled){
+            console.log('item was canceled, do nothing')
+            engine.removeEntity(selectedItem.entity);
+        }
+        else{
+            // send message to server to add item to scene
+            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM, {
+                baseParcel: curScene.bpcl,
+                item: {
+                    entity: selectedItem.entity,
+                    sceneId: curScene.id,
+                    aid: selectedItem.aid,
+                    id: selectedItem.catalogId,
+                    position: roundVector(t.position, 2),
+                    rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
+                    scale: roundVector(t.scale, 2),
+                    duplicate: selectedItem.duplicate,
+                    ugc: selectedItem.ugc
+                }
+            });
+
+            // clean up grabbed entit
+            engine.removeEntityWithChildren(selectedItem.entity);
+        }
+
         grabbedAssets.delete(selectedItem.aid);
 
         selectedItem.enabled = false;
@@ -1022,7 +1095,12 @@ export function duplicateItem(aid:string) {
         return
     }
 
-    selectCatalogItem(itemInfo.id, EDIT_MODES.GRAB, false)
+    let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(aid)
+    if(!transform){
+        return
+    }//
+
+    selectCatalogItem(itemInfo.id, EDIT_MODES.GRAB, false, itemInfo.aid, transform)
 }
 
 export function duplicateItemInPlace(aid:string) {
@@ -1730,7 +1808,7 @@ export function checkPlayerBuildRights(){
             canBuild = true
         }
     })
-    localPlayer.canBuild = canBuild
+    localPlayer.canBuild = canBuild//
 }
 
 export function removeItem(entity:Entity){

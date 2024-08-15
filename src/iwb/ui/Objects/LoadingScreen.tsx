@@ -38,7 +38,7 @@ export function createMainLoadingScreen() {
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: 'assets/iwb_logo_white.png'
+                src: resources.textures.iwbLogo
             },
         }}
     />

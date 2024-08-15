@@ -228,9 +228,6 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
 
 
         PointerEvents.deleteFrom(entityInfo.entity)
-
-        let triggerEvents = getTriggerEvents(entityInfo.entity)
-        triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
     }
 }
 

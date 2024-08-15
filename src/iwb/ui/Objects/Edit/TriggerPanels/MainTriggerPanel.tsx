@@ -80,7 +80,7 @@ export function MainTriggerPanel(){
             width: '100%',
             height: '70%',
         }}
-        // uiBackground={{color:Color4.Green()}}//
+        // uiBackground={{color:Color4.Green()}}
         > 
     
         {selectedItem && selectedItem.enabled && editingTrigger && triggerView === "main" && getTriggerEvents()}
@@ -181,7 +181,7 @@ function TriggerRow(trigger:any){
                 width: '100%',
                 height: '25%',
             }}
-            uiText={{textWrap:'nowrap', value:"Conditions", fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"Decisions", fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
              <UiEntity
@@ -192,14 +192,14 @@ function TriggerRow(trigger:any){
                 width: '100%',
                 height: '25%',
             }}
-            uiText={{textWrap:'nowrap', value:"" + data.caid.length, fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value:"" + (data.decisions ? data.decisions.length : 0), fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
 
             </UiEntity>
 
             {/* trigger action column */}
-            <UiEntity
+            {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -219,7 +219,6 @@ function TriggerRow(trigger:any){
             uiText={{value:"Actions", fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
-             {/* trigger event pointer column */}
              <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -232,7 +231,7 @@ function TriggerRow(trigger:any){
             />
 
 
-            </UiEntity>
+            </UiEntity> */}
 
             {/* trigger edit buttons column */}
             <UiEntity

@@ -1,10 +1,10 @@
 import { Room } from "colyseus.js";
 import { createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings, worldTravel } from './Player'
-import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
+import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addLocalWorldPermissionsUser, addTutorial, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removeTutorial, setConfig, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
+import { addLocalWorldPermissionsUser, addPlayerToHideArray, addTutorial, excludeHidingUsers, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removePlayerFromHideArray, removeTutorial, setConfig, setHidPlayersArea, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { addScene, checkAllScenesLoaded, checkSceneCount, enablePrivateModeForScene, isPrivateScene, loadScene, loadSceneAsset, pendingSceneLoad, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
@@ -37,9 +37,22 @@ export async function createColyseusListeners(room:Room){
             return
         }
 
+        let scene = colyseusRoom.state.scenes.get(info.sceneId)
+        if(!scene){
+            console.log('scene does not exist for requested action to run')
+            return
+        }
+
+        if(info.forceScene){
+            let currentScene = localPlayer.activeScene
+            if(!currentScene || currentScene.id !== info.sceneId){
+                console.log('forcing scene and player is not in current scene, do not run action')
+                return
+            }
+        }
+
         switch(info.type){
             case 'live-action':
-                let scene = colyseusRoom.state.scenes.get(info.sceneId)
                 if(!scene || !info.aid || !info.actionId){
                     console.log('invalid arguments, cannot run live action')//
                     return
@@ -54,7 +67,7 @@ export async function createColyseusListeners(room:Room){
                     let action = actionInfo.actions.find(($:any)=> $.id === info.actionId)
                     if(action){
                         console.log('running entity action', action)
-                        actionQueue.push({aid:entityInfo.aid, action:action, entity:entityInfo.entity})
+                        actionQueue.push({aid:entityInfo.aid, action:action, entity:entityInfo.entity, force:true})
                     }
                 }
                
@@ -93,11 +106,7 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
-
-        // console.log('settings info', info.settings)
-        // console.log(info.realmAssets)
-
-        // setCatalog(info.catalog)//
+        setHidPlayersArea()
         await setRealmAssets(info.realmAssets)
 
         await refreshSortedItems()
@@ -106,23 +115,23 @@ export async function createColyseusListeners(room:Room){
 
         await setPlayerVersion(info.iwb.v)
         await setConfig(info.iwb.v, info.iwb.updates, info.tutorials.videos, info.tutorials.cid)
-        await setWorlds(info.worlds)
         await setNewItems()
         await setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
 
         await setSettings(info.settings)
         if(!isGCScene() && info.settings.firstTime){
             console.log('first time')
-            displaySkinnyVerticalPanel(true, getView("Welcome_Screen"))
+            displaySkinnyVerticalPanel(true, getView("Welcome_Screen"))//
         }
 
         room.state.players.onAdd(async(player:any, userId:any)=>{
             if(userId === localUserId){
                 await createPlayer(player)
+                await setWorlds(info.worlds)
                 setSceneListeners(room)
 
                 if(!isGCScene()){
-                    // displayIWBMap(true)
+                    // displayIWBMap(true)//
                     localPlayer.canMap = true
                     utils.timers.setTimeout(()=>{
                         refreshMap()
@@ -137,10 +146,19 @@ export async function createColyseusListeners(room:Room){
             player.listen("selectedAsset", (current:any, previous:any)=>{
                 setPlayerSelectedAsset(player, current, previous)
             })
+
+            player.listen("gameStatus", (current:any, previous:any)=>{
+                if(current === PLAYER_GAME_STATUSES.PLAYING && userId !== localUserId){
+                    removePlayerFromHideArray(userId)
+                }else{
+                    addPlayerToHideArray(userId)
+                   
+                }
+            })
         })
     
         room.state.players.onRemove(async(player:any, userId:any)=>{
-            removePlayer(userId)
+            removePlayer(userId, player)
             removeGamePlayer(player)
         })
 
@@ -190,20 +208,20 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL + ' received', info)
-    //     addTutorial(info)
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.ADDED_TUTORIAL + ' received', info)
+        addTutorial(info)
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL + ' received', info)
-    //     removeTutorial(info)
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.REMOVED_TUTORIAL + ' received', info)
+        removeTutorial(info)
+    })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID + ' received', info)
-    //     updateTutorialCID(info)
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.UPDATED_TUTORIAL_CID + ' received', info)
+        updateTutorialCID(info)
+    })
 
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED, (info: any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_FINISHED + ' received', info)
@@ -232,39 +250,12 @@ export async function createColyseusListeners(room:Room){
             })
             if (info) {
                 updateItem(info.id, info)
-                // addPendingAsset(info)
+                // addPendingAsset(info)//
                 refreshSortedItems()
                 displayPendingPanel(true, 'assetsready')
             }
         }
     })
-
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_ASSET_CATALOG + ' received', info)
-    //     if(info){
-    //         if(info.pending){
-    //             addPendingAsset(info)
-    //             delete info.pending
-    //         }
-    //         updateItem(info.id, info)
-    //     }
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_SCENES_CATALOG + ' received', info)
-    //     addPlayerScenes(info.user, info.scenes)
-    // })
-
-    // room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_CATALOG_DEPLOYED, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.PLAYER_CATALOG_DEPLOYED + ' received', info)
-    //     showNotification({
-    //         type: NOTIFICATION_TYPES.MESSAGE,
-    //         message: "Your latest asset uploads have been deployed. Refresh to use them.",
-    //         animate: {enabled: true, return: true, time: 10}
-    //     })//
-    //     displayPendingPanel(true, 'ready')//
-    // })//
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_RECEIVED_MESSAGE + ' received', info)
@@ -490,10 +481,10 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_COUNT, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_COUNT + ' received', info)
-    //     updateSceneCount(info)
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_COUNT, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_COUNT + ' received', info)
+        updateSceneCount(info)
+    })
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SELECTED_SCENE_ASSET + ' received', info)

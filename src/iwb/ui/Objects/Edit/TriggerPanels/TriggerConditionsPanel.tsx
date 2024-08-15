@@ -11,6 +11,7 @@ import { getAllAssetNames } from '../../../../components/Name'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { selectedTrigger } from './TriggerInfoPanel'
 import { utils } from '../../../../helpers/libraries'
+import { newDecision } from './TriggerDecisionPanel'
 
 let entities:any[] = []
 let entityConditions:any[] = []
@@ -28,8 +29,10 @@ export function updateTriggerConditionPanel(){
     entities.length = 0
     entities = getAllAssetNames(selectedItem.sceneId)
 
+    console.log('current conditions are ', newDecision.conditions)
+
     getCurrentConditions()
-    selectedOperatorIndex = operators.findIndex($=> selectedTrigger.operator)
+    // selectedOperatorIndex = operators.findIndex($=> selectedTrigger.operator)
 }
 
 function getCurrentConditions(){
@@ -40,12 +43,21 @@ function getCurrentConditions(){
         if(triggerData){
             let trigger = triggerData.triggers.find((trigger:any) => trigger.id === selectedTrigger.id)
             if(trigger){
-                trigger.caid.forEach((caid:string, index:number)=>{
-                    let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(caid)
-                    if(itemInfo){
-                        currentConditions.push({triggerId:selectedTrigger.id, index:index, entityName:itemInfo.value, type: trigger.ctype[index], value:trigger.cvalue[index] ? trigger.cvalue[index] : undefined, counter:trigger.ccounter[index] ? trigger.ccounter[index] : undefined})
-                    }
-                })
+                let decision = trigger.decisions.find((d:any)=> d.id === newDecision.id)
+                if(decision){
+                    decision.conditions.forEach((condition:any, i:number)=>{
+                        let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(condition.aid)
+                        if(itemInfo){
+                            currentConditions.push({triggerId:selectedTrigger.id, did:decision.id, index:i, entityName:itemInfo.value, type:condition.condition, value:condition.value ? condition.value : undefined, counter:condition.counter ? condition.counter : undefined})
+                        }
+                    })
+                    // trigger.caid.forEach((caid:string, index:number)=>{
+                    //     let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(caid)
+                    //     if(itemInfo){
+                    //         currentConditions.push({triggerId:selectedTrigger.id, index:index, entityName:itemInfo.value, type: trigger.ctype[index], value:trigger.cvalue[index] ? trigger.cvalue[index] : undefined, counter:trigger.ccounter[index] ? trigger.ccounter[index] : undefined})
+                    //     }
+                    // })
+                }
             }
         }
     }
@@ -82,7 +94,7 @@ export function TriggerConditionsPanel(){
                 alignContent:'center',
                 width: '100%',
                 height: '10%',
-                display: currentConditions.length > 0 ? "flex" : 'none'
+                display: newDecision && newDecision.conditions && newDecision.conditions.length > 0 ? "flex" : 'none'
             }}
                 uiText={{value:"Add Condition Operator", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
@@ -261,7 +273,7 @@ export function TriggerConditionsPanel(){
                 newCondition.aid = entities[selectedEntityIndex-1].aid
                 console.log('new condition is', newCondition)
 
-                update("addcondition", {...newCondition,...{tid:selectedTrigger.id}})
+                update("addcondition", {...newCondition,...{tid:selectedTrigger.id, did:newDecision.id}})
                 selectedEntityIndex = 0
                 selectedConditionIndex = 0
                 newCondition = {}
@@ -367,7 +379,7 @@ export function TriggerConditionRow(info:any){
             uiText={{textWrap:'nowrap', value:"" + (data.value ? data.value : data.counter ? data.counter : ""), fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
-            {/* action edit buttons column */}
+            {/* action edit buttons column // */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
@@ -396,7 +408,7 @@ export function TriggerConditionRow(info:any){
                 }}
                 onMouseDown={() => {
                     console.log('data is', data)
-                    update("deletecondition", {tid: data.triggerId, index:data.index})
+                    update("deletecondition", {tid: data.triggerId, did:data.did, index:data.index})
                     utils.timers.setTimeout(()=>{getCurrentConditions()}, 200)
                 }}
             />
@@ -475,7 +487,7 @@ function selectConditionEntityIndex(index:number){
 
 function selectConditionOperatorIndex(index:number){
     selectedOperatorIndex = index
-    update("edit", {conditionperator:operators[index]})
+    update("editoperation", {conditionperator:operators[index], tid:selectedTrigger.id, did:newDecision.id})
 }
 
 function selectConditionIndex(index:number){
@@ -490,7 +502,7 @@ function getTriggerConditions(justCount?:boolean){
     let arr:any[] = []
     let count = 0
     currentConditions.forEach((condition:any, i:number)=>{
-        arr.push(<TriggerConditionRow data={{triggerId:condition.triggerId, index:condition.index, entityName:condition.entityName, type: condition.type, value:condition.value, counter:condition.counter}} rowCount={count} />)
+        arr.push(<TriggerConditionRow data={{triggerId:condition.triggerId, did:condition.did, index:condition.index, entityName:condition.entityName, type: condition.type, value:condition.value, counter:condition.counter}} rowCount={count} />)
         count++
     })
     return arr
@@ -520,3 +532,5 @@ function getTriggerConditions(justCount?:boolean){
     // }
 
 }
+
+//
