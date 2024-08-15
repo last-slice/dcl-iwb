@@ -713,7 +713,7 @@ export function MusicView(){
       uiText={{textWrap:'nowrap', value:"Now Playing", textAlign:"middle-center", fontSize:sizeFont(25,15)}}
       onMouseDown={()=>{
         setUIClicked(true)
-        selectedCategory = "More Info"
+        chooseCategory("More Info")
       }}
       onMouseUp={()=>{
         setUIClicked(false)
@@ -1372,6 +1372,9 @@ async function getNextMoodPlaylist(){
 }
 
 function getPageType(){
+  if(!selectedPlaylist){
+    return ""
+  }
   switch(selectedCategory){
     case 'Trending':
       return Math.ceil([...currentPlaylist].length / 3)
@@ -2479,3 +2482,5 @@ key={resources.slug + "playlist::track::item::" + data.count}
       </UiEntity>
   )
 }
+
+//
