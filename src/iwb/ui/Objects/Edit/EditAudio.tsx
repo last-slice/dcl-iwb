@@ -50,7 +50,7 @@ export function EditAudio() {
                 width: '15%',
                 height: '100%',
             }}
-        uiText={{value:"Attach to Player", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"Attach to Player", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
         />
 
             <UiEntity
@@ -151,10 +151,11 @@ export function EditAudio() {
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
-                justifyContent: 'center',
+                justifyContent: 'center',//
                 width: '100%',
                 height: '10%',
-                margin:{top:"1%"}
+                margin:{top:"1%"},
+                display:'none'
             }}
         >
                     <UiEntity
@@ -294,8 +295,8 @@ export function EditAudio() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    height: '60%',
-                    margin: {top: "5%"},
+                    height: '30%',
+                    margin: {top: "5%", bottom:'5%'},
                 }}
             >
 

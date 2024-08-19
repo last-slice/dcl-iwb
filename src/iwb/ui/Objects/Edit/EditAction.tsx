@@ -95,7 +95,7 @@ export function EditAction(){
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignSelf:'flex-start',
-                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
                 height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
             }}
             uiBackground={{

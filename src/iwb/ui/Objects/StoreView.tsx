@@ -9,7 +9,7 @@ import { HoriztonalButtons } from '../Reuse/HoriztonalButtons'
 import { Color4 } from '@dcl/sdk/math'
 import { marketplaceItems, marketplaceOriginal, refreshMarketplaceItems, sortedAll, SortedNewest, styles } from '../../components/Catalog'
 import { playSound } from '@dcl-sdk/utils'
-import { currentPage, filterByStyle, filterCatalog, filtered, initCatalog, itemsPerPage, itemsToShow, refreshView, totalPages, updateCatalogSizing, updateCurrentPage, updateSearchFilter } from './CatalogPanel'
+import { currentPage, filterByStyle, filterCatalog, filtered, initCatalog, itemsPerPage, itemsToShow, refreshView, totalPages, updateCatalogSizing, updateCurrentPage, updatePublicAssetToggle, updateSearchFilter, updateStyleToggle } from './CatalogPanel'
 import { showNotification } from './NotificationPanel'
 import { displayPendingPanel } from './PendingInfoPanel'
 import { localPlayer } from '../../components/Player'
@@ -31,7 +31,7 @@ let buttons:any[] = [
         position:{bottom:'13%'},
         positionType:'absolute',
         displayCondition:()=>{
-            if(localPlayer && localPlayer.homeWorld){
+            if(localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions)){
                 return true
             }else{
                 return false
@@ -49,6 +49,7 @@ let buttons:any[] = [
 let filterButtons:any[] = [
     {
         label:"Select All", 
+        textwrap:"nowrap",
         width:6,
         height:5,
         fontBigScreen:20,
@@ -59,6 +60,7 @@ let filterButtons:any[] = [
     },
     {
         label:"Remove All", 
+        textwrap:"nowrap",
         width:6,
         height:5,
         fontBigScreen:20,
@@ -75,6 +77,7 @@ let horiztonalButtons:any[] = [
         showItems(SortedNewest)
         },
         height:4,
+        textwrap:"nowrap",
         width:6,
         fontBigScreen:30,
         fontSmallScreen:15
@@ -83,6 +86,7 @@ let horiztonalButtons:any[] = [
         playSound(SOUND_TYPES.SELECT_3)
         },
         height:4,
+        textwrap:"nowrap",
         width:6,
         fontBigScreen:30,
         fontSmallScreen:15
@@ -118,6 +122,8 @@ export function displayStoreView(value:boolean){
 
     if(showStore){
         storeView = "loading"
+
+        console.log('local player world permissions', localPlayer.worldPermissions)
         
         updateSearchFilter("")
         sendServerMessage(SERVER_MESSAGE_TYPES.GET_MARKETPLACE,{})
@@ -128,11 +134,14 @@ export function updateStoreVisibleItems(){
     refreshMarketplaceItems()
 
     itemsToShow.length = 0
-    selectedItems.length = 0
+    selectedItems.length = 0//
 
+    updateSearchFilter("")
+    updateStyleToggle(0)
+    updatePublicAssetToggle(0)
     updateCurrentPage(0)
     updateCatalogSizing(3,3,9)
-    initCatalog(SortedNewest)
+    initCatalog(sortedAll)
 }
 
 export function updateStoreView(view:string){
@@ -381,6 +390,18 @@ function LeftDataView(){
         <UiEntity
             uiTransform={{
                 display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            uiText={{value:"Asset Creator", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            />
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignContent: 'center',
@@ -389,7 +410,33 @@ function LeftDataView(){
             }}
             // uiBackground={{color:Color4.Green()}}
         >
-     {showStore  && localPlayer && localPlayer.homeWorld &&  <HoriztonalButtons height={'100%'} buttons={filterButtons} slug={"store-left-filter-buttons"} />}
+
+            <Dropdown
+            options={['In World Builder']}
+            selectedIndex={0}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+            // uiBackground={{color:Color4.Purple()}}
+            color={Color4.White()}
+            fontSize={sizeFont(20, 15)}
+            />
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignContent: 'center',
+                width: '100%',
+                height: '8%',
+                margin:{top:"2%"}
+            }}
+            // uiBackground={{color:Color4.Green()}}
+        >
+     {showStore  && localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) &&  <HoriztonalButtons height={'100%'} buttons={filterButtons} slug={"store-left-filter-buttons"} />}
 
         </UiEntity>
 
@@ -985,7 +1032,7 @@ function ItemView(){
             width: '100%',
             height: '100%',
         }}
-        uiText={{value:"Category: " + (selectedItem && selectedItem.cat), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+        uiText={{textWrap:'nowrap', value:"Category: " + (selectedItem && selectedItem.cat), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
         />
         </UiEntity>
 
@@ -1020,7 +1067,7 @@ function ItemView(){
                 width: '100%',
                 height: '10%',
             }}
-            uiText={{value:"Type: " + (selectedItem && selectedItem.ty), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+            uiText={{textWrap:'nowrap', value:"Type: " + (selectedItem && selectedItem.ty), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
             />
 
 
@@ -1032,7 +1079,7 @@ function ItemView(){
                     width: '100%',
                     height: '20%',
                 }}
-                uiText={{value:"" + (selectedItem && selectedItem.d), fontSize:sizeFont(25,20), textAlign:'top-left'}}
+                uiText={{value:"Description: " + (selectedItem && selectedItem.d), fontSize:sizeFont(25,20), textAlign:'top-left'}}
                 />
 
                 </UiEntity>

@@ -134,18 +134,10 @@ export function setWorlds(config: any) {
             builds: world.builds,
             updated: world.updated,
             bps:world.bps,
-            init: true
+            init: true,
+            backedUp:world.backedUp
         })
     }
-
-    console.log('local player is', localPlayer)
-
-    let worldPermissions = worlds.find(($:any)=> $.ens === realm)
-    if(worldPermissions && worldPermissions.bps.includes(localUserId)){
-        localPlayer.worldPermissions = true
-    }
-
-    console.log('worlds are set', worlds)
 }
 
 export function addTutorial(info:any){

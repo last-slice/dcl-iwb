@@ -53,6 +53,7 @@ import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
 export let selectedItem: SelectedItem
+export let sceneEdit:any
 export let selectedAssetId:any
 export let playerParentEntities: Map<string, Entity> = new Map()
 export let tweenPlacementEntity: Entity = engine.addEntity()
@@ -572,6 +573,7 @@ export function editItem(aid:string, mode: EDIT_MODES, already?: boolean) {
         let transScal = Vector3.clone(transform.scale)
         let transRot = Quaternion.toEulerAngles(transform.rotation)
     
+        sceneEdit = localPlayer.activeScene
         selectedItem = {
             duplicate: false,
             mode: mode,

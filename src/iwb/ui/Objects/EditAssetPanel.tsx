@@ -2,7 +2,7 @@ import ReactEcs, {Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgro
 import resources from '../../helpers/resources'
 import { localPlayer, settings } from '../../components/Player'
 import { EDIT_MODES, COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Actions } from '../../helpers/types'
-import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity, resetAdditionalAssetFeatures, addAllBuildModePointers } from '../../modes/Build'
+import { selectedItem, saveItem, deleteSelectedItem, cancelEditingItem, updateSelectedAssetId, selectedAssetId, disableTweenPlacementEntity, resetAdditionalAssetFeatures, addAllBuildModePointers, sceneEdit } from '../../modes/Build'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
@@ -1101,7 +1101,7 @@ function getBasicComponents(){
         COMPONENT_TYPES.PLAYLIST_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
-        if(localPlayer.activeScene[component] && localPlayer.activeScene[component][aid] && !omittedComponents.includes(component)){
+        if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
             components.push(component)
         }
     })

@@ -33,6 +33,14 @@ export let searchFilter = ""
 export let selectedSetting = 0
 export let selectedStyleIndex = 0
 
+export function updatePublicAssetToggle(value:number){
+    selectedSetting = value
+}
+
+export function updateStyleToggle(value:number){
+    selectedStyleIndex = value
+}
+
 export function updateCatalogSizing(row:number, column:number, perPage:number){
     rows = row
     columns = column

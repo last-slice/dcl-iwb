@@ -84,6 +84,7 @@ export async function createPlayer(player:any){
     await getPlayerNames(player)
     await getPlayerLand()
     await checkPlayerHomeWorld(player)
+    await checkWorldPermissions()
     engine.addSystem(PendingSceneLoadSystem)
     getAssetUploadToken()
 
@@ -99,6 +100,14 @@ export async function createPlayer(player:any){
                 })
             }
         }
+    }
+}
+
+function checkWorldPermissions(){
+    let worldPermissions = worlds.find(($:any)=> $.ens === realm)
+    console.log('worlds to search for permissions', worldPermissions)
+    if(worldPermissions && worldPermissions.bps.includes(localUserId)){
+        localPlayer.worldPermissions = true
     }
 }
 
@@ -150,9 +159,11 @@ export async function getPlayerNames(player:any) {
 
     let json = await res.json()
     if (json.data) {
+        console.log('worlds are currenlty', worlds)
         json.data.nfts.forEach((nft: any) => {
             console.log('nft is', nft.ens.subdomain)
             let world = worlds.find(($:any)=> $.name === nft.ens.subdomain)
+            console.log('world is', world)
             if(world){
                 console.log('found world config')
                 world.init = true

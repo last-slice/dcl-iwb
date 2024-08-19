@@ -27,7 +27,7 @@ export function EditVideo() {
         >
 
             {/* url label */}
-            <UiEntity
+            {/* <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -37,10 +37,10 @@ export function EditVideo() {
                     margin: {top: "2%"}
                 }}
                 uiText={{value: "URL", fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
-            />
+            /> */}
 
             {/* url input info */}
-            <UiEntity
+            {/* <UiEntity
                 uiTransform={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -97,7 +97,7 @@ export function EditVideo() {
                         setUIClicked(false)
                     }}
                 />
-            </UiEntity>
+            </UiEntity> */}
 
             {/* loop setting */}
             <UiEntity
@@ -257,7 +257,7 @@ export function EditVideo() {
                         onChange={(input) => {
                             updateVideo("volume", parseFloat(input))
                         }}
-                        value={"" + (visibleComponent === COMPONENT_TYPES.VIDEO_COMPONENT ? getVolume() : "")}
+                        placeholder={"" + (visibleComponent === COMPONENT_TYPES.VIDEO_COMPONENT ? getVolume() : "")}
 
                     />
 

@@ -126,8 +126,8 @@ export async function createColyseusListeners(room:Room){
 
         room.state.players.onAdd(async(player:any, userId:any)=>{
             if(userId === localUserId){
-                await createPlayer(player)
                 await setWorlds(info.worlds)
+                await createPlayer(player)
                 setSceneListeners(room)
 
                 if(!isGCScene()){

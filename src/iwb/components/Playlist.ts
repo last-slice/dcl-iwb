@@ -28,7 +28,7 @@ export function playlistListener(scene:any){
                             material.emissiveTexture = texture
                             switch(playlist.type){
                                 case 0:
-                                    updateMaterial(material, meshEntity)
+                                    updateMaterial(scene, material, meshEntity)
                                     break;
         
                                 case 1:

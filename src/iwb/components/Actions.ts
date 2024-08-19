@@ -572,7 +572,7 @@ export function handleMovePlayer(scene:any, action:any){
 
         console.log('action is now ', action)
     }
-    if(action.cx){
+    if(action.xLook){
         movePlayerTo({
             newRelativePosition:{
                 x:newPosition.x, 
@@ -580,9 +580,9 @@ export function handleMovePlayer(scene:any, action:any){
                 z:newPosition.z
             }, 
             cameraTarget:{
-                x:newPosition.cx, 
-                y:newPosition.cy, 
-                z:newPosition.cz
+                x:newPosition.xLook, 
+                y:newPosition.yLook, 
+                z:newPosition.zLook
             }
         })
     }else{
@@ -777,7 +777,7 @@ function handleLoadLevel(scene:any, info:any, action:any){
         displayLoadingScreen(true, levelInfo)
 
         let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
-        handleMovePlayer(scene, {...spawnLocation, ...{cx:levelInfo.loadingSpawnLook.x, cy:levelInfo.loadingSpawnLook.y, cz:levelInfo.loadingSpawnLook.z}})
+        handleMovePlayer(scene, {...spawnLocation, ...{xLook:levelInfo.loadingSpawnLook.x, yLook:levelInfo.loadingSpawnLook.y, zLook:levelInfo.loadingSpawnLook.z}})
 
         // scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((gameInfo:any, aid:string)=>{
         //     movePlayerToLobby(scene, gameInfo)

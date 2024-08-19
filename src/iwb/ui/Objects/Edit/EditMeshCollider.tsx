@@ -5,7 +5,7 @@ import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '
 import resources from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
-import { selectedItem } from '../../../modes/Build'
+import { sceneEdit, selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
 import { getOnPlay } from './EditMeshRender'
 import { localPlayer } from '../../../components/Player'
@@ -209,15 +209,15 @@ export function EditMeshCollider() {
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: selectedItem && selectedItem.enabled && getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.MESH_COLLIDER_COMPONENT ,selectedItem.aid) ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                uvs: selectedItem && selectedItem.enabled && getOnPlay(sceneEdit, COMPONENT_TYPES.MESH_COLLIDER_COMPONENT ,selectedItem.aid) ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
             }}
             onMouseDown={() => {
                 sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
                     {
-                        component:COMPONENT_TYPES.MESH_RENDER_COMPONENT,
+                        component:COMPONENT_TYPES.MESH_COLLIDER_COMPONENT,
                         aid:selectedItem.aid, 
                         sceneId:selectedItem.sceneId,
-                        onPlay: !getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.MESH_COLLIDER_COMPONENT ,selectedItem.aid)
+                        onPlay: !getOnPlay(sceneEdit, COMPONENT_TYPES.MESH_COLLIDER_COMPONENT ,selectedItem.aid)
                     }
                 )
 

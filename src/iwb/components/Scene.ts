@@ -162,7 +162,8 @@ async function loadSceneBoundaries(scene:any) {
 
     const sceneParent = engine.addEntity()
     Transform.createOrReplace(sceneParent, {
-        position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16)
+        position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16),
+        rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
     })
 
     console.log('scene parent is', Transform.get(sceneParent))
@@ -424,4 +425,28 @@ export async function removeEmptyParcels(parcels:string[]){
             emptyParcels.splice(index,1)
         }
     })
+}
+
+export function updateSceneParentRotation(scene:any, degrees:number){
+    let transform = Transform.getMutableOrNull(scene.parentEntity)
+    if(!transform){
+        return
+    }
+
+    let rotation = Quaternion.toEulerAngles(transform.rotation)
+    rotation.y += degrees
+
+    transform.rotation = Quaternion.fromEulerDegrees(rotation.x, rotation.y, rotation.z)
+
+    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS,
+        {
+            sceneId: scene!.id,
+            name: scene!.n,
+            desc: scene!.d,
+            image: scene!.im,
+            enabled: scene!.e,
+            priv: scene!.priv,
+            lim: scene!.lim,
+            direction: degrees
+        })
 }

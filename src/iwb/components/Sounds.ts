@@ -8,7 +8,7 @@ import resources from "../helpers/resources"
 import { items } from "./Catalog"
 import { AudioLoadedComponent } from "../helpers/Components"
 import { updateTransform } from "./Transform"
-import { selectedItem } from "../modes/Build"
+import { sceneEdit, selectedItem } from "../modes/Build"
 import { localUserId } from "./Player"
 
 export function checkAudioSourceComponent(scene:any, entityInfo:any){
@@ -508,15 +508,20 @@ export function playAudioFile(catalogId?:string){
             // AudioStream.createOrReplace(catalogSoundEntity, {
             //     url: "assets/" + itemData.id + ".mp3",
             //     playing:true,
-            // })
+            // })//
             
         }else{
             console.log('trying to preview audio stream')
-            Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
-            AudioStream.createOrReplace(catalogSoundEntity, {
-                url: "",
-                playing:true,
-            })
+            let streamInfo = sceneEdit[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(selectedItem.aid)
+            console.log("stream info is", streamInfo)
+            if(streamInfo){
+                Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
+                AudioStream.createOrReplace(catalogSoundEntity, {
+                    url: streamInfo.url,
+                    playing:true,
+                    volume: streamInfo.volume
+                })
+            }
         }
     }
 }
@@ -528,13 +533,15 @@ export function playAudioStream(){
 export function stopAudioFile(catalogId?:string){
     let audio:any
     let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
-    let entity = catalogId ? catalogSoundEntity : selectedItem.entity
+    // let entity = catalogId ? catalogSoundEntity : selectedItem.entity
 
     if(itemData){
         if(itemData.id !== CATALOG_IDS.AUDIO_STREAM){
-            audio = AudioSource.getMutable(entity)
+            audio = AudioSource.getMutable(catalogSoundEntity)
+            // audio.playing = false
         }else{
-            audio = AudioStream.getMutable(entity)
+            audio = AudioStream.getMutable(catalogSoundEntity)
+            // audio.playing = false
         }
         audio.playing = false
     }

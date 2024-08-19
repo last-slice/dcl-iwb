@@ -39,7 +39,7 @@ export function IWBButton(data:any){
       onMouseUp={()=>{
         setUIClicked(false)
       }}
-      uiText={{value: button.customImage ? "" : button.label, color:Color4.White(), fontSize:sizeFont(button.fontBigScreen ? button.fontBigScreen : 30,button.fontSmallScreen ? button.fontSmallScreen : 20)}}
+      uiText={{textWrap:button.textwrap ? button.textwrap :undefined,  value: button.customImage ? "" : button.label, color:Color4.White(), fontSize:sizeFont(button.fontBigScreen ? button.fontBigScreen : 30,button.fontSmallScreen ? button.fontSmallScreen : 20)}}
       />
     )
 }

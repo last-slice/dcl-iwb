@@ -7,7 +7,7 @@ import { createColyseusListeners } from "./Listeners";
 import { createTimerSystem } from "./Timer";
 import { engine } from "@dcl/sdk/ecs";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
-import { island, localConfig } from "./Config";
+import { isGCScene, island, localConfig } from "./Config";
 import { addLoadingScreen } from "../systems/LoadingSystem";
 
 export let data:any
@@ -38,8 +38,10 @@ export async function colyseusConnect(data:any, token:string, world?:any, island
     });
 }
 
-export async function joinWorld(world?: any) {
-    !isPreview ? addLoadingScreen() :null
+export async function joinWorld(world?: any, retries?:number) {
+    if(!isPreview && !isGCScene()){
+        addLoadingScreen()
+    }
 
     if (connected) {
         colyseusRoom.removeAllListeners()
@@ -53,6 +55,17 @@ export async function joinWorld(world?: any) {
             delete playerData.wearables
             delete playerData.avatar
             delete playerData.emotes
+        }
+
+        if(retries && retries < 3){
+            if(playerData.name === ""){
+                if(!retries){
+                    retries = 0
+                }
+
+                joinWorld(world, retries + 1)
+                return
+            }
         }
         await colyseusConnect(playerData, "", world, island)
     }

@@ -206,6 +206,7 @@ export interface IWBScene {
     im?:string,
     priv:boolean,
     lim:boolean
+    direction:boolean
     // actions:any[]//
 }
 

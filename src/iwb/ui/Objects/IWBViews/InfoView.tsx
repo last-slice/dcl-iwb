@@ -259,7 +259,7 @@ function VersionView(){
         )
         displayPendingPanel(true, "deployment")
     }}
-    uiText={{value:"Update", color:Color4.White(), fontSize:sizeFont(30,20)}}
+    uiText={{value:"Update", color:Color4.White(), fontSize:sizeFont(25,15)}}
     />
     </UiEntity>
 
@@ -323,15 +323,18 @@ function VersionView(){
                 }}
                 onMouseDown={() => {
                     playSound(SOUND_TYPES.SELECT_3)
-                    displayMainView(false)
                     
-                    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your world backup is pending...", animate:{enabled:true, time:7, return:true}})
+                    showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your world backup is pending...", animate:{enabled:true, time:5, return:true}})
                     sendServerMessage(
                         SERVER_MESSAGE_TYPES.FORCE_BACKUP, 
                         worlds.find((w)=> w.ens === realm)
                     )
+                    let world =  worlds.find((w)=> w.ens === realm)
+                    if(world){
+                        world.backedUp = Math.floor(Date.now()/1000)
+                    }
                 }}
-                uiText={{value:"Back Up", color:Color4.White(), fontSize:sizeFont(30,20)}}
+                uiText={{textWrap:'nowrap', value:"Back Up", color:Color4.White(), fontSize:sizeFont(25,15)}}
             />
 
 

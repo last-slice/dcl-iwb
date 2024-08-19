@@ -22,9 +22,11 @@ export let type:any[] = [
     "PBR",
 ]
 
-let textureTypes:any[] = [
+let textureTypes:any[] = [//
     'NONE',
     'TEXTURE',
+    'VIDEO',
+    'COLOR',
     'PLAYLIST'
 ]
 
@@ -458,6 +460,52 @@ export function EditMaterial() {
 
             </UiEntity>
 
+             {/* texture input dropdown */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:'1%'},
+                display:textureIndex === 1 || textureIndex === 2 ? 'flex' : 'none'//
+            }}
+            >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '50%',
+    }}
+>
+                                <Input
+                    onSubmit={(value) => {
+                        update('texture', value.trim())
+                    }}
+                    onChange={(value) => {
+                        update('texture', value.trim())
+                    }}
+                    fontSize={sizeFont(20, 15)}
+                    placeholder={'' + (material && material.texture ? material.texture : "enter texture link")}
+                    placeholderColor={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    color={Color4.White()}
+                    />
+
+            </UiEntity>
+
+
+
+
+            </UiEntity>
+
             {/* texture playlist dropdown */}
             <UiEntity
             uiTransform={{
@@ -467,7 +515,7 @@ export function EditMaterial() {
                 width: '100%',
                 height: '10%',
                 margin:{top:'1%'},
-                display:textureIndex !== 0 ? 'flex' : 'none'
+                display:textureIndex === 4 ? 'flex' : 'none'
             }}
             >
 
@@ -507,6 +555,7 @@ export function EditMaterial() {
 
 
             </UiEntity>
+
             </UiEntity>
 
         {/* emissive panel */}
@@ -541,7 +590,7 @@ export function EditMaterial() {
                         width: '50%',
                         height: '100%',
                     }}
-                uiText={{value:"Emissive Texture", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+                uiText={{value:"Emissive Type", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
                 />
 
                 <UiEntity
@@ -570,6 +619,52 @@ export function EditMaterial() {
 
             </UiEntity>
 
+             {/* texture input dropdown */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:'1%'},
+                display:emissiveTextureIndex === 1 || emissiveTextureIndex === 2 ? 'flex' : 'none'//
+            }}
+            >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '50%',
+    }}
+>
+<Input
+    onSubmit={(value) => {
+        update('emissivetexture', value.trim())
+    }}
+    onChange={(value) => {
+        update('emissivetexture', value.trim())
+    }}
+    fontSize={sizeFont(20, 15)}
+    placeholder={'' + (material && material.emissveTexture ? material.emissveTexture : "enter texture link")}
+    placeholderColor={Color4.White()}
+    uiTransform={{
+        width: '100%',
+        height: '100%',
+    }}
+    color={Color4.White()}
+    />
+
+</UiEntity>
+
+
+
+
+            </UiEntity>
+
             <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
@@ -582,7 +677,7 @@ export function EditMaterial() {
                 />
 
             {/* emissive color row */}
-            <UiEntity
+            {/* <UiEntity
                         uiTransform={{
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -641,7 +736,7 @@ export function EditMaterial() {
                             </UiEntity>
 
 
-            </UiEntity>
+            </UiEntity> */}
 
             <UiEntity
                 uiTransform={{
@@ -885,21 +980,18 @@ function update(type:any, value:any){
 }
 
 function validateIntensity(color:string){
+    console.log('validating intensity', color)
     let value = parseFloat(color)
-    if(isNaN(value) || value < 0 || value > 1){
+    if(isNaN(value) || value < 0){
         return
     }
-
     update("emissiveIntensity", value)
 }
 
 function validateColor(hue:string, color:string){
     let value = parseFloat(color)
-    if(isNaN(value) || value < 0 || value > 1){
+    if(isNaN(value) || value < 0){
         return
     }
-
     update("albedoColor", {hue:hue, value:value})
 }
-
-//

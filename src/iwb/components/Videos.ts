@@ -1,20 +1,26 @@
-import { VideoPlayer } from "@dcl/sdk/ecs"
+import { Material, VideoPlayer } from "@dcl/sdk/ecs"
 import { VideoLoadedComponent } from "../helpers/Components"
 import { selectedItem } from "../modes/Build"
 import { getEntity } from "./IWB"
 import { COMPONENT_TYPES } from "../helpers/types"
 
-export function checkVideoComponent(scene:any, entityInfo:any){
+export async function checkVideoComponent(scene:any, entityInfo:any, texture:string){
     let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         console.log('entity info', entityInfo.entity)
-        VideoPlayer.create(entityInfo.entity, {
-            src: "" + itemInfo.url,
-            playing: true,
-            volume: itemInfo.volume,
+        let videoPlayer = VideoPlayer.getMutableOrNull(entityInfo.entity)
+        if(videoPlayer){
+            videoPlayer.playing = false
+        }
+
+        VideoPlayer.createOrReplace(entityInfo.entity, {
+            src: "" + texture,
+            playing: false,
+            volume: itemInfo.volume > 1 ? 1 : itemInfo.volume,//
             loop: itemInfo.loop
         })
-        VideoLoadedComponent.create(entityInfo.entity, {init:false, sceneId:scene.id})
+        console.log('video player is', VideoPlayer.get(entityInfo.entity))
+        VideoLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
@@ -100,6 +106,7 @@ export function disableVideoPlayMode(scene:any, entityInfo:any){
 export function playVideoFile(){
     console.log(selectedItem)
     console.log(VideoPlayer.get(selectedItem.entity))
+    console.log(Material.get(selectedItem.entity))
     if(VideoPlayer.has(selectedItem.entity)){
         VideoPlayer.getMutable(selectedItem.entity).playing = true
     }
