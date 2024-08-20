@@ -25,6 +25,7 @@ import { updateAssetBuildVisibility } from "./Visibility"
 import { colyseusRoom } from "./Colyseus"
 import { localUserId } from "./Player"
 import { disableGameAsset } from "./Game"
+import { checkAvatarShape } from "./AvatarShape"
 
 export function getEntity(scene:any, aid:string){
   return scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
@@ -101,6 +102,7 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
   await checkUIImage(scene, iwbInfo)
   await checkTriggerComponent(scene, iwbInfo)
   await checkBillboardComponent(scene, iwbInfo)
+  await checkAvatarShape(scene, iwbInfo)
 
   await disableGameAsset(scene, iwbInfo)
 

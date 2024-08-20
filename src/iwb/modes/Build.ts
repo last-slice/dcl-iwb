@@ -50,6 +50,7 @@ import { releaseRandomActions } from "../ui/Objects/Edit/ActionPanels/AddRandomA
 import { resetMovePlayerEntity } from "../ui/Objects/Edit/ActionPanels/AddMovePlayerPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { disablePlaylistForBuildMode } from "../components/Playlist"
+import { setAvatarShapeBuildMode } from "../components/AvatarShape"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -1673,6 +1674,7 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         addBuildModePointers(entityInfo.entity)
         resetTween(scene, entityInfo)
         disablePlaylistForBuildMode(scene, entityInfo)
+        setAvatarShapeBuildMode(scene, entityInfo)
     }
     //         resetTweenPositions(entity, sceneItem, scene)//
 }

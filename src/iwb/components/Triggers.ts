@@ -21,12 +21,12 @@ const triggers = new Map<Entity, any>()
 export function checkTriggerComponent(scene:any, entityInfo:any){
   let itemInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
   if(itemInfo){
-    let hasEnter = false
-    let hasLeave = false
+    let hasEnter:any
+    let hasLeave:any
 
     if(itemInfo.isArea){
-      hasEnter = true
-      hasLeave = true
+      hasEnter = Triggers.ON_ENTER
+      hasLeave = Triggers.ON_LEAVE
     }
 
     itemInfo.triggers.forEach((trigger:any)=>{
@@ -40,47 +40,45 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
           break;
 
         case Triggers.ON_ENTER:
-          hasEnter = true
+          hasEnter = Triggers.ON_ENTER
           break;
 
         case Triggers.ON_LEAVE:
-          hasLeave = true
+          hasLeave = Triggers.ON_LEAVE
           break;
+
+          case Triggers.ON_PICKUP:
+            hasEnter = Triggers.ON_PICKUP
+            break;
+        
       }
     })
-    setTriggerArea(scene, entityInfo.aid, hasEnter, hasLeave, Triggers.ON_ENTER, Triggers.ON_LEAVE)
-  }
-}
 
-function setTriggerArea(scene:any, aid:any, hasEnter:any, hasLeave:any, enterTrigger?:Triggers, leaveTrigger?:Triggers){
-  let itemInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(aid)
-  if(!itemInfo || (!hasEnter && !hasLeave)){
-    return
-  }
-
-  let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(itemInfo.aid)
-  if(transform){
-    console.log('trigger area scale', transform)
-
-    itemInfo.trigger = utils.triggers.addTrigger(itemInfo.entity, NO_LAYERS, LAYER_1,
-      [{type:'box',
-        // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
-        scale: itemInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
-      }],
-      ()=>{
-        if(hasEnter){
-          const triggerEvents = getTriggerEvents(itemInfo.entity)
-          triggerEvents.emit(enterTrigger, {input:0, pointer:0, entity:itemInfo.entity})
-        }
-      },
-      ()=>{
-        if(hasLeave){
-          const triggerEvents = getTriggerEvents(itemInfo.entity)
-          triggerEvents.emit(leaveTrigger, {input:0, pointer:0, entity:itemInfo.entity})
-        }
-      },
-      Color3.create(236/255,209/255,92/255)
-    )
+    if(hasEnter || hasLeave){
+      let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
+      if(transform){
+        console.log('trigger area scale', transform)
+        itemInfo.trigger = utils.triggers.addTrigger(entityInfo.entity, NO_LAYERS, LAYER_1,
+          [{type:'box',
+            // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
+            scale: itemInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+          }],
+          ()=>{
+            if(hasEnter){
+              const triggerEvents = getTriggerEvents(entityInfo.entity)
+              triggerEvents.emit(Triggers.ON_ENTER, {input:0, pointer:0, entity:entityInfo.entity})
+            }
+          },
+          ()=>{
+            if(hasLeave){
+              const triggerEvents = getTriggerEvents(entityInfo.entity)
+              triggerEvents.emit(Triggers.ON_LEAVE, {input:0, pointer:0, entity:entityInfo.entity})
+            }
+          },
+          Color3.create(236/255,209/255,92/255)
+        )
+      }
+    }
   }
 }
 
@@ -111,10 +109,17 @@ export function getTriggerEvents(entity: Entity) {
 
 export function triggerListener(scene:any){
   scene[COMPONENT_TYPES.TRIGGER_COMPONENT].onAdd((assetTrigger:any, aid:any)=>{
+    // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
+    // if(!iwbInfo.components.includes(COMPONENT_TYPES.TRIGGER_COMPONENT)){
+    //   iwbInfo.components.push(COMPONENT_TYPES.TRIGGER_COMPONENT)
+    // }
+
     let info = getEntity(scene, aid)
     if(!info){
         return
     }
+
+    //
 
     
     assetTrigger.triggers.onAdd((trigger:any, index:any)=>{
@@ -122,11 +127,35 @@ export function triggerListener(scene:any){
           console.log('trigger is', trigger, info.entity)
           updateTriggerEvents(scene, info, trigger)
 
-          if(trigger.type === Triggers.ON_PICKUP){
-            setTriggerArea(scene, info.aid, true, false, Triggers.ON_PICKUP)
+          if(trigger.type === Triggers.ON_PICKUP && !info.trigger){
+            let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(info.aid)
+            info.trigger = utils.triggers.addTrigger(info.entity, NO_LAYERS, LAYER_1,
+              [{type:'box',
+                // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
+                scale: info.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+              }],
+              ()=>{
+                  const triggerEvents = getTriggerEvents(info.entity)
+                  triggerEvents.emit(Triggers.ON_PICKUP, {input:0, pointer:0, entity:info.entity})
+              },
+              ()=>{
+              },
+              Color3.create(236/255,209/255,92/255)
+            )
           }
       })
     })
+
+    assetTrigger.triggers.onRemove((trigger:any, index:any)=>{
+      console.log("trigger removed")
+      if(trigger.type === Triggers.ON_PICKUP){
+        utils.triggers.removeTrigger(info.entity)
+        const triggerEvents = getTriggerEvents(info.entity)
+        triggerEvents.off("*")
+      }
+    })
+
+
   })
 }
 

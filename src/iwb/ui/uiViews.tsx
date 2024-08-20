@@ -133,7 +133,7 @@ export let uiViews:any[] = [
         props:{
             label:"Clear Scene",
             text:"Are you sure you want to clear this build? All assets will be removed from this scene.",
-            // slug:"welcome-view",
+            // slug:"welcome-view",//
             // view:"welcome",
             display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
             buttons:[

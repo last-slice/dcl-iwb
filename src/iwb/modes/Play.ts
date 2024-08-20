@@ -32,6 +32,7 @@ import { getActionEvents, handleUnlockPlayer, updateActions } from "../component
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { disablePlaylistForPlayMode, stopAllPlaylists } from "../components/Playlist"
+import { disableAvatarShapePlayMode } from "../components/AvatarShape"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -225,6 +226,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         resetTween(scene, entityInfo)
         setAnimationBuildMode(scene, entityInfo)
         disablePlaylistForPlayMode(scene, entityInfo)
+        disableAvatarShapePlayMode(scene, entityInfo)
         //to do
         // - reset states
         // - reset tweens
@@ -285,15 +287,16 @@ export function resetTween(scene:any, entityInfo:any){
 
 async function loadRemovedItems(scene:any){
     let removedItems:any[] = removedEntities.get(scene.id)
-    console.log('removed items are ', removedItems)
+    console.log('removed items to load are ', removedItems)
     if(removedItems && removedItems.length > 0){
         for(let i = 0; i < removedItems.length; i++){
             let removedInfo = removedItems[i]
             let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(removedInfo.aid)
             console.log('iwb info is', iwbInfo, iwbInfo.aid, iwbInfo.entity)
+
             await createEntity(iwbInfo)
             console.log('entity is now', iwbInfo.entity)
-            createAsset(scene, iwbInfo)
+            await createAsset(scene, iwbInfo)
 
             let actions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(iwbInfo.aid)
             if(actions && actions.actions && actions.actions.length > 0){

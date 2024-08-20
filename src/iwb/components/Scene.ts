@@ -36,6 +36,7 @@ import { gameListener } from "./Game"
 import { refreshMap } from "../ui/Objects/Map"
 import { playlistListener } from "./Playlist"
 import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem"
+import { avatarShapeListener } from "./AvatarShape"
 
 export let realmActions: any[] = []
 
@@ -126,7 +127,8 @@ async function loadSceneComponents(scene:any){
     await materialListener(scene)
     await gameListener(scene)
     await playlistListener(scene)
-
+    await avatarShapeListener(scene)
+    
     scene.loaded = true
     console.log('scene loaded', scene.id)
     await disableSceneEntities(scene.id)
