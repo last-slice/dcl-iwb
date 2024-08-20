@@ -35,6 +35,7 @@ import { AddTeleport } from './ActionPanels/AddTeleportPanel'
 import { AddDelayActionPanel, updateDelayEntitiesWithActions } from './ActionPanels/AddDelay'
 import { AddPopupPanel, showPopupPanel } from './ActionPanels/AddPopupPanel'
 import { AddRandomNumberPanel } from './ActionPanels/AddRandomNumberPanel'
+import { AddVolumeUpPanel } from './ActionPanels/AddVolumeUpPanel'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -516,9 +517,17 @@ function getActionDataPanel(){
         case Actions.RANDOM_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddRandomNumberPanel/>
 
+
+        case Actions.VOLUME_UP.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddVolumeUpPanel/>
+
+        case Actions.VOLUME_DOWN.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddVolumeUpPanel/>
+
+        case Actions.VOLUME_SET.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddVolumeUpPanel/>
+
             
-
-
         //play sound - doesnt need any action metadata//
         //stop sound - doesnt need any action metadata
         //play video - doesnt need any action metadata
@@ -571,6 +580,10 @@ function resetActionData(){
             else{
                 newActionData[key] = actionTemplate[key]
             }
+        }
+
+        if(newActionData.type === Actions.PLAY_PLAYLIST){
+            newActionData.playlistAid = selectedItem.aid
         }
     }
 }
@@ -669,5 +682,17 @@ const ActionDefaults:any = {
     [Actions.RANDOM_NUMBER]:{
         min:1,
         max:10
+    },
+    [Actions.VOLUME_UP]:{
+        value:0
+    },
+    [Actions.VOLUME_DOWN]:{
+        value:0
+    },
+    [Actions.VOLUME_SET]:{
+        value:0
+    },
+    [Actions.PLAY_PLAYLIST]:{
+        playlistAid:"" + (selectedItem && selectedItem.aid ? selectedItem.aid : "")
     },
 }

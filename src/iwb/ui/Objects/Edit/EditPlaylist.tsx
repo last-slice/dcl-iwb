@@ -12,13 +12,18 @@ import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
 import { paginateArray } from '../../../helpers/functions'
 import { utils } from '../../../helpers/libraries'
+import { searchAudius } from '../../../components/Sounds'
+import { getArtWork } from '../IWBViews/MusicView'
 
 let typeIndex = 0
 let playmodeIndex = 0
 let playlist:any = {}
 let newItem:string = ""
+let audiusSearch = ""
+
 export let playlistView:string = "main"
 
+let audiusSearchResults:any[] = []
 let visibleItems:any[] = []
 let visibleIndex:number = 1
 
@@ -26,7 +31,8 @@ export let type:any[] = [
     "SELECT",
     "IMAGES",
     "VIDEO",
-    "AUDIO"
+    "AUDIO",
+    "AUDIUS"
 ]
 
 let playModes:any[] = [
@@ -48,16 +54,18 @@ export function updatePlaylistComponent(refresh?:boolean){
 
     playlist = {...itemInfo}
     newItem = ""
+    audiusSearch = ""
 
     if(refresh){
         visibleItems.length = 0
+        audiusSearchResults.length = 0
     }
     else{
         playlistView = "main"
         visibleIndex = 1
     }
    
-    visibleItems = paginateArray([...playlist.playlist], visibleIndex, 6)
+    visibleItems = playlist.type !== 4 ? paginateArray([...playlist.playlist], visibleIndex, 6) : paginateArray([...audiusSearchResults], visibleIndex, 4)
     typeIndex = playlist.type >= 0 ? playlist.type + 1 : 0
     playmodeIndex = playlist.playtype + 1
 }
@@ -76,7 +84,72 @@ export function EditPlaylist() {
             }}
         >
 
-      {/* main items view */}  
+                    {/* type row */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{top:"1%"},
+                display: typeIndex === 0 ? "flex" : "none"
+            }}
+        >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                height: '50%',
+            }}
+        uiText={{value:"Playlist Type", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+        <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '50%',
+                        height: '60%',
+                    }}
+                >
+
+                    <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '100%',
+                                height: '100%',
+                                display: typeIndex !== 0 ? 'flex' : 'none'
+                            }}
+                            uiText={{textWrap:'nowrap', value:"" + (type[typeIndex]), fontSize:sizeFont(20,15)}}
+                        />
+
+                        <Dropdown
+                    options={type}
+                    selectedIndex={typeIndex}
+                    onChange={selectTypeIndex}
+                    uiTransform={{
+                        width: '100%',
+                        height: '120%',
+                        display:typeIndex === 0 ? 'flex' : 'none'
+                    }}
+                    // uiBackground={{color:Color4.Purple()}}//
+                    color={Color4.White()}
+                    fontSize={sizeFont(20, 15)}
+                />
+
+        </UiEntity>
+
+
+        </UiEntity>
+
+
+      {/* main image items view */}  
   <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -87,14 +160,14 @@ export function EditPlaylist() {
             }}
         >
 
-                    {/* type row */}
-        <UiEntity
+<UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 width: '100%',
                 height: '10%',
-                margin:{top:"1%"}
+                margin:{top:"1%"},
+                display: typeIndex !== 0 ? "flex" : "none"
             }}
         >
 
@@ -157,7 +230,8 @@ export function EditPlaylist() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '10%',
-                margin:{top:"1%"}
+                margin:{top:"1%"},
+                display: typeIndex === 1 || typeIndex === 2 ? 'flex' : 'none'
             }}
         >
 
@@ -198,6 +272,7 @@ export function EditPlaylist() {
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{
+                textWrap:'nowrap',
                 value: "Add Items",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
@@ -225,6 +300,7 @@ export function EditPlaylist() {
                 width: '100%',
                 height: '10%',
                 margin:{top:"1%"},
+                display: typeIndex !== 0 ? 'flex' : 'none'
             }}
         >
 
@@ -322,68 +398,80 @@ export function EditPlaylist() {
 
         </UiEntity>
 
-            </UiEntity>
 
-{/* add items view */}
-            <UiEntity
+        {/* audius selection row  */}
+        <UiEntity
             uiTransform={{
                 flexDirection: 'column',
-                justifyContent: 'flex-start',
-                width: '100%',
-                height: '100%',
-                display: playlistView === "add" ? "flex" : "none"
-            }}
-        >
-
-<UiEntity
-            uiTransform={{
-                flexDirection: 'row',
+                alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
                 height: '10%',
-                margin:{top:"1%"}
+                display: typeIndex === 4 ? "flex" : "none"
             }}
+        uiText={{value:"Current Playlist: " + (playlist.audiusName ? playlist.audiusName : "NONE"), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+
+        {/* audius search row */}
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            display: typeIndex === 4 ? "flex" : "none" 
+        }}
+        >
+
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '60%',
+            height: '100%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '60%',
+        }}
+    >
+        <Input
+            onChange={(value) => {
+                audiusSearch = value.trim()
+            }}
+            onSubmit={(value) => {
+                audiusSearch = value.trim()
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'search for playlist'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+            ></Input>
+        </UiEntity>
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '20%',
+            height: '100%',
+        }}
         >
              <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    width: '80%',
-                    height: '100%',
-                }}
-                >
-                <Input
-                    onSubmit={(value) => {
-                        newItem = value.trim()
-                    }}
-                    onChange={(value) => {
-                        newItem = value.trim()
-                    }}
-                    fontSize={sizeFont(20, 15)}
-                    placeholder={'Add link'}
-                    placeholderColor={Color4.White()}
-                    uiTransform={{
-                        width: '100%',
-                        height: '100%',
-                    }}
-                    color={Color4.White()}
-                />
-            </UiEntity>
-
-            <UiEntity
-                uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    width: '20%',
-                    height: '100%',
-                }}
-            >
-
-            <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -400,41 +488,93 @@ export function EditPlaylist() {
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{
-                value: "Add",
+                value: "Search",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
-                textAlign: 'middle-center'
+                textAlign: 'middle-center',
+                textWrap:'nowrap'
             }}
             onMouseDown={() => {
                 setUIClicked(true)
-                update('item', 'additem', newItem)
-                utils.timers.setTimeout(()=>{
-                    updatePlaylistComponent(true)
-                }, 200)
-                setUIClicked(false)
+                attemptSearch()
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
             }}
-            />
-
-            </UiEntity>
+        />
 
         </UiEntity>
 
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '20%',
+            height: '100%',
+        }}
+        >
+                        {/* scroll up button */}
+                        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateImageDimensions(2, getAspect(uiSizes.leftArrowBlack)).width,
+                height: calculateImageDimensions(2, getAspect(uiSizes.leftArrowBlack)).height,
+                margin: {left: "5%"},
+            }}
+            // uiBackground={{color:Color4.White()}}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.leftArrowBlack)
+            }}
+            onMouseDown={() => {
+                setUIClicked(true)
+                if(visibleIndex -1 >= 1){
+                    visibleIndex--
+                    visibleItems = paginateArray([...audiusSearchResults], visibleIndex, 4)
+                }
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
 
-
-        {/* playlist items list */}
+        {/* scroll down button */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',//
-                height: '10%',
+                width: calculateImageDimensions(2, getAspect(uiSizes.rightArrowBlack)).width,
+                height: calculateImageDimensions(2, getAspect(uiSizes.rightArrowBlack)).height,
+                margin: {right: "1%"},
             }}
-        uiText={{value:"Current Playlist", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.rightArrowBlack)
+            }}
+            onMouseDown={() => {
+                setUIClicked(true)
+                visibleIndex++
+                visibleItems = paginateArray([...audiusSearchResults], visibleIndex, 4)
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
         />
+        
+
+</UiEntity>
+
+        </UiEntity>
 
         <UiEntity
             uiTransform={{
@@ -442,27 +582,158 @@ export function EditPlaylist() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 width: '100%',
-                height: '70%',
+                height: '55%',
+                display: typeIndex === 4 ? "flex" : "none"
             }}
         >
-
-            {visibleComponent === COMPONENT_TYPES.PLAYLIST_COMPONENT && typeIndex !== 0 && getPlaylist()}
-
+            {
+                typeIndex === 4 && 
+                visibleComponent === COMPONENT_TYPES.PLAYLIST_COMPONENT &&
+                audiusSearchResults.length > 0 &&
+                generateAudiusSearchRows()
+            }
         </UiEntity>
 
-            </UiEntity>
+
+</UiEntity>
+
+{/* add items view */}
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    width: '100%',
+    height: '100%',
+    display: playlistView === "add" ? "flex" : "none"
+}}
+    >
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    height: '10%',
+    margin:{top:"1%"}
+}}
+>
+    <UiEntity
+    uiTransform={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignContent: 'center',
+        width: '80%',
+        height: '100%',
+    }}
+    >
+    <Input
+        onSubmit={(value) => {
+            newItem = value.trim()
+        }}
+        onChange={(value) => {
+            newItem = value.trim()
+        }}
+        fontSize={sizeFont(20, 15)}
+        placeholder={'Add link'}
+        placeholderColor={Color4.White()}
+        uiTransform={{
+            width: '100%',
+            height: '100%',
+        }}
+        color={Color4.White()}
+    />
+</UiEntity>
+
+<UiEntity
+    uiTransform={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignContent: 'center',
+        width: '20%',
+        height: '100%',
+    }}
+>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf:'flex-start',
+    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+    height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+}}
+uiBackground={{
+    textureMode: 'stretch',
+    texture: {
+        src: 'assets/atlas2.png'
+    },
+    uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+}}
+uiText={{
+    value: "Add",
+    fontSize: sizeFont(25, 15),
+    color: Color4.White(),
+    textAlign: 'middle-center'
+}}
+onMouseDown={() => {
+    setUIClicked(true)
+    update('item', 'additem', newItem)
+    utils.timers.setTimeout(()=>{
+        updatePlaylistComponent(true)
+    }, 200)
+    setUIClicked(false)
+}}
+onMouseUp={()=>{
+    setUIClicked(false)
+}}
+/>
+
+</UiEntity>
+
+</UiEntity>
 
 
+
+{/* playlist items list */}
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',//
+    height: '10%',
+}}
+uiText={{value:"Current Playlist", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+    height: '70%',
+}}
+>
+
+{visibleComponent === COMPONENT_TYPES.PLAYLIST_COMPONENT && typeIndex !== 0 && getPlaylist()}
+
+</UiEntity>
+
+</UiEntity>
      
         </UiEntity>
     )
 }
 
 function selectTypeIndex(index: number) {
-    if(index !== typeIndex){
-        typeIndex = index - 1
-        update('type', 'type', index - 1)
-    }    
+    if(index - 1 >= 0){
+        typeIndex = index
+        update('type', 'type', typeIndex - 1)
+    } 
 }
 
 function selectPlaymodeIndex(index: number) {
@@ -694,5 +965,144 @@ function PlaylistRow({count}: {count:number}){
                 {generateRowItems(count)}
 
         </UiEntity>
+    )
+}
+
+async function attemptSearch(){
+    audiusSearchResults.length = 0
+    visibleItems.length = 0
+    visibleIndex = 1
+    audiusSearchResults = await searchAudius(audiusSearch)
+    console.log('search results are ', audiusSearchResults)
+    visibleItems = paginateArray([...audiusSearchResults], visibleIndex, 4)
+    console.log('visible items are ', visibleItems)
+}
+
+function generateAudiusSearchRows(){
+    let arr:any[] = []
+    let count = 0
+    visibleItems.forEach((playlist:any)=>{
+        arr.push(<AudiusSearchRow data={playlist} count={count} />)
+        count++
+    })
+    return arr
+}
+
+function AudiusSearchRow(data:any){
+    let playlistInfo = data.data
+    return(
+        <UiEntity
+        key={resources.slug + "audius::search::row" + data.count}
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '20%',
+            margin:{top:"1%", bottom:"1%"}
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.rowPillDark)
+        }}
+    >
+          <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '20%',
+            height: '100%',
+        }}
+    >
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '80%',
+        height: '80%',
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: getArtWork(playlistInfo)
+        }
+    }}
+    />
+    </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '60%',
+            height: '100%',
+        }}
+        uiText={{value:"" + (playlistInfo.playlist_name.length > 25 ? playlistInfo.playlist_name.substring(0,25) + "..." : playlistInfo.playlist_name), textAlign:'middle-left', textWrap:'nowrap', fontSize:sizeFont(20,15)}}
+        />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '20%',
+            height: '100%',
+        }}
+    >
+
+{/* <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '45%',
+            height: '85%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.eyeTrans)
+        }}
+    /> */}
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '45%',
+            height: '45%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png'//
+            },
+            uvs: getImageAtlasMapping(uiSizes.saveButton)
+        }}
+        onMouseDown={()=>{
+            setUIClicked(true)
+            update("", "setaudiusplaylist", {name:playlistInfo.playlist_name, id:playlistInfo.id})
+            utils.timers.setTimeout(()=>{
+                updatePlaylistComponent()
+            }, 200)
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+    />
+
+    </UiEntity>
+
+    </UiEntity>
     )
 }

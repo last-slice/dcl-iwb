@@ -20,7 +20,9 @@ export function nameListener(scene:any){
         }
 
         name.listen("value", (current:any, previous:any)=>{
+            console.log('name value changed')
             if(previous !== undefined && playerMode === SCENE_MODES.BUILD_MODE){
+                // console.log('updating tet omponetn')
                 // updateAudioTextLabel(scene, aid, current)
                 // updateClickAreaTextLabel(scene, entityInfo, current)
                 updateTextComponent(scene, entityInfo, current)

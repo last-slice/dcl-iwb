@@ -64,11 +64,6 @@ export function setTextShapeForPlayMode(scene:any, entityInfo:any){
 
 export function textShapeListener(scene:any){
     scene[COMPONENT_TYPES.TEXT_COMPONENT].onAdd((textShape:any, aid:any)=>{
-        // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
-        // if(!iwbInfo.components.includes(COMPONENT_TYPES.TEXT_COMPONENT)){
-        //   iwbInfo.components.push(COMPONENT_TYPES.TEXT_COMPONENT)
-        // }
-
         let info = getEntity(scene, aid)
         if(!info){
             return
@@ -110,13 +105,17 @@ export function textShapeListener(scene:any){
             }
         })
 
-        textShape.listen("color", (c:any, p:any)=>{
-            if(p !== undefined){
-                let text = TextShape.getMutable(info.entity)
-                if(text){
-                    text.textColor = Color4.create(textShape.color.r, textShape.color.g, textShape.color.b, textShape.color.a)
-                }
-            }
+        textShape.color.listen("r", (c:any, p:any)=>{
+            addTextShape(scene, info, textShape)
+        })
+        textShape.color.listen("g", (c:any, p:any)=>{
+            addTextShape(scene, info, textShape)
+        })
+        textShape.color.listen("b", (c:any, p:any)=>{
+            addTextShape(scene, info, textShape)
+        })
+        textShape.color.listen("a", (c:any, p:any)=>{
+            addTextShape(scene, info, textShape)
         })
     })
 }

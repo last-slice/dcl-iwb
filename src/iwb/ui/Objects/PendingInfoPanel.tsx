@@ -200,7 +200,7 @@ export function createPendingStatusPanel(){
             },
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
         }}
-        uiText={{value:"Update", fontSize:sizeFont(20,15), color:Color4.White()}}
+        uiText={{textWrap:'nowrap', value:"Update", fontSize:sizeFont(20,15), color:Color4.White()}}
         onMouseDown={()=>{
             playSound(SOUND_TYPES.SELECT_3)
             displayMainView(false)

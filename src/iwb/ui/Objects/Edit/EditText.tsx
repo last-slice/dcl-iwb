@@ -4,10 +4,10 @@ import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import resources, { colorsLabels, colors } from '../../../helpers/resources'
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
-import { selectedItem } from '../../../modes/Build'
+import { sceneEdit, selectedItem } from '../../../modes/Build'
 import { sizeFont } from '../../helpers'
 import { visibleComponent } from '../EditAssetPanel'
-import { NftShape, engine } from '@dcl/sdk/ecs'
+import { ComponentType, NftShape, engine } from '@dcl/sdk/ecs'
 
 export let fontStyles:string[] = [
     "Sans Serif",
@@ -39,7 +39,7 @@ export function loadCurrentTextData(){
 export function EditText() {
     return (
         <UiEntity
-            key={resources.slug + "edittextComponentPanel"}
+            key={resources.slug + "edit::text:shape::panel"}
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -50,6 +50,328 @@ export function EditText() {
             }}
         >
 
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%'}
+        }}
+        uiText={{textWrap:'nowrap', value:"Edit Text Shape", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+    >
+        <Input
+            onChange={(value) => {
+                updateText("data","text", value.trim())
+            }}
+            onSubmit={(value) => {
+                updateText("data","text", value.trim())
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'enter text'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+            ></Input>
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%'}
+        }}
+        uiText={{textWrap:'nowrap', value:"Font Size", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+    >
+        <Input
+            onChange={(value) => {
+                if(!isNaN(parseFloat(value.trim()))){
+                    updateText("data","fontSize", parseFloat(value.trim()))
+                }
+            }}
+            onSubmit={(value) => {
+                if(!isNaN(parseFloat(value.trim()))){
+                    updateText("data","fontSize", parseFloat(value.trim()))
+                }
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'enter size (number)'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+            ></Input>
+        </UiEntity>
+
+         {/* albedo color row */}
+         <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+            }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '15%',
+                    margin:{bottom:'3%', top:'2%'}
+                }}
+            uiText={{value:"Text Color", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '70%',
+                }}
+            >
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '25%',
+                    height: '100%',
+                }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '25%',
+                    margin:{bottom:"5%"}
+                }}
+            uiText={{value:"r", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '100%',
+                    height: '70%',
+                }}
+                >
+                <Input
+                    onSubmit={(value) => {
+                        validateColor('r', value.trim())
+                    }}
+                    onChange={(value) => {
+                        validateColor('r', value.trim())
+                    }}
+                    fontSize={sizeFont(20, 15)}
+                    placeholder={'' + (sceneEdit && visibleComponent === COMPONENT_TYPES.TEXT_COMPONENT ? sceneEdit[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid).color.r : "")}
+                    placeholderColor={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    color={Color4.White()}
+                />
+        </UiEntity>
+
+            </UiEntity>
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '25%',
+                    height: '100%',
+                }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '25%',
+                    margin:{bottom:"5%"}
+                }}
+            uiText={{value:"g", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '100%',
+                    height: '70%',
+                }}
+                >
+                <Input
+                    onSubmit={(value) => {
+                        validateColor('g', value.trim())
+                    }}
+                    onChange={(value) => {
+                        validateColor('g', value.trim())
+                    }}
+                    fontSize={sizeFont(20, 15)}
+                    placeholder={'' + (sceneEdit && visibleComponent === COMPONENT_TYPES.TEXT_COMPONENT ? sceneEdit[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid).color.g : "")}
+                    placeholderColor={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    color={Color4.White()}
+                />
+        </UiEntity>
+
+            </UiEntity>
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '25%',
+                    height: '100%',
+                }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '25%',
+                    margin:{bottom:"5%"}
+                }}
+            uiText={{value:"b", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '100%',
+                    height: '70%',
+                }}
+                >
+                <Input
+                    onSubmit={(value) => {
+                        validateColor('b', value.trim())
+                    }}
+                    onChange={(value) => {
+                        validateColor('b', value.trim())
+                    }}
+                    fontSize={sizeFont(20, 15)}
+                    placeholder={'' + (sceneEdit && visibleComponent === COMPONENT_TYPES.TEXT_COMPONENT ? sceneEdit[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid).color.b : "")}
+                    placeholderColor={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    color={Color4.White()}
+                />
+        </UiEntity>
+
+            </UiEntity>
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '25%',
+                    height: '100%',
+                }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '25%',
+                    margin:{bottom:"5%"}
+                }}
+            uiText={{value:"a", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+            />
+
+            <UiEntity
+                uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    width: '100%',
+                    height: '70%',
+                }}
+                >
+                <Input
+                    onSubmit={(value) => {
+                        validateColor('a', value.trim())
+                    }}
+                    onChange={(value) => {
+                        validateColor('a', value.trim())
+                    }}
+                    fontSize={sizeFont(20, 15)}
+                    placeholder={'' + (sceneEdit && visibleComponent === COMPONENT_TYPES.TEXT_COMPONENT ? sceneEdit[COMPONENT_TYPES.TEXT_COMPONENT].get(selectedItem.aid).color.a : "")}
+                    placeholderColor={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    color={Color4.White()}
+                />
+        </UiEntity>
+
+            </UiEntity>
+
+            </UiEntity>
+
+                            </UiEntity>
      
         </UiEntity>
     )
@@ -132,28 +454,37 @@ function getTextColor(){
 
 function selectColor(index: number) {
     if(index !== getTextColor()){
-        updateText("color", colors[index])
+        updateText("data","color", colors[index])
     }    
 }
 
 function selectFont(index: number) {
     if(index !== getFontStyle()){
-        updateText("font", index)
+        updateText("data","font", index)
     }    
 }
 
 function selectTextAlign(index: number) {
     if(index !== getTextAlign()){
-        updateText("textAlign", index)
+        updateText("data","textAlign", index)
     }  
 }
 
-function updateText(type:string, value:any){
+function updateText(parameter:string, type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
         {
             component:COMPONENT_TYPES.TEXT_COMPONENT, 
             aid:selectedItem.aid, sceneId:selectedItem.sceneId,
+            type:parameter,
             [type]:value
         }
     )
+}
+
+function validateColor(hue:string, color:string){
+    let value = parseFloat(color)
+    if(isNaN(value) || value < 0){
+        return
+    }
+    updateText("color", "data", {hue:hue, value:value})//
 }

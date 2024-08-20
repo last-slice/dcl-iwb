@@ -25,11 +25,22 @@ import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
 import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { disableSceneEntities } from "../modes/Play";
+import { playAudiusTrack } from "./Sounds";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
 
 export async function createColyseusListeners(room:Room){
+    room.onMessage(SERVER_MESSAGE_TYPES.PLAY_AUDIUS_TRACK, (info:any)=>{
+        console.log(SERVER_MESSAGE_TYPES.PLAY_AUDIUS_TRACK + ' received', info)
+        if(!info){
+            console.log('invalid arguments, do not proceed with scene action')
+            return
+        }
+
+        playAudiusTrack(info)
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, (info:any)=>{
         console.log(SERVER_MESSAGE_TYPES.SCENE_ACTION + ' received', info)
         if(!info && !info.type){
@@ -54,7 +65,7 @@ export async function createColyseusListeners(room:Room){
         switch(info.type){
             case 'live-action':
                 if(!scene || !info.aid || !info.actionId){
-                    console.log('invalid arguments, cannot run live action')//
+                    console.log('invalid arguments, cannot run live action')
                     return
                 }
 
@@ -556,7 +567,7 @@ function setSceneListeners(room:any){
         scene.loaded = false
 
         await addScene(scene)
-        disableSceneEntities(scene.id)
+        // disableSceneEntities(scene.id)
         
         scene.listen("si",(current:any, previous:any)=>{
             scene.si = current

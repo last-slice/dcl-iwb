@@ -35,6 +35,7 @@ import { materialListener } from "./Materials"
 import { gameListener } from "./Game"
 import { refreshMap } from "../ui/Objects/Map"
 import { playlistListener } from "./Playlist"
+import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem"
 
 export let realmActions: any[] = []
 
@@ -319,6 +320,8 @@ export async function checkScenePermissions() {
         // displaySceneAssetInfoPanel(false)
     }
 
+    // console.log('active scene', activeScene)
+
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
         playModeCheckedAssets.length = 0
     } else {
@@ -332,10 +335,11 @@ export async function checkScenePermissions() {
                         //let triggerEvents = getTriggerEvents(entityInfo.entity)
                         //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
                         
-                        enableSceneEntities(activeScene.id)
+                        await enableSceneEntities(activeScene.id)
                     }
-                } else {
-                    enableSceneEntities(activeScene.id)
+                } else {//
+                    console.log('last scene is undefined, enable current active scene')//
+                    await enableSceneEntities(activeScene.id)
                 }
             } else {
                 disableSceneEntities(lastScene)
@@ -353,6 +357,7 @@ export function checkAllScenesLoaded() {
     if (scenesLoadedCount >= sceneCount && !scenesLoaded) {
         scenesLoaded = true
         loadBlankParcels()
+        engine.addSystem(PlayerTrackingSystem)
     }
 }
 

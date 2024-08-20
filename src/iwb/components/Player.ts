@@ -22,6 +22,7 @@ import { setUIClicked } from "../ui/ui";
 import { addScene, pendingSceneLoad } from "./Scene";
 import { showNotification } from "../ui/Objects/NotificationPanel";
 import { displayTutorialVideoButton } from "../ui/Objects/TutorialVideo";
+import { AudioFinishedSystem, createSounds } from "./Sounds";
 
 export let localUserId: string
 export let localPlayer:any
@@ -43,11 +44,12 @@ export function setLocalUserId(userData:any){
 export function setLocalPlayer(player:any){
     localPlayer = player
 
+    createSounds()
     createInputListeners()
     engine.addSystem(BuildModeVisibiltyComponents)
-    engine.addSystem(PlayerTrackingSystem)
     engine.addSystem(FlyModeSystem)
     engine.addSystem(SelectedItemSystem)
+    // engine.addSystem(AudioFinishedSystem)//
 }
 
 export function setPlayerSelectedAsset(player:any, current:any, previous:any){

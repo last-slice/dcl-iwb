@@ -25,6 +25,7 @@ import { showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { getView } from "../ui/uiViews"
 import { buildNFTURN } from "./NftShape"
+import { playImagePlaylist, seekAudiusPlaylist, stopAudiusPlaylist } from "./Playlist"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -286,6 +287,14 @@ export function updateActions(scene:any, info:any, action:any){
                 handlePlayPlaylist(scene, info, action)
                 break;
 
+            case Actions.SEEK_PLAYLIST:
+                handleSeekPlaylist(scene, info, action)
+                break;
+
+            case Actions.STOP_PLAYLIST:
+                handleStopPlaylist(scene, info, action)
+                break;
+
             case Actions.ADVANCED_LEVEL:
                 handleAdvanceLevel(scene, info, action)
                 break;
@@ -304,6 +313,18 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.OPEN_NFT_DIALOG:
                 handleNFTDialogPopup(scene, info, action)
+                break;
+
+            case Actions.VOLUME_UP:
+                handleVolumeUp(scene, info, action)
+                break;
+
+             case Actions.VOLUME_DOWN:
+                handleVolumeDown(scene, info, action)
+                break;
+
+             case Actions.VOLUME_SET:
+                handleVolumeSet(scene, info, action)
                 break;
         }
     })
@@ -1093,7 +1114,7 @@ function handleEndLevel(scene:any, info:any, action:any){
 }
 
 export function handlePlayPlaylist(scene:any, info:any, action:any){
-    console.log('handling playlist', info, action)
+    console.log('handling playlist', info, action)//
     let entityInfo = getEntity(scene, info.aid)
     if(!entityInfo){
         return
@@ -1102,14 +1123,103 @@ export function handlePlayPlaylist(scene:any, info:any, action:any){
     if(!itemInfo){
         return
     }
+    
+    switch(itemInfo.type){
+        case 0:
+            playImagePlaylist(scene, info, action, itemInfo, (action.channel ? action.channel === 0 ? true : false : true), true)
+            break;
 
-    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION,
-        {
-            sceneId:scene.id,
-            type:action.type,
-            playlistAid:info.aid,
-        }
-    )
+        case 1:
+            break;
+
+        case 2:
+            break;
+
+        case 3: //play audius playlist
+            seekAudiusPlaylist(scene, info, action, itemInfo, true)
+            break;
+    }
+    // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION,
+    //     {
+    //         sceneId:scene.id,
+    //         type:action.type,
+    //         playlistAid:info.aid,
+    //         channel:action.channel,
+    //         reset:true
+    //     }
+    // )
+}
+
+export function handleSeekPlaylist(scene:any, info:any, action:any){
+    console.log('handling seeking playlist', info, action)
+    let entityInfo = getEntity(scene, info.aid)
+    if(!entityInfo){
+        return
+    }
+    let itemInfo = scene[COMPONENT_TYPES.PLAYLIST_COMPONENT].get(info.aid)
+    if(!itemInfo){
+        return
+    }
+    
+    switch(itemInfo.type){
+        case 0:
+            break;
+
+        case 1:
+            break;
+
+        case 2:
+            break;
+
+        case 3: //play audius playlist
+            seekAudiusPlaylist(scene, info, action, itemInfo)
+            break;
+    }
+    // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION,
+    //     {
+    //         sceneId:scene.id,
+    //         type:action.type,
+    //         playlistAid:info.aid,
+    //         channel:action.channel,
+    //         reset:true
+    //     }
+    // )
+}
+
+export function handleStopPlaylist(scene:any, info:any, action:any){
+    console.log('handling seeking playlist', info, action)
+    let entityInfo = getEntity(scene, info.aid)
+    if(!entityInfo){
+        return
+    }
+    let itemInfo = scene[COMPONENT_TYPES.PLAYLIST_COMPONENT].get(info.aid)
+    if(!itemInfo){
+        return
+    }
+    
+    switch(itemInfo.type){
+        case 0:
+            break;
+
+        case 1:
+            break;
+
+        case 2:
+            break;
+
+        case 3: //play audius playlist
+            stopAudiusPlaylist(scene, info)
+            break;
+    }
+    // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION,
+    //     {
+    //         sceneId:scene.id,
+    //         type:action.type,
+    //         playlistAid:info.aid,
+    //         channel:action.channel,
+    //         reset:true
+    //     }
+    // )
 }
 
 async function handleAdvanceLevel(scene:any, info:any, action:any){
@@ -1203,4 +1313,97 @@ function handleNFTDialogPopup(scene:any, info:any, action:any){
     }
 
     openNftDialog({urn: buildNFTURN(itemInfo)})
+}
+
+
+function handleVolumeUp(scene:any, info:any, action:any){
+    let volumeSource:any
+    volumeSource = VideoPlayer.getMutableOrNull(info.entity)
+    if(volumeSource){
+        if(volumeSource.volume + action.value > 1){
+            volumeSource.volume = 1
+            return
+        }
+        volumeSource.volume += action.value
+    }
+
+    volumeSource = AudioSource.getMutableOrNull(info.entity)
+    if(volumeSource){
+        if(volumeSource.volume + action.value > 1){
+            volumeSource.volume = 1
+            return
+        }
+        volumeSource.volume += action.value
+    }
+
+    volumeSource = AudioStream.getMutableOrNull(info.entity)
+    if(volumeSource){
+        if(volumeSource.volume + action.value > 1){
+            volumeSource.volume = 1
+            return
+        }
+        volumeSource.volume += action.value
+    }
+}
+
+function handleVolumeDown(scene:any, info:any, action:any){
+    let volumeSource:any
+    volumeSource = VideoPlayer.getMutableOrNull(info.entity)
+    console.log('volume VideoPlayer is', volumeSource)
+    if(volumeSource){
+        if(volumeSource.volume - action.value < 0){
+            volumeSource.volume = 0
+            return
+        }
+        volumeSource.volume -= action.value
+    }
+
+    volumeSource = AudioSource.getMutableOrNull(info.entity)
+    console.log('volume AudioSource is', volumeSource)
+    if(volumeSource){
+        if(volumeSource.volume - action.value < 0){
+            volumeSource.volume = 0
+            return
+        }
+        volumeSource.volume -= action.value
+    }
+
+    volumeSource = AudioStream.getMutableOrNull(info.entity)
+    console.log('volume AudioStream is', volumeSource)
+    if(volumeSource){
+        console.log('found volume source for audios tream')
+        if(volumeSource.volume - action.value < 0){
+            console.log('volume would be less than 0')
+            volumeSource.volume = 0
+            return
+        }
+        volumeSource.volume -= action.value
+    }
+}
+
+function handleVolumeSet(scene:any, info:any, action:any){
+    let volumeSource:any
+    volumeSource = VideoPlayer.getMutableOrNull(info.entity)
+    if(volumeSource){
+        if(action.value >= 0 && action.value <=1){
+            volumeSource.volume = action.value
+            return
+        }
+    }
+
+    volumeSource = AudioSource.getMutableOrNull(info.entity)
+    if(volumeSource){
+        if(action.value >= 0 && action.value <=1){
+            volumeSource.volume = action.value
+            return
+        }
+    }
+
+    volumeSource = AudioStream.getMutableOrNull(info.entity)
+    if(volumeSource){
+        if(action.value >= 0 && action.value <=1){
+            volumeSource.volume = action.value
+            return
+        }
+    }
 }

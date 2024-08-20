@@ -13,6 +13,7 @@ import { colyseusRoom } from '../../components/Colyseus'
 import { island } from '../../components/Config'
 import { addStreamEntity, MusicView, streamEntity, updateMusicView } from './IWBViews/MusicView'
 import { engine } from '@dcl/sdk/ecs'
+import { displayCatalogPanel } from './CatalogPanel'
 
 let show = false
 
@@ -24,6 +25,7 @@ let buttons:any[] = [
     },
     {label:"Catalog", pressed:false, func:()=>{
         displayMainView(false)
+        displayCatalogPanel(false)
         displayStoreView(true)
         }
     },

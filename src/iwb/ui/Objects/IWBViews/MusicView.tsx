@@ -6,23 +6,23 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { uiSizes } from '../../uiConfig'
 import { setUIClicked } from '../../ui'
 import { formatDollarAmount, formatSecondsToString, getRandomIntInclusive, paginateArray } from '../../../helpers/functions'
-import { playSound } from '../../../components/Sounds'
+import { playSound, searchAudius } from '../../../components/Sounds'
 import { SOUND_TYPES } from '../../../helpers/types'
 import { AudioStream, engine, Entity } from '@dcl/sdk/ecs'
 import { openExternalUrl } from '~system/RestrictedActions'
 import { visibleItems } from '../SceneInfoPanel'
 
-let APP_NAME = 'iwb-audius-player'
+export let APP_NAME = 'iwb-audius-player'
 
 export let streamEntity:Entity
 
 let nextPlaylistView = "main"
 let selectedCategory:string = ""
 let searchFilter:string = ""
-let server:string = ""
+export let server:string = ""
 let prevArtist:string = ""
 
-let init:boolean = false
+export let initAudiusServers:boolean = false
 let loading:boolean = false
 let shuffle:boolean = false
 let repeat:boolean = false
@@ -70,9 +70,13 @@ export function addStreamEntity(){
   streamEntity = engine.addEntity()
 }
 
+export function updateAudiusInit(value:boolean){
+  initAudiusServers = value
+}
+
 export async function updateMusicView(){
-    if(!init){
-        init = true
+    if(!initAudiusServers){
+      initAudiusServers = true
         await getServers()
     }
     chooseServer()
@@ -81,12 +85,12 @@ export async function updateMusicView(){
     searchList.length = 0
 }
 
-async function getServers(){
+export async function getServers(){
     try{    
         let res = await fetch("https://api.audius.co/")
         let json = await res.json()
 
-      console.log('init player json is', json)
+      // console.log('init player json is', json)
       if(json.data){
         servers = json.data
       }
@@ -96,7 +100,7 @@ async function getServers(){
       }
 }
 
-function chooseServer(){
+export function chooseServer(){
     server = servers[getRandomIntInclusive(0, servers.length -1)]
 }
 
@@ -1015,11 +1019,10 @@ async function attemptSearch(){
     searchList.length = 0
     nextPlaylist.length = 0
     visiblePage = 1
-    let search = await fetch(server + "/" + resources.audius.endpoints.search + searchFilter)
-    let jsonSearch = await search.json()
-    console.log('search was ', jsonSearch)
-    if(jsonSearch.data && jsonSearch.data.length > 0){
-      searchList = jsonSearch.data
+    let audiusSearch = await searchAudius(searchFilter)
+
+    if(audiusSearch.length > 0){
+      searchList = audiusSearch
       // visibleItems = paginateArray([...searchList], visiblePage, 3)
 
       selectedMood = "Search"
@@ -1028,7 +1031,7 @@ async function attemptSearch(){
       nextPlaylist.length = 0
       nextPlaylistIndex = 0
 
-      await createNextPlaylist(jsonSearch.data)
+      await createNextPlaylist(audiusSearch)
       await getPlaylistTracks(nextPlaylist[nextPlaylistIndex].playlist.id)
       console.log('mood list is', nextPlaylist)
     }
@@ -1969,7 +1972,7 @@ function retry(func:any){
     }
 }
 
-function getArtWork(item:any){
+export function getArtWork(item:any){
   if(item.artwork['150x150']){
     return item.artwork['150x150']
   }else if(item.artwork['480x480']){

@@ -659,7 +659,7 @@ function getAssetName(){
     if(scene){
         let itemInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(selectedItem.aid)
         if(itemInfo){
-            return itemInfo.value.length > 20 ? itemInfo.value.substring(0,20) + "..." : itemInfo.value
+            return itemInfo.value //.length > 20 ? itemInfo.value.substring(0,20) + "..." : itemInfo.value
         }
         return ""
     }
@@ -893,6 +893,7 @@ function EditObjectData(){
                         uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
                     }}
                     uiText={{
+                        textWrap:'nowrap',
                         value: "Add Component",
                         fontSize: sizeFont(25, 15),
                         color: Color4.White(),

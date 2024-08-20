@@ -1,5 +1,7 @@
 import { NOTIFICATION_TYPES, SceneItem, SERVER_MESSAGE_TYPES } from "../helpers/types";
-import { initCatalog, selectedSetting, updateSearchFilter } from "../ui/Objects/CatalogPanel";
+import { filterCatalog, initCatalog, itemsToShow, selectedSetting, updateSearchFilter } from "../ui/Objects/CatalogPanel";
+import { updateMainView } from "../ui/Objects/IWBView";
+import { updateInfoView } from "../ui/Objects/IWBViews/InfoView";
 import { showNotification } from "../ui/Objects/NotificationPanel";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
@@ -53,18 +55,29 @@ export function setRealmAssets(assets:any){
     }
 }
 
-export function confirmDeleteAsset(item:any, ugc?:boolean){
-    if(settings.confirms){
-        console.log('confirm delete asset')
-        displaySkinnyVerticalPanel(true, getView("Delete_Realm_Asset"), item.n, ()=>{
-            deleteRealmAsset(item, ugc)
-        })
-    }else{
-        deleteRealmAsset(item, ugc)
+export function confirmDeleteAsset(item:any, index?:number){
+    let localItem = items.get(item.id)
+    if(localItem){
+        if(settings.confirms){
+            console.log('confirm delete asset')
+            displaySkinnyVerticalPanel(true, getView("Delete_Realm_Asset"), item.n, ()=>{
+                deleteRealmAsset(item, localItem.ugc, index)
+            }, ()=>{
+                displaySkinnyVerticalPanel(false)
+                if(localItem.ugc){
+                    displayMainView(true)
+                    updateMainView("Info")
+                    updateInfoView("Assets")
+                }
+                
+            })
+        }else{
+            deleteRealmAsset(item, localItem.ugc, index)
+        }
     }
 }
 
-export function deleteRealmAsset(item:any, ugc?:boolean){
+export function deleteRealmAsset(item:any, ugc?:boolean, index?:number){
     console.log('delete realm asset', item)
     sendServerMessage(ugc ? SERVER_MESSAGE_TYPES.DELETE_UGC_ASSET : SERVER_MESSAGE_TYPES.DELETE_WORLD_ASSETS, [item.id])
     showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Item removed! Initiate a deployment to remove them from your world.", animate:{enabled:true, return:true, time:7}})
@@ -72,14 +85,16 @@ export function deleteRealmAsset(item:any, ugc?:boolean){
 
     items.delete(item.id)
     refreshSortedItems()
-    initCatalog(sortedAll)
+    filterCatalog()
+   
+    // initCatalog(sortedAll)
 }
 
 export function refreshSortedItems() {
     original = [...items.values()].filter((it:any)=> !it.ugc)
     playerItemsOriginal = [...items.values()].filter((it:any)=> it.ugc)
 
-    console.log('player items are ', playerItemsOriginal)
+    // console.log('player items are ', playerItemsOriginal)
 
     sortedAll = sortByType(selectedSetting === 0 ? original : playerItemsOriginal)
     Sorted3D = sortByType(selectedSetting === 0 ? original : playerItemsOriginal, "3D")
@@ -108,6 +123,10 @@ export function updateItem(id: string, update: SceneItem) {
 }
 
 function sortByType(items: SceneItem[], type?: string) {
+    console.log('type is', type)
+    console.log('items are ',items)
+
+    console.log(items.filter(($:any) => !$.n))
     if(type){
         if(type === "New"){
             return items.filter((item:any)=> item.time && item. time >= (Date.now() / 1000) - (5 * 24 * 60 * 60))
@@ -116,7 +135,7 @@ function sortByType(items: SceneItem[], type?: string) {
             return items.filter((item: any) => item.ty === type).sort((a, b) => a.n.localeCompare(b.n))
         }
     }else{
-        return items.sort((a, b) => a.n.localeCompare(b.n))
+        return items.filter($=> $.n).sort((a, b) => a.n.localeCompare(b.n))
     }
 }
 
@@ -134,4 +153,8 @@ export function setNewItems() {
 export function resetCatalog(){
     updateSearchFilter("")
     initCatalog(sortedAll)
+}
+
+function displayMainView(arg0: boolean) {
+    throw new Error("Function not implemented.");
 }

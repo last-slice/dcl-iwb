@@ -22,16 +22,16 @@ export function materialListener(scene:any){
             return
         }
 
-        material.albedoColor && material.albedoColor.listen("r", (c:any, p:any)=>{
+        material.type === 0 && material.albedoColor && material.albedoColor.listen("r", (c:any, p:any)=>{
             checkMaterialComponent(scene, info)
         })
-        material.albedoColor && material.albedoColor.listen("g", (c:any, p:any)=>{
+        material.type === 0 &&  material.type === 0 && material.albedoColor && material.albedoColor.listen("g", (c:any, p:any)=>{
             checkMaterialComponent(scene, info)
         })
-        material.albedoColor && material.albedoColor.listen("b", (c:any, p:any)=>{
+        material.type === 0 &&  material.albedoColor && material.albedoColor.listen("b", (c:any, p:any)=>{
             checkMaterialComponent(scene, info)
         })
-        material.albedoColor && material.albedoColor.listen("a", (c:any, p:any)=>{
+        material.type === 0 && material.albedoColor && material.albedoColor.listen("a", (c:any, p:any)=>{
             checkMaterialComponent(scene, info)
         })
 
@@ -40,19 +40,24 @@ export function materialListener(scene:any){
             checkMaterialComponent(scene, info)
         })
 
-       material.listen("emissveTexture", (c:any, p:any)=>{
+        material.type === 0 && material.listen("emissveTexture", (c:any, p:any)=>{
             console.log('emissveTexture changed', p, c)
             checkMaterialComponent(scene, info)
         })
 
-        material.listen("emissiveIntensity", (c:any, p:any)=>{
+        material.type === 0 && material.listen("emissiveIntensity", (c:any, p:any)=>{
             console.log('emissiveIntensity changed', p, c)
+            checkMaterialComponent(scene, info)
+        })
+
+        material.type === 1 && material.listen("shadows", (c:any, p:any)=>{
+            console.log('shadows changed', p, c)
             checkMaterialComponent(scene, info)
         })
     })
 }
 
-export async function updateMaterial(scene:any, material:any, entityInfo:any){
+export async function updateMaterial(scene:any, material:any, entityInfo:any, fromPlaylist?:boolean){
     switch(material.type){
         case 0:
             switch(material.textureType){
@@ -76,16 +81,13 @@ export async function updateMaterial(scene:any, material:any, entityInfo:any){
 
                 case 'TEXTURE':
                     Material.setPbrMaterial(entityInfo.entity, {//
-                        texture: material.textureType === "TEXTURE" ?
-                        Material.Texture.Common({
+                        texture: Material.Texture.Common({
                             src: material.texture ? material.texture : ""
-                        })
-                        : undefined
-                        ,
+                        }),
                 
                         emissiveTexture: material.emissiveType !== "NONE" ?
                         Material.Texture.Common({
-                            src: material.emissiveTexture ? material.emissiveTexture : ""
+                            src: material.emissiveTexture ? material.emissiveTexture : "",
                         })
                         : undefined,
                 
@@ -103,8 +105,35 @@ export async function updateMaterial(scene:any, material:any, entityInfo:any){
                     })
                     break;
 
-                    case 'COLOR':
+                case 'COLOR':
+                    Material.setPbrMaterial(entityInfo.entity, {
+                        emissiveColor: material.emissiveType !== "NONE" ? 
+                        Color4.create(material.emissiveColor.r, material.emissiveColor.g, material.emissiveColor.b, material.emissiveColor.a)
+                        : undefined,
+                
+                        emissiveIntensity: material.emissiveType !== "NONE" ? 
+                        material.emissiveIntensity
+                        : undefined,
+                
+                        albedoColor: material.albedoColor ? 
+                        Color4.create(material.albedoColor.r, material.albedoColor.g, material.albedoColor.b, material.albedoColor.a)
+                        : undefined
+                    })
+                    break;   
+
+                case 'PLAYLIST':
+                    if(fromPlaylist){
                         Material.setPbrMaterial(entityInfo.entity, {
+                            texture: Material.Texture.Common({
+                                src: material.texture ? material.texture : ""
+                            }),
+                    
+                            emissiveTexture: material.emissiveType !== "NONE" ?
+                            Material.Texture.Common({
+                                src: material.texture
+                            })
+                            : undefined,
+                    
                             emissiveColor: material.emissiveType !== "NONE" ? 
                             Color4.create(material.emissiveColor.r, material.emissiveColor.g, material.emissiveColor.b, material.emissiveColor.a)
                             : undefined,
@@ -117,13 +146,45 @@ export async function updateMaterial(scene:any, material:any, entityInfo:any){
                             Color4.create(material.albedoColor.r, material.albedoColor.g, material.albedoColor.b, material.albedoColor.a)
                             : undefined
                         })
-                        break;
-
-                
+                    }
+                    
+                    break;
             }
             break;
 
         case 1:
+            switch(material.textureType){
+                case 'NONE':
+                    Material.deleteFrom(entityInfo.entity)
+                    break;
+
+                case 'TEXTURE':
+                    Material.setBasicMaterial(entityInfo.entity, {
+                        texture: Material.Texture.Common({
+                            src: material.texture ? material.texture : ""
+                        }),
+            
+                        alphaTest: material.alphaTest ? material.alphaTest : undefined,
+                        castShadows: material.hasOwnProperty("shadows") ? material.shadows : undefined,
+                    })
+
+                    console.log('material is', Material.get(entityInfo.entity))
+
+                    break;
+            }
             break;
+    }
+}
+
+export function updateAssetMaterialForPlaylist(scene:any, aid:string, texture:string){
+    let material = scene[COMPONENT_TYPES.MATERIAL_COMPONENT].get(aid)
+    if(material){
+        let entityInfo = getEntity(scene, aid)
+        if(!entityInfo){
+            return
+        }
+
+        material.texture = texture + "?t=" + Math.floor(Date.now()/1000)
+        updateMaterial(scene, material, entityInfo, true)
     }
 }

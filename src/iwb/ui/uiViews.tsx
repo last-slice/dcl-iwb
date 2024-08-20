@@ -298,10 +298,7 @@ export let uiViews:any[] = [
                 {
                     label:"Cancel",
                     func:()=>{
-                        displaySkinnyVerticalPanel(false)
-                        displayMainView(true)
-                        updateMainView("Info")
-                        updateInfoView("Assets")
+                        customFunction2()
                     }
                 }
             ]

@@ -48,32 +48,39 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
           break;
       }
     })
+    setTriggerArea(scene, entityInfo.aid, hasEnter, hasLeave, Triggers.ON_ENTER, Triggers.ON_LEAVE)
+  }
+}
 
-    if(hasEnter || hasLeave){
-      let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
-      if(transform){
-        console.log('trigger area scale', transform)
-        itemInfo.trigger = utils.triggers.addTrigger(entityInfo.entity, NO_LAYERS, LAYER_1,
-          [{type:'box',
-            // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
-            scale: itemInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
-          }],
-          ()=>{
-            if(hasEnter){
-              const triggerEvents = getTriggerEvents(entityInfo.entity)
-              triggerEvents.emit(Triggers.ON_ENTER, {input:0, pointer:0, entity:entityInfo.entity})
-            }
-          },
-          ()=>{
-            if(hasLeave){
-              const triggerEvents = getTriggerEvents(entityInfo.entity)
-              triggerEvents.emit(Triggers.ON_LEAVE, {input:0, pointer:0, entity:entityInfo.entity})
-            }
-          },
-          Color3.create(236/255,209/255,92/255)
-        )
-      }
-    }
+function setTriggerArea(scene:any, aid:any, hasEnter:any, hasLeave:any, enterTrigger?:Triggers, leaveTrigger?:Triggers){
+  let itemInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(aid)
+  if(!itemInfo || (!hasEnter && !hasLeave)){
+    return
+  }
+
+  let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(itemInfo.aid)
+  if(transform){
+    console.log('trigger area scale', transform)
+
+    itemInfo.trigger = utils.triggers.addTrigger(itemInfo.entity, NO_LAYERS, LAYER_1,
+      [{type:'box',
+        // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
+        scale: itemInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+      }],
+      ()=>{
+        if(hasEnter){
+          const triggerEvents = getTriggerEvents(itemInfo.entity)
+          triggerEvents.emit(enterTrigger, {input:0, pointer:0, entity:itemInfo.entity})
+        }
+      },
+      ()=>{
+        if(hasLeave){
+          const triggerEvents = getTriggerEvents(itemInfo.entity)
+          triggerEvents.emit(leaveTrigger, {input:0, pointer:0, entity:itemInfo.entity})
+        }
+      },
+      Color3.create(236/255,209/255,92/255)
+    )
   }
 }
 
@@ -104,11 +111,6 @@ export function getTriggerEvents(entity: Entity) {
 
 export function triggerListener(scene:any){
   scene[COMPONENT_TYPES.TRIGGER_COMPONENT].onAdd((assetTrigger:any, aid:any)=>{
-    // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
-    // if(!iwbInfo.components.includes(COMPONENT_TYPES.TRIGGER_COMPONENT)){
-    //   iwbInfo.components.push(COMPONENT_TYPES.TRIGGER_COMPONENT)
-    // }
-
     let info = getEntity(scene, aid)
     if(!info){
         return
@@ -119,6 +121,10 @@ export function triggerListener(scene:any){
       trigger.listen("tick", (c:any, p:any)=>{
           console.log('trigger is', trigger, info.entity)
           updateTriggerEvents(scene, info, trigger)
+
+          if(trigger.type === Triggers.ON_PICKUP){
+            setTriggerArea(scene, info.aid, true, false, Triggers.ON_PICKUP)
+          }
       })
     })
   })
@@ -188,7 +194,7 @@ async function evaluateDecision(decisionItem:any){
                 // actionQueue.push({aid:aid, action:action, entity:entity, decisionId:decision.id, sceneId:scene.id})
                 // decisionActions.push({aid:aid, action:action, entity:entity})
 
-                // const { entity, action, aid, decisionId } = actionQueue.shift()!
+                // const { entity, action, aid, decisionId } = actionQueue.shift()!//
                 const actionEvents = getActionEvents(entity)
                 switch(action.channel){
                   case 0:
@@ -199,11 +205,12 @@ async function evaluateDecision(decisionItem:any){
                   case 1:
                     console.log('running global channel action')
                     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {
-                      type:'live-action',
+                      type:action.type,
                       aid:aid,
                       sceneId:sceneId,
-                      actionId:action.id,
-                      forceScene:true
+                      actionId:action.id,//
+                      forceScene:true,
+                      action:action
                     })
                     break;
 

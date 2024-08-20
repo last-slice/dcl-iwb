@@ -103,10 +103,10 @@ export function createLiveUI() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlack)).width,
+                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
                 height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
                 positionType:'absolute',
-                position:{left:'1%', top:"30%"}
+                position:{right:'1%', bottom:"1%"}
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -115,7 +115,7 @@ export function createLiveUI() {
                 },
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
-            uiText={{textWrap:'nowrap', value: "Live Panel", fontSize: sizeFont(20, 16)}}
+            uiText={{textWrap:'nowrap', value: "Live", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
                 setUIClicked(true)
                 showLivePanel = !showLivePanel
@@ -141,10 +141,10 @@ function LiveControlPanel(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                width: calculateImageDimensions(20, 345 / 511).width,
-                height: calculateImageDimensions(15, 345 / 511).height,
+                width: calculateImageDimensions(25, 345 / 511).width,
+                height: calculateImageDimensions(20, 345 / 511).height,
                 positionType: 'absolute',
-                position: {right: '2%', bottom: '1%'},
+                position: {right: '0%', bottom: '4%'},
             }}
             uiBackground={{
                 textureMode: 'stretch',
@@ -640,7 +640,7 @@ function getSceneActions(){
         return [] 
     }
     let actions = getActions(scene)
-    return actions.map(($:any)=> $.name)
+    return actions.map(($:any)=> $.name).sort((a,b) => a.localeCompare(b))
 }
 
 function getActions(scene:any){
@@ -650,7 +650,7 @@ function getActions(scene:any){
             actions.push({id:action.id, aid:aid, name:action.name})
         })
     })
-    return actions
+    return actions.sort((a,b)=> a.name.localeCompare(b.name))
 }
 
 function attemptAction(){

@@ -1225,7 +1225,7 @@ export let worldAssetsTableConfig:any = {
         onClick:(item:any)=>{
             playSound(SOUND_TYPES.SELECT_3)
             displayMainView(false)
-            confirmDeleteAsset(item, true)
+            confirmDeleteAsset(item)
         }
     },
     ]

@@ -26,11 +26,12 @@ import { setUIClicked } from "../ui/ui"
 import { localPlayer } from "../components/Player"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { disableLivePanel, setLivePanel } from "../components/Live"
-import { removedEntities } from "../components/Scene"
+import { lastScene, removedEntities } from "../components/Scene"
 import { removeItem } from "./Build"
 import { getActionEvents, handleUnlockPlayer, updateActions } from "../components/Actions"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
+import { disablePlaylistForPlayMode, stopAllPlaylists } from "../components/Playlist"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
@@ -44,6 +45,7 @@ export function updatePlayModeReset(value: boolean) {
 }
 
 export async function disableSceneEntities(sceneId:any) {
+    // console.log('disabling scene entities', lastScene, localPlayer.activeScene)
     // if (!disabledEntities) {
         // console.log('disabling entities')
         // stopAllIntervals()
@@ -55,6 +57,7 @@ export async function disableSceneEntities(sceneId:any) {
             displaySkinnyVerticalPanel(false)
             stopAllTimeouts()
             stopAllIntervals()
+            stopAllPlaylists(sceneId)
             resetDialog()
             showDialogPanel(false)
             handleUnlockPlayer(null, null, null)
@@ -113,11 +116,12 @@ export async function disableSceneEntities(sceneId:any) {
 
         // disableDelayedActionTimers()
         // disablePlayUI()
-        // disabledEntities = true
+        // disabledEntities = true//
     // }
 }
 
 export async function enableSceneEntities(sceneId: string) {
+    // console.log('enabling scene entities', lastScene, localPlayer.activeScene)
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(scene && !scene.checkEnabled){
         console.log('enable scene entities', sceneId)
@@ -220,7 +224,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableLivePanel(scene, entityInfo)
         resetTween(scene, entityInfo)
         setAnimationBuildMode(scene, entityInfo)
-
+        disablePlaylistForPlayMode(scene, entityInfo)
         //to do
         // - reset states
         // - reset tweens

@@ -9,7 +9,9 @@ import { items } from "./Catalog"
 import { AudioLoadedComponent } from "../helpers/Components"
 import { updateTransform } from "./Transform"
 import { sceneEdit, selectedItem } from "../modes/Build"
-import { localUserId } from "./Player"
+import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
+import { colyseusRoom } from "./Colyseus"
+import { localPlayer } from "./Player"
 
 export function checkAudioSourceComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
@@ -42,24 +44,25 @@ export function checkAudioStreamComponent(scene:any, entityInfo:any){
 }
 
 export function setAudioBuildMode(scene:any, entityInfo:any) {
+    let audio:any
+
     let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         console.log('setting audio for build mode')
         MeshRenderer.setBox(entityInfo.entity)
         MeshCollider.setBox(entityInfo.entity, ColliderLayer.CL_POINTER)
 
-        let audio = AudioSource.getMutableOrNull(entityInfo.entity)
-
         let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(entityInfo.aid)
         if(name){
             TextShape.createOrReplace(entityInfo.entity, {text: "" + name.value, fontSize: 3})
         }
 
-        if(audio){
-            audio.playing = false
-        }
-
         updateTransform(scene, entityInfo.aid, scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid))
+    }
+
+    audio = AudioSource.getMutableOrNull(entityInfo.entity)
+    if(audio){
+        audio.playing = false
     }
 
     let audioStreamInfo = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
@@ -67,7 +70,7 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
         MeshRenderer.setBox(entityInfo.entity)
         MeshCollider.setBox(entityInfo.entity, ColliderLayer.CL_POINTER)
 
-        let audio = AudioStream.getMutableOrNull(entityInfo.entity)
+        
 
         Material.setPbrMaterial(entityInfo.entity, {
             albedoColor: Color4.create(0, 0, 1, .5)
@@ -78,11 +81,12 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
             TextShape.createOrReplace(entityInfo.entity, {text: "" + name.value, fontSize: 3})
         }
 
-        if(audio){
-            audio.playing = false
-        }
-
         updateTransform(scene, entityInfo.aid, scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid))
+    }
+
+    audio = AudioStream.getMutableOrNull(entityInfo.entity)
+    if(audio){
+        audio.playing = false
     }
 }
 
@@ -142,7 +146,6 @@ export function disableAudioPlayMode(scene:any, entityInfo:any){
         }
     // }
 
-    let audioStream = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
     // if(audioStream){
         audio = AudioStream.getMutableOrNull(entityInfo.entity)
         if(audio){
@@ -304,6 +307,7 @@ let timeout:any
 
 export async function createSounds(){
     catalogSoundEntity = engine.addEntity()
+    console.log('catalog entity is', catalogSoundEntity)//
     AudioSource.create(catalogSoundEntity)
     AudioStream.create(catalogSoundEntity)
     // AvatarAttach.create(catalogSoundEntity,
@@ -313,41 +317,41 @@ export async function createSounds(){
     // )
     Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
 
-    let catalog = [...items.values()].filter((it:any)=> !it.ugc)
+    // let catalog = [...items.values()].filter((it:any)=> !it.ugc)
 
-    resources.audioClips.forEach((clip)=>{
-        audioClips.set(clip.key, catalog.find((item:any)=> item.n === clip.name))
-    })
+    // resources.audioClips.forEach((clip)=>{
+    //     audioClips.set(clip.key, catalog.find((item:any)=> item.n === clip.name))
+    // })
 
-    resources.audioClips.forEach((sound)=>{
-        const sEntity = engine.addEntity()
-        let data:any = {
-            vol: sound.volume ? sound.volume : 1,
-            loop:sound.loop,
-            sound:sEntity
-        }
+    // resources.audioClips.forEach((sound)=>{
+    //     const sEntity = engine.addEntity()
+    //     let data:any = {
+    //         vol: sound.volume ? sound.volume : 1,
+    //         loop:sound.loop,
+    //         sound:sEntity
+    //     }
 
-        AudioSource.create(sEntity, {
-            audioClipUrl: "assets/" + catalog.find((item:any)=> item.ty === "Audio" && item.n === sound.name)?.id + ".mp3",
-            loop: sound.loop,
-            playing: false
-        })
+    //     AudioSource.create(sEntity, {
+    //         audioClipUrl: "assets/" + catalog.find((item:any)=> item.ty === "Audio" && item.n === sound.name)?.id + ".mp3",
+    //         loop: sound.loop,
+    //         playing: false
+    //     })
 
-        if(sound.attach){
-            Transform.create(sEntity, {
-                parent: engine.PlayerEntity
-            })
-        }else{
-            // if(sound.pos){
-            //     angzaarLog("adding position to sound")//
-            //     Transform.create(sEntity, {
-            //         position: sound.pos,    
-            //     })
-            //     MeshRenderer.setBox(sEntity)
-            // }
-        }
-        sounds.set(sound.key, data)
-    })
+    //     if(sound.attach){
+    //         Transform.create(sEntity, {
+    //             parent: engine.PlayerEntity
+    //         })
+    //     }else{
+    //         // if(sound.pos){
+    //         //     angzaarLog("adding position to sound")//
+    //         //     Transform.create(sEntity, {
+    //         //         position: sound.pos,    
+    //         //     })
+    //         //     MeshRenderer.setBox(sEntity)
+    //         // }
+    //     }
+    //     sounds.set(sound.key, data)
+    // })
     createPlaylists()
 }
 
@@ -541,9 +545,70 @@ export function stopAudioFile(catalogId?:string){
             // audio.playing = false
         }else{
             audio = AudioStream.getMutable(catalogSoundEntity)
-            // audio.playing = false
+            // audio.playing = false//
         }
         audio.playing = false
     }
     // AudioStream.getMutable(catalogSoundEntity).playing = false
+}
+
+export function AudioFinishedSystem(dt:number){
+    for (const [entity] of engine.getEntitiesWith(AudioSource)) {
+        let audio = AudioSource.getMutableOrNull(entity)
+        if(audio){
+            console.log('audio playing', audio.playing, entity)
+        }
+        
+    }
+}
+
+export async function searchAudius(filter:string){
+    if(!initAudiusServers){
+        updateAudiusInit(true)
+        await getServers()
+    }
+    chooseServer()
+
+    let search = await fetch(server + "/" + resources.audius.endpoints.search + filter)
+    let jsonSearch = await search.json()
+    console.log('search was ', jsonSearch)
+    if(jsonSearch.data && jsonSearch.data.length > 0){
+        return jsonSearch.data
+    }else{
+        return []
+    }
+}
+
+export async function playAudiusTrack(info:any){
+    let scene = colyseusRoom.state.scenes.get(info.sceneId)
+    if(!scene || localPlayer.activeScene.id !== scene.id){
+        console.log('invalid scene, will not play audius track')
+        return
+    }
+
+    let entityInfo = getEntity(scene, info.playlistAid)
+    if(!entityInfo){
+        console.log('error with entity info, will not play audius track')
+        return
+    }
+
+    let audio = AudioStream.getMutableOrNull(entityInfo.entity)
+    if(audio){
+        audio.playing = false
+    }
+
+    if(!initAudiusServers){
+        updateAudiusInit(true)
+        await getServers()
+    }
+    chooseServer()
+
+
+    AudioStream.createOrReplace(info.entity,
+        {
+            url:server + "/" + resources.audius.endpoints.stream + "/" + info.track + "/stream?app_name=" + APP_NAME + "&t=" +Math.floor(Date.now()/1000),
+            playing:true,
+            volume:1
+        }
+    )
 }

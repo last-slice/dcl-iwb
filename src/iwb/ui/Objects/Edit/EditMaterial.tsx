@@ -1,14 +1,16 @@
 
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
-import { sizeFont } from '../../helpers'
+import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
 import resources from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import {  visibleComponent } from '../EditAssetPanel'
 import { localPlayer } from '../../../components/Player'
 import { setUIClicked } from '../../ui'
+import { uiSizes } from '../../uiConfig'
+import { utils } from '../../../helpers/libraries'
 
 let typeIndex = 0
 let textureIndex = 0
@@ -20,6 +22,7 @@ export let materialView = "main"
 
 export let type:any[] = [
     "PBR",
+    "BASIC"
 ]
 
 let textureTypes:any[] = [//
@@ -38,7 +41,14 @@ let materialOptions:any[] = [
     "Intensity"
 ]
 
-export function updateMaterialComponent(){
+let basicMaterialOptions:any[] = [
+    "Texture",
+    "Alpha Test",
+    "Cast Shadows",
+    "Diffuse Color"
+]
+
+export function updateMaterialComponent(refresh?:boolean){
     let scene = localPlayer.activeScene
     if(!scene){
         return
@@ -61,8 +71,14 @@ export function updateMaterialComponent(){
     playlistIndex = textureIndex === 0 ? 0 : materialInfo.playlist ? playlists.findIndex($=> $.aid === materialInfo.playlist) : 0
 
     material = {...materialInfo}
+    if(!material.hasOwnProperty("shadows")){
+        material.shadows = false
+    }
 
-    materialView = "main"
+    if(!refresh){
+        materialView = "main"
+    }
+   
 }
 
 export function EditMaterial() {
@@ -129,18 +145,32 @@ export function EditMaterial() {
 
         </UiEntity>
 
-            {/* main panel */}
+            {/* main pbr panel */}
             <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 width: '100%',
                 height: '100%',
-                display: materialView === "main" ? "flex" : "none",
+                display: materialView === "main" && typeIndex === 0 ? "flex" : "none",
                 margin:{top:"1%"}
             }}
         >
-            {materialView === "main" && generateMainViews()}
+            {materialView === "main" && typeIndex === 0 && generateMainViews()}
+            </UiEntity>
+
+            {/* main basic panel */}
+                        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+                display: materialView === "main" && typeIndex === 1 ? "flex" : "none",
+                margin:{top:"1%"}
+            }}
+        >
+            {materialView === "main" && typeIndex === 1 && generateMainBasicViews()}
             </UiEntity>
 
             {/* albedo panel */}
@@ -394,7 +424,86 @@ export function EditMaterial() {
 
             </UiEntity>
 
+                            </UiEntity>
             </UiEntity>
+
+            {/* cast shadows panel */}
+             {/* texture panel */}
+             <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+                display: materialView === "Cast Shadows" ? "flex" : "none",
+                margin:{top:"2%"}
+            }}
+        >
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"5%"}
+            }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+            }}
+        uiText={{textWrap:'nowrap',value:"Cast Shadows", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '85%',
+                height: '100%',
+            }}
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: material && material.shadows ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            update("shadows", !material.shadows)
+            utils.timers.setTimeout(()=>{
+                updateMaterialComponent(true)
+            }, 200)
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        />
+
+
+        </UiEntity>
+
+
+        </UiEntity>
             </UiEntity>
 
          {/* texture panel */}
@@ -419,7 +528,7 @@ export function EditMaterial() {
                 width: '100%',
                 height: '10%',
                 margin:{top:'1%'},
-                display:typeIndex === 0 ? 'flex' : 'none'
+                // display:typeIndex === 0 ? 'flex' : 'none'
             }}
             >
 
@@ -469,7 +578,7 @@ export function EditMaterial() {
                 width: '100%',
                 height: '20%',
                 margin:{top:'1%'},
-                display:textureIndex === 1 || textureIndex === 2 ? 'flex' : 'none'//
+                display:textureIndex === 1 || textureIndex === 2 ? 'flex' : 'none'
             }}
             >
 
@@ -889,6 +998,16 @@ function generateMainViews(){
     return arr
 }
 
+function generateMainBasicViews(){
+    let arr:any[] = []
+    let count = 0
+    basicMaterialOptions.forEach((item:any, i:number)=>{
+        arr.push(<MainView item={item} count={count} />)
+        count++
+    })
+    return arr
+}
+
 function MainView(data:any){
     return(
         <UiEntity
@@ -918,7 +1037,7 @@ function MainView(data:any){
                 materialView = data.item
             }}
             onMouseUp={()=>{
-                setUIClicked(false)//
+                setUIClicked(false)
             }}
         />
     </UiEntity>

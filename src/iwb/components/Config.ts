@@ -25,6 +25,7 @@ import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./Game"
 import { handleUnlockPlayer } from "./Actions"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
+import { stopAllPlaylists } from "./Playlist"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -194,6 +195,7 @@ export async function setPlayerMode(mode:SCENE_MODES){
         displaySkinnyVerticalPanel(false)
         await killAllGameplay()
         handleUnlockPlayer(null, null, null)
+        stopAllPlaylists(localPlayer.activeScene.id)
     }else if(playerMode === SCENE_MODES.PLAYMODE){
         // utils.triggers.enableDebugDraw(false)//
         hideAllPanels()

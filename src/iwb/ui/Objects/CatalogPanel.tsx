@@ -223,10 +223,12 @@ function generateCatalogRows() {
 
         let start = 0
         let end = 2
+        let count = 0
         for (let i = 0; i < Math.ceil(itemsToShow.length / 2); i++) {
-            arr.push(<CatalogRow row={start} items={itemsToShow.slice(start, end)}/>)
+            arr.push(<CatalogRow row={start} count={count} items={itemsToShow.slice(start, end)}/>)
             start += 2
             end += 2
+            count++
         }
         return arr
     }else{
@@ -285,13 +287,13 @@ function generateCatalogRows() {
     }
 }
 
-function generateRowItems(row: number, items: CatalogItemType[]) {
+function generateRowItems(row: number, count:number, items: CatalogItemType[]) {
     return items.map((item, index) => {
-        return <CatalogItem row={row + "-" + index} item={item}/>
+        return <CatalogItem row={row + "-" + index} count={count} index={index} item={item}/>
     })
 }
 
-const CatalogRow = ({row, items}: { row: number, items: CatalogItemType[] }) => {
+const CatalogRow = ({row, count, items}: { row: number,count:number, items: CatalogItemType[] }) => {
     return (
         <UiEntity
             key={"catalog-row" + row}
@@ -307,13 +309,13 @@ const CatalogRow = ({row, items}: { row: number, items: CatalogItemType[] }) => 
             }}
             // uiBackground={{color:Color4.Green()}}
         >
-            {generateRowItems(row, items)}
+            {generateRowItems(row, count, items)}
 
         </UiEntity>
     )
 }
 
-function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
+function CatalogItem({row, index, count, item}: { row: string, count:number, index:number, item: CatalogItemType }) {
     return (
         <UiEntity
             key={"catalog-item-row" + item.id}
@@ -465,7 +467,8 @@ function CatalogItem({row, item}: { row: string, item: CatalogItemType }) {
                         }}
                         onMouseDown={() => {
                             setUIClicked(true)
-                            confirmDeleteAsset(item)
+                            console.log('row is', count, index, itemsToShow[(count * 2) + index])
+                            confirmDeleteAsset(item, (count * 2) + index)
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)
@@ -714,7 +717,7 @@ export function createCatalogPanel(){
                         height: '100%',
                         margin: {right: '5%'}
                     }}
-                    uiText={{value: "Page " + (currentPage + 1) + " / " + totalPages, fontSize: sizeFont(20, 15)}}
+                    uiText={{textWrap:'nowrap', value: "Page " + (currentPage + 1) + " / " + totalPages, fontSize: sizeFont(20, 15)}}
                 />
 
                 <UiEntity
@@ -734,7 +737,6 @@ export function createCatalogPanel(){
                         },
                         uvs: getImageAtlasMapping(uiSizes.opaqueArrowleft)
                     }}
-                    uiText={{value: "<", fontSize: sizeFont(20, 12)}}
                     onMouseUp={() => {
                         if (currentPage - 1 >= 0) {
                             currentPage--
@@ -760,11 +762,12 @@ export function createCatalogPanel(){
                         },
                         uvs: getImageAtlasMapping(uiSizes.opaqueArrowRight)
                     }}
-                    uiText={{value: ">", fontSize: sizeFont(20, 12)}}
                     onMouseUp={() => {
-                        if ((currentPage + 1) * itemsPerPage + itemsPerPage <= items.size)
+                        // if (((currentPage + 1) * itemsPerPage) + itemsPerPage <= items.size){
                             currentPage++
-                        refreshView()
+                            refreshView()  
+                        // }
+
                     }}
                 />
 

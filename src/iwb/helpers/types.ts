@@ -85,6 +85,9 @@ export enum SERVER_MESSAGE_TYPES {
     CUSTOM = "custom",//
     IWB_VERSION_UPDATE ='iwb_version_update',
 
+    //AUDIUS SPECIFIC ACTIONS
+    PLAY_AUDIUS_TRACK = 'play_audius_track',
+
     //REMOTE SERVER ACTIONS
     CLAIM_REWARD = 'claim_reward',
     VERIFY_ACCESS = 'verify_access',
@@ -440,7 +443,10 @@ export enum Actions {
     POPUP_SHOW = 'popup_show',
     POPUP_HIDE = 'popup_hide',
     RANDOM_NUMBER ='random_number',
-    OPEN_NFT_DIALOG = 'nft_dialog_popup'
+    OPEN_NFT_DIALOG = 'nft_dialog_popup',
+    VOLUME_UP = 'volume_up',
+    VOLUME_DOWN = 'volume_down',
+    VOLUME_SET = 'volume_set',
 }
 
 InputAction.IA_ACTION_3
@@ -475,7 +481,8 @@ export enum Triggers {
     ON_ATTEMPT_START_GAME = 'on_attempt_start_game',
     ON_JOIN_LOBBY = 'on_join_lobby',
     ON_GAME_START_COUNTDOWN = 'on_game_start_countdown',
-    ON_PLAYLIST_CHANGE = 'on_playlist_change'
+    ON_PLAYLIST_CHANGE = 'on_playlist_change',
+    ON_PICKUP = 'on_pickup'
 }
 
 export enum Pointers {

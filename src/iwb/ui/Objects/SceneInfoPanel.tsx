@@ -840,7 +840,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '40%',
+                width: '30%',
                 height: '100%',
                 margin: {left: "2%"}
             }}
@@ -859,14 +859,14 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '15%',
+                width: '20%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
             uiText={{
                 value: "" + (localScene ? formatDollarAmount(localPlayer.activeScene!.pc)  : ""),
                 fontSize: sizeFont(25, 15),
-                textAlign: 'middle-center',
+                textAlign: 'middle-left',
                 color: Color4.White(),
                 textWrap:'nowrap'
             }}
@@ -878,7 +878,7 @@ const SceneAssetList = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                width: '15%',
+                width: '20%',
                 height: '100%',
             }}
             // uiBackground={{color:Color4.Green()}}
@@ -1052,7 +1052,7 @@ function SceneAssetRow(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{
-            value: curItem ? name.length > 20 ?  name.substring(0,20) + "..." : name : "Name not found",
+            value: curItem ? (name.split(" ")[0].length > 10 ? name.split(" ")[0].substring(0,10) : name.split(" ")[0] + " - " + aid) : "Name not found", // name.length > 20 ?  name.substring(0,20) + "..." : name : "Name not found",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
             color: Color4.White(),
