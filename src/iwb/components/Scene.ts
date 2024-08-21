@@ -4,7 +4,7 @@ import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES,
 import {addBoundariesForParcel, deleteCreationEntities, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
-import { log } from "../helpers/functions"
+import { getDistance, log } from "../helpers/functions"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { gltfListener } from "./Gltf"
 import { parentingListener } from "./Parenting"
@@ -184,7 +184,7 @@ async function loadSceneBoundaries(scene:any) {
     // loadSceneAssets(id)
 
 
-    // await addSceneLoadTrigger(scene)
+    await addSceneLoadTrigger(scene)
 }
 
 async function addSceneLoadTrigger(scene:any){
@@ -196,16 +196,22 @@ async function addSceneLoadTrigger(scene:any){
     const yPos = 0
     const zPos = center[1] - parentT.position.z
 
+    let centerPos = Vector3.create(xPos, yPos, zPos)
+
+    let radius = getDistance(centerPos, parentT.position)
+
     utils.triggers.addTrigger(scene.parentEntity, NO_LAYERS, LAYER_8,
         [{type:'sphere',
-            radius:10,
-            position: Vector3.create(xPos, yPos, zPos),
+            radius:radius,
+            position: centerPos,
         }],
         ()=>{
             console.log("player is close by")
+            enableSceneEntities(scene.id)
         },
         ()=>{
             console.log('player no longer close by')
+            disableSceneEntities(scene.id)
         },
         Color3.create(.2, 1, .2)
       )
@@ -356,27 +362,27 @@ export async function checkScenePermissions() {
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
         playModeCheckedAssets.length = 0
     } else {
-        if (playModeReset) {
-            if (activeScene) {
-                // console.log('active scene is', activeScene)//
-                if (lastScene) {
-                    if (lastScene !== activeScene.id) {
-                        await disableSceneEntities(lastScene)
+        // if (playModeReset) {
+        //     if (activeScene) {
+        //         // console.log('active scene is', activeScene)//
+        //         if (lastScene) {
+        //             if (lastScene !== activeScene.id) {
+        //                 await disableSceneEntities(lastScene)
 
-                        //let triggerEvents = getTriggerEvents(entityInfo.entity)
-                        //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+        //                 //let triggerEvents = getTriggerEvents(entityInfo.entity)
+        //                 //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
                         
-                        await enableSceneEntities(activeScene.id)
-                    }
-                } else {//
-                    console.log('last scene is undefined, enable current active scene')//
-                    await enableSceneEntities(activeScene.id)
-                }
-            } else {
-                disableSceneEntities(lastScene)
-            }
-            lastScene = activeScene ? activeScene.id : undefined
-        }
+        //                 await enableSceneEntities(activeScene.id)
+        //             }
+        //         } else {//
+        //             console.log('last scene is undefined, enable current active scene')//
+        //             await enableSceneEntities(activeScene.id)
+        //         }
+        //     } else {
+        //         disableSceneEntities(lastScene)
+        //     }
+        //     lastScene = activeScene ? activeScene.id : undefined
+        // }
     }
 }
 

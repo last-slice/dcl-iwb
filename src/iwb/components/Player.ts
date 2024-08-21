@@ -90,7 +90,7 @@ export async function createPlayer(player:any){
     await checkPlayerHomeWorld(player)
     await checkWorldPermissions()
     // await createPhysics()
-    // await addPlayerTrigger()
+    await addPlayerTrigger()
     
     engine.addSystem(PendingSceneLoadSystem)
     getAssetUploadToken()
@@ -110,11 +110,18 @@ export async function createPlayer(player:any){
     }
 }
 
+export function updatePlayerLoadRadius(value:number){
+    utils.triggers.setAreas(engine.PlayerEntity,
+        [{type:'sphere',
+            radius:value
+        }]
+    )
+}
+
 function addPlayerTrigger(){
     utils.triggers.addTrigger(engine.PlayerEntity, LAYER_8, NO_LAYERS,
         [{type:'sphere',
-            radius:10
-          // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
+            radius:20
         }],
         ()=>{
         },

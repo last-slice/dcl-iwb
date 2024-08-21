@@ -1,10 +1,10 @@
 import { Color4 } from '@dcl/sdk/math'
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps } from '@dcl/sdk/react-ecs'
+import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Dropdown } from '@dcl/sdk/react-ecs'
 import resources from '../../../helpers/resources'
 import { mainView } from '../IWBView'
 import { HoriztonalButtons } from '../../Reuse/HoriztonalButtons'
 import { sendServerMessage } from '../../../components/Colyseus'
-import { settings } from '../../../components/Player'
+import { settings, updatePlayerLoadRadius } from '../../../components/Player'
 import { SOUND_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { calculateSquareImageDimensions, sizeFont, getImageAtlasMapping } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
@@ -14,6 +14,16 @@ import { utils } from '../../../helpers/libraries'
 import { addSceneRoofs, removeSceneRoofs } from '../../../components/Config'
 
 let settingsView = "Visual"
+
+let loadRadius:any[] = [
+    "10",
+    "20",
+    "30",
+    "40",
+    "50"
+] 
+
+let loadRadiusIndex = 1
 
 let labels:any[] = [
     {label:"Scene Notifications", key:"nots"},
@@ -93,7 +103,68 @@ function VisualSettings(){
             }}
         // uiBackground={{ color: Color4.Teal() }}
             >
+    <UiEntity   
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '70%',
+            }}
+            >
                 {generateSettingsToggles()}
+
+                </UiEntity>
+
+                <UiEntity   
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '70%',
+            height: '20%',
+            margin:{left:"5%", right:"5%"}
+            }}
+            >
+
+            <UiEntity   
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '40%',
+            height: '100%',
+            }}
+            uiText={{value:"Load Radius", textWrap:'nowrap', textAlign:'middle-left', fontSize:sizeFont(30,15)}}
+            />
+
+        <UiEntity   
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '60%',
+            height: '30%',
+            }}
+            >
+                     <Dropdown
+                    options={loadRadius}
+                    selectedIndex={loadRadiusIndex}
+                    onChange={(index:number)=>{
+                        loadRadiusIndex = index
+                        updatePlayerLoadRadius(parseInt(loadRadius[index]))
+                    }}
+                    uiTransform={{
+                        width: '100%',
+                        height: '120%',
+                    }}
+                    // uiBackground={{color:Color4.Purple()}}
+                    color={Color4.White()}
+                    fontSize={sizeFont(20, 15)}
+                />
+            </UiEntity>
+
+                </UiEntity>
 
         </UiEntity>
     )
