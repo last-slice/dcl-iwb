@@ -28,6 +28,7 @@
     "@dcl-sdk/utils": "latest",
     "colyseus.js": "^0.15.10",
     "core-js": "^3.31.0",
+    "cannon": "latest",
     "dcl-crypto-toolkit": "^1.0.0-20231102170834.commit-63c4be6",
     "eth-connect": "^6.2.1",
     "mitt": "^3.0.1",

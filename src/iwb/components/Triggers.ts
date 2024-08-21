@@ -1,4 +1,4 @@
-import { Entity, InputAction, PointerEventType, PointerEvents, Transform, engine, pointerEventsSystem } from "@dcl/sdk/ecs";
+import { Entity, InputAction, PointerEventType, PointerEvents, Transform, Tween, TweenState, TweenStateStatus, engine, pointerEventsSystem, tweenSystem } from "@dcl/sdk/ecs";
 import { COMPONENT_TYPES, COUNTER_VALUE, SERVER_MESSAGE_TYPES, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
 import mitt, { Emitter } from "mitt";
 import { getActionEvents } from "./Actions";
@@ -476,7 +476,12 @@ export function PlayTriggerSystem(dt:number){
         actionEvents.emit(action.id, action)
         checkDecisionActions(decisionId)
       }
-      }
+    }
+
+    const entitiesWithTweens = engine.getEntitiesWith(Tween)
+    for (const [entity] of entitiesWithTweens) {
+      handleOnTweenEnd(entity)
+    }
 }
 
 let runningDecision = false
@@ -546,6 +551,19 @@ export function runGlobalTrigger(scene:any, type:Triggers, data:any){
 export function runSingleTrigger(entityInfo:any, type:Triggers, data:any){
   let triggerEvents = getTriggerEvents(entityInfo.entity)
   triggerEvents.emit(type, data)
+}
+
+// ON_TWEEN_END
+function handleOnTweenEnd(entity: Entity) {
+  if (
+    Tween.getOrNull(entity) &&
+    TweenState.getOrNull(entity)?.state === TweenStateStatus.TS_COMPLETED &&
+    tweenSystem.tweenCompleted(entity)
+  ) {
+    const triggerEvents = getTriggerEvents(entity)
+    triggerEvents.emit(Triggers.ON_TWEEN_END, {input:0, pointer:0, entity:entity})
+    Tween.deleteFrom(entity)
+  }
 }
 
 class MittExtender {

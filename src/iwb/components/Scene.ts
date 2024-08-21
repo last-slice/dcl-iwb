@@ -2,7 +2,7 @@ import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Tra
 import { getSceneInformation } from '~system/Runtime'
 import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
 import {addBoundariesForParcel, deleteCreationEntities, deleteParcelEntities, SelectedFloor} from "../modes/Create"
-import {Color4, Quaternion, Vector3} from "@dcl/sdk/math"
+import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
 import { log } from "../helpers/functions"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
@@ -37,6 +37,8 @@ import { refreshMap } from "../ui/Objects/Map"
 import { playlistListener } from "./Playlist"
 import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem"
 import { avatarShapeListener } from "./AvatarShape"
+import { utils } from "../helpers/libraries"
+import { LAYER_8, NO_LAYERS } from "@dcl-sdk/utils"
 
 export let realmActions: any[] = []
 
@@ -180,6 +182,33 @@ async function loadSceneBoundaries(scene:any) {
         })
     }
     // loadSceneAssets(id)
+
+
+    // await addSceneLoadTrigger(scene)
+}
+
+async function addSceneLoadTrigger(scene:any){
+        // get center of scene//
+    const center = getCenterOfParcels(scene!.pcls)
+    const parentT = Transform.get(scene.parentEntity)
+
+    const xPos = center[0] - parentT.position.x
+    const yPos = 0
+    const zPos = center[1] - parentT.position.z
+
+    utils.triggers.addTrigger(scene.parentEntity, NO_LAYERS, LAYER_8,
+        [{type:'sphere',
+            radius:10,
+            position: Vector3.create(xPos, yPos, zPos),
+        }],
+        ()=>{
+            console.log("player is close by")
+        },
+        ()=>{
+            console.log('player no longer close by')
+        },
+        Color3.create(.2, 1, .2)
+      )
 }
 
 export function loadSceneAsset(sceneId: string, item: SceneItem) {

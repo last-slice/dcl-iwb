@@ -4,7 +4,7 @@ import { Vector3 } from '@dcl/sdk/math';
 import { world } from '../physics';
 
 const fixedTimeStep: number = 1.0 / 60.0 // seconds
-const maxSubSteps: number = 3
+const maxSubSteps: number = 4
 
 export let forwardVector:any
 

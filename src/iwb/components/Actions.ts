@@ -943,19 +943,22 @@ function handleStartTween(scene:any, info:any, action:any){
 
   // MOVE_ITEM
   function handleMoveItem(scene:any, info:any, action:any){
-    let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(info.aid)
-    // if(!transform){
-    //     return
-    // }
-
-    // const transform = Transform.get(info.entity)
+    let transform:any
+    if(action.moveRel){
+        transform = Transform.get(info.entity).position
+    }
+    else{
+        let transformInfo = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(info.aid)
+        transform = {...transformInfo.p}
+    }
+    
     const { timer, ip, relative, x,y,z } = action
     const end = Vector3.create(x, y, z)
     const endPosition = relative ? Vector3.add(transform.p, end) : end
 
     let tween = Tween.createOrReplace(info.entity, {
         mode: Tween.Mode.Move({
-          start: transform.p,
+          start: transform,
           end: endPosition,
         }),
         duration: timer * 1000, // from secs to ms
@@ -964,9 +967,11 @@ function handleStartTween(scene:any, info:any, action:any){
 
     switch(action.tloop){
         case 0://nothing
-            utils.timers.setTimeout(()=>{
-                Tween.deleteFrom(info.entity)
-            }, timer * 1000)
+            // utils.timers.setTimeout(()=>{
+            //     Tween.deleteFrom(info.entity)
+            //     const triggerEvents = getTriggerEvents(info.entity)
+            //     triggerEvents.emit(Triggers.ON_TWEEN_END)
+            // }, timer * 1000)
             break;
 
         case 1://restart

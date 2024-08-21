@@ -131,8 +131,7 @@ export async function createColyseusListeners(room:Room){
 
         await setSettings(info.settings)
         if(!isGCScene() && info.settings.firstTime){
-            console.log('first time')
-            displaySkinnyVerticalPanel(true, getView("Welcome_Screen"))//
+            displaySkinnyVerticalPanel(true, getView("Welcome_Screen"))
         }
 
         room.state.players.onAdd(async(player:any, userId:any)=>{

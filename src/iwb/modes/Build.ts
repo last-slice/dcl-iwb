@@ -678,6 +678,7 @@ export function resetAdditionalAssetFeatures(){
     resetMovePlayerEntity()
     displaySkinnyVerticalPanel(false)
     resetPathEntities(true)
+    releaseRandomActions()
 }
 
 export function dropGrabbedItems(){

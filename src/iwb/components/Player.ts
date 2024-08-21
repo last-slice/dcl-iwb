@@ -3,7 +3,7 @@ import {NOTIFICATION_TYPES, Player, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_ME
 // import {iwbEvents, sendServerMessage} from "../messaging";
 import {AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
 import resources, { colors } from "../helpers/resources";
-import {Color4, Quaternion, Vector3} from "@dcl/sdk/math";
+import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
 import { iwbConfig, realm, removePlayerFromHideArray, setPlayerMode, worlds } from "./Config";
@@ -23,6 +23,8 @@ import { addScene, pendingSceneLoad } from "./Scene";
 import { showNotification } from "../ui/Objects/NotificationPanel";
 import { displayTutorialVideoButton } from "../ui/Objects/TutorialVideo";
 import { AudioFinishedSystem, createSounds } from "./Sounds";
+import { createPhysics } from "../physics";
+import { LAYER_1, LAYER_8, NO_LAYERS } from "@dcl-sdk/utils";
 
 export let localUserId: string
 export let localPlayer:any
@@ -87,6 +89,9 @@ export async function createPlayer(player:any){
     await getPlayerLand()
     await checkPlayerHomeWorld(player)
     await checkWorldPermissions()
+    // await createPhysics()
+    // await addPlayerTrigger()
+    
     engine.addSystem(PendingSceneLoadSystem)
     getAssetUploadToken()
 
@@ -103,6 +108,20 @@ export async function createPlayer(player:any){
             }
         }
     }
+}
+
+function addPlayerTrigger(){
+    utils.triggers.addTrigger(engine.PlayerEntity, LAYER_8, NO_LAYERS,
+        [{type:'sphere',
+            radius:10
+          // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
+        }],
+        ()=>{
+        },
+        ()=>{
+        },
+        Color3.create(236/255,209/255,92/255)
+      )
 }
 
 function checkWorldPermissions(){

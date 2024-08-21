@@ -1,19 +1,22 @@
 import { Color4, Quaternion } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
-import { Actions, COMPONENT_TYPES, EDIT_MODIFIERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS, TWEEN_EASE_SLUGS, TWEEN_LOOP_SLUGS, TWEEN_TYPE_SLUGS } from '../../../../helpers/types'
-import { getImageAtlasMapping, sizeFont } from '../../../helpers'
+import { Actions, COMPONENT_TYPES, EDIT_MODES, EDIT_MODIFIERS, ENTITY_EMOTES, ENTITY_EMOTES_SLUGS, SERVER_MESSAGE_TYPES, TWEEN_EASE_SLUGS, TWEEN_LOOP_SLUGS, TWEEN_TYPE_SLUGS } from '../../../../helpers/types'
+import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
 import { TransformInputModifiers } from '../EditTransform'
 import { Animator, engine, Entity, GltfContainer, Transform } from '@dcl/sdk/ecs'
-import { colyseusRoom } from '../../../../components/Colyseus'
+import { colyseusRoom, sendServerMessage } from '../../../../components/Colyseus'
 import { findAssetParent } from '../../../../components/Parenting'
 import { selectedItem } from '../../../../modes/Build'
+import { uiSizes } from '../../../uiConfig'
+import { setUIClicked } from '../../../ui'
 
 let tweenTypeIndex:number = 0
 let tweenEaseIndex:number = 0
 let tweenLoopIndex:number = 0
 let tweenDuration:number = 3
+let tweenMoveRelative:boolean = true
 
 let setPositionEntity:Entity
 
@@ -221,6 +224,71 @@ export function AddTweenActionPanel(){
         fontSize={sizeFont(20, 15)}
     />
         </UiEntity>
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+                margin:{top:'1%'}
+            }}
+        >
+
+                    {/* url label// */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+            }}
+        uiText={{textWrap:'nowrap',value:"From Current Position", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '85%',
+                height: '100%',
+            }}
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: tweenMoveRelative ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            tweenMoveRelative = !tweenMoveRelative
+            updateActionData({moveRel:tweenMoveRelative})
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        />
+
+
+        </UiEntity>
+
+
         </UiEntity>
 
         {/* change position panel */}

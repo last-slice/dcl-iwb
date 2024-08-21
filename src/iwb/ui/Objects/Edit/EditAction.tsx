@@ -180,7 +180,7 @@ export function EditAction(){
 
                 <Dropdown
                     options={getActionList()}
-                    selectedIndex={newActionIndex}
+                    selectedIndex={0}
                     onChange={selectNewActionIndex}
                     uiTransform={{
                         width: '100%',
@@ -554,7 +554,7 @@ async function buildAction(){
     updateActionView("main")
     selectNewActionIndex(0)
 
-    //clean up actions//
+    //clean up actions////
     resetAdditionalAssetFeatures()
 }
 
@@ -657,7 +657,8 @@ const ActionDefaults:any = {
         ip:0,
         ttype:0,
         timer:3,
-        tloop:0
+        tloop:0,
+        moveRel:true
     },
     [Actions.TELEPORT_PLAYER]:{
         fn:()=>{addTweenActionEntity()},

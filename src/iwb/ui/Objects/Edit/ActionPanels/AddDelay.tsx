@@ -22,6 +22,7 @@ let updated = false
 
 export function releaseRandomActions(){
     updated = false
+    batchActions.length = 0
 }
 
 export function updateRandomEntityActions(aid:string){
@@ -37,7 +38,7 @@ export function updateRandomEntityActions(aid:string){
             entitiesWithActions.push(action)
         })
     }
-    console.log('entity actions are ', entitiesWithActions,batchActions)
+    // console.log('entity actions are ', entitiesWithActions,batchActions)
 }
 
 export function updateDelayEntitiesWithActions(){
@@ -232,7 +233,7 @@ function selectActionIndex(index:number){
     selectedActionIndex = index
     // if(index !== 0){
     //     newAction = entitiesWithActions[index-1]
-    //     console.log('new action is', newAction)
+    //     console.log('new action is', newAction)//
     // }
 }
 
@@ -241,10 +242,9 @@ function setData(value:any){
     console.log('selected action is', action)
     batchActions.push({...entitiesWithActions[selectedActionIndex-1]})
 
-    newActionData.actions = [...batchActions.map(($:any)=> $.id)]
-    updateActionData({actions:newActionData.actions})
+    updateActionData({actions:[...batchActions.map(($:any)=> $.id)]})
 
-    console.log('all entities with actions', batchActions)
+    console.log('all entities with actions', batchActions)//
 }
 
 function getBatchActionList(){
@@ -321,9 +321,9 @@ export function Row(info:any){
                     uvs: getImageAtlasMapping(uiSizes.trashButton)
                 }}
                 onMouseDown={() => {
-                    let actionIndex = newActionData.actions.findIndex(($:any)=> $.id === data.actionId)
+                    let actionIndex = batchActions.findIndex(($:any)=> $.id === data.actionId)
                     if(actionIndex >= 0){
-                        newActionData.actions.splice(actionIndex, 1)
+                        batchActions.splice(actionIndex, 1)
                     }
                 }}
             />
