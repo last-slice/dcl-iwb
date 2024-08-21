@@ -47,6 +47,7 @@ import { EditRewards, updateRewardInfo } from './Edit/EditRewards'
 import { EditPlaylist, playlistView, updatePlaylistComponent } from './Edit/EditPlaylist'
 import { updatePopupPanelView } from './Edit/ActionPanels/AddPopupPanel'
 import { EditNPC, npcComponentView, updateNPCView } from './Edit/EditNPC'
+import { EditPath, editPathView, resetPathEntities, updateEditPathPanel, updateEditPathView } from './Edit/EditPath'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -63,6 +64,9 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.PATH_COMPONENT:
+            updateEditPathPanel()
+            break;
         case COMPONENT_TYPES.AVATAR_SHAPE_COMPONENT:
             updateNPCView("main")
             break;
@@ -500,6 +504,15 @@ function getBackButtonLogic(){
                 updateEditLevelView("main")
             }else if(levelView === "loading"){
                 updateEditLevelView("main")
+            }
+            break;
+
+        case COMPONENT_TYPES.PATH_COMPONENT:
+            if(editPathView === "main"){
+                resetPathEntities(true)
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }else{
+                updateEditPathView("main")
             }
             break;
 
@@ -970,16 +983,7 @@ function EditObjectData(){
                 <EditRewards/>
                 <EditPlaylist/>
                 <EditNPC/>
-
-                {/* <ImageComponentPanel/>
-                <VideoComponentPanel/>//    
-
-                <MaterialComponentPanel/>
-                <TriggerAreaComponent/>
-                <AnimationComponent/>
-                <NPCComponent/>
-                <DialogComponent/>
-                <RewardComponentPanel/> */}
+                <EditPath/>
 
             </UiEntity>
 
@@ -1115,6 +1119,7 @@ function getBasicComponents(){
         COMPONENT_TYPES.REWARD_COMPONENT,
         COMPONENT_TYPES.PLAYLIST_COMPONENT,
         COMPONENT_TYPES.AVATAR_SHAPE_COMPONENT,
+        COMPONENT_TYPES.PATH_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1154,7 +1159,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-20).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1218,7 +1223,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-20).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

@@ -74,15 +74,15 @@ export function avatarShapeListener(scene:any){
             }
         })    
 
-        avatarShape.wearables.onAdd((item:any)=>{
+        avatarShape.wearables && avatarShape.wearables.onAdd((item:any)=>{
             console.log('avatar wearables onAdd', item)
                 checkAvatarShape(scene, entityInfo)
         })   
 
-        avatarShape.wearables.onRemove((item:any)=>{
+        avatarShape.wearables && avatarShape.wearables.onRemove((item:any)=>{
             console.log('avatar wearables onRemove', item)
                 checkAvatarShape(scene, entityInfo)
-        })
+        })//
 
         avatarShape.eyeColor.listen("r", (c:any, p:any)=>{
             console.log('avatar eyeColor changed')

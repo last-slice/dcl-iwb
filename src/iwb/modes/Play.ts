@@ -33,9 +33,12 @@ import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { disablePlaylistForPlayMode, stopAllPlaylists } from "../components/Playlist"
 import { disableAvatarShapePlayMode } from "../components/AvatarShape"
+import { disablePathingForEntity } from "../components/Path"
 
 export let disabledEntities: boolean = false
 export let playModeReset: boolean = true
+
+export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 
 export function updateDisabledEntities(value:boolean){
     disabledEntities = value
@@ -227,6 +230,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         setAnimationBuildMode(scene, entityInfo)
         disablePlaylistForPlayMode(scene, entityInfo)
         disableAvatarShapePlayMode(scene, entityInfo)
+        disablePathingForEntity(scene, entityInfo)
         //to do
         // - reset states
         // - reset tweens

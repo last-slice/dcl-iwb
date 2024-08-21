@@ -51,6 +51,8 @@ import { resetMovePlayerEntity } from "../ui/Objects/Edit/ActionPanels/AddMovePl
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { disablePlaylistForBuildMode } from "../components/Playlist"
 import { setAvatarShapeBuildMode } from "../components/AvatarShape"
+import { resetPathEntities } from "../ui/Objects/Edit/EditPath"
+import { disablePathingForEntity } from "../components/Path"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -449,8 +451,16 @@ function selectVisualGrabbedItem(grabbedItem:any, itemHeight:any, itemDepth:any,
             MeshRenderer.setPlane(grabbedItem.entity)
             itemPosition = {x: 0, y: .5, z: itemDepth}
             grabbedItem.initialHeight = .88
-            scale = Vector3.create(1,1,1)
+            scale = Vector3.create(1,1,1)//
             MeshCollider.setPlane(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } 
+        else if (grabbedItem.itemData.n === "Path System") {
+            console.log('selected path system')
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1,1,1)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
         } 
         else {
             // if (grabbedItem.itemData.pending)  {//
@@ -650,8 +660,6 @@ export function saveItem() {
     //     }
     // }//
     resetAdditionalAssetFeatures()
-
-    Actions.SHOW_DIALOG
 }
 
 export function resetAdditionalAssetFeatures(){
@@ -669,6 +677,7 @@ export function resetAdditionalAssetFeatures(){
     releaseRandomActions()
     resetMovePlayerEntity()
     displaySkinnyVerticalPanel(false)
+    resetPathEntities(true)
 }
 
 export function dropGrabbedItems(){
@@ -1675,6 +1684,7 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         resetTween(scene, entityInfo)
         disablePlaylistForBuildMode(scene, entityInfo)
         setAvatarShapeBuildMode(scene, entityInfo)
+        disablePathingForEntity(scene, entityInfo)
     }
     //         resetTweenPositions(entity, sceneItem, scene)//
 }

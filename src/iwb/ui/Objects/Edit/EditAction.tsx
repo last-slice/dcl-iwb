@@ -36,6 +36,7 @@ import { AddDelayActionPanel, updateDelayEntitiesWithActions } from './ActionPan
 import { AddPopupPanel, showPopupPanel } from './ActionPanels/AddPopupPanel'
 import { AddRandomNumberPanel } from './ActionPanels/AddRandomNumberPanel'
 import { AddVolumeUpPanel } from './ActionPanels/AddVolumeUpPanel'
+import { AddFollowPathPanel } from './ActionPanels/AddFollowPathPanel'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -527,14 +528,10 @@ function getActionDataPanel(){
         case Actions.VOLUME_SET.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddVolumeUpPanel/>
 
-            
-        //play sound - doesnt need any action metadata//
-        //stop sound - doesnt need any action metadata
-        //play video - doesnt need any action metadata
-        //stop video - doesnt need any action metadata
-        //stop animations - doesnt need any action metadata
+        case Actions.FOLLOW_PATH.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddFollowPathPanel/>
 
-    }
+        }
 }
 
 async function update(action:string, actionData:any){
@@ -694,5 +691,8 @@ const ActionDefaults:any = {
     },
     [Actions.PLAY_PLAYLIST]:{
         playlistAid:"" + (selectedItem && selectedItem.aid ? selectedItem.aid : "")
+    },
+    [Actions.FOLLOW_PATH]:{
+        pathAid:""
     },
 }

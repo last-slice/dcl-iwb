@@ -26,6 +26,8 @@ import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { getView } from "../ui/uiViews"
 import { buildNFTURN } from "./NftShape"
 import { playImagePlaylist, seekAudiusPlaylist, stopAudiusPlaylist } from "./Playlist"
+import { entitiesWithPathingEnabled } from "../modes/Play"
+import { walkPath } from "./Path"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -325,6 +327,10 @@ export function updateActions(scene:any, info:any, action:any){
 
              case Actions.VOLUME_SET:
                 handleVolumeSet(scene, info, action)
+                break;
+
+             case Actions.FOLLOW_PATH:
+                handleFollowPath(scene, info, action)
                 break;
         }
     })
@@ -1406,4 +1412,9 @@ function handleVolumeSet(scene:any, info:any, action:any){
             return
         }
     }
+}
+
+function handleFollowPath(scene:any, info:any, action:any){
+    console.log('handling follow path action', info, action)
+    walkPath(scene, info, action)
 }

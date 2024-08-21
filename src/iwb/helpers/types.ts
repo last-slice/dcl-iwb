@@ -334,6 +334,7 @@ export enum COMPONENT_TYPES {
     NPC_COMPONENT = "NPC",
     DIALOG_COMPONENT = "Dialog",
     REWARD_COMPONENT = 'Reward',
+    PATH_COMPONENT = 'Path'
 }
 
 export enum BLOCKCHAINS {
@@ -447,6 +448,7 @@ export enum Actions {
     VOLUME_UP = 'volume_up',
     VOLUME_DOWN = 'volume_down',
     VOLUME_SET = 'volume_set',
+    FOLLOW_PATH = 'path_follow'
 }
 
 InputAction.IA_ACTION_3

@@ -91,7 +91,7 @@ export function transformListener(scene:any){
 }
 
 export function updateTransform(scene:any, aid:string, transform:any){
-    console.log('updating transform', aid)//
+    console.log('updating transform', aid)
     let info = getEntity(scene, aid)
     if(info){
         Transform.createOrReplace(info.entity, 

@@ -307,7 +307,6 @@ let timeout:any
 
 export async function createSounds(){
     catalogSoundEntity = engine.addEntity()
-    console.log('catalog entity is', catalogSoundEntity)//
     AudioSource.create(catalogSoundEntity)
     AudioStream.create(catalogSoundEntity)
     // AvatarAttach.create(catalogSoundEntity,
