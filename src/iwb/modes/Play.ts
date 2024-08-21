@@ -143,25 +143,7 @@ export async function enableSceneEntities(sceneId: string) {
         //     levels.push(aid)
         // })//
 
-        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
-            if(index > 2){
-                let entityInfo = getEntity(scene, item.aid)
-                if(entityInfo){
-                    // levels.forEach((level:string)=>{
-                    //     let parenting = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((parent:any)=> parent.aid === level)
-                    //     if(parenting && parenting.children.includes(item.aid)){
-                    //         disableEntityForPlayMode(scene, entityInfo)
-                    //         updateAssetBuildVisibility(scene, false, entityInfo)
-                    //     }else{
-                    enableEntityForPlayMode(scene, entityInfo)
-                        // }
-                    // })
-
-                    let triggerEvents = getTriggerEvents(entityInfo.entity)
-                    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
-                }
-            }
-        })
+        triggerSceneEntitiesOnLoad(sceneId)
     }
 
     // log('enable scene entities for play mode')
@@ -192,21 +174,53 @@ export async function enableSceneEntities(sceneId: string) {
     scene.checkDisabled = false
 }
 
+export function triggerSceneEntitiesOnEnter(sceneId:string){
+    let scene = colyseusRoom.state.scenes.get(sceneId)
+    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+        if(index > 2){
+            let entityInfo = getEntity(scene, item.aid)
+            if(entityInfo){
+
+                setAudioPlayMode(scene, entityInfo)
+                setVideoPlayMode(scene, entityInfo)
+
+                let triggerEvents = getTriggerEvents(entityInfo.entity)
+                triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+            }
+        }
+    })
+}
+
+export function triggerSceneEntitiesOnLoad(sceneId:string){
+    let scene = colyseusRoom.state.scenes.get(sceneId)
+    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+        if(index > 2){
+            let entityInfo = getEntity(scene, item.aid)
+            if(entityInfo){
+
+                setGLTFPlayMode(scene, entityInfo)
+                
+                setMeshColliderPlayMode(scene, entityInfo)
+                setMeshRenderPlayMode(scene, entityInfo)
+                setVisibilityPlayMode(scene, entityInfo)
+                
+                // setSmartItemPlaydMode(scene, entityInfo)
+                setPointersPlayMode(scene, entityInfo)
+                checkTransformComponent(scene, entityInfo)
+                setTextShapeForPlayMode(scene, entityInfo)
+                setTriggersForPlayMode(scene, entityInfo)
+                setUiTextPlayMode(scene, entityInfo)
+                setUiImagePlayMode(scene, entityInfo)
+                setLivePanel(scene, entityInfo)                
+                
+                let triggerEvents = getTriggerEvents(entityInfo.entity)
+                triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+            }
+        }
+    })
+}
 export function enableEntityForPlayMode(scene:any, entityInfo:any){
-    setGLTFPlayMode(scene, entityInfo)
-    setVideoPlayMode(scene, entityInfo)
-    setMeshColliderPlayMode(scene, entityInfo)
-    setMeshRenderPlayMode(scene, entityInfo)
-    setVisibilityPlayMode(scene, entityInfo)
-    setAudioPlayMode(scene, entityInfo)
-    setSmartItemPlaydMode(scene, entityInfo)
-    setPointersPlayMode(scene, entityInfo)
-    checkTransformComponent(scene, entityInfo)
-    setTextShapeForPlayMode(scene, entityInfo)
-    setTriggersForPlayMode(scene, entityInfo)
-    setUiTextPlayMode(scene, entityInfo)
-    setUiImagePlayMode(scene, entityInfo)
-    setLivePanel(scene, entityInfo)
+
 }
 
 export function disableEntityForPlayMode(scene:any, entityInfo:any){

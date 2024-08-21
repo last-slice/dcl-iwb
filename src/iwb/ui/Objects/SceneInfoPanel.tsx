@@ -322,7 +322,7 @@ export function createSceneInfoPanel() {
                             }}
                         />
         
-                        <UiEntity
+                        {/* <UiEntity
                             uiTransform={{
                                 flexDirection: 'column',
                                 width: calculateSquareImageDimensions(3.5).width,
@@ -352,7 +352,7 @@ export function createSceneInfoPanel() {
                             onMouseUp={()=>{
                                 setUIClicked(false)
                             }}
-                        />
+                        /> */}
         
                         <UiEntity
                             uiTransform={{

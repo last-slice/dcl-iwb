@@ -53,6 +53,7 @@ import { disablePlaylistForBuildMode } from "../components/Playlist"
 import { setAvatarShapeBuildMode } from "../components/AvatarShape"
 import { resetPathEntities } from "../ui/Objects/Edit/EditPath"
 import { disablePathingForEntity } from "../components/Path"
+import { resetSpawnLocationEntities } from "../ui/Objects/AddSpawnPointPanel"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -662,6 +663,34 @@ export function saveItem() {
     resetAdditionalAssetFeatures()
 }
 
+export function addBlankSelectedItem(){
+    selectedItem = {
+        duplicate: false,
+        mode: EDIT_MODES.EDIT,
+        n: "",
+        modifier: EDIT_MODIFIERS.POSITION,
+        pFactor: 1,
+        sFactor: 1,
+        rFactor: 90,
+        entity: -500 as Entity,
+        aid: "",
+        catalogId: "",
+        sceneId: localPlayer.activeScene.id,
+        enabled: false,
+        already: false,
+        initialHeight: 0,
+        transform: {
+            position: Vector3.One(),
+            rotation: Quaternion.fromEulerDegrees(0,0,0),
+            scale: Vector3.One()
+        },
+        distance:4,
+        ugc: false,
+        rotation: 0,
+        scale:1
+    }
+}
+
 export function resetAdditionalAssetFeatures(){
     resetCloneEntity()
     resetLevelSpawnEntity()
@@ -679,6 +708,7 @@ export function resetAdditionalAssetFeatures(){
     displaySkinnyVerticalPanel(false)
     resetPathEntities(true)
     releaseRandomActions()
+    resetSpawnLocationEntities()
 }
 
 export function dropGrabbedItems(){
@@ -1445,21 +1475,21 @@ function addGrabbedComponent(entity: Entity, catalogId: string) {
                 break;
 
             case 'SM':
-                MeshRenderer.setBox(selectedItem.entity)
-                if (selectedItem.itemData.trigArComp) {
-                    Material.setPbrMaterial(entity, {
-                        albedoColor: Color4.create(1, 1, 0, .5)
-                    })
-                } else if (selectedItem.itemData.dialComp) {
-                    Material.setPbrMaterial(entity, {
-                        albedoColor: Color4.create(1, 0, 1, .5)
-                    })
-                    TextShape.createOrReplace(entity, {text: "" + selectedItem.itemData.dialComp.name, fontSize: 3})
-                } else {
-                    Material.setPbrMaterial(entity, {
-                        albedoColor: Color4.create(54 / 255, 221 / 255, 192 / 255, .5)
-                    })
-                }
+                // MeshRenderer.setBox(selectedItem.entity)
+                // if (selectedItem.itemData.trigArComp) {
+                //     Material.setPbrMaterial(entity, {
+                //         albedoColor: Color4.create(1, 1, 0, .5)
+                //     })
+                // } else if (selectedItem.itemData.dialComp) {
+                //     Material.setPbrMaterial(entity, {
+                //         albedoColor: Color4.create(1, 0, 1, .5)
+                //     })
+                //     TextShape.createOrReplace(entity, {text: "" + selectedItem.itemData.dialComp.name, fontSize: 3})
+                // } else {
+                //     Material.setPbrMaterial(entity, {
+                //         albedoColor: Color4.create(54 / 255, 221 / 255, 192 / 255, .5)
+                //     })
+                // }
                 break;
         }
     }

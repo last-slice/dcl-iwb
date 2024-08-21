@@ -1,6 +1,6 @@
 import ReactEcs, {Input, UiEntity} from '@dcl/sdk/react-ecs'
 import {Color4, Quaternion, Vector3} from '@dcl/sdk/math'
-import { Transform, engine } from '@dcl/sdk/ecs'
+import { Entity, Transform, engine } from '@dcl/sdk/ecs'
 import { localPlayer, localUserId } from '../../../components/Player'
 import { COMPONENT_TYPES, EDIT_MODIFIERS, EDIT_MODES } from '../../../helpers/types'
 import { selectedItem, sendServerEdit, toggleModifier } from '../../../modes/Build'
@@ -58,7 +58,7 @@ export function EditTransform() {
     )
 }
 
-export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: number, valueFn: Function, rowHeight?:any, override?:any }) {
+export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: number, valueFn: Function, rowHeight?:any, override?:any, entity?:Entity }) {
 
     const modifierName =
         props.modifier === EDIT_MODIFIERS.POSITION ? "Position" :
@@ -139,7 +139,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                         }}
                         // uiBackground={{color:Color4.Green()}}
                         uiText={{
-                            value: "X: " + (selectedItem && selectedItem.enabled ? props.valueFn("x") : ""),
+                            value: "X: " + (props.entity ?  props.valueFn("x")  : selectedItem && selectedItem.enabled ? props.valueFn("x") : ""),
                             fontSize: sizeFont(25, 12),
                             textAlign: 'middle-center'
                         }}
@@ -157,7 +157,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                         }}
                         // uiBackground={{color:Color4.Blue()}}
                         uiText={{
-                            value: "Y: " + (selectedItem && selectedItem.enabled ? props.valueFn("y") : ""),
+                            value: "Y: " + (props.entity ?  props.valueFn("y")  : selectedItem && selectedItem.enabled ? props.valueFn("y") : ""),
                             fontSize: sizeFont(25, 12),
                             textAlign: 'middle-center'
                         }}
@@ -175,7 +175,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                         }}
                         // uiBackground={{color:Color4.Teal()}}
                         uiText={{
-                            value: "Z: " + (selectedItem && selectedItem.enabled ? props.valueFn("z") : ""),
+                            value: "Z: " + (props.entity ?  props.valueFn("z")  : selectedItem && selectedItem.enabled ? props.valueFn("z") : ""),
                             fontSize: sizeFont(25, 12),
                             textAlign: 'middle-center'
                         }}
@@ -225,7 +225,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                                 sendServerEdit(props.modifier, 'x', 1, true, props.modifier, parseFloat(value))
                             }}
                             fontSize={sizeFont(20, 12)}
-                            placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
+                            placeholder={'' + (props.entity ?  props.valueFn("x")  : selectedItem && selectedItem.enabled ? props.valueFn("x") : "")}
                             placeholderColor={Color4.White()}
                             uiTransform={{
                                 width: '100%',
@@ -263,7 +263,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                                 sendServerEdit(props.modifier, 'y', 1, true, props.modifier, parseFloat(value))
                             }}
                             fontSize={sizeFont(20, 12)}
-                            placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
+                            placeholder={'' + (props.entity ?  props.valueFn("y")  : selectedItem && selectedItem.enabled ? props.valueFn("y") : "")}
                             placeholderColor={Color4.White()}
                             uiTransform={{
                                 width: '100%',
@@ -302,7 +302,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                                 sendServerEdit(props.modifier, 'z', 1, true, props.modifier, parseFloat(value))
                             }}
                             fontSize={sizeFont(20, 12)}
-                            placeholder={'' + (selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
+                            placeholder={'' + (props.entity ?  props.valueFn("z")  : selectedItem && selectedItem.enabled ? props.valueFn("z") : "")}
                             placeholderColor={Color4.White()}
                             uiTransform={{
                                 width: '100%',

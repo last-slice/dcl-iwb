@@ -277,7 +277,7 @@ export interface SelectedItem {
     catalogId:string
     sceneId:string
     aid:string
-    itemData:SceneItem
+    itemData?:SceneItem
     enabled:boolean
     already?:boolean
     grabbedTransform?:any
@@ -484,7 +484,8 @@ export enum Triggers {
     ON_JOIN_LOBBY = 'on_join_lobby',
     ON_GAME_START_COUNTDOWN = 'on_game_start_countdown',
     ON_PLAYLIST_CHANGE = 'on_playlist_change',
-    ON_PICKUP = 'on_pickup'
+    ON_PICKUP = 'on_pickup',
+    ON_LOAD_SCENE = 'on_load_scene'
 }
 
 export enum Pointers {

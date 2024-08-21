@@ -270,7 +270,7 @@ export function EditAudio() {
                     width: '100%',
                     height: '20%',
                     margin: {top: "2%"},
-                    display: selectedItem && selectedItem.itemData.id === "e6991f31-4b1e-4c17-82c2-2e484f53a124" ? 'flex' : 'none'
+                    display: selectedItem && selectedItem.itemData && selectedItem.itemData.id === "e6991f31-4b1e-4c17-82c2-2e484f53a124" ? 'flex' : 'none'
                 }}
             >
 

@@ -534,7 +534,7 @@ function SpawnPanel(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                width: calculateImageDimensions(7, getAspect(uiSizes.buttonPillBlue)).width,
                 height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
             }}
             uiBackground={{
@@ -544,7 +544,7 @@ function SpawnPanel(){
                 },
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
             }}
-            uiText={{value: "Add Spawn", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
+            uiText={{textWrap:'nowrap', value: "Add Spawn", fontSize:sizeFont(20,15), textAlign:'middle-center', color:Color4.White()}}
             onMouseDown={()=>{
                 displayAddSpawnPointPanel(true)
                 updateIWBTable([])

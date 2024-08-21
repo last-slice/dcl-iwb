@@ -148,20 +148,19 @@ function VisualSettings(){
             }}
             >
                      <Dropdown
-                    options={loadRadius}
-                    selectedIndex={loadRadiusIndex}
-                    onChange={(index:number)=>{
-                        loadRadiusIndex = index
-                        updatePlayerLoadRadius(parseInt(loadRadius[index]))
-                    }}
-                    uiTransform={{
-                        width: '100%',
-                        height: '120%',
-                    }}
-                    // uiBackground={{color:Color4.Purple()}}
-                    color={Color4.White()}
-                    fontSize={sizeFont(20, 15)}
-                />
+                        options={loadRadius}
+                        selectedIndex={loadRadiusIndex}
+                        onChange={(index:number)=>{
+                            loadRadiusIndex = index
+                            updatePlayerLoadRadius(parseInt(loadRadius[index]))
+                        }}
+                        uiTransform={{
+                            width: '100%',
+                            height: '120%',
+                        }}
+                        color={Color4.White()}
+                        fontSize={sizeFont(20, 15)}
+                    />
             </UiEntity>
 
                 </UiEntity>

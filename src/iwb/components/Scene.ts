@@ -12,7 +12,7 @@ import { localUserId, localPlayer } from "./Player"
 import { transformListener } from "./Transform"
 import { getCenterOfParcels } from "../helpers/build"
 import { meshListener } from "./Meshes"
-import { disableSceneEntities, enableSceneEntities, updateDisabledEntities } from "../modes/Play"
+import { disableSceneEntities, enableSceneEntities, triggerSceneEntitiesOnEnter, updateDisabledEntities } from "../modes/Play"
 import { playModeReset } from "../modes/Play"
 import { iwbInfoListener } from "./IWB"
 import { nameListener } from "./Name"
@@ -362,27 +362,30 @@ export async function checkScenePermissions() {
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
         playModeCheckedAssets.length = 0
     } else {
-        // if (playModeReset) {
-        //     if (activeScene) {
-        //         // console.log('active scene is', activeScene)//
-        //         if (lastScene) {
-        //             if (lastScene !== activeScene.id) {
-        //                 await disableSceneEntities(lastScene)
+        if (playModeReset) {
+            if (activeScene) {
+                // console.log('active scene is', activeScene)//
+                if (lastScene) {
+                    if (lastScene !== activeScene.id) {
+                        // await disableSceneEntities(lastScene)
 
-        //                 //let triggerEvents = getTriggerEvents(entityInfo.entity)
-        //                 //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+                        //let triggerEvents = getTriggerEvents(entityInfo.entity)
+                        //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
                         
-        //                 await enableSceneEntities(activeScene.id)
-        //             }
-        //         } else {//
-        //             console.log('last scene is undefined, enable current active scene')//
-        //             await enableSceneEntities(activeScene.id)
-        //         }
-        //     } else {
-        //         disableSceneEntities(lastScene)
-        //     }
-        //     lastScene = activeScene ? activeScene.id : undefined
-        // }
+                        // await enableSceneEntities(activeScene.id)
+                        
+                        triggerSceneEntitiesOnEnter(activeScene.id)
+                    }
+                } else {//
+                    console.log('last scene is undefined, enable current active scene')//
+                    // await enableSceneEntities(activeScene.id)
+                    triggerSceneEntitiesOnEnter(activeScene.id)
+                }
+            } else {
+                // disableSceneEntities(lastScene)
+            }
+            lastScene = activeScene ? activeScene.id : undefined
+        }
     }
 }
 
