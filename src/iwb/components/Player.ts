@@ -26,6 +26,7 @@ import { AudioFinishedSystem, createSounds } from "./Sounds";
 import { createPhysics } from "../physics";
 import { LAYER_1, LAYER_8, NO_LAYERS } from "@dcl-sdk/utils";
 import { initQuestClients } from "./Quests";
+import VLM from "vlm-dcl";
 
 export let localUserId: string
 export let localPlayer:any
@@ -104,13 +105,14 @@ export async function createPlayer(player:any){
             if (config.v < iwbConfig.v) {
                 showNotification({
                     type: NOTIFICATION_TYPES.MESSAGE,
-                    message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",
+                    message: "There's a newer version of the IWB! Visit the Settings panel to view the updates and deploy.",//
                     animate: {enabled: true, time: 10, return: true}
                 })
             }
         }
         sendServerMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, {})
     }
+    VLM.init({});
 }
 
 export function updatePlayerLoadRadius(value:number){

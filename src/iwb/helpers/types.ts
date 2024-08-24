@@ -338,7 +338,8 @@ export enum COMPONENT_TYPES {
     NPC_COMPONENT = "NPC",
     DIALOG_COMPONENT = "Dialog",
     REWARD_COMPONENT = 'Reward',
-    PATH_COMPONENT = 'Path'
+    PATH_COMPONENT = 'Path',
+    VLM_COMPONENT = 'VLM'
 }
 
 export enum BLOCKCHAINS {

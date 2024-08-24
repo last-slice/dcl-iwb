@@ -33,7 +33,8 @@
     "core-js": "^3.31.0",
     "dcl-crypto-toolkit": "^1.0.0-20231102170834.commit-63c4be6",
     "eth-connect": "^6.2.1",
-    "mitt": "^3.0.1"
+    "mitt": "^3.0.1",
+    "vlm-dcl": "^1.0.0-alpha.50"
   },
   "bundleDependencies": [
     "colyseus.js",

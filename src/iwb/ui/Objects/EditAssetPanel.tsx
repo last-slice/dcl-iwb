@@ -50,6 +50,7 @@ import { EditNPC, npcComponentView, updateNPCView } from './Edit/EditNPC'
 import { EditPath, editPathView, resetPathEntities, updateEditPathPanel, updateEditPathView } from './Edit/EditPath'
 import { releaseQuestAction } from './Edit/ActionPanels/AddQuestAction'
 import { EditAudioComponent, updateAudioComponent } from './Edit/EditAudios'
+import { EditVLMComponent, updateVLM } from './Edit/EditVLM'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -138,6 +139,11 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
         case COMPONENT_TYPES.PARENTING_COMPONENT:
             updateChildrenAssets()
             break;
+
+        case COMPONENT_TYPES.VLM_COMPONENT:
+            updateVLM()
+            break;
+            
         // case COMPONENT_TYPES.NPC_COMPONENT:
         //     updateNPCView('main')
         //     break;
@@ -971,7 +977,7 @@ function EditObjectData(){
                     margin: {top: "2%"},
                     display: visibleComponent !== COMPONENT_TYPES.ADVANCED_COMPONENT ? 'flex' : 'none'
                 }}
-                // uiBackground={{color:Color4.Blue()}}
+                // uiBackground={{color:Color4.Blue()}}//
             >
                 <EditParenting/>
                 <EditCounter/>
@@ -991,6 +997,7 @@ function EditObjectData(){
                 <EditNPC/>
                 <EditPath/>
                 <EditAudioComponent/>
+                <EditVLMComponent/>
 
             </UiEntity>
 
@@ -1127,6 +1134,7 @@ function getBasicComponents(){
         COMPONENT_TYPES.PLAYLIST_COMPONENT,
         COMPONENT_TYPES.AVATAR_SHAPE_COMPONENT,
         COMPONENT_TYPES.PATH_COMPONENT,
+        COMPONENT_TYPES.VLM_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1166,7 +1174,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-20).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1222,7 +1230,8 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.REWARD_COMPONENT,
             COMPONENT_TYPES.LEVEL_COMPONENT,
             COMPONENT_TYPES.PATH_COMPONENT,
-            COMPONENT_TYPES.AUDIO_COMPONENT
+            COMPONENT_TYPES.AUDIO_COMPONENT,
+            COMPONENT_TYPES.VLM_COMPONENT
         ]
 
         let components:any[] = []
@@ -1232,7 +1241,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-20).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

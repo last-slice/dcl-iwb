@@ -449,7 +449,6 @@ function selectVisualGrabbedItem(grabbedItem:any, itemHeight:any, itemDepth:any,
             MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
         } 
         else if (grabbedItem.itemData.n === "Plane Shape") {
-            console.log('selected plane shape')
             MeshRenderer.setPlane(grabbedItem.entity)
             itemPosition = {x: 0, y: .5, z: itemDepth}
             grabbedItem.initialHeight = .88
@@ -457,7 +456,13 @@ function selectVisualGrabbedItem(grabbedItem:any, itemHeight:any, itemDepth:any,
             MeshCollider.setPlane(grabbedItem.entity, ColliderLayer.CL_POINTER)
         } 
         else if (grabbedItem.itemData.n === "Path System") {
-            console.log('selected path system')
+            MeshRenderer.setBox(grabbedItem.entity)
+            itemPosition = {x: 0, y: .5, z: itemDepth}
+            grabbedItem.initialHeight = .88
+            scale = Vector3.create(1,1,1)
+            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+        } 
+        else if (grabbedItem.itemData.n === "VLM Connector") {
             MeshRenderer.setBox(grabbedItem.entity)
             itemPosition = {x: 0, y: .5, z: itemDepth}
             grabbedItem.initialHeight = .88
