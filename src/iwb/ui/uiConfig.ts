@@ -615,6 +615,14 @@ export let settingsIconData: any =
     }
 
 export let uiSizes: any = {
+    trophyIcon: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 90,
+        sourceLeft: 995,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
     plusButton: {
         atlasHeight: 1024,
         atlasWidth: 1024,

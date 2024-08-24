@@ -96,6 +96,9 @@ export enum SERVER_MESSAGE_TYPES {
     CREATE_GAME_LOBBY = 'create_game_lobby',
     HIT_OBJECT = 'hit_object',
     SHOOT = 'shoot',
+
+    //QUESTING
+    GET_QUEST_DEFINITIONS = 'get_quest_definitions',
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -303,8 +306,9 @@ export enum COMPONENT_TYPES {
     ADVANCED_COMPONENT = 'Advanced',
     NAMES_COMPONENT ='Name',
     GLTF_COMPONENT = 'Gltf',
-    AUDIO_SOURCE_COMPONENT = 'Audio_Source',
-    AUDIO_STREAM_COMPONENT = 'Audio_Stream',
+    AUDIO_COMPONENT = 'Audio',
+    // AUDIO_SOURCE_COMPONENT = 'Audio_Source',
+    // AUDIO_STREAM_COMPONENT = 'Audio_Stream',
     IWB_COMPONENT = 'IWB',
     MESH_RENDER_COMPONENT = 'Mesh_Renderer',
     MESH_COLLIDER_COMPONENT = 'Mesh_Collider',
@@ -315,7 +319,7 @@ export enum COMPONENT_TYPES {
     //advanced components
     PARENTING_COMPONENT = 'Parenting',
     STATE_COMPONENT ='States',
-    POINTER_COMPONENT = 'Pointers',//
+    POINTER_COMPONENT = 'Pointers',
     COUNTER_COMPONENT = 'Counters',
     UI_TEXT_COMPONENT = 'UI_Text',
     UI_IMAGE_COMPONENT ='UI_Image',
@@ -448,7 +452,8 @@ export enum Actions {
     VOLUME_UP = 'volume_up',
     VOLUME_DOWN = 'volume_down',
     VOLUME_SET = 'volume_set',
-    FOLLOW_PATH = 'path_follow'
+    FOLLOW_PATH = 'path_follow',
+    QUEST_ACTION = 'quest_action',
 }
 
 InputAction.IA_ACTION_3

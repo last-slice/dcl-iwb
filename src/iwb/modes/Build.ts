@@ -54,6 +54,7 @@ import { setAvatarShapeBuildMode } from "../components/AvatarShape"
 import { resetPathEntities } from "../ui/Objects/Edit/EditPath"
 import { disablePathingForEntity } from "../components/Path"
 import { resetSpawnLocationEntities } from "../ui/Objects/AddSpawnPointPanel"
+import { releaseQuestAction } from "../ui/Objects/Edit/ActionPanels/AddQuestAction"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -709,6 +710,7 @@ export function resetAdditionalAssetFeatures(){
     resetPathEntities(true)
     releaseRandomActions()
     resetSpawnLocationEntities()
+    releaseQuestAction()
 }
 
 export function dropGrabbedItems(){

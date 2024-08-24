@@ -13,7 +13,7 @@ import { checkMeshRenderComponent, checkMeshColliderComponent } from "./Meshes"
 import { checkNftShapeComponent } from "./NftShape"
 import { checkPointerComponent } from "./Pointers"
 import { afterLoadActions } from "./Scene"
-import { checkAudioSourceComponent, checkAudioStreamComponent } from "./Sounds"
+import { checkAudioComponent, checkAudioSourceComponent, checkAudioStreamComponent } from "./Sounds"
 import { checkTextShapeComponent } from "./TextShape"
 import { checkTextureComponent } from "./Textures"
 import { checkTransformComponent } from "./Transform"
@@ -94,8 +94,9 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
   await checkMeshRenderComponent(scene, iwbInfo)
   await checkMeshColliderComponent(scene, iwbInfo)
   await checkMaterialComponent(scene, iwbInfo)
-  await checkAudioSourceComponent(scene, iwbInfo)
-  await checkAudioStreamComponent(scene, iwbInfo)
+  // await checkAudioSourceComponent(scene, iwbInfo)
+  // await checkAudioStreamComponent(scene, iwbInfo)
+  await checkAudioComponent(scene, iwbInfo)
   await checkTextShapeComponent(scene, iwbInfo)
   await checkNftShapeComponent(scene, iwbInfo)
   await checkCounterComponent(scene, iwbInfo)

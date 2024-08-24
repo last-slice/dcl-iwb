@@ -13,8 +13,8 @@ import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAu
 import { colyseusRoom } from "./Colyseus"
 import { localPlayer } from "./Player"
 
-export function checkAudioSourceComponent(scene:any, entityInfo:any){
-    let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
+export function checkAudioComponent(scene:any, entityInfo:any){
+    let itemInfo = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         AudioSource.create(entityInfo.entity, {
             audioClipUrl: itemInfo.url,
@@ -31,22 +31,40 @@ export function checkAudioSourceComponent(scene:any, entityInfo:any){
     }
 }
 
+export function checkAudioSourceComponent(scene:any, entityInfo:any){
+    // let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
+    // if(itemInfo){
+    //     AudioSource.create(entityInfo.entity, {
+    //         audioClipUrl: itemInfo.url,
+    //         playing: false,
+    //         volume: itemInfo.volume,
+    //         loop: itemInfo.loop
+    //     })
+    //     AudioStream.create(entityInfo.entity, {
+    //         url: "" + itemInfo.url,
+    //         playing: false,
+    //         volume: itemInfo.volume
+    //     })
+    //     AudioLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+    // }
+}
+
 export function checkAudioStreamComponent(scene:any, entityInfo:any){
-    let itemInfo = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
-    if(itemInfo){
-        AudioStream.create(entityInfo.entity, {
-            url: itemInfo.url,
-            playing: false,
-            volume: itemInfo.volume,
-        })
-        AudioLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
-    }
+    // let itemInfo = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
+    // if(itemInfo){
+    //     AudioStream.create(entityInfo.entity, {
+    //         url: itemInfo.url,
+    //         playing: false,
+    //         volume: itemInfo.volume,
+    //     })
+    //     AudioLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+    // }
 }
 
 export function setAudioBuildMode(scene:any, entityInfo:any) {
     let audio:any
 
-    let itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
+    let itemInfo = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(entityInfo.aid)
     if(itemInfo){
         console.log('setting audio for build mode')
         MeshRenderer.setBox(entityInfo.entity)
@@ -58,41 +76,30 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
         }
 
         updateTransform(scene, entityInfo.aid, scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid))
-    }
 
-    audio = AudioSource.getMutableOrNull(entityInfo.entity)
-    if(audio){
-        audio.playing = false
-    }
+        switch(itemInfo.type){
+            case 0:
+                audio = AudioSource.getMutableOrNull(entityInfo.entity)
+                if(audio){
+                    audio.playing = false
+                }
+                break;
 
-    let audioStreamInfo = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
-    if(audioStreamInfo){
-        MeshRenderer.setBox(entityInfo.entity)
-        MeshCollider.setBox(entityInfo.entity, ColliderLayer.CL_POINTER)
-
-        
-
-        Material.setPbrMaterial(entityInfo.entity, {
-            albedoColor: Color4.create(0, 0, 1, .5)
-        })
-
-        let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(entityInfo.aid)
-        if(name){
-            TextShape.createOrReplace(entityInfo.entity, {text: "" + name.value, fontSize: 3})
+            case 1:
+            case 2:
+            case 3:
+                audio = AudioStream.getMutableOrNull(entityInfo.entity)
+                if(audio){
+                    audio.playing = false
+                }
+                break;
         }
-
-        updateTransform(scene, entityInfo.aid, scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid))
-    }
-
-    audio = AudioStream.getMutableOrNull(entityInfo.entity)
-    if(audio){
-        audio.playing = false
     }
 }
 
 export function setAudioPlayMode(scene:any, entityInfo:any){
     if (AudioLoadedComponent.has(entityInfo.entity) && !AudioLoadedComponent.get(entityInfo.entity).init){
-        let audioSource = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
+        let audioSource = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(entityInfo.aid)
         if(audioSource){
             MeshRenderer.deleteFrom(entityInfo.entity)
             MeshCollider.deleteFrom(entityInfo.entity)
@@ -101,41 +108,37 @@ export function setAudioPlayMode(scene:any, entityInfo:any){
             if(audioSource.attach){
                 Transform.createOrReplace(entityInfo.entity, {parent:engine.PlayerEntity})
             }
-    
-            let audio = AudioSource.getMutableOrNull(entityInfo.entity)
-    
-            if(audio){
-                audio.playing = audioSource.autostart
-                audio.loop = audioSource.loop
-                audio.volume = audioSource.volume
+
+            let audio:any
+            switch(audioSource.type){
+                case 0:
+                    audio = AudioSource.getMutableOrNull(entityInfo.entity)
+                    if(audio){
+                        audio.playing = false
+                        audio.loop = audioSource.loop
+                        audio.volume = audioSource.volume
+                    }
+                    break;
+
+                case 1:
+                case 2:
+                case 3:
+                    audio = AudioStream.getMutableOrNull(entityInfo.entity)
+                    if(audio){
+                        audio.playing = false
+                        audio.volume = audioSource.volume
+                    }
+                    break;
             }
         }
 
-        let audioStream = scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(entityInfo.aid)
-        if(audioStream){
-            console.log('setting audio stream play mode')
-            MeshRenderer.deleteFrom(entityInfo.entity)
-            MeshCollider.deleteFrom(entityInfo.entity)
-            TextShape.deleteFrom(entityInfo.entity)
-
-            if(audioStream.attach){
-                Transform.createOrReplace(entityInfo.entity, {parent:engine.PlayerEntity})
-            }
-    
-            let audio = AudioStream.getMutableOrNull(entityInfo.entity)
-    
-            if(audio){
-                audio.playing = audioStream.autostart
-                audio.volume = audioStream.volume
-            }
-        }
 
         AudioLoadedComponent.getMutable(entityInfo.entity).init = true
     }
 }
 
 export function disableAudioPlayMode(scene:any, entityInfo:any){
-    let audioSource = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(entityInfo.aid)
+    let audioSource = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(entityInfo.aid)
     console.log('disabling audio play mode', audioSource)
     let audio:any
     // if(audioSource){
@@ -202,49 +205,7 @@ export function updateSoundAutostart(entity:Entity, auto:boolean){
 }
 
 export function soundsListener(scene:any){
-    scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].onAdd((sound:any, aid:any)=>{
-        let info = getEntity(scene, aid)
-        if(!info){
-            return
-        }
-
-        // sound.listen("url", (c:any, p:any)=>{
-        //     if(p !== undefined){
-        //         updateSoundURL(info.entity, c)
-        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-        //     }
-        // })
-
-        // sound.listen("attach", (c:any, p:any)=>{
-        //     if(p !== undefined){
-        //         updateSoundAttachView(scene, aid, c, info)
-        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-        //     }
-        // })
-
-        // sound.listen("volume", (c:any, p:any)=>{
-        //     if(p !== undefined){
-        //         updateSoundVolume(info.entity, c)
-        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-        //     }
-        // })
-
-        // sound.listen("loop", (c:any, p:any)=>{
-        //     if(p !== undefined){
-        //         updateSoundLoop(info.entity, c)
-        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-        //     }
-        // })
-
-        // sound.listen("autostart", (c:any, p:any)=>{
-        //     if(p !== undefined){
-        //         updateSoundAutostart(info.entity, c)
-        //         AudioLoadedComponent.createOrReplace(info.entity, {init:false, sceneId:scene.id})
-        //     }
-        // })
-    })
-
-    scene[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].onAdd((sound:any, aid:any)=>{
+    scene[COMPONENT_TYPES.AUDIO_COMPONENT].onAdd((sound:any, aid:any)=>{
         let info = getEntity(scene, aid)
         if(!info){
             return
@@ -481,74 +442,107 @@ function loopTrack(){
     }
 }
 
-export function playAudioFile(catalogId?:string){
-    let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
-    if(itemData){
-        if(itemData.id !== CATALOG_IDS.AUDIO_STREAM){
-            console.log('not audio stream', itemData)
+export async function playAudioFile(catalogId?:string, streamId?:string, custom?:boolean){
+    if(streamId){
+        Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
 
-            Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
+        let url:any
+        if(custom){
+            url = streamId
+        }else{
+            if(!initAudiusServers){
+                updateAudiusInit(true)
+                await getServers()
+            }
+            chooseServer()
+            url = server + "/" + resources.audius.endpoints.stream + "/" + streamId + "/stream?app_name=" + APP_NAME + "&t=" +Math.floor(Date.now()/1000)
+        }
 
-            // let clip = AudioSource.getMutableOrNull(catalogSoundEntity)
-            // if(!clip){
-
-            // }
-            // clip.playing = false
-            // clip.audioClipUrl = "assets/" + itemData.id + ".mp3"
-            // clip.playing = true
-            AudioSource.createOrReplace(catalogSoundEntity, {
-                audioClipUrl:  "assets/" + itemData.id + ".mp3",
-                loop:false,
+        AudioStream.createOrReplace(catalogSoundEntity,
+            {
+                url:url,
                 playing:true,
                 volume:1
-            })
-            
-            // clip.volume = 10
-            // clip.playing = true
-
-            // AudioSource.playSound(catalogSoundEntity, "asset/" + itemData.id + ".mp3")
-            
-            // AudioStream.createOrReplace(catalogSoundEntity, {
-            //     url: "assets/" + itemData.id + ".mp3",
-            //     playing:true,
-            // })//
-            
-        }else{
-            console.log('trying to preview audio stream')
-            let streamInfo = sceneEdit[COMPONENT_TYPES.AUDIO_STREAM_COMPONENT].get(selectedItem.aid)
-            console.log("stream info is", streamInfo)
-            if(streamInfo){
+            }
+        )
+    }
+    else{
+        let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
+        if(itemData){
+            if(itemData.id !== CATALOG_IDS.AUDIO_STREAM){
+                console.log('not audio stream', itemData)
+    
                 Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
-                AudioStream.createOrReplace(catalogSoundEntity, {
-                    url: streamInfo.url,
+    
+                // let clip = AudioSource.getMutableOrNull(catalogSoundEntity)
+                // if(!clip){
+    
+                // }
+                // clip.playing = false
+                // clip.audioClipUrl = "assets/" + itemData.id + ".mp3"
+                // clip.playing = true
+                AudioSource.createOrReplace(catalogSoundEntity, {
+                    audioClipUrl:  "assets/" + itemData.id + ".mp3",
+                    loop:false,
                     playing:true,
-                    volume: streamInfo.volume
+                    volume:1
                 })
+                
+                // clip.volume = 10
+                // clip.playing = true
+    
+                // AudioSource.playSound(catalogSoundEntity, "asset/" + itemData.id + ".mp3")
+                
+                // AudioStream.createOrReplace(catalogSoundEntity, {
+                //     url: "assets/" + itemData.id + ".mp3",
+                //     playing:true,
+                // })//
+                
+            }else{
+                console.log('trying to preview audio stream')
+                let streamInfo = sceneEdit[COMPONENT_TYPES.AUDIO_COMPONENT].get(selectedItem.aid)
+                console.log("stream info is", streamInfo)
+                if(streamInfo && streamInfo.type > 0){
+                    Transform.createOrReplace(catalogSoundEntity, {parent:engine.PlayerEntity})
+                    AudioStream.createOrReplace(catalogSoundEntity, {
+                        url: streamInfo.url,
+                        playing:true,
+                        volume: streamInfo.volume
+                    })
+                }
             }
         }
     }
+    
 }
 
 export function playAudioStream(){
 
 }
 
-export function stopAudioFile(catalogId?:string){
-    let audio:any
-    let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
-    // let entity = catalogId ? catalogSoundEntity : selectedItem.entity
-
-    if(itemData){
-        if(itemData.id !== CATALOG_IDS.AUDIO_STREAM){
-            audio = AudioSource.getMutable(catalogSoundEntity)
-            // audio.playing = false
-        }else{
-            audio = AudioStream.getMutable(catalogSoundEntity)
-            // audio.playing = false//
+export function stopAudioFile(catalogId?:string, stream?:boolean){
+    if(stream){
+        let audio = AudioStream.getMutableOrNull(catalogSoundEntity)
+        if(audio){
+            audio.playing = false
         }
-        audio.playing = false
+    }else{
+        let audio:any
+        let itemData = items.get(catalogId ? catalogId : selectedItem.catalogId)
+        // let entity = catalogId ? catalogSoundEntity : selectedItem.entity
+    
+        if(itemData){
+            if(itemData.id !== CATALOG_IDS.AUDIO_STREAM){
+                audio = AudioSource.getMutable(catalogSoundEntity)
+                // audio.playing = false
+            }else{
+                audio = AudioStream.getMutable(catalogSoundEntity)
+                // audio.playing = false//
+            }
+            audio.playing = false
+        }
+        // AudioStream.getMutable(catalogSoundEntity).playing = false
     }
-    // AudioStream.getMutable(catalogSoundEntity).playing = false
 }
 
 export function AudioFinishedSystem(dt:number){
@@ -561,14 +555,14 @@ export function AudioFinishedSystem(dt:number){
     }
 }
 
-export async function searchAudius(filter:string){
+export async function searchAudius(filter:string, url?:string){
     if(!initAudiusServers){
         updateAudiusInit(true)
         await getServers()
     }
     chooseServer()
 
-    let search = await fetch(server + "/" + resources.audius.endpoints.search + filter)
+    let search = await fetch(server + "/" + (url ? url : resources.audius.endpoints.search) + filter)
     let jsonSearch = await search.json()
     console.log('search was ', jsonSearch)
     if(jsonSearch.data && jsonSearch.data.length > 0){

@@ -14,7 +14,7 @@ import { setUIClicked } from '../ui'
 import { EditTransform } from './Edit/EditTransform'
 import { EditVisibility } from './Edit/EditVisibility'
 import { EditName } from './Edit/EditName'
-import { EditAudio, updateAudioComponent } from './Edit/EditAudio'
+// import { EditAudio, updateAudioComponent } from './Edit/EditAudio'
 import { EditText } from './Edit/EditText'
 import { EditNftShape } from './Edit/EditNftShape'
 import { EditGltf } from './Edit/EditGltf'
@@ -48,6 +48,8 @@ import { EditPlaylist, playlistView, updatePlaylistComponent } from './Edit/Edit
 import { updatePopupPanelView } from './Edit/ActionPanels/AddPopupPanel'
 import { EditNPC, npcComponentView, updateNPCView } from './Edit/EditNPC'
 import { EditPath, editPathView, resetPathEntities, updateEditPathPanel, updateEditPathView } from './Edit/EditPath'
+import { releaseQuestAction } from './Edit/ActionPanels/AddQuestAction'
+import { EditAudioComponent, updateAudioComponent } from './Edit/EditAudios'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -111,11 +113,13 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             openEditComponent("")
             break;
 
-        case COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT:
-        case COMPONENT_TYPES.AUDIO_STREAM_COMPONENT:
-            if(scene && scene[value].has(selectedItem.aid)){
-                updateAudioComponent(scene[value].get(selectedItem.aid))
-            }
+            case COMPONENT_TYPES.AUDIO_COMPONENT:
+        // case COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT:
+        // case COMPONENT_TYPES.AUDIO_STREAM_COMPONENT:
+            // if(scene && scene[value].has(selectedItem.aid)){
+                // updateAudioComponent(scene[value].get(selectedItem.aid))
+                updateAudioComponent()
+            // }
             break;
 
         case COMPONENT_TYPES.TRIGGER_COMPONENT:
@@ -559,6 +563,7 @@ function getBackButtonLogic(){
                 }else{
                     releaseBatchActions()
                     releaseRandomActions()
+                    releaseQuestAction()
                     updateActionView("main")
                 }
             }else{
@@ -831,7 +836,8 @@ function EditObjectData(){
                 <EditTransform/>
                 <EditVisibility/>
                 <EditName/>
-                <EditAudio/>
+                {/* <EditAudio/> */}
+                <EditAudioComponent/>
                 <EditText/>
                 <EditNftShape/>
                 <EditGltf/>
@@ -984,6 +990,7 @@ function EditObjectData(){
                 <EditPlaylist/>
                 <EditNPC/>
                 <EditPath/>
+                <EditAudioComponent/>
 
             </UiEntity>
 
@@ -1119,7 +1126,7 @@ function getBasicComponents(){
         COMPONENT_TYPES.REWARD_COMPONENT,
         COMPONENT_TYPES.PLAYLIST_COMPONENT,
         COMPONENT_TYPES.AVATAR_SHAPE_COMPONENT,
-        COMPONENT_TYPES.PATH_COMPONENT
+        COMPONENT_TYPES.PATH_COMPONENT,
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1159,7 +1166,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-20).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1202,8 +1209,8 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.TRANSFORM_COMPONENT,
             COMPONENT_TYPES.CLICK_AREA_COMPONENT,
             COMPONENT_TYPES.TEXTURE_COMPONENT,
-            COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT,
-            COMPONENT_TYPES.AUDIO_STREAM_COMPONENT,
+            // COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT,
+            // COMPONENT_TYPES.AUDIO_STREAM_COMPONENT,
             COMPONENT_TYPES.IMAGE_COMPONENT,
             COMPONENT_TYPES.IWB_COMPONENT,
             COMPONENT_TYPES.LIVE_COMPONENT,
@@ -1214,6 +1221,8 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.TEAM_COMPONENT,
             COMPONENT_TYPES.REWARD_COMPONENT,
             COMPONENT_TYPES.LEVEL_COMPONENT,
+            COMPONENT_TYPES.PATH_COMPONENT,
+            COMPONENT_TYPES.AUDIO_COMPONENT
         ]
 
         let components:any[] = []
@@ -1223,7 +1232,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-20).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")

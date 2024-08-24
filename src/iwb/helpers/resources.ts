@@ -67,7 +67,7 @@ export let audiusMoodEndpoints:any = {
 }
 
 export default {
-    DEBUG: true,
+    DEBUG: true,//
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
@@ -264,7 +264,8 @@ export default {
             playlistInfo: "v1/playlists",
             trackInfo:"v1/tracks",
             feelingLucky:"v1/full/tracks/feeling_lucky?limit=25&with_users=false",
-            search:"v1/playlists/search?query="
+            search:"v1/playlists/search?query=",
+            searchTracks:"v1/tracks/search?query="
         },
         servers:[
             "https://audius-discovery-6.cultur3stake.com",

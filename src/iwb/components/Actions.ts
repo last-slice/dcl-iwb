@@ -485,9 +485,9 @@ function handleSubtractNumber(scene:any, info:any, action:any){
 function handlePlaySound(scene:any, info:any, action:any){
     let audio:any
     let itemInfo:any 
-    itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(info.aid)
+    itemInfo = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(info.aid)
 
-    if(itemInfo){
+    if(itemInfo && itemInfo.type === 0){
         audio = AudioSource.getMutableOrNull(info.entity)
         if(audio){
             audio.loop = action.loop
@@ -498,8 +498,8 @@ function handlePlaySound(scene:any, info:any, action:any){
         }
     }
 
-    itemInfo = scene[COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT].get(info.aid)
-    if(itemInfo){
+    itemInfo = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(info.aid)
+    if(itemInfo && itemInfo.type > 0){
         audio = AudioStream.getMutableOrNull(info.entity)
         console.log('audio is', audio)
         if(audio){

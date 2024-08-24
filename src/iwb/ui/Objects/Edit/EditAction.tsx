@@ -37,6 +37,7 @@ import { AddPopupPanel, showPopupPanel } from './ActionPanels/AddPopupPanel'
 import { AddRandomNumberPanel } from './ActionPanels/AddRandomNumberPanel'
 import { AddVolumeUpPanel } from './ActionPanels/AddVolumeUpPanel'
 import { AddFollowPathPanel } from './ActionPanels/AddFollowPathPanel'
+import { AddQuestActionPanel, updateQuests } from './ActionPanels/AddQuestAction'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -531,6 +532,10 @@ function getActionDataPanel(){
         case Actions.FOLLOW_PATH.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddFollowPathPanel/>
 
+          case Actions.QUEST_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateQuests()
+            return <AddQuestActionPanel/>
+
         }
 }
 
@@ -695,5 +700,9 @@ const ActionDefaults:any = {
     },
     [Actions.FOLLOW_PATH]:{
         pathAid:""
+    },
+    [Actions.QUEST_ACTION]:{
+        questId:"",
+        actionId:""
     },
 }

@@ -25,6 +25,7 @@ import { displayTutorialVideoButton } from "../ui/Objects/TutorialVideo";
 import { AudioFinishedSystem, createSounds } from "./Sounds";
 import { createPhysics } from "../physics";
 import { LAYER_1, LAYER_8, NO_LAYERS } from "@dcl-sdk/utils";
+import { initQuestClients } from "./Quests";
 
 export let localUserId: string
 export let localPlayer:any
@@ -91,12 +92,13 @@ export async function createPlayer(player:any){
     await checkWorldPermissions()
     // await createPhysics()
     await addPlayerTrigger()
+    await initQuestClients()
     
     engine.addSystem(PendingSceneLoadSystem)
     getAssetUploadToken()
 
 
-    if (localPlayer!.homeWorld) {
+    if (localPlayer!.homeWorld || localPlayer.worldPermissions) {
         let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
         if (config) {
             if (config.v < iwbConfig.v) {
@@ -107,6 +109,7 @@ export async function createPlayer(player:any){
                 })
             }
         }
+        sendServerMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, {})
     }
 }
 
@@ -170,6 +173,7 @@ function setPlayerDefaults(player:any){
     player.activeSceneId = ""
     player.mode = SCENE_MODES.PLAYMODE
     player.gameStatus = PLAYER_GAME_STATUSES.NONE
+    player.questClients = new Map<string, any>()
 
     let playerData = getPlayer()
     player.dclData = playerData

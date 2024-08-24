@@ -4,14 +4,14 @@ import resources from "../../helpers/resources"
 import { playSound } from "@dcl-sdk/utils"
 import { connected } from "../../components/Colyseus"
 import { localPlayer, localUserId, hasBuildPermissions, setPlayMode, isLocalPlayer } from "../../components/Player"
-import { log } from "../../helpers/functions"
-import { SCENE_MODES, SOUND_TYPES } from "../../helpers/types"
+import { EDIT_MODES, SCENE_MODES, SOUND_TYPES } from "../../helpers/types"
 import { selectedItem } from "../../modes/Build"
-import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping } from "../helpers"
+import { dimensions, calculateSquareImageDimensions, getImageAtlasMapping, uiSizer } from "../helpers"
 import { island, playerMode } from "../../components/Config"
-import { settingsIconData, topTools, uiModes } from "../uiConfig"
+import { settingsIconData, topTools, uiModes, uiSizes } from "../uiConfig"
 import { setUIClicked } from "../ui"
 import { showStore } from "./StoreView"
+import { displayQuestPanel, showQuestView } from "./QuestPanel"
 
 export let showToolsPanel = false
 
@@ -84,6 +84,31 @@ export function createToolsPanel() {
                     setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
                    }
                 }
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+            />  
+
+<UiEntity
+            uiTransform={{
+                display: localPlayer && (playerMode === SCENE_MODES.PLAYMODE) ? "flex" : "none",
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                flexDirection:'row',
+                margin: { top: '5', bottom: '5'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src:resources.textures.atlas2
+                },
+                uvs: getImageAtlasMapping(uiSizes.trophyIcon)//
+            }}
+            onMouseDown={()=>{
+                setUIClicked(true)
+                displayQuestPanel(!showQuestView)
+                setUIClicked(false)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)

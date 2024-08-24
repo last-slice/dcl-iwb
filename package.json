@@ -26,13 +26,14 @@
   },
   "dependencies": {
     "@dcl-sdk/utils": "latest",
+    "@dcl/quests-client": "^1.0.3",
+    "@types/cannon": "latest",
+    "cannon": "latest",
     "colyseus.js": "^0.15.10",
     "core-js": "^3.31.0",
-    "cannon": "latest",
     "dcl-crypto-toolkit": "^1.0.0-20231102170834.commit-63c4be6",
     "eth-connect": "^6.2.1",
-    "mitt": "^3.0.1",
-    "@types/cannon": "latest"
+    "mitt": "^3.0.1"
   },
   "bundleDependencies": [
     "colyseus.js",

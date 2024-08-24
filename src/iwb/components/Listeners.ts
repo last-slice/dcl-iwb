@@ -26,6 +26,7 @@ import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
 import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { disableSceneEntities } from "../modes/Play";
 import { playAudiusTrack } from "./Sounds";
+import { setServerQuests, updateQuestsDefinitions } from "./Quests";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -117,7 +118,10 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
-        setHidPlayersArea()
+
+        // setHidPlayersArea()//
+
+        await setServerQuests(info.quests)
         await setRealmAssets(info.realmAssets)
 
         await refreshSortedItems()
@@ -540,6 +544,11 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.SHOOT, (info:any) => {
         log(SERVER_MESSAGE_TYPES.SHOOT + ' received', info)
         playGameShoot(info)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS + ' received', info)
+        updateQuestsDefinitions(info)
     })
 
     room.state.listen("sceneCount", (c:any, p:any)=>{

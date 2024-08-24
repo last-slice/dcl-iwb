@@ -32,6 +32,7 @@ import { createGameLobbyPanel } from './Objects/GameLobby'
 import { createDialogPanel } from './Objects/DialogPanel'
 import { createTutorialVideoButton } from './Objects/TutorialVideo'
 import { createMainLoadingScreen } from './Objects/LoadingScreen'
+import { createQuestPanel } from './Objects/QuestPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -71,6 +72,7 @@ const uiComponent:any = () => [
   createDialogPanel(),
   createTutorialVideoButton(),
   createMainLoadingScreen(),
+  createQuestPanel(),
   // createAdvancedEditPanel(),
 ]
 
