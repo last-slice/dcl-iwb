@@ -430,6 +430,7 @@ export function getActionList(){
 
 function selectNewActionIndex(index:number){
     newActionIndex = index
+    console.log('new action index is ', index)
     resetActionData()
 }
 
@@ -557,7 +558,7 @@ async function buildAction(){
     newActionData.channel = newActionPipelineIndex
     await update("add", newActionData)
     updateActionView("main")
-    selectNewActionIndex(0)
+    // selectNewActionIndex(0)
 
     //clean up actions////
     resetAdditionalAssetFeatures()

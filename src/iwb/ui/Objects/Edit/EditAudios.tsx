@@ -33,19 +33,24 @@ let playing = false
 export function updateAudioComponent(){
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(!scene){
+        console.log('no scene for audio option')
         return
     }
 
-    audioComponent = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(selectedItem.aid)
-    console.log('setting audio to', audioComponent)//
-    // if(audio.type > 0){
-    //     audioComponent = {...audio}
-    // }
-
-    if(audioComponent && audioComponent.type === 2){
-        clearSearch()
+    let audioInfo = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(selectedItem.aid)
+    if(!audioInfo){
+        console.log('invalid audio info')
+        return
     }
-    playing = false
+
+    if(audioInfo.type > 0){
+        console.log('im ehre')
+        clearSearch()
+        playing = false
+    }
+    audioComponent = {...audioInfo}
+
+    console.log('audio component is', audioComponent)
 }
 
 function clearSearch(){
@@ -278,7 +283,7 @@ export function EditAudioComponent() {
 
             </UiEntity>
 
-            {/* <AudioFile /> */}
+            <AudioFile />
             <Audius />
             <AudioStream />
 
@@ -289,19 +294,19 @@ export function EditAudioComponent() {
 function AudioFile(){
     return(
         <UiEntity
+        key={resources.slug + "edit::audio::source"}
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             width: '100%',
             height: '75%',
-            // display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT && audioComponent.type === 0 ? 'flex' : 'none'//
+            display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT && (audioComponent.type === 0) ? 'flex' : 'none'//
         }}
-        uiText={{value:"Awesome"}}
     >
 
-{/* play button row */}
-{/* <UiEntity
+{/* play button row  */}
+<UiEntity
 uiTransform={{
 flexDirection: 'row',
 justifyContent: 'center',
@@ -359,8 +364,7 @@ stopAudioFile(selectedItem.catalogId)
 }}
 />
 
-</UiEntity> */}
-
+</UiEntity>
 
         </UiEntity>
     )
@@ -375,7 +379,7 @@ function Audius(){
              justifyContent: 'flex-start',
              width: '100%',
              height: '75%',
-             display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT && audioComponent.type && audioComponent.type === 2 ? 'flex' : 'none'
+             display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT && audioComponent.type === 2 ? 'flex' : 'none'
             }}
      >
 
@@ -398,7 +402,7 @@ function Audius(){
         width: '100%',
         height: '100%',
     }}
-    uiText={{value: "Current Song: " + (audioComponent && audioComponent.name), fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
+    uiText={{value: "Current Song: " + (audioComponent.name), fontSize: sizeFont(25, 15), color: Color4.White(), textAlign: 'middle-left'}}
 />
 {/* <UiEntity
     uiTransform={{
@@ -553,7 +557,7 @@ function Audius(){
 
     {
         visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT &&
-        audioComponent && audioComponent.type && audioComponent.type === 2 &&
+        audioComponent && audioComponent.type === 2 &&
         generateAudiusSearchRows()
     }
 
@@ -642,7 +646,7 @@ function AudioStream(){
             justifyContent: 'flex-start',
             width: '100%',
             height: '75%',
-            display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT && audioComponent.type && audioComponent.type === 1 ? 'flex' : 'none'
+            display: visibleComponent === COMPONENT_TYPES.AUDIO_COMPONENT && audioComponent.type === 1 ? 'flex' : 'none'
            }}
     >
 
@@ -984,5 +988,3 @@ function updateVolume(type:string, value:any){
         }
     )
 }
-
-///

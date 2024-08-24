@@ -115,12 +115,7 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             break;
 
             case COMPONENT_TYPES.AUDIO_COMPONENT:
-        // case COMPONENT_TYPES.AUDIO_SOURCE_COMPONENT:
-        // case COMPONENT_TYPES.AUDIO_STREAM_COMPONENT:
-            // if(scene && scene[value].has(selectedItem.aid)){
-                // updateAudioComponent(scene[value].get(selectedItem.aid))
                 updateAudioComponent()
-            // }
             break;
 
         case COMPONENT_TYPES.TRIGGER_COMPONENT:

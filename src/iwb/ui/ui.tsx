@@ -33,6 +33,7 @@ import { createDialogPanel } from './Objects/DialogPanel'
 import { createTutorialVideoButton } from './Objects/TutorialVideo'
 import { createMainLoadingScreen } from './Objects/LoadingScreen'
 import { createQuestPanel } from './Objects/QuestPanel'
+import { createUITests } from './tests'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -74,6 +75,9 @@ const uiComponent:any = () => [
   createMainLoadingScreen(),
   createQuestPanel(),
   // createAdvancedEditPanel(),
+
+
+  createUITests(),
 ]
 
 export function generateButtons(data:any){
