@@ -1147,7 +1147,9 @@ export function handlePlayPlaylist(scene:any, info:any, action:any){
             break;
 
         case 3: //play audius playlist
-            seekAudiusPlaylist(scene, info, action, itemInfo, true)
+            if(itemInfo.audiusId){
+                seekAudiusPlaylist(scene, info, action, itemInfo, true)
+            }
             break;
     }
     // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION,

@@ -48,6 +48,48 @@ export function updatePlayModeReset(value: boolean) {
     playModeReset = value
 }
 
+export async function disableSceneEntitiesOnLeave(sceneId:any){
+    let scene = colyseusRoom.state.scenes.get(sceneId)
+    if(scene && !scene.checkLeave && scene.loaded){
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+            if(index > 2){
+                let entityInfo = getEntity(scene, item.aid)
+                if(entityInfo){
+                    //check 3d//
+                if (GLTFLoadedComponent.has(entityInfo.entity)) {
+                    GLTFLoadedComponent.getMutable(entityInfo.entity).init = false
+                }
+
+                //check video
+                if (VideoLoadedComponent.has(entityInfo.entity)) {
+                    VideoLoadedComponent.getMutable(entityInfo.entity).init = false
+                }
+
+                //check audio
+                if (AudioLoadedComponent.has(entityInfo.entity)) {
+                    AudioLoadedComponent.getMutable(entityInfo.entity).init = false
+                }
+
+                if (VisibleLoadedComponent.has(entityInfo.entity)) {
+                    VisibleLoadedComponent.getMutable(entityInfo.entity).init = false
+                }
+
+                // //check pointers
+                if (PointersLoadedComponent.has(entityInfo.entity)) {
+                    PointersLoadedComponent.getMutable(entityInfo.entity).init = false
+                }
+
+                disableTriggers(scene, entityInfo)
+                }
+            }
+        })
+
+        scene.checkLeave = true
+        scene.checkDisabled = false
+        scene.checkEnabled = false
+    }
+}
+
 export async function disableSceneEntities(sceneId:any) {
     // console.log('disabling scene entities', lastScene, localPlayer.activeScene)
     // if (!disabledEntities) {
@@ -170,25 +212,32 @@ export async function enableSceneEntities(sceneId: string) {
     //     }
     //     disabledEntities = false
     // }
+    scene.checkLeave = false
     scene.checkEnabled = true
     scene.checkDisabled = false
 }
 
 export function triggerSceneEntitiesOnEnter(sceneId:string){
     let scene = colyseusRoom.state.scenes.get(sceneId)
-    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
-        if(index > 2){
-            let entityInfo = getEntity(scene, item.aid)
-            if(entityInfo){
-
-                setAudioPlayMode(scene, entityInfo)
-                setVideoPlayMode(scene, entityInfo)
-
-                let triggerEvents = getTriggerEvents(entityInfo.entity)
-                triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+    if(scene && scene.checkLeave){
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+            if(index > 2){
+                let entityInfo = getEntity(scene, item.aid)
+                if(entityInfo){
+    
+                    setAudioPlayMode(scene, entityInfo)
+                    setVideoPlayMode(scene, entityInfo)
+                    setTriggersForPlayMode(scene, entityInfo)
+    
+                    let triggerEvents = getTriggerEvents(entityInfo.entity)
+                    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+                }
             }
-        }
-    })
+        })
+        scene.checkLeave = false
+        scene.checkDisabled = false
+        scene.checkEnabled = true
+    }
 }
 
 export function triggerSceneEntitiesOnLoad(sceneId:string){
@@ -208,7 +257,7 @@ export function triggerSceneEntitiesOnLoad(sceneId:string){
                 setPointersPlayMode(scene, entityInfo)
                 checkTransformComponent(scene, entityInfo)
                 setTextShapeForPlayMode(scene, entityInfo)
-                setTriggersForPlayMode(scene, entityInfo)
+
                 setUiTextPlayMode(scene, entityInfo)
                 setUiImagePlayMode(scene, entityInfo)
                 setLivePanel(scene, entityInfo)                
@@ -234,7 +283,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableMeshRenderPlayMode(scene, entityInfo)
         disableTextShapePlayMode(scene, entityInfo)
         disableSmartItemsPlayMode(scene, entityInfo)
-        disableTriggers(scene, entityInfo)
+
         checkTransformComponent(scene, entityInfo)
         disableCounterForPlayMode(scene, entityInfo)
         disableUiTextPlayMode(scene, entityInfo)

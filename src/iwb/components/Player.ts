@@ -112,7 +112,7 @@ export async function createPlayer(player:any){
         }
         sendServerMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, {})
     }
-    VLM.init({});
+    // VLM.init({});
 }
 
 export function updatePlayerLoadRadius(value:number){

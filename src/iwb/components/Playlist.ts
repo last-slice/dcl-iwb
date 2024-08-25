@@ -185,7 +185,7 @@ export async function seekAudiusPlaylist(scene:any, info:any, action:any, playli
                 {
                     url:server + "/" + resources.audius.endpoints.stream + "/" + trackToPlay.id + "/stream?app_name=" + APP_NAME + "&t=" +Math.floor(Date.now()/1000),
                     playing:true,
-                    volume:1
+                    volume:playlistInfo.volume
                 }
             )
         }

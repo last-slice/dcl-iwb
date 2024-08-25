@@ -296,7 +296,7 @@ export function EditPlaylist() {
             <UiEntity
             uiTransform={{
                 flexDirection: 'row',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 width: '100%',
                 height: '10%',
                 margin:{top:"1%"},
@@ -304,13 +304,21 @@ export function EditPlaylist() {
             }}
         >
 
-        {/* add playlist item */}
-        <UiEntity
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '60%',
+        height: '100%',
+    }}
+>
+<UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '70%',
+                width: '60%',
                 height: '100%',
             }}
         uiText={{value:"Play Mode", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
@@ -322,7 +330,7 @@ export function EditPlaylist() {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignContent: 'center',
-                width: '40%',
+                width: '95%',
                 height: '100%',
             }}
             >
@@ -339,6 +347,80 @@ export function EditPlaylist() {
                     fontSize={sizeFont(20, 15)}
                 />
         </UiEntity>
+</UiEntity>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40%',
+        height: '100%',
+        margin:{left:'3%'},
+        display: typeIndex === 4 ? 'flex' : 'none'
+    }}
+>
+ {/* audius volume row */}
+
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '60%',
+            height: '100%',
+        }}
+        uiText={{value:"Volume", textWrap:'nowrap', textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '40%',
+            height: '100%',
+        }}
+        >
+        <Input
+            onChange={(value) => {
+                let newVolume = parseFloat(value.trim())
+                if(!isNaN(newVolume)){
+                    if(newVolume > 1){
+                        newVolume = 1
+                    }
+                    if(newVolume < 0){
+                        newVolume = 0
+                    }
+                    playlist.volume = newVolume
+                }
+                update("volume", "volume", playlist.volume)
+            }}
+            onSubmit={(value) => {
+                let newVolume = parseFloat(value.trim())
+                if(!isNaN(newVolume)){
+                    if(newVolume > 1){
+                        newVolume = 1
+                    }
+                    if(newVolume < 0){
+                        newVolume = 0
+                    }
+                    playlist.volume = newVolume
+                }
+                update("volume", "volume", playlist.volume)
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'' + (playlist.volume ? playlist.volume : "")}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+        />
+        </UiEntity>
+
+</UiEntity>
 
         </UiEntity>
     
@@ -396,8 +478,7 @@ export function EditPlaylist() {
             />
         </UiEntity>
 
-        </UiEntity>
-
+    </UiEntity>
 
         {/* audius selection row  */}
         <UiEntity

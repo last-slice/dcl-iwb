@@ -77,7 +77,7 @@ const uiComponent:any = () => [
   // createAdvancedEditPanel(),
 
 
-  createUITests(),
+  // createUITests(),//
 ]
 
 export function generateButtons(data:any){

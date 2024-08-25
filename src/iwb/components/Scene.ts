@@ -12,7 +12,7 @@ import { localUserId, localPlayer } from "./Player"
 import { transformListener } from "./Transform"
 import { getCenterOfParcels } from "../helpers/build"
 import { meshListener } from "./Meshes"
-import { disableSceneEntities, enableSceneEntities, triggerSceneEntitiesOnEnter, updateDisabledEntities } from "../modes/Play"
+import { disableSceneEntities, disableSceneEntitiesOnLeave, enableSceneEntities, triggerSceneEntitiesOnEnter, updateDisabledEntities } from "../modes/Play"
 import { playModeReset } from "../modes/Play"
 import { iwbInfoListener } from "./IWB"
 import { nameListener } from "./Name"
@@ -368,6 +368,8 @@ export async function checkScenePermissions() {
                 if (lastScene) {
                     if (lastScene !== activeScene.id) {
                         // await disableSceneEntities(lastScene)
+                        await disableSceneEntitiesOnLeave(lastScene)
+
 
                         //let triggerEvents = getTriggerEvents(entityInfo.entity)
                         //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
