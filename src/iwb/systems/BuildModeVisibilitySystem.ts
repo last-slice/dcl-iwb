@@ -1,6 +1,6 @@
 import {engine, VisibilityComponent} from "@dcl/sdk/ecs"
 import { localPlayer } from "../components/Player";
-import { BuildModeVisibilty } from "../modes/Create";
+// import { BuildModeVisibilty } from "../modes/Create";
 let timer = 0
 
 export function BuildModeVisibiltyComponents(dt: number) {

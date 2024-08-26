@@ -10,7 +10,7 @@ export let questClients:Map<string, any> = new Map()
 const questHud = createQuestHUD({autoRender:true})
 
 export function setServerQuests(serverQuests:any[]){
-    console.log('server quests are ', serverQuests)
+    // console.log('server quests are ', serverQuests)
     quests = serverQuests
     quests.forEach((quest:any)=>{
       quest.started = false

@@ -1,10 +1,10 @@
 import { Entity, InputAction, PointerEventType, PointerEvents, engine, inputSystem } from "@dcl/sdk/ecs"
-import { handleInputTriggerForEntity } from "../components/Triggers"
+import { handleInputTriggerForEntity, runGlobalTrigger } from "../components/Triggers"
 import { uiInput } from "../ui/ui"
 import { setButtonState } from "./InputSystem"
 import { localUserId} from "../components/Player"
 import { createBeam, startAttackCooldown } from "../components/Game"
-import { GAME_WEAPON_TYPES } from "../helpers/types"
+import { GAME_WEAPON_TYPES, Triggers } from "../helpers/types"
 import { colyseusRoom } from "../components/Colyseus"
 import { excludeHidingUsers } from "../components/Config"
 
@@ -14,12 +14,14 @@ export function addPlayModeSystem(){
     if(!added){
         added = true
         engine.addSystem(PlayModeInputSystem)
+        engine.addSystem(PlayModeSceneTick)
         console.log('adding playmode input system')//
     }
 }
 
 export function removePlayModSystem(){
     engine.removeSystem(PlayModeInputSystem)
+    engine.removeSystem(PlayModeSceneTick)
     added = false
     console.log('removed playmode input system')
 }
@@ -209,3 +211,13 @@ export function PlayModeInputSystem(dt: number) {
         }
     }
 }
+
+export function PlayModeSceneTick(_dt: number) {
+    colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
+      runGlobalTrigger(scene, Triggers.ON_CLOCK_TICK, {input:0, pointer:0})
+    })
+    // for (const entity of tickSet) {
+    //   const triggerEvents = getTriggerEvents(entity)
+    //   triggerEvents.emit(Triggers.ON_CLOCK_TICK, {input:0, type:0, entity:entity})
+    // }
+  }

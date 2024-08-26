@@ -31,7 +31,7 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
 
     itemInfo.triggers.forEach((trigger:any)=>{
       switch(trigger.type){
-        case Triggers.ON_TICK:
+        case Triggers.ON_CLOCK_TICK:
           initOnTick(entityInfo.entity)
           break
 
@@ -193,7 +193,7 @@ function findTrigger(scene:any, triggerEvent:any){
   }
     let triggers = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(aid)
     if(!triggers){
-      return false
+      return false//
     }
     // console.log('triggers', triggers)
     // console.log('trigger found', triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer))
@@ -513,6 +513,7 @@ export function PlayTriggerDecisionSystem(dt:number){
 
 function initOnTick(entity:Entity){
   tickSet.add(entity)
+  console.log('adding tick')
 }
 
 export function disableTriggers(scene:any, entityInfo:any){

@@ -338,7 +338,7 @@ export function updateActions(scene:any, info:any, action:any){
 }
 
 export function handlePlayAnimation(scene:any, entityInfo:any, action:any){
-    console.log('handl')
+    console.log('handlePlayAnimation action ', action)
     Animator.stopAllAnimations(entityInfo.entity)
     const clip = Animator.getClip(entityInfo.entity, action.anim)
     clip.playing = true
@@ -818,6 +818,7 @@ function handleStopLoop(scene:any, info:any, action:any){
 }
 
 function handleLoadLevel(scene:any, info:any, action:any){
+    console.log('handle load level action', info, action)
     let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(info.aid)
     if(levelInfo){
         displayLoadingScreen(true, levelInfo)

@@ -1,6 +1,6 @@
 import { ColliderLayer, GltfContainer, MeshCollider, MeshRenderer, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
-import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../helpers/Components"
+// import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../helpers/Components"
 import { COMPONENT_TYPES } from "../helpers/types"
 
 export function checkMeshRenderComponent(scene:any, entityInfo:any){
@@ -14,7 +14,7 @@ export function checkMeshRenderComponent(scene:any, entityInfo:any){
                 MeshRenderer.setBox(entityInfo.entity)
                 break;
         }
-        MeshRenderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        // MeshRenderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
         // console.log('setting mesh renderer for entity', entityInfo.aid)
     }
 }
@@ -33,7 +33,7 @@ export function checkMeshColliderComponent(scene:any, entityInfo:any){
                 break;
             
         }
-        MeshColliderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        // MeshColliderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
@@ -76,7 +76,7 @@ export function meshListener(scene:any){
 
 export function setMeshRenderBuildMode(scene:any, entityInfo:any){
     checkMeshRenderComponent(scene, entityInfo)
-    MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+    // MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
 }
 
 export function setMeshRenderPlayMode(scene:any, entityInfo:any){
@@ -85,7 +85,7 @@ export function setMeshRenderPlayMode(scene:any, entityInfo:any){
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }
-        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+        // MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
 }
 
@@ -93,7 +93,7 @@ export function setMeshColliderBuildMode(scene:any, entityInfo:any){
     let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
     if(meshInfo){
         checkMeshColliderComponent(scene, entityInfo)
-        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+        // MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
 }
 
@@ -106,7 +106,7 @@ export function setMeshColliderPlayMode(scene:any, entityInfo:any){
         }else{
             checkMeshColliderComponent(scene, entityInfo)
         }
-        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+        // MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
 }
 
@@ -117,7 +117,7 @@ export function disableMeshRenderPlayMode(scene:any, entityInfo:any){
         if(!meshInfo.onPlay){
             MeshRenderer.deleteFrom(entityInfo.entity)
         }
-        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+        // MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
 }
 
@@ -127,6 +127,6 @@ export function disableMeshColliderPlayMode(scene:any, entityInfo:any){
         if(!meshInfo.onPlay){
             MeshCollider.deleteFrom(entityInfo.entity)
         }
-        MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
+        // MeshRenderLoadedComponent.has(entityInfo.entity) ? MeshRenderLoadedComponent.getMutable(entityInfo.entity).init = true : null
     }
 }

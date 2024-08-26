@@ -48,7 +48,7 @@ export function addLevelSpawnEntity(){
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     Transform.createOrReplace(levelSpawnEntity, {
         parent:scene.parentEntity, 
-        position:scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(selectedItem.aid).loadingSpawn,
+        position:{...scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(selectedItem.aid).loadingSpawn},
     }
     )
 
@@ -62,7 +62,7 @@ export function addLevelSpawnEntity(){
     TextShape.create(levelSpawnArrowEntity, {text:"Spawn Look", fontSize:3})
     Transform.createOrReplace(levelSpawnArrowEntity, {
         parent: findAssetParent(scene, selectedItem.aid), 
-        position: Vector3.subtract(scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(selectedItem.aid).loadingSpawnLook, Transform.get(scene.parentEntity).position)
+        position: {...scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(selectedItem.aid).loadingSpawn}
         }
     )
 }

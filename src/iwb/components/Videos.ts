@@ -1,5 +1,5 @@
 import { Material, VideoPlayer } from "@dcl/sdk/ecs"
-import { VideoLoadedComponent } from "../helpers/Components"
+// import { VideoLoadedComponent } from "../helpers/Components"
 import { selectedItem } from "../modes/Build"
 import { getEntity } from "./IWB"
 import { COMPONENT_TYPES } from "../helpers/types"
@@ -20,7 +20,7 @@ export async function checkVideoComponent(scene:any, entityInfo:any, texture:str
             loop: itemInfo.loop
         })
         console.log('video player is', VideoPlayer.get(entityInfo.entity))
-        VideoLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        // VideoLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
@@ -72,13 +72,13 @@ export function setVideoBuildMode(scene:any, entityInfo:any){
 }
 
 export function setVideoPlayMode(scene:any, entityInfo:any){
-    if (VideoLoadedComponent.has(entityInfo.entity) && !VideoLoadedComponent.get(entityInfo.entity).init){
+    // if (VideoLoadedComponent.has(entityInfo.entity) && !VideoLoadedComponent.get(entityInfo.entity).init){
         let videoInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
         if(videoInfo && videoInfo.autostart){
             playVideoComponent(entityInfo)
         }
-        VideoLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
+    //     VideoLoadedComponent.getMutable(entityInfo.entity).init = true
+    // }
 }
 
 export function playVideoComponent(entityInfo:any, position?:any){

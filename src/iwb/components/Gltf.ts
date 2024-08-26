@@ -1,6 +1,6 @@
 import { AvatarAttach, ColliderLayer, GltfContainer, PointerEvents, Transform } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
-import { GLTFLoadedComponent, LevelAssetGLTF } from "../helpers/Components"
+import { LevelAssetGLTF } from "../helpers/Components"
 import { playerMode } from "./Config"
 import { COLLIDER_LAYERS, COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { setAnimationPlayMode } from "./Animator"
@@ -18,7 +18,7 @@ export function checkGLTFComponent(scene:any, entityInfo:any, isLevelAsset?:bool
             visibleMeshesCollisionMask: (gltf.visibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltf.visibleCollision].toString())), 
             invisibleMeshesCollisionMask: (gltf.invisibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltf.invisibleCollision].toString()))
         })
-        GLTFLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        // GLTFLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
 
         if(playerMode === SCENE_MODES.BUILD_MODE){
             setGLTFCollisionBuildMode(scene, entityInfo)
@@ -71,7 +71,7 @@ export function setGLTFCollisionBuildMode(scene:any, entityInfo:any) {
 }
 
 export function setGLTFPlayMode(scene:any, entityInfo:any){
-    if (GLTFLoadedComponent.has(entityInfo.entity) && !GLTFLoadedComponent.get(entityInfo.entity).init){
+    // if (GLTFLoadedComponent.has(entityInfo.entity) && !GLTFLoadedComponent.get(entityInfo.entity).init){
         let gltfInfo = scene[COMPONENT_TYPES.GLTF_COMPONENT].get(entityInfo.aid)
         if(gltfInfo){
             let gltf = GltfContainer.getMutableOrNull(entityInfo.entity)
@@ -82,7 +82,7 @@ export function setGLTFPlayMode(scene:any, entityInfo:any){
             }
             setAnimationPlayMode(scene, entityInfo)
         }
-        GLTFLoadedComponent.getMutable(entityInfo.entity).init = true
+        // GLTFLoadedComponent.getMutable(entityInfo.entity).init = true
         AvatarAttach.deleteFrom(entityInfo.entity)
-    }
+    // }
 }

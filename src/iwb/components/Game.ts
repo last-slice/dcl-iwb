@@ -19,8 +19,8 @@ import { stopAllIntervals } from "./Timer"
 import { setVisibilityPlayMode, updateAssetBuildVisibility } from "./Visibility"
 import { disableCounterForPlayMode } from "./Counter"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
-import { disableEntityForPlayMode, disableSceneEntities } from "../modes/Play"
 import { setExcludePlayersToSoloGame } from "./Config"
+import { handleSceneEntitiesOnUnload, handleSceneEntityOnUnload } from "../modes/Play"
 
 export let gameEndingtimer:any
 export let gameEntities:any[] = []
@@ -214,10 +214,11 @@ export function attemptGameEnd(info:any){
         displaySkinnyVerticalPanel(false)
         //to do
         //clean up any game timers etc etc//
+        showScenesAfterGame(scene.id)
     }
     localPlayer.canTeleport = true
     localPlayer.canMap = true
-    showScenesAfterGame(scene.id)
+    
 }
 
 export function abortGameTermination(scene:any){
@@ -239,8 +240,6 @@ export function checkGameplay(scene:any){
         gameEndingtimer = utils.timers.setTimeout(()=>{
             hideNotification()
             killAllGameplay()
-            // sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
-            // attemptGameEnd({sceneId: scene.id})
         }, 1000 * 5)
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Your Game will auto end in 5 seconds", animate:{enabled:true, return: false, time:5}})
     }
@@ -751,7 +750,7 @@ function hideOtherScenes(sceneId:string){
                 if(index > 2){
                     let entityInfo = getEntity(scene, item.aid)
                     if(entityInfo){
-                        disableEntityForPlayMode(scene, entityInfo)
+                        handleSceneEntityOnUnload(scene, entityInfo)
                         updateAssetBuildVisibility(scene, false, entityInfo)
                     }
                 }
@@ -768,14 +767,7 @@ function hideOtherPlayers(excludedIds:string[]){
 function showScenesAfterGame(sceneId:string){
     colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
         if(aid !== sceneId && scene.hiddenForGame){
-            scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
-                if(index > 2){
-                    let entityInfo = getEntity(scene, item.aid)
-                    if(entityInfo){
-                        disableEntityForPlayMode(scene, entityInfo)
-                    }
-                }
-            })
+            // handleSceneEntitiesOnUnload(scene.id)
             scene.hiddenForGame = false
         }
     })

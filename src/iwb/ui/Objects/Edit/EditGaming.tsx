@@ -534,31 +534,72 @@ function GameMetadataView(){
 
     </UiEntity>
 
+
     <UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '10%',
-    display: gamingInfo && gamingInfo.startScreen !== "iwb" ? "flex" : "none"
-}}
->
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '100%',
+        height: '10%',
+    }}
+        uiText={{value:"Game Image", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+    />
+    
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+        >
 <Input
     onChange={(value) => {
-        // startScreen = value.trim()
+        // gamingInfo.description = value.trim()//
+        update("edit", "image", value.trim())
     }}
     fontSize={sizeFont(20,15)}
-    placeholder={'' + (gamingInfo && gamingInfo.startScreen)}
+    placeholder={'' + (gamingInfo && gamingInfo.image)}
     placeholderColor={Color4.White()}
     color={Color4.White()}
     uiTransform={{
         width: '100%',
         height: '100%',
     }}
+    // value={selectedItem && selectedItem.enabled  ? getDefaultCounterValue() : ""}
     />
 
     </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '30%',
+        }}
+        >
+                <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(15).width,
+            height: calculateSquareImageDimensions(15).height
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: '' + (gamingInfo ? gamingInfo.image : "")
+            },
+        }}
+        />
+        </UiEntity>
+
 
         </UiEntity>
     )
@@ -1607,6 +1648,11 @@ function update(action:string, type:string, value:any, team?:any){
             [type]:value
         }
     )
+    if(team){}
+    else{
+        gamingInfo[type] = value
+    }
+   
 }
 
 function generateLevels(){

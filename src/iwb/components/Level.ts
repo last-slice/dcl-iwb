@@ -1,7 +1,6 @@
 import { Entity, GltfContainerLoadingState, LoadingState, engine } from "@dcl/sdk/ecs"
 import { Actions, COMPONENT_TYPES, Triggers } from "../helpers/types"
 import { createAsset, getEntity } from "./IWB"
-import { enableEntityForPlayMode, enableSceneEntities, updatePlayModeReset } from "../modes/Play"
 import { LevelAssetGLTF } from "../helpers/Components"
 import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger, updateTriggerEvents } from "./Triggers"
 import { utils } from "../helpers/libraries"
@@ -109,7 +108,6 @@ export function loadLevelAssets(scene:any, info:any, action:any){
         })
 
         // checkLevelLoaded(info.entity)
-        updatePlayModeReset(true)
 
         utils.timers.setTimeout(()=>{
             checkLevelLoaded(scene, levelInfo, info)
@@ -123,21 +121,23 @@ export function enableLevelAsset(scene:any, entityInfo:any){
 }
 
 export function disableLevelAssets(scene:any){
-    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
-        if(i > 2){
-            let entityInfo = getEntity(scene, item.aid)
-            if(entityInfo){
-                // if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
-                //     engine.removeEntity(entityInfo.entity)
-                // }
-
-                disableGameAsset(scene, entityInfo)
+    if(scene){
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, i:number)=>{
+            if(i > 2){
+                let entityInfo = getEntity(scene, item.aid)
+                if(entityInfo){
+                    // if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
+                    //     engine.removeEntity(entityInfo.entity)
+                    // }
+    
+                    disableGameAsset(scene, entityInfo)
+                }
             }
-        }
-    })
-    levelAssetsLoaded = 0
-    levelAssetsToLoad = 0
-    levelToLoad = -500 as Entity
+        })
+        levelAssetsLoaded = 0
+        levelAssetsToLoad = 0
+        levelToLoad = -500 as Entity
+    }
 }
 
 export function checkLevelLoaded(scene:any, levelInfo:any, entityInfo:any){
@@ -172,12 +172,11 @@ export function LevelAssetLoadingSystem(dt:number){
     }
 }
 
-
 export function attemptLoadLevel(scene:any, levelCounterAid:string, levelAid:string){
     let entityInfo = getEntity(scene, levelAid)
     if(!entityInfo){
         //todo
-        //end game
+        //end game//
         return
     }
 
@@ -188,13 +187,16 @@ export function attemptLoadLevel(scene:any, levelCounterAid:string, levelAid:str
         if(actionInfo.actions && actionInfo.actions.length > 0){
             let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
             if(action){
+                console.log("found load level action for level")
                 let counterActions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(levelCounterAid)
+                console.log('level counter actions are ', counterActions)
                 if(counterActions){
                     let advanceLevelAction = counterActions.actions.find(($:any)=> $.type === Actions.ADD_NUMBER)
                     if(advanceLevelAction){
+                        console.log('found add level action to counter')
                         let counterInfo = getEntity(scene, levelCounterAid)
-                        actionQueue.push({aid:levelCounterAid, action:advanceLevelAction, entity:counterInfo.entity})
-                        actionQueue.push({aid:levelAid, action:action, entity:entityInfo.entity})
+                        actionQueue.push({aid:levelCounterAid, action:advanceLevelAction, entity:counterInfo.entity, force:true})
+                        actionQueue.push({aid:levelAid, action:action, entity:entityInfo.entity, force:true})
                         setUIClicked(false)
                     }
                 }

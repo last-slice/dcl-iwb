@@ -1,5 +1,5 @@
 import { InputAction, PBPointerEvents_Entry, PointerEventType, PointerEvents } from "@dcl/sdk/ecs"
-import { PointersLoadedComponent } from "../helpers/Components"
+// import { PointersLoadedComponent } from "../helpers/Components"
 import { getEntitiesWithParent } from "@dcl-sdk/utils"
 import { getEntity } from "./IWB"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
@@ -27,7 +27,7 @@ export function checkPointerComponent(scene:any, entityInfo:any, dontInit?:boole
     //     // if(dontInit){
     //     //     return
     //     // }
-        PointersLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        // PointersLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     // }
 }
 
@@ -77,7 +77,7 @@ export function pointerListener(scene:any){
 }
 
 export function setPointersPlayMode(scene:any, entityInfo:any){
-    if (PointersLoadedComponent.has(entityInfo.entity) && !PointersLoadedComponent.get(entityInfo.entity).init){
+    // if (PointersLoadedComponent.has(entityInfo.entity) && !PointersLoadedComponent.get(entityInfo.entity).init){
         let pointerInfo = scene[COMPONENT_TYPES.POINTER_COMPONENT].get(entityInfo.aid)
         if(pointerInfo && pointerInfo.events.length > 0){
             let pointers:any[] = []
@@ -100,6 +100,6 @@ export function setPointersPlayMode(scene:any, entityInfo:any){
             })
 
         }
-        PointersLoadedComponent.getMutable(entityInfo.entity).init = true
-    } 
+    //     PointersLoadedComponent.getMutable(entityInfo.entity).init = true
+    // } 
 }

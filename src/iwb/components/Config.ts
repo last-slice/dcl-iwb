@@ -6,26 +6,25 @@ import { AvatarModifierArea, AvatarModifierType, Entity, GltfContainer, Material
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { resetEntityForBuildMode, addAllBuildModePointers } from "../modes/Build"
-import { BuildModeVisibilty, ParcelFloor, redBeam, greenBeam } from "../modes/Create"
 import { addInputSystem, removeInputSystem } from "../systems/InputSystem"
 import { hideAllPanels } from "../ui/ui"
-import { updatePlayModeReset } from "../modes/Play"
 import { getEntity } from "./IWB"
 import { removePlayModSystem, addPlayModeSystem } from "../systems/PlayModeSystem"
-import { disableEntityForPlayMode } from "../modes/Play"
 import { displayHover } from "../ui/Objects/ContextMenu"
 import { clearShowTexts } from "../ui/Objects/ShowText"
 import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { addPlayTriggerSystem, removePlayTriggerSystem } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
-import { displayLiveControl } from "../ui/Objects/LiveShowPanel"
+import { displayLiveControl, displayLivePanel } from "../ui/Objects/LiveShowPanel"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./Game"
 import { handleUnlockPlayer } from "./Actions"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { stopAllPlaylists } from "./Playlist"
+import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload } from "../modes/Play"
+import { disableLevelAssets } from "./Level"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -119,11 +118,11 @@ export function setConfig(version:any, updates:any, videos:any, tutorialCID:any)
     iwbConfig.tutorials = videos
     iwbConfig.CID = tutorialCID
 
-    console.log('tutorials are', iwbConfig.tutorials)
+    // console.log('tutorials are', iwbConfig.tutorials)
 }
 
 export function setWorlds(config: any) {
-    console.log('worlds are ', config)
+    // console.log('worlds are ', config)
 
     for(let i = 0; i < config.length; i++){
         let world = config[i]
@@ -158,25 +157,25 @@ export async function setPlayerMode(mode:SCENE_MODES){
 
     displayGrabContextMenu(false)
 
-    for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
-        if(playerMode === SCENE_MODES.CREATE_SCENE_MODE){
-            if(ParcelFloor.has(entity)){
-                Material.setPbrMaterial(entity, {
-                    albedoColor: Color4.Red()
-                })
-            }else{
-                GltfContainer.createOrReplace(entity, {src: redBeam})
-            }
-        }else{
-            if(ParcelFloor.has(entity)){
-                Material.setPbrMaterial(entity, {
-                    albedoColor: Color4.create(0, 1, 0, .5)
-                })
-            }else{
-                GltfContainer.createOrReplace(entity, {src: greenBeam})
-            }
-        }
-    }
+    // for (const [entity] of engine.getEntitiesWith(BuildModeVisibilty)) {
+    //     if(playerMode === SCENE_MODES.CREATE_SCENE_MODE){
+    //         if(ParcelFloor.has(entity)){
+    //             Material.setPbrMaterial(entity, {
+    //                 albedoColor: Color4.Red()
+    //             })
+    //         }else{
+    //             GltfContainer.createOrReplace(entity, {src: redBeam})
+    //         }
+    //     }else{
+    //         if(ParcelFloor.has(entity)){
+    //             Material.setPbrMaterial(entity, {
+    //                 albedoColor: Color4.create(0, 1, 0, .5)
+    //             })
+    //         }else{
+    //             GltfContainer.createOrReplace(entity, {src: greenBeam})
+    //         }
+    //     }
+    // }
 
     // hideAllOtherPointers()
     hideAllPanels()
@@ -189,21 +188,47 @@ export async function setPlayerMode(mode:SCENE_MODES){
         clearShowTexts()
         removePlayModSystem()
         addInputSystem()
-        updatePlayModeReset(false)
         removePlayTriggerSystem()
         displayLiveControl(false)
+        displayLivePanel(false)
+
         displaySkinnyVerticalPanel(false)
         await killAllGameplay()
         handleUnlockPlayer(null, null, null)
         stopAllPlaylists(localPlayer.activeScene.id)
+
+
+        colyseusRoom.state.scenes.forEach((scene:any)=>{
+            scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach(async (item:any, i:number)=>{
+                if(i > 2){
+                    let entityInfo = getEntity(scene, item.aid)
+                    if(entityInfo){
+                        resetEntityForBuildMode(scene, entityInfo)
+                    }
+                }
+            })
+        })
+
     }else if(playerMode === SCENE_MODES.PLAYMODE){
-        // utils.triggers.enableDebugDraw(false)//
+        // utils.triggers.enableDebugDraw(false)
         hideAllPanels()
         displayHover(false)
         removeInputSystem()
         addPlayModeSystem()
         addPlayTriggerSystem()
         handleUnlockPlayer(null, null, null)
+
+        colyseusRoom.state.scenes.forEach(async (scene:any)=>{
+            scene.checkedLeave = false
+            scene.checkedUnloaded = false
+
+            console.log('restting scene to play mode', scene.id)
+            await handleSceneEntitiesOnLeave(scene.id)
+            await handleSceneEntitiesOnUnload(scene.id)
+            await disableLevelAssets(scene)
+        })
+        
+
     }else{
         await killAllGameplay()
         utils.triggers.enableDebugDraw(false)
@@ -211,37 +236,11 @@ export async function setPlayerMode(mode:SCENE_MODES){
         removePlayModSystem()
     }
 
-    colyseusRoom.state.scenes.forEach((scene:any)=>{
-        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach(async (item:any, i:number)=>{
-            if(i > 2){
-                let entityInfo = getEntity(scene, item.aid)
-                if(entityInfo){
-                    if(mode === SCENE_MODES.BUILD_MODE){
-                        // if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
-                        //     await createAsset(scene, scene[COMPONENT_TYPES.IWB_COMPONENT].get(item.aid))
-                        // }
-                        resetEntityForBuildMode(scene, entityInfo)
-                    }else{
-                        // if(isLevelAsset(scene, item.aid) || isGameAsset(scene, item.aid)){
-                        //     engine.removeEntity(entityInfo.entity)
-                        // }
-                        // else{
-                        //     disableEntityForPlayMode(scene, entityInfo)
-                        // }
-                        disableEntityForPlayMode(scene, entityInfo)
-                        disableGameAsset(scene, entityInfo)
-                    }
-                }
-            }
-        })
-    })
-
     if(mode === SCENE_MODES.BUILD_MODE){
         addAllBuildModePointers()
     }
 
     updatePendingGameCleanup(false)
-    updatePlayModeReset(true)
 }
 
 export function addLocalWorldPermissionsUser(user:string){

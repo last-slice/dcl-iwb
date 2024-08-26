@@ -8,50 +8,50 @@ export const RealmEntityComponent = engine.defineComponent("iwb::realm::entity::
 // export const AnimatorComponent = engine.defineComponent("iwb::asset::animator::component", {})
 export const CollisionComponent = engine.defineComponent("iwb::asset::collision::component", {})
 
-export const VideoLoadedComponent = engine.defineComponent("iwb::asset::video::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const VideoLoadedComponent = engine.defineComponent("iwb::asset::video::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const AudioLoadedComponent = engine.defineComponent("iwb::asset::audio::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const AudioLoadedComponent = engine.defineComponent("iwb::asset::audio::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const VisibleLoadedComponent = engine.defineComponent("iwb::asset::visibl3::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const VisibleLoadedComponent = engine.defineComponent("iwb::asset::visibl3::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const MeshRenderLoadedComponent = engine.defineComponent("iwb::asset::mesh::render::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const MeshRenderLoadedComponent = engine.defineComponent("iwb::asset::mesh::render::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const MeshColliderLoadedComponent = engine.defineComponent("iwb::asset::mesh::collider::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const MeshColliderLoadedComponent = engine.defineComponent("iwb::asset::mesh::collider::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const PointersLoadedComponent = engine.defineComponent("iwb::asset::pointers::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const PointersLoadedComponent = engine.defineComponent("iwb::asset::pointers::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const GLTFLoadedComponent = engine.defineComponent("iwb::asset::gltf::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const GLTFLoadedComponent = engine.defineComponent("iwb::asset::gltf::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const SmartItemLoadedComponent = engine.defineComponent("iwb::asset::smartitem::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const SmartItemLoadedComponent = engine.defineComponent("iwb::asset::smartitem::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
-export const BillboardLoadedComponent = engine.defineComponent("iwb::asset::billboard::loaded::component", {
-    init:Schemas.Boolean,
-    sceneId:Schemas.String
-})
+// export const BillboardLoadedComponent = engine.defineComponent("iwb::asset::billboard::loaded::component", {
+//     init:Schemas.Boolean,
+//     sceneId:Schemas.String
+// })
 
 export let AssetComponentList:any = {
     Animator: Animator,

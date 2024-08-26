@@ -1,5 +1,5 @@
 import { Entity } from '@dcl/sdk/ecs'
-import { getTriggerEvents } from './Triggers'
+import { getTriggerEvents, runGlobalTrigger } from './Triggers'
 import { COMPONENT_TYPES, PLAYER_GAME_STATUSES, Triggers } from '../helpers/types'
 import { localPlayer } from './Player'
 import { colyseusRoom } from './Colyseus'
@@ -28,7 +28,6 @@ export function createTimerSystem() {
   return function timerSystem(dt: number) {
     intervalSystem(dt)
     delaySystem(dt)
-    tickSystem(dt)
   }
 
   function intervalSystem(dt: number) {
@@ -72,13 +71,6 @@ export function createTimerSystem() {
       for (const action of completedActions) {
         actions.splice(action, 1)
       }
-    }
-  }
-
-  function tickSystem(_dt: number) {
-    for (const entity of tickSet) {
-      const triggerEvents = getTriggerEvents(entity)
-      triggerEvents.emit(Triggers.ON_TICK)
     }
   }
 }

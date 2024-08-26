@@ -6,7 +6,6 @@ import { log, getRandomIntInclusive } from "../helpers/functions"
 import { utils } from "../helpers/libraries"
 import resources from "../helpers/resources"
 import { items } from "./Catalog"
-import { AudioLoadedComponent } from "../helpers/Components"
 import { updateTransform } from "./Transform"
 import { sceneEdit, selectedItem } from "../modes/Build"
 import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
@@ -27,7 +26,7 @@ export function checkAudioComponent(scene:any, entityInfo:any){
             playing: false,
             volume: itemInfo.volume
         })
-        AudioLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        // AudioLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
     }
 }
 
@@ -98,7 +97,7 @@ export function setAudioBuildMode(scene:any, entityInfo:any) {
 }
 
 export function setAudioPlayMode(scene:any, entityInfo:any){
-    if (AudioLoadedComponent.has(entityInfo.entity) && !AudioLoadedComponent.get(entityInfo.entity).init){
+    // if (AudioLoadedComponent.has(entityInfo.entity) && !AudioLoadedComponent.get(entityInfo.entity).init){
         let audioSource = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(entityInfo.aid)
         if(audioSource){
             MeshRenderer.deleteFrom(entityInfo.entity)
@@ -133,8 +132,8 @@ export function setAudioPlayMode(scene:any, entityInfo:any){
         }
 
 
-        AudioLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
+    //     AudioLoadedComponent.getMutable(entityInfo.entity).init = true
+    // }
 }
 
 export function disableAudioPlayMode(scene:any, entityInfo:any){

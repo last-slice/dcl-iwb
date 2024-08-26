@@ -5,9 +5,12 @@ import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import resources, { colorsLabels, colors } from '../../../helpers/resources'
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { sceneEdit, selectedItem } from '../../../modes/Build'
-import { sizeFont } from '../../helpers'
+import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { visibleComponent } from '../EditAssetPanel'
 import { ComponentType, NftShape, engine } from '@dcl/sdk/ecs'
+import { localPlayer } from '../../../components/Player'
+import { uiSizes } from '../../uiConfig'
+import { getOnPlay } from './EditMeshRender'
 
 export let fontStyles:string[] = [
     "Sans Serif",
@@ -130,6 +133,69 @@ export function EditText() {
                 height: '100%',
             }}
             ></Input>
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '70%',
+                height: '100%',
+            }}
+        uiText={{value:"Show On Play", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+        >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: selectedItem && selectedItem.enabled && getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.TEXT_COMPONENT ,selectedItem.aid) ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+            }}
+            onMouseDown={() => {
+                sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+                    {
+                        component:COMPONENT_TYPES.TEXT_COMPONENT,
+                        aid:selectedItem.aid, 
+                        sceneId:selectedItem.sceneId,
+                        onPlay: !getOnPlay(localPlayer.activeScene, COMPONENT_TYPES.TEXT_COMPONENT ,selectedItem.aid)
+                    }
+                )
+
+            }}
+            />
+        </UiEntity>
+
+
         </UiEntity>
 
          {/* albedo color row */}
@@ -371,7 +437,7 @@ export function EditText() {
 
             </UiEntity>
 
-                            </UiEntity>
+         </UiEntity>
      
         </UiEntity>
     )

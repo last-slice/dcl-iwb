@@ -1,6 +1,6 @@
 import { ColliderLayer, GltfContainer, MeshCollider, VisibilityComponent } from "@dcl/sdk/ecs"
 import { getEntity } from "./IWB"
-import { VisibleLoadedComponent } from "../helpers/Components"
+// import { VisibleLoadedComponent } from "../helpers/Components"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { playerMode } from "./Config"
 
@@ -82,15 +82,15 @@ export function setVisibilityBuildMode(scene:any, entityInfo:any){
 }
 
 export function setVisibilityPlayMode(scene:any, entityInfo:any){
-    if (VisibleLoadedComponent.has(entityInfo.entity) && !VisibleLoadedComponent.get(entityInfo.entity).init){
+    // if (VisibleLoadedComponent.has(entityInfo.entity) && !VisibleLoadedComponent.get(entityInfo.entity).init){
         let visibilityInfo = scene[COMPONENT_TYPES.VISBILITY_COMPONENT].get(entityInfo.aid)
         if(visibilityInfo){
             VisibilityComponent.has(entityInfo.entity) && VisibilityComponent.createOrReplace(entityInfo.entity, {
                 visible: visibilityInfo.visible
             })
         }
-        VisibleLoadedComponent.getMutable(entityInfo.entity).init = true
-    }
+        // VisibleLoadedComponent.getMutable(entityInfo.entity).init = true
+    // }
 }
 
 export function disableVisibilityPlayMode(scene:any, entityInfo:any){

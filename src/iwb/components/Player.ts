@@ -12,7 +12,6 @@ import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Bui
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
 import { FlyModeSystem } from "../systems/FlyModeSystem";
 import { createInputListeners } from "../systems/InputSystem";
-import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem";
 import { SelectedItemSystem } from "../systems/SelectedItemSystem";
 import { changeRealm } from "~system/RestrictedActions";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
@@ -26,7 +25,7 @@ import { AudioFinishedSystem, createSounds } from "./Sounds";
 import { createPhysics } from "../physics";
 import { LAYER_1, LAYER_8, NO_LAYERS } from "@dcl-sdk/utils";
 import { initQuestClients } from "./Quests";
-import VLM from "vlm-dcl";
+// import VLM from "vlm-dcl";//
 
 export let localUserId: string
 export let localPlayer:any
@@ -50,7 +49,7 @@ export function setLocalPlayer(player:any){
 
     createSounds()
     createInputListeners()
-    engine.addSystem(BuildModeVisibiltyComponents)
+    // engine.addSystem(BuildModeVisibiltyComponents)
     engine.addSystem(FlyModeSystem)
     engine.addSystem(SelectedItemSystem)
     // engine.addSystem(AudioFinishedSystem)//
@@ -138,7 +137,7 @@ function addPlayerTrigger(){
 
 function checkWorldPermissions(){
     let worldPermissions = worlds.find(($:any)=> $.ens === realm)
-    console.log('worlds to search for permissions', worldPermissions)
+    // console.log('worlds to search for permissions', worldPermissions)
     if(worldPermissions && worldPermissions.bps.includes(localUserId)){
         localPlayer.worldPermissions = true
     }
@@ -147,7 +146,7 @@ function checkWorldPermissions(){
 function checkPlayerHomeWorld(player:any){
     // if (realm !== "BuilderWorld") {
         player.worlds.forEach(async (world:any) => {
-            console.log('player world', world, realm)
+            // console.log('player world', world, realm)
             if ((world.ens === realm)) {
                 player!.homeWorld = true
                 // await getPlayerLand()
@@ -193,18 +192,18 @@ export async function getPlayerNames(player:any) {
 
     let json = await res.json()
     if (json.data) {
-        console.log('worlds are currenlty', worlds)
+        // console.log('worlds are currenlty', worlds)
         json.data.nfts.forEach((nft: any) => {
-            console.log('nft is', nft.ens.subdomain)
+            // console.log('nft is', nft.ens.subdomain)
             let world = worlds.find(($:any)=> $.name === nft.ens.subdomain)
-            console.log('world is', world)
+            // console.log('world is', world)
             if(world){
-                console.log('found world config')
+                // console.log('found world config')
                 world.init = true
                 player.worlds.push(world)
             }
             else{
-                console.log('no world config, add blank to table')
+                // console.log('no world config, add blank to table')
                 player.worlds.push({
                     name: nft.ens.subdomain,
                     owner: localUserId,
@@ -277,7 +276,6 @@ export function setPlayMode(userId:string, mode:SCENE_MODES) {
     if (player) {
         player.mode = mode
         setPlayerMode(mode)
-        // iwbEvents.emit(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})//
         sendServerMessage(SERVER_MESSAGE_TYPES.PLAY_MODE_CHANGED, {mode: mode})
     }
 }

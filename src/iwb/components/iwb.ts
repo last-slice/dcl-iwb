@@ -1,7 +1,7 @@
 // import { IWBCatalogComponent, IWBComponent } from "./Components"
 
 import { engine } from "@dcl/sdk/ecs"
-import { PointersLoadedComponent, RealmEntityComponent } from "../helpers/Components"
+import { RealmEntityComponent } from "../helpers/Components"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { addBuildModePointers, confirmGrabItem, removeItem, resetEntityForBuildMode } from "../modes/Build"
 import { checkBillboardComponent } from "./Billboard"
@@ -46,7 +46,7 @@ export function createEntity(item:any){
 
 export async function iwbInfoListener(scene:any){
   scene[COMPONENT_TYPES.IWB_COMPONENT].onAdd(async (iwbInfo:any, aid:any)=>{
-    console.log('iwb component added', aid, iwbInfo)
+    // console.log('iwb component added', aid, iwbInfo)
     if(aid){
       
       iwbInfo.aid = aid
@@ -84,7 +84,7 @@ export async function iwbInfoListener(scene:any){
 }
 
 export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean){
-  PointersLoadedComponent.createOrReplace(iwbInfo.entity, {init: false, sceneId: scene.id})
+  // PointersLoadedComponent.createOrReplace(iwbInfo.entity, {init: false, sceneId: scene.id})
 
   await checkTransformComponent(scene, iwbInfo)  
   await checkGLTFComponent(scene, iwbInfo,isLevelAsset)

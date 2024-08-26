@@ -89,7 +89,13 @@ export function createGameStartUI(){
         alignItems:'center',
         margin:{left:"3%"}
         }}
-        uiBackground={{color:Color4.White()}}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: '' + (startGame ? startGame.image : "")
+            },
+            // uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
         />
         </UiEntity>
 

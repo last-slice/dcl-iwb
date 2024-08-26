@@ -15,7 +15,6 @@ export let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
 export let redBeam = "assets/d8b8c385-8044-4bef-abcb-0530b2ebd6c7.glb"
 
 export const SelectedFloor = engine.defineComponent("iwb::selected::FloorComponent", {})
-export const BuildModeVisibilty = engine.defineComponent("iwb::buildmode::visibility", {})
 export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
@@ -69,65 +68,58 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
         let centerx = (x * 16) + 8
         let centery = (y * 16) + 8
 
-        if(lobby){
-            let left = engine.addEntity()
-            let right = engine.addEntity()
-            let front = engine.addEntity()
-            let back = engine.addEntity()
+        // if(lobby){
+        //     let left = engine.addEntity()
+        //     let right = engine.addEntity()
+        //     let front = engine.addEntity()
+        //     let back = engine.addEntity()
 
-            entities.push(left)
-            entities.push(right)
-            entities.push(front)
-            entities.push(back)
+        //     entities.push(left)
+        //     entities.push(right)
+        //     entities.push(front)
+        //     entities.push(back)
 
-            //left
-            Transform.createOrReplace(left, {
-                position: Vector3.create(x * 16, 0, y * 16),
-                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-                scale: Vector3.create(1, 20, 1),
-                parent:parent
-            })
-            GltfContainer.create(left, {src: local ? greenBeam : redBeam})
+        //     //left
+        //     Transform.createOrReplace(left, {
+        //         position: Vector3.create(x * 16, 0, y * 16),
+        //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+        //         scale: Vector3.create(1, 20, 1),
+        //         parent:parent
+        //     })
+        //     GltfContainer.create(left, {src: local ? greenBeam : redBeam})
     
-            //right
-            Transform.createOrReplace(right, {
-                position: Vector3.create(x * 16 + 16, 0, y * 16),
-                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-                scale: Vector3.create(1, 20, 1),
-                parent:parent
-            })
-            GltfContainer.create(right, {src: local ? greenBeam : redBeam})
+        //     //right
+        //     Transform.createOrReplace(right, {
+        //         position: Vector3.create(x * 16 + 16, 0, y * 16),
+        //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+        //         scale: Vector3.create(1, 20, 1),
+        //         parent:parent
+        //     })
+        //     GltfContainer.create(right, {src: local ? greenBeam : redBeam})
     
-            // front
-            Transform.createOrReplace(front, {
-                position: Vector3.create(x * 16, 0, y * 16 + 16),
-                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-                scale: Vector3.create(1, 20, 1),
-                parent:parent
-            })
-            GltfContainer.create(front, {src: local ? greenBeam : redBeam})
+        //     // front
+        //     Transform.createOrReplace(front, {
+        //         position: Vector3.create(x * 16, 0, y * 16 + 16),
+        //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+        //         scale: Vector3.create(1, 20, 1),
+        //         parent:parent
+        //     })
+        //     GltfContainer.create(front, {src: local ? greenBeam : redBeam})
     
-            // back
-            Transform.createOrReplace(back, {
-                position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
-                rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-                scale: Vector3.create(1, 20, 1),
-                parent:parent
-            })
-            GltfContainer.createOrReplace(back, {src: local ? greenBeam : redBeam})
+        //     // back
+        //     Transform.createOrReplace(back, {
+        //         position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
+        //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+        //         scale: Vector3.create(1, 20, 1),
+        //         parent:parent
+        //     })
+        //     GltfContainer.createOrReplace(back, {src: local ? greenBeam : redBeam})
 
-            VisibilityComponent.createOrReplace(left, {visible:playMode ? false : true})
-            VisibilityComponent.createOrReplace(front, {visible:playMode ? false : true})
-            VisibilityComponent.createOrReplace(right, {visible:playMode ? false : true})
-            VisibilityComponent.createOrReplace(back, {visible:playMode ? false : true})
-
-                
-            BuildModeVisibilty.createOrReplace(left)
-            BuildModeVisibilty.createOrReplace(front)
-            BuildModeVisibilty.createOrReplace(right)
-            BuildModeVisibilty.createOrReplace(back)
-
-        }
+        //     VisibilityComponent.createOrReplace(left, {visible:playMode ? false : true})
+        //     VisibilityComponent.createOrReplace(front, {visible:playMode ? false : true})
+        //     VisibilityComponent.createOrReplace(right, {visible:playMode ? false : true})
+        //     VisibilityComponent.createOrReplace(back, {visible:playMode ? false : true})
+        // }
         
     
         let floor = engine.addEntity()
@@ -149,7 +141,7 @@ export function addBoundariesForParcel(parcel:string, local:boolean, lobby:boole
         ParcelFloor.create(floor)
     
         VisibilityComponent.create(floor, {visible:playMode ? false : true})    
-        BuildModeVisibilty.create(floor)
+        // BuildModeVisibilty.create(floor)
 
 
         local ? tempParcels.set(parcel, entities) : otherTempParcels.set(parcel, entities)

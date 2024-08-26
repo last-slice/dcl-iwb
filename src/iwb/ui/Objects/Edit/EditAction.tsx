@@ -462,7 +462,6 @@ function getActionDataPanel(){
             return <AddShowTextPanel/>
 
         case Actions.PLAY_ANIMATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateAssetAnimations()
             return <AddAnimationActionPanel/>
 
         case Actions.ATTACH_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -613,8 +612,10 @@ const ActionDefaults:any = {
         visible:true
     },
     [Actions.PLAY_ANIMATION]:{
+        fn:()=>{updateAssetAnimations()},
         loop:0,
-        anim:""
+        anim:"",
+        speed:1
     },
     [Actions.SHOW_TEXT]:{
         text:"",

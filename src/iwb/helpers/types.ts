@@ -474,7 +474,7 @@ export enum Triggers {
     ON_CLICK_IMAGE = 'on_click_image',
     // ON_DAMAGE = 'on_damage',
     ON_GLOBAL_CLICK = 'on_global_click',
-    ON_TICK = 'on_tick',
+    ON_CLOCK_TICK = 'on_scene_tick',
     // ON_HEAL = 'on_heal',//
     ON_STATE_CHANGE = "on_state_change",
     ON_COUNTER_CHANGE = "on_counter_change",
@@ -492,7 +492,8 @@ export enum Triggers {
     ON_GAME_START_COUNTDOWN = 'on_game_start_countdown',
     ON_PLAYLIST_CHANGE = 'on_playlist_change',
     ON_PICKUP = 'on_pickup',
-    ON_LOAD_SCENE = 'on_load_scene'
+    ON_LOAD_SCENE = 'on_load_scene',
+    ON_UNLOAD_SCENE = 'on_unload_scene',
 }
 
 export enum Pointers {

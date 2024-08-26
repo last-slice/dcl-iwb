@@ -24,7 +24,6 @@ import { addGamePlayer, attemptGameEnd, attemptGameStart, playGameShoot, removeG
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
 import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
-import { disableSceneEntities } from "../modes/Play";
 import { playAudiusTrack } from "./Sounds";
 import { setServerQuests, updateQuestsDefinitions } from "./Quests";
 
@@ -434,7 +433,7 @@ export async function createColyseusListeners(room:Room){
             utils.timers.setTimeout(()=>{
                 let scene = colyseusRoom.state.scenes.get(info.sceneId)
                 if(scene){
-                    updateIWBTable(scene.bps)
+                    updateIWBTable(scene.bps)//
                 }      
             }, 100)
         }
@@ -547,7 +546,7 @@ export async function createColyseusListeners(room:Room){
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, (info:any) => {
-        log(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS + ' received', info)
+        // log(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS + ' received', info)
         updateQuestsDefinitions(info)
     })
 
@@ -570,13 +569,8 @@ export async function createColyseusListeners(room:Room){
 function setSceneListeners(room:any){
     room.state.scenes.onAdd(async(scene:any, key:string)=>{
         console.log('scene added', key, scene)
-        scene.checkEnabled = false
-        scene.checkDisabled = false
-        scene.loaded = false
-
         await addScene(scene)
-        // disableSceneEntities(scene.id)
-        
+
         scene.listen("si",(current:any, previous:any)=>{
             scene.si = current
         })

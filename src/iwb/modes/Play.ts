@@ -1,7 +1,7 @@
 import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "../components/Colyseus"
 import { createAsset, createEntity, getEntity } from "../components/IWB"
-import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
+// import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
 import { AUDIO_TYPES, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, Triggers } from "../helpers/types"
 import { disableMeshColliderPlayMode, disableMeshRenderPlayMode, setMeshColliderPlayMode, setMeshRenderPlayMode } from "../components/Meshes"
 import { disableVideoPlayMode, setVideoPlayMode } from "../components/Videos"
@@ -35,73 +35,74 @@ import { disablePlaylistForPlayMode, stopAllPlaylists } from "../components/Play
 import { disableAvatarShapePlayMode } from "../components/AvatarShape"
 import { disablePathingForEntity } from "../components/Path"
 
-export let disabledEntities: boolean = false
-export let playModeReset: boolean = true
-
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 
-export function updateDisabledEntities(value:boolean){
-    disabledEntities = value
-}
-
-export function updatePlayModeReset(value: boolean) {
-    playModeReset = value
-}
-
-export async function disableSceneEntitiesOnLeave(sceneId:any){
+export async function handleSceneEntitiesOnLeave(sceneId:string){
     let scene = colyseusRoom.state.scenes.get(sceneId)
-    if(scene && !scene.checkLeave && scene.loaded){
+    if(scene && !scene.checkedLeave && scene.loaded){
+        console.log('handleSceneEntitiesOnLeave for', sceneId)
+        scene.checkedLeave = true
+        scene.checkedEntered = false
+
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+            if(index > 2){
+                let entityInfo = getEntity(scene, item.aid)
+                if(entityInfo){ 
+                    handleSceneEntityOnLeave(scene, entityInfo)
+                }
+            }
+        })
+    }
+}
+
+export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
+    if(localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){
+        disableTriggers(scene, entityInfo)
+        disableLivePanel(scene, entityInfo)
+        resetAttachedEntity(scene, entityInfo)
+    }
+
+    checkGameplay(scene)
+
+    let triggerEvents = getTriggerEvents(entityInfo.entity)
+    triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+}
+
+export function handleSceneEntitiesOnEnter(sceneId:string){
+    let scene = colyseusRoom.state.scenes.get(sceneId)
+    console.log('scene check leave is', scene.checkLeave)
+    if(scene && !scene.checkedEntered){
+        scene.checkedEntered = true
+        scene.checkedLeave = false
+
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo){
-                    //check 3d//
-                if (GLTFLoadedComponent.has(entityInfo.entity)) {
-                    GLTFLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                //check video
-                if (VideoLoadedComponent.has(entityInfo.entity)) {
-                    VideoLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                //check audio
-                if (AudioLoadedComponent.has(entityInfo.entity)) {
-                    AudioLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                if (VisibleLoadedComponent.has(entityInfo.entity)) {
-                    VisibleLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                // //check pointers
-                if (PointersLoadedComponent.has(entityInfo.entity)) {
-                    PointersLoadedComponent.getMutable(entityInfo.entity).init = false
-                }
-
-                disableTriggers(scene, entityInfo)
-                disableLivePanel(scene, entityInfo)
-                resetAttachedEntity(scene, entityInfo)
+                    handleSceneEntityOnEnter(scene, entityInfo)
                 }
             }
         })
-
-        scene.checkLeave = true
-        scene.checkDisabled = false
-        scene.checkEnabled = false
     }
 }
 
-export async function disableSceneEntities(sceneId:any) {
-    // console.log('disabling scene entities', lastScene, localPlayer.activeScene)
-    // if (!disabledEntities) {
-        // console.log('disabling entities')
-        // stopAllIntervals()
-        // stopAllTimeouts()
+export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
+    setPointersPlayMode(scene, entityInfo)
+    setAudioPlayMode(scene, entityInfo)
+    setVideoPlayMode(scene, entityInfo)
+    setLivePanel(scene, entityInfo)   
 
-        let scene = colyseusRoom.state.scenes.get(sceneId)
-        if(scene && !scene.checkDisabled && scene.loaded){
-            console.log('disabling scene entities for', sceneId)
+    let triggerEvents = getTriggerEvents(entityInfo.entity)
+    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+}
+
+export async function handleSceneEntitiesOnUnload(sceneId:string){
+    let scene = colyseusRoom.state.scenes.get(sceneId)
+        if(scene && !scene.checkedUnloaded && scene.loaded){
+            console.log('handleSceneEntitiesOnUnload for', sceneId)
+            scene.checkedUnloaded = true
+            scene.checkedLoaded = false
+
             displaySkinnyVerticalPanel(false)
             stopAllTimeouts()
             stopAllIntervals()
@@ -110,172 +111,20 @@ export async function disableSceneEntities(sceneId:any) {
             showDialogPanel(false)
             handleUnlockPlayer(null, null, null)
 
-            checkGameplay(scene)
-
-            let levels:any[] =[]
-            scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((level:any, aid:string)=>{
-                levels.push(aid)
-            })
-
             scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
                 if(index > 2){
                     let entityInfo = getEntity(scene, item.aid)
                     if(entityInfo){
-                        //check 3d//
-                    if (GLTFLoadedComponent.has(entityInfo.entity)) {
-                        GLTFLoadedComponent.getMutable(entityInfo.entity).init = false
-                    }
-    
-                    //check video
-                    if (VideoLoadedComponent.has(entityInfo.entity)) {
-                        VideoLoadedComponent.getMutable(entityInfo.entity).init = false
-                    }
-    
-                    //check audio
-                    if (AudioLoadedComponent.has(entityInfo.entity)) {
-                        AudioLoadedComponent.getMutable(entityInfo.entity).init = false
-                    }
-    
-                    if (VisibleLoadedComponent.has(entityInfo.entity)) {
-                        VisibleLoadedComponent.getMutable(entityInfo.entity).init = false
-                    }
-    
-                    // //check pointers
-                    if (PointersLoadedComponent.has(entityInfo.entity)) {
-                        PointersLoadedComponent.getMutable(entityInfo.entity).init = false
-                    }
-    
-                    // //check smart items
-                    // if (SmartItemLoadedComponent.has(entity)) {
-                    //     SmartItemLoadedComponent.getMutable(entity).init = false//
-                    // }
-    
-                    disableEntityForPlayMode(scene, entityInfo)
+                        handleSceneEntityOnUnload(scene, entityInfo)
                     }
                 }
             })
-            scene.checkDisabled = true
-            scene.checkEnabled = false
-
             disableDelayedActionTimers()
             disablePlayUI()
-            disabledEntities = true
         }
-
-        // disableDelayedActionTimers()
-        // disablePlayUI()
-        // disabledEntities = true//
-    // }
 }
 
-export async function enableSceneEntities(sceneId: string) {
-    // console.log('enabling scene entities', lastScene, localPlayer.activeScene)
-    let scene = colyseusRoom.state.scenes.get(sceneId)
-    if(scene && !scene.checkEnabled){
-        console.log('enable scene entities', sceneId)
-        setUIClicked(false)
-        updatePlayModeReset(true)
-
-        abortGameTermination(scene)
-
-        await loadRemovedItems(scene)
-
-        // findSceneEntryTrigger(scene)//
-
-        // let levels:any[] =[]
-        // scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((level:any, aid:string)=>{
-        //     levels.push(aid)
-        // })//
-
-        triggerSceneEntitiesOnLoad(sceneId)
-    }
-
-    // log('enable scene entities for play mode')
-    // let scene = sceneBuilds.get(sceneId)
-    // if (scene) {
-    //     findSceneEntryTrigger(scene)
-        
-    //     for (let i = 0; i < scene.entities.length; i++) {
-    //         let entity = scene.entities[i]//
-
-    //         let sceneItem = getSceneItem(scene, entity)
-    //         if (sceneItem) {
-
-
-    //             //check smart items
-    //             console.log('about to check smart items for play mod')
-    //             if (SmartItemLoadedComponent.has(entity) && !SmartItemLoadedComponent.get(entity).init) {
-    //                 console.log('need to check for smart item play mode')
-    //                 checkSmartItem(entity, sceneItem, scene)
-    //                 SmartItemLoadedComponent.getMutable(entity).init = true
-    //             }
-
-    //         }
-    //     }
-    //     disabledEntities = false
-    // }
-    scene.checkLeave = false
-    scene.checkEnabled = true
-    scene.checkDisabled = false
-}
-
-export function triggerSceneEntitiesOnEnter(sceneId:string){
-    let scene = colyseusRoom.state.scenes.get(sceneId)
-    console.log('scene check leave is', scene.checkLeave)
-    if(scene && !scene.checkLeave){
-        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
-            if(index > 2){
-                let entityInfo = getEntity(scene, item.aid)
-                if(entityInfo){
-    
-                    setAudioPlayMode(scene, entityInfo)
-                    setVideoPlayMode(scene, entityInfo)
-                    setTriggersForPlayMode(scene, entityInfo)
-                    setLivePanel(scene, entityInfo)   
-    
-                    let triggerEvents = getTriggerEvents(entityInfo.entity)
-                    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
-                }
-            }
-        })
-        scene.checkLeave = true
-        scene.checkDisabled = false
-        scene.checkEnabled = true
-    }
-}
-
-export function triggerSceneEntitiesOnLoad(sceneId:string){
-    let scene = colyseusRoom.state.scenes.get(sceneId)
-    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
-        if(index > 2){
-            let entityInfo = getEntity(scene, item.aid)
-            if(entityInfo){
-
-                setGLTFPlayMode(scene, entityInfo)
-                
-                setMeshColliderPlayMode(scene, entityInfo)
-                setMeshRenderPlayMode(scene, entityInfo)
-                setVisibilityPlayMode(scene, entityInfo)
-                
-                // setSmartItemPlaydMode(scene, entityInfo)
-                setPointersPlayMode(scene, entityInfo)
-                checkTransformComponent(scene, entityInfo)
-                setTextShapeForPlayMode(scene, entityInfo)
-
-                setUiTextPlayMode(scene, entityInfo)
-                setUiImagePlayMode(scene, entityInfo)             
-                
-                let triggerEvents = getTriggerEvents(entityInfo.entity)
-                triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
-            }
-        }
-    })
-}
-export function enableEntityForPlayMode(scene:any, entityInfo:any){
-
-}
-
-export function disableEntityForPlayMode(scene:any, entityInfo:any){
+export function handleSceneEntityOnUnload(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo && localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){
         disableVisibilityPlayMode(scene, entityInfo)
@@ -304,7 +153,52 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
 
 
         PointerEvents.deleteFrom(entityInfo.entity)
+
+        let triggerEvents = getTriggerEvents(entityInfo.entity)
+        triggerEvents.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
     }
+}
+
+export async function handleSceneEntitiesOnLoad(sceneId:string){
+    let scene = colyseusRoom.state.scenes.get(sceneId)
+    if(scene && !scene.checkedLoaded){
+        console.log('handleSceneEntitiesOnLoad for scene ', sceneId)
+        scene.checkedLoaded = true
+        scene.checkedUnloaded = false
+
+        setUIClicked(false)
+        abortGameTermination(scene)
+
+        await loadRemovedItems(scene)
+
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
+            if(index > 2){
+                let entityInfo = getEntity(scene, item.aid)
+                if(entityInfo){
+                    handleSceneEntityOnLoad(scene, entityInfo)
+                }
+            }
+        })
+    }
+}
+
+export function handleSceneEntityOnLoad(scene:any, entityInfo:any){
+    setGLTFPlayMode(scene, entityInfo)
+                    
+    setMeshColliderPlayMode(scene, entityInfo)
+    setMeshRenderPlayMode(scene, entityInfo)
+    setVisibilityPlayMode(scene, entityInfo)
+    
+    
+    checkTransformComponent(scene, entityInfo)
+    setTextShapeForPlayMode(scene, entityInfo)
+
+    setUiTextPlayMode(scene, entityInfo)
+    setUiImagePlayMode(scene, entityInfo)             
+    setTriggersForPlayMode(scene, entityInfo)
+    
+    let triggerEvents = getTriggerEvents(entityInfo.entity)
+    triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
 }
 
 function disableDelayedActionTimers(){

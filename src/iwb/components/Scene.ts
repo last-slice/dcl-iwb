@@ -1,9 +1,9 @@
 import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
 import { getSceneInformation } from '~system/Runtime'
-import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES} from "../helpers/types"
+import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES, Triggers} from "../helpers/types"
 import {addBoundariesForParcel, deleteCreationEntities, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math"
-import { RealmEntityComponent, PointersLoadedComponent } from "../helpers/Components"
+import { RealmEntityComponent } from "../helpers/Components"
 import { getDistance, log } from "../helpers/functions"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { gltfListener } from "./Gltf"
@@ -12,8 +12,7 @@ import { localUserId, localPlayer } from "./Player"
 import { transformListener } from "./Transform"
 import { getCenterOfParcels } from "../helpers/build"
 import { meshListener } from "./Meshes"
-import { disableSceneEntities, disableSceneEntitiesOnLeave, enableSceneEntities, triggerSceneEntitiesOnEnter, updateDisabledEntities } from "../modes/Play"
-import { playModeReset } from "../modes/Play"
+import { handleSceneEntitiesOnEnter, handleSceneEntitiesOnLeave, handleSceneEntitiesOnLoad, handleSceneEntitiesOnUnload, } from "../modes/Play"
 import { iwbInfoListener } from "./IWB"
 import { nameListener } from "./Name"
 import { textShapeListener } from "./TextShape"
@@ -23,7 +22,7 @@ import { videoListener } from "./Videos"
 import { textureListener } from "./Textures"
 import { counterListener } from "./Counter"
 import { actionListener } from "./Actions"
-import { triggerListener } from "./Triggers"
+import { runGlobalTrigger, triggerListener } from "./Triggers"
 import { pointerListener } from "./Pointers"
 import { stateListener } from "./States"
 import { isGCScene, realm, worlds } from "./Config"
@@ -62,6 +61,12 @@ export function isPrivateScene(scene:any){
 }
 
 export async function addScene(scene:any, loadPending?:boolean){
+    scene.checkedEntered = false
+    scene.checkedLeave = false
+    scene.checkedLoaded = false
+    scene.checkedUnloaded = false
+    scene.loaded = false
+    
     if(scene.e){
         if(isPrivateScene(scene) && loadPending === undefined){
             pendingSceneLoad.push(scene)
@@ -75,7 +80,6 @@ export async function addScene(scene:any, loadPending?:boolean){
                 refreshMap()
             }
             await loadScene(scene)
-            updateDisabledEntities(true)
             scenesLoadedCount++
             checkAllScenesLoaded()
         }
@@ -134,13 +138,9 @@ async function loadSceneComponents(scene:any){
     
     scene.loaded = true
     console.log('scene loaded', scene.id)
-    await disableSceneEntities(scene.id)
 
-    //todo
-    //we might not need these since these are only metadata changes and can be pulled auto from colyseus room state
-    // await addIWBComponent(scene)
-    // await addIWBCatalogComponent(scene)
-    // await addNameComponent(scene)
+    await handleSceneEntitiesOnLeave(scene.id)
+    await handleSceneEntitiesOnUnload(scene.id)
 }
 
 export function unloadScene(scene:any) {
@@ -172,7 +172,7 @@ async function loadSceneBoundaries(scene:any) {
         rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
     })
 
-    console.log('scene parent is', Transform.get(sceneParent))
+    // console.log('scene parent is', Transform.get(sceneParent))
 
     scene.parentEntity = sceneParent
 
@@ -183,13 +183,9 @@ async function loadSceneBoundaries(scene:any) {
         })
     }
     // loadSceneAssets(id)
-
-
-    await addSceneLoadTrigger(scene)
 }
 
 async function addSceneLoadTrigger(scene:any){
-        // get center of scene//
     const center = getCenterOfParcels(scene!.pcls)
     const parentT = Transform.get(scene.parentEntity)
 
@@ -208,11 +204,11 @@ async function addSceneLoadTrigger(scene:any){
         }],
         ()=>{
             console.log("player is close by")
-            enableSceneEntities(scene.id)
+            handleSceneEntitiesOnLoad(scene.id)
         },
         ()=>{
             console.log('player no longer close by')
-            disableSceneEntities(scene.id)
+            handleSceneEntitiesOnUnload(scene.id)
         },
         Color3.create(.2, 1, .2)
       )
@@ -341,10 +337,8 @@ export async function checkScenePermissions() {
             }
         }
 
-
         if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel)) {
             activeScene = scene
-            // console.log('active scene is', activeScene)
         }
     })
 
@@ -354,43 +348,25 @@ export async function checkScenePermissions() {
         localPlayer.canBuild = true
     } else {
         localPlayer.canBuild = false
-        // player.activeScene = null
-        // displaySceneAssetInfoPanel(false)
     }
 
     // console.log('active scene', activeScene)
 
-    if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
-        playModeCheckedAssets.length = 0
-    } else {
-        console.log('playmode reset', playModeReset)
-        if (playModeReset) {
-            if (activeScene) {
-                // console.log('active scene is', activeScene)//
-                if (lastScene) {
-                    if (lastScene !== activeScene.id) {
-                        // await disableSceneEntities(lastScene)
-                        await disableSceneEntitiesOnLeave(lastScene)
-
-
-                        //let triggerEvents = getTriggerEvents(entityInfo.entity)
-                        //triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
-                        
-                        // await enableSceneEntities(activeScene.id)
-                        
-                        triggerSceneEntitiesOnEnter(activeScene.id)
-                    }
-                } else {//
-                    console.log('last scene is undefined, enable current active scene')//
-                    // await enableSceneEntities(activeScene.id)
-                    triggerSceneEntitiesOnEnter(activeScene.id)
+    if (localPlayer.mode === SCENE_MODES.PLAYMODE) {
+        if (activeScene) {
+            if (lastScene) {
+                if (lastScene !== activeScene.id) {
+                    await handleSceneEntitiesOnLeave(lastScene)
+                    await handleSceneEntitiesOnEnter(activeScene.id)
                 }
-            } else {
-                // disableSceneEntities(lastScene)
-                await disableSceneEntitiesOnLeave(lastScene)
+            } else {//
+                console.log('last scene is undefined, enable current active scene')//
+                await handleSceneEntitiesOnEnter(activeScene.id)
             }
-            lastScene = activeScene ? activeScene.id : undefined
+        } else {
+            await handleSceneEntitiesOnLeave(lastScene)
         }
+        lastScene = activeScene ? activeScene.id : undefined
     }
 }
 
@@ -402,6 +378,11 @@ export function checkAllScenesLoaded() {
     if (scenesLoadedCount >= sceneCount && !scenesLoaded) {
         scenesLoaded = true
         loadBlankParcels()
+        
+        colyseusRoom.state.scenes.forEach(async (scene:any) => {
+            await addSceneLoadTrigger(scene)
+        });
+
         engine.addSystem(PlayerTrackingSystem)
     }
 }
