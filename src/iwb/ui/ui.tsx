@@ -34,6 +34,7 @@ import { createTutorialVideoButton } from './Objects/TutorialVideo'
 import { createMainLoadingScreen } from './Objects/LoadingScreen'
 import { createQuestPanel } from './Objects/QuestPanel'
 import { createUITests } from './tests'
+import { createQuestCreatorPanel } from './Objects/QuestCreatorPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -74,6 +75,7 @@ const uiComponent:any = () => [
   createTutorialVideoButton(),
   createMainLoadingScreen(),
   createQuestPanel(),
+  createQuestCreatorPanel(),
   // createAdvancedEditPanel(),
 
 

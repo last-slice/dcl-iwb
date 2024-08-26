@@ -573,7 +573,7 @@ export function EditPath() {
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{
-                value: "Add Path",
+                value: "Add Point",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
                 textAlign: 'middle-center',

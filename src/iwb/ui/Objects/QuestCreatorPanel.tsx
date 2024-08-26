@@ -1,340 +1,344 @@
 import { Color4, Vector3 } from '@dcl/sdk/math'
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps } from '@dcl/sdk/react-ecs'
-import { rotateUVs } from '../../../ui_components/utilities'
-import { playerMode, realm } from '../../components/Config'
-import { localPlayer } from '../../components/Player'
-import { isPreview } from '../../helpers/functions'
+import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position,UiBackgroundProps, Input } from '@dcl/sdk/react-ecs'
 import resources from '../../helpers/resources'
-import { SCENE_MODES, IWBScene } from '../../helpers/types'
-import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions } from '../helpers'
+import { calculateImageDimensions, getAspect, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions, dimensions } from '../helpers'
 import { uiSizes } from '../uiConfig'
-import { colyseusRoom } from '../../components/Colyseus'
-import { setUIClicked } from '../ui'
-import { displayExpandedMap, expandedMapshow } from './ExpandedMapView'
+import { generateButtons, setUIClicked } from '../ui'
+import { displayMainView } from './IWBView'
+import { sendServerMessage } from '../../components/Colyseus'
+import { SERVER_MESSAGE_TYPES } from '../../helpers/types'
+import { localPlayer } from '../../components/Player'
+import { validateCreateQuest } from '@dcl/quests-client/dist-cjs/utils'
 
-let showView = false
-let init = false
+let showQuestCreator = false
+let questView = "main"
 
-let size = 9
-
-export let mapParcels:any[] = []
-
-
-export function displayIWBMap(value:boolean){
-    showView = value
+let steps:any[] = []
+let connections:any[] = []
+let newQuest:any = {
+    name:"",
+    description:"",
+    image:"",
+    steps:[],
 }
 
-function initArray(){
-  let xStart = -4
-  let yStart = 4
+export function displayQuestCreatorPanel(value:boolean){
+    showQuestCreator = value
 
-  let xCount = 0
-  let yCount = 0
-
-  for(let i = 0; i < size; i++){
-    let columns:any[] = []
-    for(let j = 0; j < size; j++){
-      columns.push({coords: (xStart + xCount) + "," + (yStart + yCount), scene:false, cur:false})
-      xCount++
+    if(value){
+        questView = "main"
     }
-    yCount--
-    xCount = 0
-    mapParcels.push(columns)
-  }
-  refreshMap()
 }
 
 export function createQuestCreatorPanel(){
-  if(!init){
-    init = true
-    initArray()
-  }
   return(
     <UiEntity
     key={"" + resources.slug + "quest::creator::panel"}
     uiTransform={{
-        width: calculateImageDimensions(12.5, getAspect(uiSizes.vertRectangle)).width,
-        height: calculateImageDimensions(12.5,getAspect(uiSizes.vertRectangle)).height,
-      display: localPlayer && localPlayer.canMap ? 'flex' : 'none',
-      justifyContent:'flex-start',
-      flexDirection:'column',
-      alignContent:'center',
-      alignItems:'center',
-      positionType:'absolute',
-      position:{top: isPreview ? '45%' : '5%', left:'-0.5%'}
+        display: showQuestCreator? 'flex' : 'none',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width,
+        height: calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).height,
+        positionType: 'absolute',
+        position: { left: (dimensions.width - calculateImageDimensions(45, getAspect(uiSizes.horizRectangle)).width) / 2, bottom: '15%'}
     }}
     uiBackground={{
       texture:{
           src: resources.textures.atlas2
       },
       textureMode: 'stretch',
-      uvs:getImageAtlasMapping(uiSizes.vertRectangle)
+      uvs:getImageAtlasMapping(uiSizes.horizRectangle)
     }}
     onMouseDown={()=>{
       setUIClicked(true)
-      if(expandedMapshow){
-        displayExpandedMap(false)
-      }else{
-        displayExpandedMap(true, undefined, true)
-      }
+      setUIClicked(false)
     }}
     onMouseUp={()=>{
       setUIClicked(false)
     }}
   >
-        
-          {/* map parcels container */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '84%',
-                height: '76%',
-                margin:{top:'4%'}
-            }}
-            // uiBackground={{color:Color4.Green()}}
-            >
 
-            {generateMapParcels()}
-
-            </UiEntity>
-
-
-            {/* map info container */}
-          <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '86.5%',
-                height: '20%',
-                positionType:'absolute',
-                position:{bottom:'5.5%'}
-            }}
-            uiBackground={{color:Color4.Black()}}
-            >
-
-            {/* top row info */}
-          <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            >
-
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '50%',
-                height: '100%',
-            }}
-            uiText={{textWrap:'nowrap', value:"" + (localPlayer && realm.split(".")[0]), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
-            />
-
-        <UiEntity
-              uiTransform={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '25%',
-                  height: '100%',
-              }}
-              uiText={{textWrap:'nowrap', value:"" + (playerMode === SCENE_MODES.PLAYMODE ? "Play" : "Build"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
-              />
-
-      <UiEntity
-            uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '25%',
-                height: '100%',
-            }}
-            uiText={{textWrap:'nowrap', value:"" + (localPlayer && localPlayer.currentParcel), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}            
-            />
-
-         
-
-              </UiEntity>
-
-
-            {/* right column info */}
-              <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '50%',
-            }}
-            >
-
-<UiEntity
-      uiTransform={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-      }}
-      uiText={{textWrap:'nowrap', value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
-      />
-
-
-              </UiEntity>
-
-
-
-            </UiEntity>
-
-
-      {/* player arrow */}
-      <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '84%',
-                height: '76%',
-                positionType:'absolute',
-                margin:{top:"4%"}
-            }}
-            >
-
-        <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width:calculateSquareImageDimensions(3).width,
-                height: calculateSquareImageDimensions(3).height,
-                positionType:'absolute',
-            }}
-            uiBackground={{
-              texture:{
-                  src: "images/map_arrow.png"
-              },
-              textureMode: 'stretch',
-              uvs:rotateUVs(localPlayer && localPlayer.rotation ? localPlayer.rotation : 0)
-            }}
-            />
-
-            </UiEntity>
+    <MainView/>
+    <CreateView/>
+    <EditView/>
+    {/* <AnalyticsView /> */}
 
   </UiEntity>
   )
 }
 
-function generateMapParcels(){
-  let count = 0
-  let arr:any[] = []
-  for(let i = 0; i < mapParcels.length; i++){
-    arr.push(<MapRow row={mapParcels[i]} rowCount={count} />)
-    count++
-  }
-  return arr
-}
-
-function MapRow(data:any){
-  return(
+function MainView(){
+    return(
     <UiEntity
-    key={"map-row-" + data.rowCount}
+    key={"" + resources.slug + "quest::creator::panel::main::view"}
     uiTransform={{
-        flexDirection: 'row',
+        display: questView === "main" ? 'flex' : 'none',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
-        height: '10%',
-        margin:{bottom:'1%'}
+        width: '85%',
+        height: '90%',
     }}
-    >
-      {generateMapColumns(data)}
-      </UiEntity>
-  )
-}
+    // uiBackground={{color:Color4.Green()}}
+  >
 
-function generateMapColumns(data:any){
-  let row = data.row
-  let count = 0
-  let arr:any[] = []
-  for(let i = 0; i < row.length; i++){
-    arr.push(<MapParcel data={row[i]} rowCount={data.rowCount} columnCount={count} />)
-    count++
-  }
-  return arr
-}
-
-function MapParcel(data:any){
-  let parcel = data.data
-  return(
-    <UiEntity
-    key={"map-parcel-" + data.rowCount + "-" + data.columnCount}
+<UiEntity
     uiTransform={{
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '10%',
-        height: '100%',
-        margin:{left:'0.5%', right:"0.5%"}
+        width: '100%',
+        height: '10%',
+
     }}
-    uiBackground={{color: parcel.cur ? Color4.create(0,1,0,.2) : parcel.scene ? Color4.create(.4,.5,.6,1) :  Color4.create(0,0,0,.2)}}
-    >
-      </UiEntity>
-  )
-}
+    uiText={{value:"Quest Creator", textAlign:'middle-center', textWrap:'nowrap', fontSize:sizeFont(25,20)}}
+  />
 
-export function refreshMap(){
-  if(localPlayer && localPlayer.currentParcel){
-    let xStart = parseInt(localPlayer.currentParcel.split(",")[0]) - 4
-    let yStart = parseInt(localPlayer.currentParcel.split(",")[1]) + 4
-  
-    let xCount = 0
-    let yCount = 0
-  
-    let sceneParcels:string[] = []
-    colyseusRoom.state.scenes.forEach((scene:IWBScene)=>{
-      scene.pcls.forEach((parcel:string)=>{
-        sceneParcels.push(parcel)
-      })
-    })
-  
-    for(let i = 0; i < size; i++){
-      for(let j = 0; j < size; j++){
-        let coord = (xStart + xCount) + "," + (yStart + yCount)
-        mapParcels[i][j].coords = coord
-        xCount++
-      }
-      yCount--
-      xCount = 0
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '95%',
+        height: '90%',
+    }}
+  >
+    {   showQuestCreator && questView === "main" &&
+        generateButtons(
+            {
+                slug:"add-new-quest", 
+                buttons:[
+                     {label:"New Quest", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                        questView = "new"
+                     }},
+                     {label:"All Quests", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{}},
+                     {label:"Close", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                        displayQuestCreatorPanel(false)
+                        displayMainView(true)
+                        questView = ""
+                     }},
+                    ]
+                }
+        )
     }
-  
-    xCount = 0
-    yCount = 0
-  
-    mapParcels.forEach(subArray => {
-      subArray.forEach((obj:any) => {
-          if (sceneParcels.includes(obj.coords)) {
-              obj.scene = true;
-          }else{
-            obj.scene = false
-          }
-      });
-    });
+  </UiEntity>
 
-    mapParcels.forEach(subArray => {
-      subArray.forEach((obj:any) => {
-          if (localPlayer.activeScene?.pcls.includes(obj.coords)) {
-              obj.cur = true;
-          }else{
-            obj.cur = false
-          }
-      });
-    });
-  }
+  </UiEntity>
+)
 }
+
+function EditView(){
+    return(
+    <UiEntity
+    key={"" + resources.slug + "quest::creator::panel::edit::view"}
+    uiTransform={{
+        display: questView === "edit" ? 'flex' : 'none',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '95%',
+        height: '95%',
+    }}
+  >
+    
+  </UiEntity>
+)
+}
+
+function CreateView(){
+    return(
+        <UiEntity
+    key={"" + resources.slug + "quest::creator::create::panel"}
+    uiTransform={{
+        display: questView === "new" ? 'flex' : 'none',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '65%',
+        height: '90%',
+    }}
+    // uiBackground={{color:Color4.Green()}}
+  >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+        margin:{top:"5%"}
+    }}
+    uiText={{value:"New Quest Details", textAlign:'middle-center', textWrap:'nowrap', fontSize:sizeFont(25,20)}}
+  />
+
+    <UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '70%',
+    height: '10%',
+}}
+>
+<Input
+onChange={(value)=>{
+    newQuest.name = value.trim()
+}}
+onSubmit={(value)=>{
+    newQuest.name = value.trim()
+}}
+fontSize={sizeFont(20,15)}
+placeholder={'Enter Quest Name'}
+placeholderColor={Color4.White()}
+color={Color4.White()}
+uiTransform={{
+    width: '100%',
+    height: '100%',
+}}
+></Input>
+</UiEntity>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '70%',
+    height: '10%',
+    margin:{top:"1%"}
+}}
+>
+<Input
+onChange={(value)=>{
+    newQuest.description = value.trim()
+}}
+onSubmit={(value)=>{
+    newQuest.description = value.trim()
+}}
+fontSize={sizeFont(20,15)}
+placeholder={'Enter Quest Description'}
+placeholderColor={Color4.White()}
+color={Color4.White()}
+uiTransform={{
+    width: '100%',
+    height: '100%',
+}}
+></Input>
+</UiEntity>
+
+<UiEntity
+uiTransform={{
+flexDirection: 'column',
+alignItems: 'center',
+justifyContent: 'center',
+width: '70%',
+height: '10%',
+margin:{top:"1%"}
+}}
+>
+<Input
+onChange={(value)=>{
+    newQuest.image = value.trim()
+}}
+onSubmit={(value)=>{
+    newQuest.image = value.trim()
+}}
+fontSize={sizeFont(20,15)}
+placeholder={'Enter Quest Image'}
+placeholderColor={Color4.White()}
+color={Color4.White()}
+uiTransform={{
+    width: '100%',
+    height: '100%',
+}}
+></Input>
+</UiEntity>
+
+{   showQuestCreator && questView === "new" &&
+        generateButtons(
+            {
+                slug:"create-new-panel", 
+                buttons:[
+                     {label:"Add Steps", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                        // questView = "steps"
+                        try {
+                            validateCreateQuest(template)
+                            sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_EDIT, {
+                                sceneId:localPlayer.activeScene.id,
+                                action:'create',
+                                quest:template
+                            })
+                          } catch (error) {
+                            console.log("quest validation error", error)
+                          }
+                     }},
+                     {label:"Quit", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                        displayQuestCreatorPanel(false)
+                     }}
+                    ]
+                }
+        )
+    }
+
+    </UiEntity>
+
+    )
+}
+
+
+let template:any = 
+{
+    "name": "Coven Test 2023 T1",
+    "description": "Aurora Test 1",
+    "imageUrl": "https://the-image-u-want-to-be-displayed-on-dcl-explorer.com",
+    "definition": {
+      "steps": [
+        {
+          "id": "STEP_1",
+          "description": "First Step",
+          "tasks": [
+            {
+              "id": "STEP_1_1",
+              "description": "First Task of First Step",
+              "actionItems": [
+                {
+                  "type": "CUSTOM",
+                  "parameters": {
+                    "id": "CUSTOM_EVENT_1"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "STEP_2",
+          "description": "Second Step",
+          "tasks": [
+            {
+              "id": "STEP_2_1",
+              "description": "First Task of Second Step",
+              "actionItems": [
+                {
+                  "type": "CUSTOM",
+                  "parameters": {
+                    "id": "CUSTOM_EVENT_2"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "stepFrom": "STEP_1",
+          "stepTo": "STEP_2"
+        }
+      ]
+    }
+  }
+

@@ -80,6 +80,7 @@ export async function disableSceneEntitiesOnLeave(sceneId:any){
                 }
 
                 disableTriggers(scene, entityInfo)
+                disableLivePanel(scene, entityInfo)
                 }
             }
         })
@@ -228,6 +229,7 @@ export function triggerSceneEntitiesOnEnter(sceneId:string){
                     setAudioPlayMode(scene, entityInfo)
                     setVideoPlayMode(scene, entityInfo)
                     setTriggersForPlayMode(scene, entityInfo)
+                    setLivePanel(scene, entityInfo)   
     
                     let triggerEvents = getTriggerEvents(entityInfo.entity)
                     triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
@@ -259,8 +261,7 @@ export function triggerSceneEntitiesOnLoad(sceneId:string){
                 setTextShapeForPlayMode(scene, entityInfo)
 
                 setUiTextPlayMode(scene, entityInfo)
-                setUiImagePlayMode(scene, entityInfo)
-                setLivePanel(scene, entityInfo)                
+                setUiImagePlayMode(scene, entityInfo)             
                 
                 let triggerEvents = getTriggerEvents(entityInfo.entity)
                 triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
@@ -288,7 +289,7 @@ export function disableEntityForPlayMode(scene:any, entityInfo:any){
         disableCounterForPlayMode(scene, entityInfo)
         disableUiTextPlayMode(scene, entityInfo)
         disableUiImagePlayMode(scene, entityInfo)
-        disableLivePanel(scene, entityInfo)
+        
         resetTween(scene, entityInfo)
         setAnimationBuildMode(scene, entityInfo)
         disablePlaylistForPlayMode(scene, entityInfo)

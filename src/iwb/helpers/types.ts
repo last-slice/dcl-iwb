@@ -99,6 +99,7 @@ export enum SERVER_MESSAGE_TYPES {
 
     //QUESTING
     GET_QUEST_DEFINITIONS = 'get_quest_definitions',
+    QUEST_EDIT = 'edit_quest'
 }
 
 export enum IWB_MESSAGE_TYPES {

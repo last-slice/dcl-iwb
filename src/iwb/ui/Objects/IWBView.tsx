@@ -14,6 +14,7 @@ import { island } from '../../components/Config'
 import { addStreamEntity, MusicView, streamEntity, updateMusicView } from './IWBViews/MusicView'
 import { engine } from '@dcl/sdk/ecs'
 import { displayCatalogPanel } from './CatalogPanel'
+import { displayQuestCreatorPanel } from './QuestCreatorPanel'
 
 let show = false
 
@@ -30,7 +31,7 @@ let buttons:any[] = [
         }
     },
     {label:"Create", pressed:false, func:()=>{
-        updateMainView("Create")
+        updateMainView("CreateView")
         },
         displayCondition:()=>{
             return island === "world"
@@ -220,7 +221,7 @@ function MainRightView(){
             justifyContent: 'center',
             width: '75%',
             height: '100%',
-            margin:{left:'2%'}
+            margin:{left:'2%'},
         }}
         // uiBackground={{color:Color4.Blue()}}
         >
@@ -230,8 +231,66 @@ function MainRightView(){
             <InfoView/>
             <CreateSceneView/>
             <MusicView/>
+            <CreateMainView />
 
         </UiEntity>
   
     )
+}
+
+function CreateMainView(){
+    return(
+    <UiEntity
+    key={"" + resources.slug + "creator::panel::main::view"}
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+        display:mainView === "CreateView" ? 'flex' : 'none'
+    }}
+    >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+
+    }}
+    uiText={{value:"Creator View", textAlign:'middle-center', textWrap:'nowrap', fontSize:sizeFont(25,20)}}
+  />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '95%',
+        height: '90%',
+    }}
+  >
+    {   show && mainView === "CreateView" &&
+        generateButtons(
+            {
+                slug:"create-new-panel", 
+                buttons:[
+                     {label:"Scenes", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                        updateMainView("Create")
+                     }},
+                    //  {label:"Quests", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                    //     displayMainView(false)
+                    //     displayQuestCreatorPanel(true)
+                    //  }}
+                    ]
+                }
+        )
+    }
+  </UiEntity>
+
+  </UiEntity>
+)
 }
