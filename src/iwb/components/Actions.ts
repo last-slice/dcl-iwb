@@ -28,6 +28,7 @@ import { buildNFTURN } from "./NftShape"
 import { playImagePlaylist, seekAudiusPlaylist, stopAudiusPlaylist } from "./Playlist"
 import { entitiesWithPathingEnabled } from "../modes/Play"
 import { walkPath } from "./Path"
+import { checkTransformComponent } from "./Transform"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -694,7 +695,15 @@ function handleAttachToPlayer(scene:any, info:any, action:any){
 }
 
 function handleDetachToPlayer(scene:any, info:any, action:any){
-    AvatarAttach.deleteFrom(info.entity)
+    let attachedIndex = sceneAttachedParents.findIndex($=> $.entity === info.entity)
+    if(attachedIndex >=0){
+        let attachedInfo = sceneAttachedParents[attachedIndex]
+        sceneAttachedParents.splice(attachedIndex, 1)
+        engine.removeEntity(attachedInfo.parent)
+
+        //figure out what to do with entity 
+        checkTransformComponent(scene, info)
+    }
 }
 
 function handleEnableClickArea(scene:any, info:any, action:any){

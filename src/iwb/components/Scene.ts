@@ -363,6 +363,7 @@ export async function checkScenePermissions() {
     if (localPlayer.mode === SCENE_MODES.BUILD_MODE) {
         playModeCheckedAssets.length = 0
     } else {
+        console.log('playmode reset', playModeReset)
         if (playModeReset) {
             if (activeScene) {
                 // console.log('active scene is', activeScene)//
@@ -386,6 +387,7 @@ export async function checkScenePermissions() {
                 }
             } else {
                 // disableSceneEntities(lastScene)
+                await disableSceneEntitiesOnLeave(lastScene)
             }
             lastScene = activeScene ? activeScene.id : undefined
         }

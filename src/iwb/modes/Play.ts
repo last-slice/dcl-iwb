@@ -322,8 +322,9 @@ function resetAttachedEntity(scene:any, entityInfo:any){
     if(attachedIndex >=0){
         let attachedInfo = sceneAttachedParents[attachedIndex]
         engine.removeEntity(attachedInfo.parent)
+        sceneAttachedParents.splice(attachedIndex, 1)
 
-        //figure out what to do with entity 
+        checkTransformComponent(scene, entityInfo)
     }
 }
 
