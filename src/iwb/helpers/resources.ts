@@ -67,7 +67,7 @@ export let audiusMoodEndpoints:any = {
 }
 
 export default {
-    DEBUG: true,//
+    DEBUG: true,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",

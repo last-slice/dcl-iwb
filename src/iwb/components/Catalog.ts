@@ -123,8 +123,8 @@ export function updateItem(id: string, update: SceneItem) {
 }
 
 function sortByType(items: SceneItem[], type?: string) {
-    console.log('type is', type)
-    console.log('items are ',items)
+    // console.log('type is', type)
+    // console.log('items are ',items)
 
     console.log(items.filter(($:any) => !$.n))
     if(type){

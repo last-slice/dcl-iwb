@@ -55,6 +55,7 @@ import { resetPathEntities } from "../ui/Objects/Edit/EditPath"
 import { disablePathingForEntity } from "../components/Path"
 import { resetSpawnLocationEntities } from "../ui/Objects/AddSpawnPointPanel"
 import { releaseQuestAction } from "../ui/Objects/Edit/ActionPanels/AddQuestAction"
+import { resetActionAttachEntity } from "../ui/Objects/Edit/ActionPanels/AddAttachPlayerPanel"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -716,6 +717,7 @@ export function resetAdditionalAssetFeatures(){
     releaseRandomActions()
     resetSpawnLocationEntities()
     releaseQuestAction()
+    resetActionAttachEntity()
 }
 
 export function dropGrabbedItems(){

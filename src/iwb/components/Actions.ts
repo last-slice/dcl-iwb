@@ -20,7 +20,7 @@ import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 import { island } from "./Config"
 import { getRandomIntInclusive } from "../helpers/functions"
-import { removedEntities } from "./Scene"
+import { removedEntities, sceneAttachedParents } from "./Scene"
 import { showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { getView } from "../ui/uiViews"
@@ -680,7 +680,17 @@ function handleClone(scene:any, info:any, action:any){
 }
 
 function handleAttachToPlayer(scene:any, info:any, action:any){
-    AvatarAttach.createOrReplace(info.entity, { anchorPointId:action.anchor })
+    console.log('handling attach to player action', info, action)
+    let parent = engine.addEntity()
+    sceneAttachedParents.push({parent:parent, entity:info.entity})
+
+    AvatarAttach.createOrReplace(parent, { anchorPointId:action.anchor })
+    Transform.createOrReplace(info.entity, {
+        position:Vector3.create(action.x, action.y, action.z),
+        rotation:Quaternion.fromEulerDegrees(action.xLook, action.yLook, action.zLook),
+        scale: Vector3.create(action.sx, action.sy, action.sz),
+        parent:parent
+    })
 }
 
 function handleDetachToPlayer(scene:any, info:any, action:any){

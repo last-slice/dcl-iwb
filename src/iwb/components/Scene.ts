@@ -55,6 +55,7 @@ export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
 
+export let sceneAttachedParents:any[] = []
 
 export function isPrivateScene(scene:any){
     return scene.priv

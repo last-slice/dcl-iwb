@@ -17,7 +17,7 @@ import { AddVisibilityActionPanel } from './ActionPanels/AddVisibilityPanel'
 import { AddAnimationActionPanel, updateAssetAnimations } from './ActionPanels/AddAnimationPanel'
 import { AddShowTextPanel } from './ActionPanels/AddShowTextPanel'
 import { AvatarAnchorPointType } from '@dcl/sdk/ecs'
-import { AddAttachPlayerPanel } from './ActionPanels/AddAttachPlayerPanel'
+import { addActionAttachEntity, AddAttachPlayerPanel } from './ActionPanels/AddAttachPlayerPanel'
 import { AddBatchActionPanel, updateEntitiesWithActions, updateEntityActions } from './ActionPanels/AddBatchActionsPanel'
 import { AddSetPositionPanel, addSetPositionEntity, resetSetPositionEntity } from './ActionPanels/AddSetPositionPanel'
 import { AddSetScalePanel, addSetScaleEntity, resetSetScaleEntity } from './ActionPanels/AddSetScalePanel'
@@ -623,10 +623,20 @@ const ActionDefaults:any = {
         textAlign:4
     },
     [Actions.ATTACH_PLAYER]:{
-        anchor:AvatarAnchorPointType.AAPT_POSITION,
+        fn:()=>{addActionAttachEntity()},
+        anchor:AvatarAnchorPointType.AAPT_NAME_TAG,
+        x:0,
+        y:0,
+        z:0,
+        xLook:0,
+        yLook:0,
+        zLook:0,
+        sx:0,
+        sy:0,
+        sz:0,
     },
     [Actions.BATCH_ACTIONS]:{
-        actions:[],
+        actions:[],//
     },
     [Actions.SET_POSITION]:{
         fn:()=>{addSetPositionEntity()},
@@ -706,4 +716,5 @@ const ActionDefaults:any = {
         questId:"",
         actionId:""
     },
+    
 }

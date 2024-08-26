@@ -9,7 +9,6 @@ import { uiSizes } from '../../uiConfig'
 import { visibleComponent } from '../EditAssetPanel'
 import { setUIClicked } from '../../ui'
 import { utils } from '../../../helpers/libraries'
-import { Scene } from '@gltf-transform/core'
 
 let vlm:any = {}
 let id:string = ''

@@ -26,7 +26,7 @@ import { setUIClicked } from "../ui/ui"
 import { localPlayer } from "../components/Player"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { disableLivePanel, setLivePanel } from "../components/Live"
-import { lastScene, removedEntities } from "../components/Scene"
+import { lastScene, removedEntities, sceneAttachedParents } from "../components/Scene"
 import { removeItem } from "./Build"
 import { getActionEvents, handleUnlockPlayer, updateActions } from "../components/Actions"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
@@ -81,6 +81,7 @@ export async function disableSceneEntitiesOnLeave(sceneId:any){
 
                 disableTriggers(scene, entityInfo)
                 disableLivePanel(scene, entityInfo)
+                resetAttachedEntity(scene, entityInfo)
                 }
             }
         })
@@ -220,7 +221,8 @@ export async function enableSceneEntities(sceneId: string) {
 
 export function triggerSceneEntitiesOnEnter(sceneId:string){
     let scene = colyseusRoom.state.scenes.get(sceneId)
-    if(scene && scene.checkLeave){
+    console.log('scene check leave is', scene.checkLeave)
+    if(scene && !scene.checkLeave){
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
@@ -236,7 +238,7 @@ export function triggerSceneEntitiesOnEnter(sceneId:string){
                 }
             }
         })
-        scene.checkLeave = false
+        scene.checkLeave = true
         scene.checkDisabled = false
         scene.checkEnabled = true
     }
@@ -313,6 +315,16 @@ function disableDelayedActionTimers(){
 
 function disablePlayUI(){
     // clearShowTexts()
+}
+
+function resetAttachedEntity(scene:any, entityInfo:any){
+    let attachedIndex = sceneAttachedParents.findIndex($=> $.entity === entityInfo.entity)
+    if(attachedIndex >=0){
+        let attachedInfo = sceneAttachedParents[attachedIndex]
+        engine.removeEntity(attachedInfo.parent)
+
+        //figure out what to do with entity 
+    }
 }
 
 export function teleportToScene(info:any){

@@ -1,4 +1,4 @@
-import { Entity, InputAction, TransformType, TweenLoop } from "@dcl/sdk/ecs"
+import { AvatarAnchorPointType, Entity, InputAction, TransformType, TweenLoop } from "@dcl/sdk/ecs"
 
 
 export enum SERVER_MESSAGE_TYPES {
