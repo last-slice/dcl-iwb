@@ -1022,7 +1022,7 @@ function handleStartTween(scene:any, info:any, action:any){
         start: transform.rotation,
         end: endRotation,
       }),
-      duration: timer * 1000, // from secs to ms
+      duration: timer * 1000, // from secs to ms//
       easingFunction: getEasingFunctionFromInterpolation(ip),
     })
 
@@ -1037,8 +1037,8 @@ function handleStartTween(scene:any, info:any, action:any){
                 sequence: [
                   {
                     mode: Tween.Mode.Rotate({
-                      start: Quaternion.fromEulerDegrees(0, Math.floor(y), 0),
-                      end: Quaternion.fromEulerDegrees(0, Math.floor(y) * 2, 0)
+                      start: Quaternion.fromEulerDegrees(x, Math.floor(y), x),
+                      end: Quaternion.fromEulerDegrees(z, Math.floor(y) * 2, z)
                     }),
                     duration: timer * 1000,
                     easingFunction: EasingFunction.EF_LINEAR

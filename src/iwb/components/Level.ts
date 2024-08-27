@@ -107,7 +107,7 @@ export function loadLevelAssets(scene:any, info:any, action:any){
             // checkLevelLoaded(info.entity)
         })
 
-        // checkLevelLoaded(info.entity)
+        // checkLevelLoaded(info.entity)//
 
         utils.timers.setTimeout(()=>{
             checkLevelLoaded(scene, levelInfo, info)
@@ -118,6 +118,9 @@ export function loadLevelAssets(scene:any, info:any, action:any){
 export function enableLevelAsset(scene:any, entityInfo:any){
     updateAssetBuildVisibility(scene, true, entityInfo)
     //update anything else for level asset
+
+    let triggers = getTriggerEvents(entityInfo.entity)
+    triggers.emit(Triggers.ON_LEVEL_ASSET_LOADED, {pointer:0, input:0, entity:entityInfo.entity})
 }
 
 export function disableLevelAssets(scene:any){

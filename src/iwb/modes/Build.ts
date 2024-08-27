@@ -263,6 +263,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             already: already,
             initialHeight: ITEM_HEIGHT_DEFAULT,
             duplicate: duplicate ? duplicate : false,
+            transform:grabbedTransform ? grabbedTransform : undefined,
             grabbedTransform: grabbedTransform ? grabbedTransform : undefined,
             ugc: itemData.hasOwnProperty("ugc") ? itemData.ugc : false,
             distance:4,
@@ -293,6 +294,7 @@ export function selectCatalogItem(id: any, mode: EDIT_MODES, already: boolean, d
             Transform.createOrReplace(selectedItem.entity, {
                 position: itemPosition,
                 scale: grabbedTransform.s,
+                rotation: Quaternion.fromEulerDegrees(grabbedTransform.x, grabbedTransform.y, grabbedTransform.z),
                 parent: engine.PlayerEntity
             })
 
@@ -937,175 +939,6 @@ export function dropSelectedItem(canceled?: boolean, editing?: boolean, centered
     playSound(SOUND_TYPES.ERROR_2);
 }
 
-// export function dropSelectedItem2(canceled?: boolean, editing?: boolean) {
-//
-//     if (editing) {
-//         selectedItem.enabled = false
-//         PointerEvents.deleteFrom(selectedItem.entity)
-//         addBuildModePointers(selectedItem.entity)
-//
-//         addAllBuildModePointers()
-//
-//         if (selectedItem.pointer)
-//             engine.removeEntity(selectedItem.pointer)
-//
-//         return
-//     }
-//
-//     if (canceled) {
-//         selectedItem.enabled = false
-//         PointerEvents.deleteFrom(selectedItem.entity)
-//         addBuildModePointers(selectedItem.entity)
-//
-//         addAllBuildModePointers()
-//
-//         if (selectedItem.pointer)
-//             engine.removeEntity(selectedItem.pointer)
-//
-//
-//         let t = Transform.getMutable(selectedItem.entity)
-//         t = selectedItem.transform!
-//
-//         log("selected scene id", selectedItem.sceneId)
-//
-//         let curScene = sceneBuilds.get(selectedItem.sceneId)
-//
-//         log("CURSCENE", curScene)
-//
-//         sendServerMessage(
-//             SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
-//             {
-//                 //baseParcel: curScene.bpcl,
-//                 item: {
-//                     entity: selectedItem.entity,
-//                     sceneId: selectedItem.sceneId,
-//                     aid: selectedItem.aid,
-//                     id: selectedItem.catalogId,
-//                     position: roundVector(t.position, 2),
-//                     rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-//                     scale: roundVector(t.scale, 2),
-//                     duplicate: selectedItem.duplicate,
-//                     ugc: selectedItem.ugc
-//                 }
-//             }
-//         )
-//
-//
-//         return
-//     }
-//
-//
-//     const finalPosition: Vector3.MutableVector3 = getWorldPosition(selectedItem.entity)
-//     let parcel = "" + Math.floor(finalPosition.x / 16) + "," + Math.floor(finalPosition.z / 16)
-//     let canDrop = false
-//
-//     const curScene = findSceneByParcel(parcel)
-//     const bpsCurScene = checkBuildPermissionsForScene(curScene)
-//
-//     if (curScene && bpsCurScene) {//} && isEntityInScene(selectedItem.entity, selectedItem.catalogId)) {
-//         canDrop = true
-//         playSound(SOUND_TYPES.DROP_1_STEREO)
-//
-//         if (PointerEvents.has(selectedItem.entity)) PointerEvents.deleteFrom(selectedItem.entity)
-//         VisibilityComponent.createOrReplace(bbE, {visible: false})
-//
-//         addAllBuildModePointers()
-//
-//         localPlayer.activeScene = curScene
-//
-//
-//         // update object transform
-//         let t = Transform.getMutable(selectedItem.entity)
-//         if (canceled) {
-//             t = selectedItem.transform!
-//         } else {
-//
-//
-//             const curSceneParent = curScene.parentEntity
-//             const curSceneParentPosition = Transform.get(curSceneParent).position
-//
-//             // adjust position to parent offset
-//             finalPosition.x = finalPosition.x - curSceneParentPosition.x
-//             finalPosition.z = finalPosition.z - curSceneParentPosition.z
-//
-//             const {position: playerPosition, rotation: playerRotation} = Transform.get(engine.PlayerEntity)
-//
-//
-//             t.position.x = finalPosition.x
-//             t.position.y = t.position.y + playerPosition.y
-//             t.position.z = finalPosition.z
-//
-//
-//             t.rotation = getWorldRotation(selectedItem.entity)
-//
-//             // if (selectedItem.isCatalogSelect) {
-//             //     t.rotation.y = playerRotation.y
-//             //     t.rotation.w = playerRotation.w
-//             //
-//             // } else {
-//             //
-//             //     let eulRot = Quaternion.toEulerAngles(t.rotation)
-//             //     let pEulRot = Quaternion.toEulerAngles(playerRotation)
-//             //
-//             //     t.rotation = Quaternion.fromEulerDegrees(
-//             //         eulRot.x,
-//             //         eulRot.y + pEulRot.y,
-//             //         eulRot.z
-//             //     )
-//             // }
-//
-//             t.parent = curSceneParent
-//         }
-//
-//
-//         // log('new transform is', t)
-//         // log('new rot is', Quaternion.toEulerAngles(t.rotation))
-//
-//         // if(selectedItem.already){
-//         //     log('dropping already selected item')
-//         //     // Transform.createOrReplace(selectedItem.entity, t)
-//         // }else{
-//         engine.removeEntity(selectedItem.entity)
-//         // }
-//
-//         grabbedAssets.delete(selectedItem.aid)
-//         selectedItem.enabled = false
-//         selectedItem.sceneId = curScene.id
-//
-//         // if no previous transform, this was a catalog asset
-//         if (!t) {
-//             return;
-//         }
-//
-//         sendServerMessage(
-//             SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
-//             {
-//                 baseParcel: curScene.bpcl,
-//                 item: {
-//                     entity: selectedItem.entity,
-//                     sceneId: curScene.id,
-//                     aid: selectedItem.aid,
-//                     id: selectedItem.catalogId,
-//                     position: roundVector(t.position, 2),
-//                     rotation: roundVector(Quaternion.toEulerAngles(t.rotation), 2),
-//                     scale: roundVector(t.scale, 2),
-//                     duplicate: selectedItem.duplicate,
-//                     ugc: selectedItem.ugc
-//                 }
-//             }
-//         )
-//
-//
-//         console.log('selected item', selectedItem)
-//         return
-//     }
-//
-//     if (!canDrop) {
-//         console.log('player cant build here')
-//         playSound(SOUND_TYPES.ERROR_2)
-//     }
-// }
-
 export function placeCenterCurrentScene(id?: string) {
 
     if (!id) return
@@ -1177,7 +1010,7 @@ export function duplicateItemInPlace(aid:string) {
     afterLoadActions.push((sceneId: string, entity: Entity) => {
         let scene = colyseusRoom.state.scenes.get(sceneId)
         if(!scene){
-            return
+            return//
         }
 
         editItem(newAid, EDIT_MODES.EDIT)
@@ -1186,6 +1019,16 @@ export function duplicateItemInPlace(aid:string) {
 
     playSound(SOUND_TYPES.DROP_1_STEREO)
     let transform = {...Transform.get(entityInfo.entity)}
+
+    let parentIndex:any
+    let parent = findAssetParent(scene, aid)
+    let parentAid = getAssetIdByEntity(scene, parent)
+    if(parentAid){
+        parentIndex = scene[COMPONENT_TYPES.PARENTING_COMPONENT].findIndex(($:any)=> $.aid === parentAid)
+        if(parentIndex < 0){
+            parentIndex = undefined
+        }
+    }
 
     sendServerMessage(
         SERVER_MESSAGE_TYPES.SCENE_ADD_ITEM,
@@ -1200,7 +1043,8 @@ export function duplicateItemInPlace(aid:string) {
                 rotation: roundVector(Quaternion.toEulerAngles(transform.rotation), 2),
                 scale: roundVector(transform.scale, 2),
                 duplicate: entityInfo.aid,
-                ugc: itemInfo.ugc
+                ugc: itemInfo.ugc,
+                parent: parentIndex
             }
         }
     )

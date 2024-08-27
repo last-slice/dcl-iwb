@@ -481,6 +481,7 @@ export enum Triggers {
     ON_RAYCAST_HIT = 'on_raycast_hit',
     ON_GAME_START = 'on_game_start',
     ON_LEVEL_LOADED = 'on_level_loaded',
+    ON_LEVEL_ASSET_LOADED = 'on_level_asset_loaded',
     // ON_LEVEL_LOAD = 'on_level_load',
     // ON_LEVEL_COMPLETE = 'on_level_win',//
     ON_LEVEL_END = 'on_level_end',
