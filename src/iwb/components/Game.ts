@@ -1,5 +1,5 @@
 import { Animator, AvatarAnchorPointType, AvatarAttach, AvatarModifierArea, AvatarModifierType, CameraModeArea, CameraType, EasingFunction, engine, Entity, GltfContainer, MeshRenderer, PBAvatarAttach, RaycastQueryType, raycastSystem, Transform, Tween, TweenLoop, TweenSequence, VisibilityComponent } from "@dcl/sdk/ecs"
-import { Actions, COMPONENT_TYPES, GAME_WEAPON_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types"
+import { Actions, COMPONENT_TYPES, GAME_WEAPON_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types"
 import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger } from "./Triggers"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
@@ -16,11 +16,15 @@ import { GunDataComponent } from "../helpers/Components"
 import { addGunRecoilSystem, isProcessingGunRay, processGunArray } from "../systems/GunSystem"
 import { displayCooldown } from "../ui/Objects/GameCooldownUI"
 import { stopAllIntervals } from "./Timer"
-import { setVisibilityPlayMode, updateAssetBuildVisibility } from "./Visibility"
+import { updateAssetBuildVisibility } from "./Visibility"
 import { disableCounterForPlayMode } from "./Counter"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
-import { setExcludePlayersToSoloGame } from "./Config"
-import { handleSceneEntitiesOnUnload, handleSceneEntityOnUnload } from "../modes/Play"
+import { playerMode, setExcludePlayersToSoloGame } from "./Config"
+import {  handleSceneEntityOnUnload } from "../modes/Play"
+import { disableMeshColliderPlayMode } from "./Meshes"
+import { setGLTFPlayMode } from "./Gltf"
+import { resetEntitiesForBuildMode } from "../modes/Build"
+//
 
 export let gameEndingtimer:any
 export let gameEntities:any[] = []
@@ -35,7 +39,7 @@ const gunFPSScale = Vector3.create(0.8, 0.8, 0.8)
 const gunFPSRotation = Quaternion.fromEulerDegrees(0,0,0)
 
 export function updatePendingGameCleanup(value:boolean){
-    pendingGameCleanup = value
+    pendingGameCleanup = value//
 }
 
 export function disableLevelPlayMode(scene:any, entityInfo:any){
@@ -45,11 +49,14 @@ export function disableLevelPlayMode(scene:any, entityInfo:any){
         updateAssetBuildVisibility(scene, false, entityInfo)
 
         let parentInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === entityInfo.aid)
+        console.log('level parent info is', parentInfo)
         if(parentInfo){
             parentInfo.children.forEach((childAid:string)=>{
                 let childInfo = getEntity(scene, childAid)
                 if(childInfo){
                     updateAssetBuildVisibility(scene, false, entityInfo)
+                    setGLTFPlayMode(scene, entityInfo, true)
+                    disableMeshColliderPlayMode(scene, entityInfo, true)
 
                     //reset counters
                     disableCounterForPlayMode(scene, entityInfo)
@@ -213,11 +220,15 @@ export function attemptGameEnd(info:any){
         disableLevelAssets(scene)
         displaySkinnyVerticalPanel(false)
         //to do
-        //clean up any game timers etc etc//
+        //clean up any game timers etc etc
         showScenesAfterGame(scene.id)
     }
     localPlayer.canTeleport = true
     localPlayer.canMap = true
+
+    if(playerMode === SCENE_MODES.BUILD_MODE){
+        resetEntitiesForBuildMode()
+    }
     
 }
 

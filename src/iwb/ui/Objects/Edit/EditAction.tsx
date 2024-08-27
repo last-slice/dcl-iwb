@@ -468,7 +468,6 @@ function getActionDataPanel(){
             return <AddAttachPlayerPanel/>
 
         case Actions.BATCH_ACTIONS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateEntitiesWithActions()//
             return <AddBatchActionPanel/>
 
         case Actions.SET_POSITION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -487,18 +486,15 @@ function getActionDataPanel(){
             return <AddClonePanel/>
 
         case Actions.SET_STATE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateEntityStates()
             return <AddSetStatePanel/>
 
         case Actions.SHOW_NOTIFICATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddShowNotificationPanel/>
 
         case Actions.RANDOM_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateEntitiesWithRandomActions()
             return <AddRandomActionPanel/>
 
         case Actions.START_LOOP.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateAssetActionsLoopPanel()
             return <AddLoopPanel/>
 
         case Actions.START_TWEEN.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -508,12 +504,9 @@ function getActionDataPanel(){
             return <AddTeleport/>
 
          case Actions.START_DELAY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateDelayEntitiesWithActions()
             return <AddDelayActionPanel/>
 
         case Actions.POPUP_SHOW.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            currentAddActionPanel = Actions.POPUP_SHOW
-            showPopupPanel()
             return <AddPopupPanel/>
 
         case Actions.RANDOM_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -533,7 +526,6 @@ function getActionDataPanel(){
             return <AddFollowPathPanel/>
 
           case Actions.QUEST_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateQuests()
             return <AddQuestActionPanel/>
 
         }
@@ -637,7 +629,8 @@ const ActionDefaults:any = {
         sz:0,
     },
     [Actions.BATCH_ACTIONS]:{
-        actions:[],//
+        fn:()=>{updateEntitiesWithActions()},
+        actions:[],
     },
     [Actions.SET_POSITION]:{
         fn:()=>{addSetPositionEntity()},
@@ -660,9 +653,11 @@ const ActionDefaults:any = {
         time:5
     },
     [Actions.RANDOM_ACTION]:{
+        fn:()=>{updateEntitiesWithRandomActions()},
         actions:[]
     },
     [Actions.START_LOOP]:{
+        fn:()=>{updateAssetActionsLoopPanel()},
         actions:[],
         timer:1
     },
@@ -684,13 +679,19 @@ const ActionDefaults:any = {
         ttype:0
     },
     [Actions.START_DELAY]:{
+        fn:()=>{updateDelayEntitiesWithActions()},
         actions:[],
         timer:5
     },
     [Actions.POPUP_SHOW]:{
+        fn:()=>{
+            currentAddActionPanel = Actions.POPUP_SHOW
+            showPopupPanel()
+        },
         label:"Label",
         variableText:"Variable Text",
         text:"Longer text here",
+        buttons:[],
         button1:{enabled:true, label:"Button 1"},
         button2:{enabled:true, label:"Button 2"},
     },
@@ -714,8 +715,11 @@ const ActionDefaults:any = {
         pathAid:""
     },
     [Actions.QUEST_ACTION]:{
+        fn:()=>{updateQuests()},
         questId:"",
         actionId:""
     },
-    
+    [Actions.SET_STATE]:{
+        fn:()=>{updateEntityStates()}
+    }
 }

@@ -70,15 +70,20 @@ export function setGLTFCollisionBuildMode(scene:any, entityInfo:any) {
     }
 }
 
-export function setGLTFPlayMode(scene:any, entityInfo:any){
+export function setGLTFPlayMode(scene:any, entityInfo:any, disableLevel?:boolean){
     // if (GLTFLoadedComponent.has(entityInfo.entity) && !GLTFLoadedComponent.get(entityInfo.entity).init){
         let gltfInfo = scene[COMPONENT_TYPES.GLTF_COMPONENT].get(entityInfo.aid)
         if(gltfInfo){
             let gltf = GltfContainer.getMutableOrNull(entityInfo.entity)
             if(gltf){
-                console.log('set gltf play mode', gltfInfo)
-                gltf.invisibleMeshesCollisionMask = (gltfInfo.invisibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltfInfo.invisibleCollision].toString()))
-                gltf.visibleMeshesCollisionMask = (gltfInfo.visibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltfInfo.visibleCollision].toString()))
+                if(disableLevel){
+                    gltf.invisibleMeshesCollisionMask = 0
+                    gltf.visibleMeshesCollisionMask = 0
+                }else{
+                    console.log('set gltf play mode', gltfInfo)
+                    gltf.invisibleMeshesCollisionMask = (gltfInfo.invisibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltfInfo.invisibleCollision].toString()))
+                    gltf.visibleMeshesCollisionMask = (gltfInfo.visibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltfInfo.visibleCollision].toString()))    
+                }
             }
             setAnimationPlayMode(scene, entityInfo)
         }

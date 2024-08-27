@@ -21,7 +21,7 @@ import { getRandomIntInclusive } from "../helpers/functions"
 import { displayMainView } from "../ui/Objects/IWBView"
 import { movePlayerTo } from "~system/RestrictedActions"
 import { stopAllIntervals, stopAllTimeouts } from "../components/Timer"
-import { abortGameTermination, checkGameplay } from "../components/Game"
+import { abortGameTermination, checkGameplay, disableGameAsset } from "../components/Game"
 import { setUIClicked } from "../ui/ui"
 import { localPlayer } from "../components/Player"
 import { showNotification } from "../ui/Objects/NotificationPanel"
@@ -86,11 +86,14 @@ export function handleSceneEntitiesOnEnter(sceneId:string){
     }
 }
 
+//
+
 export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     setPointersPlayMode(scene, entityInfo)
     setAudioPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setLivePanel(scene, entityInfo)   
+    setTriggersForPlayMode(scene, entityInfo)
 
     let triggerEvents = getTriggerEvents(entityInfo.entity)
     triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
@@ -124,7 +127,7 @@ export async function handleSceneEntitiesOnUnload(sceneId:string){
         }
 }
 
-export function handleSceneEntityOnUnload(scene:any, entityInfo:any){
+export async function handleSceneEntityOnUnload(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo && localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){
         disableVisibilityPlayMode(scene, entityInfo)
@@ -148,11 +151,12 @@ export function handleSceneEntityOnUnload(scene:any, entityInfo:any){
         disablePathingForEntity(scene, entityInfo)
         //to do
         // - reset states
-        // - reset tweens
         // - disabe smart items?
 
 
         PointerEvents.deleteFrom(entityInfo.entity)
+
+        await disableGameAsset(scene, itemInfo)
 
         let triggerEvents = getTriggerEvents(entityInfo.entity)
         triggerEvents.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})

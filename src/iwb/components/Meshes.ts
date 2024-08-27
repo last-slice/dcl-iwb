@@ -121,7 +121,12 @@ export function disableMeshRenderPlayMode(scene:any, entityInfo:any){
     }
 }
 
-export function disableMeshColliderPlayMode(scene:any, entityInfo:any){
+export function disableMeshColliderPlayMode(scene:any, entityInfo:any, disableLevel?:boolean){
+    if(disableLevel){
+        MeshCollider.deleteFrom(entityInfo.entity)
+        return
+    }
+
     let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
     if(meshInfo && entityInfo.entity){
         if(!meshInfo.onPlay){

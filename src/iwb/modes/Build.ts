@@ -1704,6 +1704,19 @@ export function addAllBuildModePointers() {
     }
 }
 
+export function resetEntitiesForBuildMode(){
+    colyseusRoom.state.scenes.forEach((scene:any)=>{
+        scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach(async (item:any, i:number)=>{
+            if(i > 2){
+                let entityInfo = getEntity(scene, item.aid)
+                if(entityInfo){
+                    resetEntityForBuildMode(scene, entityInfo)
+                }
+            }
+        })
+    })
+}
+
 export function resetEntityForBuildMode(scene:any, entityInfo:any) {
     let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     if(itemInfo){

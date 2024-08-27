@@ -71,18 +71,27 @@ export function updateTriggerActionsPanel(){
 export function updatePopupPanel(){
     data = {...newActionData}
     data.buttons = [
-        {label:"" + data.button1.label, enabled:data.button1.enabled},
-        {label:"" + data.button2.label, enabled:data.button2.enabled},
+        {label:"" + data.button1.label, enabled:data.button1.enabled, displayCondition:()=>{
+            return data.button1.enabled
+        }},
+        {label:"" + data.button2.label, enabled:data.button2.enabled, displayCondition:()=>{
+            return data.button2.enabled
+        }},
     ]
 
     displaySkinnyVerticalPanel(true, data, data.variableText || data.variableText !== "" ? data.variableText : undefined)
 }
 
 export function showPopupPanel(){
-    if(init){
-        return
-    }
-    init = true
+    updateActionData({
+        label:"Label",
+        variableText:"Variable Text",
+        text:"Longer text here",
+        buttons:[],
+        button1:{enabled:true, label:"Button 1"},
+        button2:{enabled:true, label:"Button 2"},
+    })
+
     popupPanelview = "main"
     updatePopupPanel()
     updateTriggerActionsPanel()

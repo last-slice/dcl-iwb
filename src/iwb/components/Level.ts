@@ -191,13 +191,18 @@ export function attemptLoadLevel(scene:any, levelCounterAid:string, levelAid:str
                 let counterActions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(levelCounterAid)
                 console.log('level counter actions are ', counterActions)
                 if(counterActions){
-                    let advanceLevelAction = counterActions.actions.find(($:any)=> $.type === Actions.ADD_NUMBER)
-                    if(advanceLevelAction){
-                        console.log('found add level action to counter')
-                        let counterInfo = getEntity(scene, levelCounterAid)
-                        actionQueue.push({aid:levelCounterAid, action:advanceLevelAction, entity:counterInfo.entity, force:true})
-                        actionQueue.push({aid:levelAid, action:action, entity:entityInfo.entity, force:true})
-                        setUIClicked(false)
+                    let setEnableLevelAction = actionInfo.actions.find(($:any)=> $.type === Actions.SET_STATE && $.state === 'enabled')
+                    if(setEnableLevelAction){
+                        console.log('found set state level action')
+                        let advanceLevelAction = counterActions.actions.find(($:any)=> $.type === Actions.ADD_NUMBER)
+                        if(advanceLevelAction){
+                            console.log('found add level action to counter')
+                            let counterInfo = getEntity(scene, levelCounterAid)
+                            actionQueue.push({aid:levelAid, action:setEnableLevelAction, entity:entityInfo.entity, force:true})
+                            actionQueue.push({aid:levelCounterAid, action:advanceLevelAction, entity:counterInfo.entity, force:true})
+                            actionQueue.push({aid:levelAid, action:action, entity:entityInfo.entity, force:true})
+                            setUIClicked(false)
+                        }
                     }
                 }
             }

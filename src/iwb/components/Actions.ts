@@ -1138,10 +1138,32 @@ export function runDialogAction(id:string){
             }
         }
     })
-}
+}//
 
 function handleEndLevel(scene:any, info:any, action:any){
     runGlobalTrigger(scene, Triggers.ON_LEVEL_END, {input:0, pointer:0, entity:0})
+    // let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(info.aid)
+    // if(!actionInfo){
+    //     console.log('no action object for that level, cant handle end level.....end game??')
+    //     return
+    // }
+
+    // console.log('action info for level is', actionInfo)
+
+    // if(actionInfo.actions && actionInfo.actions.length > 0){
+    //     let action = actionInfo.actions.find(($:any)=> $.type === Actions.SET_STATE && $.state === 'disabled')
+    //     console.log('action found', action)
+    //     if(!action){
+    //         console.log('didnt find disable action for level, end level but also end game??')
+    //         return
+    //     }
+
+    //     console.log("running end level action")
+    //     actionQueue.push({aid:info.aid, action:action, entity:info.entity, force:true})
+    // }
+    // else{
+    //     console.log('no actions count for that level, cant handle end level.....end game??')
+    // }
 }
 
 export function handlePlayPlaylist(scene:any, info:any, action:any){
@@ -1256,10 +1278,19 @@ export function handleStopPlaylist(scene:any, info:any, action:any){
 }
 
 async function handleAdvanceLevel(scene:any, info:any, action:any){
-    let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(info.aid)
+    let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(info.aid)
+    if(!levelInfo){
+        console.log('couldnt find current level')
+    }
+
+    console.log('current level to advance is', levelInfo)
+
+
+
+    let gameInfo = scene[COMPONENT_TYPES.GAME_COMPONENT].get(levelInfo.gameAid)
     if(!gameInfo){
         console.log('error finding game, reset?')
-        //end current game?
+        return
     }
 
     // let currentLevel = getCounterValue(scene, gameInfo.currentLevelAid, "currentValue", true)
@@ -1267,7 +1298,8 @@ async function handleAdvanceLevel(scene:any, info:any, action:any){
     console.log('current level counter is', currentLevel)
 
     if(!currentLevel){
-        console.log('error finding game, reset?')
+        console.log('error finding current level counter, reset?')
+        return
     }
 
     let foundLevelAid:any
@@ -1281,6 +1313,9 @@ async function handleAdvanceLevel(scene:any, info:any, action:any){
         console.log('fund leve to advance')
         await disableLevelAssets(scene)
         attemptLoadLevel(scene, gameInfo.currentLevelAid, foundLevelAid)
+    }
+    else{
+        console.log('no level to advance to', currentLevel.currentValue + 1)
     }
 }
 
@@ -1308,6 +1343,13 @@ function handlePopupHide(){
 function handlePopupShow(scene:any, info:any, action:any){
     console.log('handling popup show', info.aid, info.entity, info, action)
     let actionPopupView = {...getView("Popup_Action")}
+
+    let button1 = actionPopupView.buttons[0]
+    let button2 = actionPopupView.buttons[1]
+    actionPopupView.buttons = []
+
+    console.log('action view is', actionPopupView)
+
     actionPopupView.label = action.label
     actionPopupView.text = action.text
 
@@ -1315,25 +1357,29 @@ function handlePopupShow(scene:any, info:any, action:any){
     let button2Action:any
 
     if(action.button1){
-        actionPopupView.buttons[0].label = action.button1Label
+        button1.label = action.button1Label
+        button1.displayCondition = ()=>{ return true}
+        actionPopupView.buttons.push(button1)
+
         if(action.button1Actions){
             button1Action = ()=>{
+                console.log('popup button 1 has actions', action.button1Actions)
                 handleBatchAction(scene, info, {actions:action.button1Actions})
             }
         }
-    }else{
-        actionPopupView.buttons.splice(0,1)
     }
 
     if(action.button2){
-        actionPopupView.buttons[actionPopupView.buttons.length-1].label = action.button2Label
+        button2.label = action.button1Label
+        button2.displayCondition = ()=>{ return true}
+        actionPopupView.buttons.push(button2)
+
         if(action.button2Actions){
             button2Action = ()=>{
-                handleBatchAction(scene, info, {actions:action.button2Actions})
+                console.log('popup button 2 has actions', action.button2Actions)
+                handleBatchAction(scene, info, {actions:action.button1Actions})
             }
         }
-    }else{
-        actionPopupView.buttons.splice(actionPopupView.buttons.length-1,1)
     }
 
     displaySkinnyVerticalPanel(true, actionPopupView, action.variableText, button1Action, button2Action)

@@ -168,7 +168,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
-      console.log('trigger event', triggerInfo, triggerEvent)
+      // console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent)
       if(!trigger){
         console.log('cant find trigger')
@@ -181,7 +181,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
 
 function checkDecisionPaths(scene:any, trigger:any, entityInfo:any){
   trigger.decisions.forEach(async (decision:any, i:number)=>{
-    console.log('decisin is', decision)
+    // console.log('decisin is', decision)//
     decisionQueue.push({sceneId:scene.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision})
   })
 }
@@ -277,7 +277,7 @@ async function checkConditions(scene:any, decision:any, aid:string, entity:Entit
         })
     })
     const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition))
-    console.log('condition evaluations', conditions)
+    // console.log('condition evaluations', conditions)
     const isTrue = (result?: boolean) => !!result
     const operation = decision.operator || TriggerConditionOperation.AND
     switch (operation) {
@@ -295,7 +295,7 @@ async function checkConditions(scene:any, decision:any, aid:string, entity:Entit
 
 function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:any) {
       try {
-        console.log('checking condition', condition)
+        // console.log('checking condition', condition)
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
@@ -520,11 +520,12 @@ export function disableTriggers(scene:any, entityInfo:any){
   let itemInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
   if(itemInfo){
     const triggerEvents = getTriggerEvents(entityInfo.entity)
-    // triggerEvents.off("*", ()=>{
-    //   console.log('disabling triggers')
-    // })
-    triggerEvents.remove()
-    tickSet.delete(entityInfo.entity)
+    triggerEvents.off(Triggers.ON_INPUT_ACTION, ()=>{
+      console.log('disabling triggers')
+    })
+
+    // triggerEvents.remove()
+    // tickSet.delete(entityInfo.entity)
   }
 }
 

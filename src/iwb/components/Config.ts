@@ -1,11 +1,11 @@
 import { getRealm } from "~system/Runtime"
-import { colyseusRoom } from "./Colyseus"
+import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { localPlayer, localUserId, settings } from "./Player"
-import { COMPONENT_TYPES, SCENE_MODES, VIEW_MODES } from "../helpers/types"
+import { COMPONENT_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES } from "../helpers/types"
 import { AvatarModifierArea, AvatarModifierType, Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
-import { resetEntityForBuildMode, addAllBuildModePointers } from "../modes/Build"
+import { resetEntityForBuildMode, addAllBuildModePointers, resetEntitiesForBuildMode } from "../modes/Build"
 import { addInputSystem, removeInputSystem } from "../systems/InputSystem"
 import { hideAllPanels } from "../ui/ui"
 import { getEntity } from "./IWB"
@@ -191,31 +191,30 @@ export async function setPlayerMode(mode:SCENE_MODES){
         removePlayTriggerSystem()
         displayLiveControl(false)
         displayLivePanel(false)
-
         displaySkinnyVerticalPanel(false)
-        await killAllGameplay()
+        
+        
+        if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
+            sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+            // attemptGameEnd({sceneId: localPlayer.activeScene.id})
+        }else{
+            resetEntitiesForBuildMode()
+    
+            // if(localPlayer.activeScene){
+            //     await handleSceneEntitiesOnLeave(localPlayer.activeScene.id)
+            //     await handleSceneEntitiesOnUnload(localPlayer.activeScene.id)
+            // }
+        }
+
         handleUnlockPlayer(null, null, null)
         stopAllPlaylists(localPlayer.activeScene.id)
 
-
-        colyseusRoom.state.scenes.forEach((scene:any)=>{
-            scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach(async (item:any, i:number)=>{
-                if(i > 2){
-                    let entityInfo = getEntity(scene, item.aid)
-                    if(entityInfo){
-                        resetEntityForBuildMode(scene, entityInfo)
-                    }
-                }
-            })
-        })
 
     }else if(playerMode === SCENE_MODES.PLAYMODE){
         // utils.triggers.enableDebugDraw(false)
         hideAllPanels()
         displayHover(false)
         removeInputSystem()
-        addPlayModeSystem()
-        addPlayTriggerSystem()
         handleUnlockPlayer(null, null, null)
 
         colyseusRoom.state.scenes.forEach(async (scene:any)=>{
@@ -227,7 +226,13 @@ export async function setPlayerMode(mode:SCENE_MODES){
             await handleSceneEntitiesOnUnload(scene.id)
             await disableLevelAssets(scene)
         })
+
+        // utils.timers.setTimeout(()=>{
+            addPlayModeSystem()
+            addPlayTriggerSystem()
         
+        //     console.log('here in playmode')
+        // }, 1000)
 
     }else{
         await killAllGameplay()
