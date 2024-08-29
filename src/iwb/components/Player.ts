@@ -175,6 +175,7 @@ function setPlayerDefaults(player:any){
     player.mode = SCENE_MODES.PLAYMODE
     player.gameStatus = PLAYER_GAME_STATUSES.NONE
     player.questClients = new Map<string, any>()
+    player.hasWeaponEquipped = false
 
     let playerData = getPlayer()
     player.dclData = playerData

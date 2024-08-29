@@ -26,9 +26,10 @@ import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { getView } from "../ui/uiViews"
 import { buildNFTURN } from "./NftShape"
 import { playImagePlaylist, seekAudiusPlaylist, stopAudiusPlaylist } from "./Playlist"
-import { entitiesWithPathingEnabled } from "../modes/Play"
+import { addForceCamera, entitiesWithPathingEnabled, removeForceCamera } from "../modes/Play"
 import { walkPath } from "./Path"
 import { checkTransformComponent } from "./Transform"
+import { equipUserWeapon, unequipUserWeapon } from "./Weapon"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -332,6 +333,22 @@ export function updateActions(scene:any, info:any, action:any){
 
              case Actions.FOLLOW_PATH:
                 handleFollowPath(scene, info, action)
+                break;
+
+            case Actions.FORCE_CAMERA:
+                handleForceCamera(action)
+                break;
+
+            case Actions.REMOVE_FORCE_CAMERA:
+                handleRemoveForceCamera(action)
+                break;
+
+            case Actions.PLAYER_EQUIP_WEAPON:
+                handleEquipWeapon(scene, info, action)
+                break;
+
+            case Actions.PLAYER_UNEQIP_WEAPON:
+                handleEquipWeapon(scene, info, action)
                 break;
         }
     })
@@ -1490,4 +1507,26 @@ function handleVolumeSet(scene:any, info:any, action:any){
 function handleFollowPath(scene:any, info:any, action:any){
     console.log('handling follow path action', info, action)
     walkPath(scene, info, action)
+}
+
+function handleForceCamera(action:any){
+    addForceCamera(action.value)
+}
+
+function handleRemoveForceCamera(action:any){
+    removeForceCamera()
+}
+
+function handleEquipWeapon(scene:any, info:any, action:any){
+    console.log('handle equip item for player')
+    if(!localPlayer.hasWeaponEquipped){
+        localPlayer.hasWeaponEquipped = true
+        equipUserWeapon(scene, info, action)
+    }
+}
+
+function handleUnequipWeapon(scene:any, info:any, action:any){
+    console.log('handle unequip item for player')
+    localPlayer.hasWeaponEquipped = false
+    unequipUserWeapon(scene)
 }

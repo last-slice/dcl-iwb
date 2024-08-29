@@ -2,11 +2,12 @@ import { Entity, InputAction, PointerEventType, PointerEvents, engine, inputSyst
 import { handleInputTriggerForEntity, runGlobalTrigger } from "../components/Triggers"
 import { uiInput } from "../ui/ui"
 import { setButtonState } from "./InputSystem"
-import { localUserId} from "../components/Player"
+import { localPlayer, localUserId} from "../components/Player"
 import { createBeam, startAttackCooldown } from "../components/Game"
 import { GAME_WEAPON_TYPES, Triggers } from "../helpers/types"
 import { colyseusRoom } from "../components/Colyseus"
 import { excludeHidingUsers } from "../components/Config"
+import { attemptFireWeapon } from "../components/Weapon"
 
 export let added = false
 
@@ -32,6 +33,10 @@ export function PlayModeInputSystem(dt: number) {
     //POINTER//
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)) {
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)
+        if(localPlayer && localPlayer.hasWeaponEquipped){
+            attemptFireWeapon(dt)
+        }
+
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
                 handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_HOVER_ENTER)

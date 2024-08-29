@@ -456,6 +456,10 @@ export enum Actions {
     VOLUME_SET = 'volume_set',
     FOLLOW_PATH = 'path_follow',
     QUEST_ACTION = 'quest_action',
+    PLAYER_EQUIP_WEAPON = 'player_equip_weapon',
+    PLAYER_UNEQIP_WEAPON = 'player_unequip_weapon',
+    FORCE_CAMERA = 'playr_camera_force',
+    REMOVE_FORCE_CAMERA = 'player_camera_force_remove'
 }
 
 InputAction.IA_ACTION_3
@@ -495,6 +499,9 @@ export enum Triggers {
     ON_PICKUP = 'on_pickup',
     ON_LOAD_SCENE = 'on_load_scene',
     ON_UNLOAD_SCENE = 'on_unload_scene',
+    ON_EQUIP_WEAPON = 'on_equip_weapon',
+    ON_UNEQUIP_WEAPON = 'on_unequip_weapon',
+    ON_WEAPON_SHOOT = 'on_weapon_shoot' 
 }
 
 export enum Pointers {

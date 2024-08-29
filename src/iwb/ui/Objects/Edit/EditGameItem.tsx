@@ -17,16 +17,16 @@ import { utils } from '../../../helpers/libraries'
 let gamingInfo:any = {}
 let levels:any[] = []
 let visibleItems:any[] = []
-let gameTypes:any[] = []
-
-let gameTypeIndex:number = 0
-
-let newVariable:string = ""
+let gameItemTypes:any[] = [
+    "SELECT ITEM TYPE",
+    "GUN",
+    "ITEM"
+]
 
 export let gameView:string = "main"
 
 
-export function updateEditGameView(view:string){
+export function updateEditGameItemView(view:string){
     gameView = view
 
     if(gameView === "levels"){
@@ -47,7 +47,7 @@ export function updateEditGameView(view:string){
 
 export function updateGameItemInfo(reset?:boolean){
     if(reset){
-        gamingInfo = undefined
+        gamingInfo = {}
         return
     }
     gamingInfo = {...localPlayer.activeScene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].get(selectedItem.aid)}
@@ -67,7 +67,10 @@ export function EditGameItem(){
                 display: visibleComponent === COMPONENT_TYPES.GAME_ITEM_COMPONENT ? 'flex' : 'none',
             }}
         >
-            <GameVariablesView/>
+
+            <MainView/>
+            {/* <GameVariablesView/> */}
+            <GameItemGunView/>
 
             {/* <GameMainView/>
             <GameMetadataView/>
@@ -78,17 +81,80 @@ export function EditGameItem(){
     )
 }
 
-function GameVariablesView(){
+function MainView(){
     return(
         <UiEntity
-        key={resources.slug + "game::variables:view"}
+        key={resources.slug + "game::item::main:view"}
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
             width: '100%',
             height: '100%',
-            // display: gameView === "variables" ? "flex" : "none"
+            display: gameView === "main" ? "flex" : "none"
+        }}
+        >
+    
+    <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '100%',
+        height: '10%',
+        display: gamingInfo && gamingInfo.type ? "flex" : "none"
+    }}
+        uiText={{value:"Type: " + (getItemType()), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '100%',
+        height: '10%',
+        display: !gamingInfo.type ? "flex" : "none"
+    }}
+    >
+    <Dropdown
+        options={gameItemTypes}
+        selectedIndex={0}
+        onChange={(index:number)=>{
+            if(index >0){
+                gamingInfo.type = gameItemTypes[index]
+                update("edit", "type", index-1)
+                utils.timers.setTimeout(()=>{
+                    updateEditGameItemView("main")
+                }, 200)
+            }
+        }}
+        uiTransform={{
+            width: '100%',
+            height: '100%',
+        }}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}//
+            />
+    </UiEntity>
+
+        </UiEntity>
+    )
+}
+
+function GameVariablesView(){
+    return(
+        <UiEntity
+        key={resources.slug + "game::item::variables:view"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '100%',
+            display: gameView === "variables" ? "flex" : "none"
         }}
         >
             <UiEntity
@@ -122,10 +188,89 @@ function GameVariablesView(){
     )
 }
 
+function GameItemGunView(){
+    return(
+        <UiEntity
+        key={resources.slug + "game::item::gun:view"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '100%',
+            display: gamingInfo && gamingInfo.type === 9 ? "flex" : "none"
+        }}
+        >
+    
+    <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '100%',
+        height: '10%',
+        display: gamingInfo && gamingInfo.type ? "flex" : "none"
+    }}
+        uiText={{value:"Gun Parameters", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+    />
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+    >
+        <Input
+            onChange={(value) => {
+                // updateActionData({url: value.trim()}, true)
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'Damage'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+            ></Input>
+    </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+    >
+        <Input
+            onChange={(value) => {
+                // updateActionData({url: value.trim()}, true)
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'Max Ammo'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '100%',
+            }}
+            ></Input>
+    </UiEntity>
+
+        </UiEntity>
+    )
+}
+
 function update(action:string, type:string, value:any){
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
         {
-            component:COMPONENT_TYPES.GAME_COMPONENT, 
+            component:COMPONENT_TYPES.GAME_ITEM_COMPONENT, //
             aid:selectedItem.aid, 
             sceneId:selectedItem.sceneId,
             action:action,
@@ -201,3 +346,25 @@ function Row(data:any){
             </UiEntity>
     )
 }
+
+function getItemType(){
+    if(!gamingInfo.type){
+        return 0
+    }
+
+    switch(gamingInfo.type){
+        case 0:
+            return "Gun"
+
+        case 1:
+            return "Item"
+
+        default:
+            return ""
+    }
+}
+
+
+
+
+//

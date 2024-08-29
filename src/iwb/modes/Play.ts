@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, ColliderLayer, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, AvatarAnchorPointType, AvatarAttach, CameraModeArea, ColliderLayer, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PointerEvents, TextShape, Transform, Tween, TweenSequence, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "../components/Colyseus"
 import { createAsset, createEntity, getEntity } from "../components/IWB"
 // import { AudioLoadedComponent, GLTFLoadedComponent, MeshRenderLoadedComponent, PointersLoadedComponent, VideoLoadedComponent, VisibleLoadedComponent } from "../helpers/Components"
@@ -34,8 +34,10 @@ import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { disablePlaylistForPlayMode, stopAllPlaylists } from "../components/Playlist"
 import { disableAvatarShapePlayMode } from "../components/AvatarShape"
 import { disablePathingForEntity } from "../components/Path"
+import { Vector3 } from "@dcl/sdk/math"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
+export let cameraForce:Entity
 
 export async function handleSceneEntitiesOnLeave(sceneId:string){
     let scene = colyseusRoom.state.scenes.get(sceneId)
@@ -54,6 +56,20 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
         })
     }
 }
+
+export function addForceCamera(mode:number){
+    if(cameraForce || cameraForce === -500){
+        cameraForce = engine.addEntity()
+        CameraModeArea.create(cameraForce, {mode:mode, area: Vector3.create(3,3,3)})
+        AvatarAttach.create(cameraForce, {anchorPointId:AvatarAnchorPointType.AAPT_HIP})
+    }
+}
+
+export function removeForceCamera(){
+    engine.removeEntity(cameraForce)
+    cameraForce = -500 as Entity
+}
+
 
 export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
     if(localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){

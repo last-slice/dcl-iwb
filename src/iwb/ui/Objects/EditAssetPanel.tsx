@@ -725,88 +725,6 @@ function EditObjectData(){
                 // uiBackground={{color:Color4.Red()}}
             >
 
-                {/* add component row */}
-            {/* <UiEntity
-                uiTransform={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent:'center',
-                width: '90%',
-                height: '10%',
-                display: "none"
-                }}
-            >
-
-            <UiEntity
-                uiTransform={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '50%',
-                    height: '100%',
-                }}
-                >
-            <Dropdown
-                options={getComponents(true)}
-                selectedIndex={0}
-                onChange={selectNewAdvancedcComponentIndex}
-                uiTransform={{
-                    width: '100%',
-                    height: '120%',
-                }}
-                // uiBackground={{color:Color4.Purple()}}//
-                color={Color4.White()}
-                fontSize={sizeFont(20, 15)}
-            />
-                </UiEntity>
-
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '50%',
-                        height: '100%',
-                    }}
-                >
-
-
-                <UiEntity
-                    uiTransform={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlack)).width,
-                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
-                    }}
-                    uiBackground={{
-                        textureMode: 'stretch',
-                        texture: {
-                            src: 'assets/atlas2.png'
-                        },
-                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-                    }}
-                    uiText={{
-                        value: "Add Component",
-                        fontSize: sizeFont(25, 15),
-                        color: Color4.White(),
-                        textAlign: 'middle-center'
-                    }}
-                    onMouseDown={() => {
-                        setUIClicked(true)
-                        if(newAdvancedComponentIndex !== 0){
-                            addComponent()
-                        }
-                    }}
-                    onMouseUp={()=>{
-                        setUIClicked(false)
-                    }}
-                />
-                </UiEntity>
-
-            </UiEntity> */}
-
             <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
@@ -1129,7 +1047,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.PLAYLIST_COMPONENT,
         COMPONENT_TYPES.AVATAR_SHAPE_COMPONENT,
         COMPONENT_TYPES.PATH_COMPONENT,
-        COMPONENT_TYPES.VLM_COMPONENT
+        COMPONENT_TYPES.VLM_COMPONENT,
+        COMPONENT_TYPES.GAME_ITEM_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){

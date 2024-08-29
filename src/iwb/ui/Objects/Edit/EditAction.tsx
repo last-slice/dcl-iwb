@@ -38,6 +38,9 @@ import { AddRandomNumberPanel } from './ActionPanels/AddRandomNumberPanel'
 import { AddVolumeUpPanel } from './ActionPanels/AddVolumeUpPanel'
 import { AddFollowPathPanel } from './ActionPanels/AddFollowPathPanel'
 import { AddQuestActionPanel, updateQuests } from './ActionPanels/AddQuestAction'
+import { AddCameraChangelPanel } from './ActionPanels/AddChangeCameraPanel'
+import { AddCameraForcePanel } from './ActionPanels/AddForceCameraPanel'
+import { AddPlayerEquipWeaponPanel } from './ActionPanels/AddPlayerEquipWeaponPanel'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -528,6 +531,12 @@ function getActionDataPanel(){
           case Actions.QUEST_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddQuestActionPanel/>
 
+        case Actions.FORCE_CAMERA.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddCameraForcePanel/>
+
+         case Actions.PLAYER_EQUIP_WEAPON.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddPlayerEquipWeaponPanel/>
+
         }
 }
 
@@ -721,5 +730,11 @@ const ActionDefaults:any = {
     },
     [Actions.SET_STATE]:{
         fn:()=>{updateEntityStates()}
+    },
+    [Actions.FORCE_CAMERA]:{
+        value:0
+    },
+    [Actions.PLAYER_EQUIP_WEAPON]:{
+        game:""
     }
 }

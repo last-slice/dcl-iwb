@@ -23,7 +23,7 @@ import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./G
 import { handleUnlockPlayer } from "./Actions"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { stopAllPlaylists } from "./Playlist"
-import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload } from "../modes/Play"
+import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload, removeForceCamera } from "../modes/Play"
 import { disableLevelAssets } from "./Level"
 
 export let realm: string = ""
@@ -192,6 +192,7 @@ export async function setPlayerMode(mode:SCENE_MODES){
         displayLiveControl(false)
         displayLivePanel(false)
         displaySkinnyVerticalPanel(false)
+        removeForceCamera()
         
         
         if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){

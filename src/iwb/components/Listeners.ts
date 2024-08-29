@@ -19,7 +19,7 @@ import { scene, sceneInfoDetailView } from "../ui/Objects/SceneMainDetailPanel";
 import { updateIWBTable } from "../ui/Reuse/IWBTable";
 import { colyseusRoom } from "./Colyseus";
 import { updateStoreView, updateStoreVisibleItems } from "../ui/Objects/StoreView";
-import { actionQueue, getTriggerEvents } from "./Triggers";
+import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers";
 import { addGamePlayer, attemptGameEnd, attemptGameStart, playGameShoot, removeGamePlayer } from "./Game";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
@@ -542,7 +542,27 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.SHOOT, (info:any) => {
         log(SERVER_MESSAGE_TYPES.SHOOT + ' received', info)
+
+        let scene:any
+        if(info.soloShot){
+            if(info.sceneId){
+                if(localPlayer.activeScene && localPlayer.activeScene.id === info.sceneId){
+        
+                }else{
+                    console.log("multiplayer bullet but not on scene, dont show projectile")
+                    return
+                }
+            }
+            return
+        }
+
+        if(info.sceneId){
+            scene = colyseusRoom.state.scenes.get(info.sceneId)
+        }
+
         playGameShoot(info)
+
+        runGlobalTrigger(scene, Triggers.ON_WEAPON_SHOOT, info)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, (info:any) => {
