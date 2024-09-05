@@ -1,5 +1,5 @@
 import { Room } from "colyseus.js";
-import { createPlayer, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings, worldTravel } from './Player'
+import { createPlayer, handleGlobalPlayerAttachitem, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings, worldTravel } from './Player'
 import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
@@ -155,11 +155,8 @@ export async function createColyseusListeners(room:Room){
             if(player.playingGame){
                 addGamePlayer(player, userId === localUserId)
             }
-    
-            player.listen("selectedAsset", (current:any, previous:any)=>{
-                setPlayerSelectedAsset(player, current, previous)
-            })
 
+    
             player.listen("gameStatus", (current:any, previous:any)=>{
                 if(current === PLAYER_GAME_STATUSES.PLAYING && userId !== localUserId){
                     removePlayerFromHideArray(userId)
@@ -167,6 +164,10 @@ export async function createColyseusListeners(room:Room){
                     addPlayerToHideArray(userId)
                    
                 }
+            })
+
+            player.listen("selectedAsset", (current:any, previous:any)=>{
+                setPlayerSelectedAsset(player, current, previous)
             })
         })
     
@@ -324,9 +325,6 @@ export async function createColyseusListeners(room:Room){
             }
         }
     })
-
-    
-
 
     // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)

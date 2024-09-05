@@ -4,7 +4,7 @@ import { createAsset, getEntity } from "./IWB"
 import { LevelAssetGLTF } from "../helpers/Components"
 import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger, updateTriggerEvents } from "./Triggers"
 import { utils } from "../helpers/libraries"
-import { displayLoadingScreen } from "../ui/Objects/GameStartUI"
+import { displayLoadingScreen, updateLoadingTimer } from "../ui/Objects/GameStartUI"
 import { disableGameAsset } from "./Game"
 import { updateAssetBuildVisibility } from "./Visibility"
 import { setUIClicked } from "../ui/ui"
@@ -90,6 +90,8 @@ export function loadLevelAssets(scene:any, info:any, action:any){
         levelToLoad = info.entity
         levelAssetsToLoad = levelParent.children.length
 
+        
+
         levelParent.children.forEach(async (aid:string, i:number)=>{
             let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
             enableLevelAsset(scene, itemInfo)
@@ -106,12 +108,6 @@ export function loadLevelAssets(scene:any, info:any, action:any){
             levelAssetsLoaded++
             // checkLevelLoaded(info.entity)
         })
-
-        // checkLevelLoaded(info.entity)//
-
-        utils.timers.setTimeout(()=>{
-            checkLevelLoaded(scene, levelInfo, info)
-        }, levelInfo.loadingMin * 1000)
     }
 }
 
@@ -147,7 +143,7 @@ export function checkLevelLoaded(scene:any, levelInfo:any, entityInfo:any){
     console.log("checking level loaded", entityInfo.aid, entityInfo.entity, levelAssetsLoaded, levelAssetsToLoad)
     if(levelAssetsLoaded >= levelAssetsToLoad){
         console.log('level assets have all loaded')
-        engine.removeSystem(LevelAssetLoadingSystem)//
+        engine.removeSystem(LevelAssetLoadingSystem)
 
         displayLoadingScreen(false)
 
@@ -211,4 +207,21 @@ export function attemptLoadLevel(scene:any, levelCounterAid:string, levelAid:str
             }
         }
     } 
+}
+
+export function startLevelCountdown(scene:any, levelInfo:any, info:any){
+    displayLoadingScreen(true, levelInfo)
+    updateLoadingTimer(levelInfo.loadingMin)
+
+    let timeRemaining = levelInfo.loadingMin
+    levelInfo.loadingInterval = utils.timers.setInterval(()=>{
+        timeRemaining--
+        updateLoadingTimer(timeRemaining)
+    }, 1000)
+
+    levelInfo.loadingTimer = utils.timers.setTimeout(()=>{
+        utils.timers.clearTimeout(levelInfo.loadingTimer)
+        utils.timers.clearInterval(levelInfo.loadingInterval)
+        checkLevelLoaded(scene, levelInfo, info)
+    }, levelInfo.loadingMin * 1000)
 }

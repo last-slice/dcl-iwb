@@ -149,7 +149,7 @@ function VisualSettings(){
             >
                      <Dropdown
                         options={loadRadius}
-                        selectedIndex={loadRadiusIndex}
+                        selectedIndex={loadRadius.findIndex($=> $ === settings['loadRadius'])}
                         onChange={(index:number)=>{
                             loadRadiusIndex = index
                             updatePlayerLoadRadius(parseInt(loadRadius[index]))

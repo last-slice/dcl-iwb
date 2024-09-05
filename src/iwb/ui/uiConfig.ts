@@ -6,7 +6,7 @@ import { toggleFlyMode } from "../modes/Flying"
 import { toggleSnapMode } from "../systems/SelectedItemSystem"
 import { getImageAtlasMapping } from "./helpers"
 import { playerViewMode } from "../components/Config"
-import { displayMainView } from "./Objects/IWBView"
+import { displayMainView, mainIWBPanelShow } from "./Objects/IWBView"
 import { displayCatalogPanel, showCatalogPanel } from "./Objects/CatalogPanel"
 import { hideAllPanels } from "./ui"
 import { displaySceneAssetInfoPanel, showSceneInfoPanel } from "./Objects/SceneInfoPanel"
@@ -14,6 +14,7 @@ import { showNotification } from "./Objects/NotificationPanel"
 import { displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { getView } from "./uiViews"
 import { openExternalUrl } from "~system/RestrictedActions"
+import { displaySceneDetailsPanel, showSceneDetailPanel } from "./Objects/SceneMainDetailPanel"
 
 export let uiModes: any = {
     0://playmode
@@ -202,6 +203,10 @@ export let topTools: any[] = [
         enabled: true,
         visible: true,
         fn: () => {
+            if(mainIWBPanelShow){
+                return
+            }
+
             if (showSceneInfoPanel) {
                 displaySceneAssetInfoPanel(false)
             } else {
@@ -605,11 +610,14 @@ export let settingsIconData: any =
         enabled: true,
         visible: true,
         fn: () => {
-            // if (showSettingsPanel) {
-            //     displaySettingsPanel(false)
-            // } else {
-            //     displaySettingsPanel(true)
-            // }
+            if(showSceneInfoPanel){
+                displaySceneAssetInfoPanel(false)
+            }
+
+            if(showSceneDetailPanel){
+                displaySceneDetailsPanel(false)
+            }
+
             displayMainView(true, true)
         }
     }

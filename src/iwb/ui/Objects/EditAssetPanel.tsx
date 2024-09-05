@@ -26,7 +26,7 @@ import { EditTexture } from './Edit/EditTexture'
 import { EditParenting, updateChildrenAssets } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
 import { EditTrigger, enableTriggerEdit, resetTriggerPanels, triggerInfoView, triggerView, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
-import { EditAction, actionView, currentAddActionPanel, updateActionView } from './Edit/EditAction'
+import { EditAction, actionView, currentAddActionPanel, refreshActionPanel, updateActionView } from './Edit/EditAction'
 import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
 import { resetSetPositionEntity } from './Edit/ActionPanels/AddSetPositionPanel'
 import { EditState } from './Edit/EditState'
@@ -67,6 +67,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.ACTION_COMPONENT:
+            refreshActionPanel()
+            break;
+
         case COMPONENT_TYPES.PATH_COMPONENT:
             updateEditPathPanel()
             break;

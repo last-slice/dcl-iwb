@@ -23,6 +23,14 @@ let levels:any[] = []
 let visibleItems:any[] = []
 let gameTypes:any[] = []
 let teamEntities:any[] = []
+let premiumAccessTypes:any[] = [
+    "HAS NFT",
+    "WEARING ITEM",
+    "TIME - DAILY",
+    "TIME - WEEKLY",
+    "TIME - MONTHLY",
+    "TIME - CUSTOM"
+]
 
 let gameTypeIndex:number = 0
 
@@ -900,6 +908,131 @@ function GameConfigurationView(){
             />
     </UiEntity>
     </UiEntity>
+
+            {/* restricted options */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            >
+                  <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '70%',
+                height: '100%',
+            }}
+            >
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignContent:'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                    uiText={{value:"Restrict Access", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+                />
+        </UiEntity>
+
+    <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: calculateSquareImageDimensions(4).width,
+                height: calculateSquareImageDimensions(4).height,
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: gamingInfo.premiumAccessType >= 0 ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+            }}
+            onMouseDown={() => {
+                if(gamingInfo.premiumAccessType >= 0){
+                    console.log('we have access, toggle off')
+                    gamingInfo.premiumAccessType = -1
+                    update("edit", "premiumAccessType", -1)
+                }else{
+                    console.log('we dont have access, toggle on')
+                    gamingInfo.premiumAccessType = 0
+                    update("edit", "premiumAccessType", 0)
+                }
+
+                utils.timers.setTimeout(()=>{
+                    updateGamingInfo()
+                }, 200)
+                
+            }}
+            />
+    </UiEntity>
+    </UiEntity>
+
+            {/* restricted access type dropdown */}
+    <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignContent:'center',
+                    width: '90%',
+                    height: '12%',
+                    display: gamingInfo.premiumAccessType >= 0 ? "flex" : 'none'
+                }}
+            >
+                <Dropdown
+                    options={premiumAccessTypes}
+                    selectedIndex={0}
+                    onChange={(index:number)=>{
+                        update("edit", "premiumAccessType", index)
+    
+                        utils.timers.setTimeout(()=>{
+                            updateGamingInfo()
+                        }, 200)
+                    }}
+                    uiTransform={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    // uiBackground={{color:Color4.Purple()}}//
+                    color={Color4.White()}
+                    fontSize={sizeFont(20, 15)}
+                />
+    </UiEntity>
+
+            {/* restricted access options */}
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            alignContent:'center',
+            width: '100%',
+            height: '25%',
+            display: gamingInfo.premiumAccessType >= 0? "flex" : 'none',
+            margin:{bottom:'2%'}
+        }}
+    >
+        </UiEntity>
 
 
         <UiEntity

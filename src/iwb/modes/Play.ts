@@ -35,6 +35,7 @@ import { disablePlaylistForPlayMode, stopAllPlaylists } from "../components/Play
 import { disableAvatarShapePlayMode } from "../components/AvatarShape"
 import { disablePathingForEntity } from "../components/Path"
 import { Vector3 } from "@dcl/sdk/math"
+import { checkMultiplayerSyncOnEnter } from "../components/Multiplayer"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity
@@ -70,7 +71,6 @@ export function removeForceCamera(){
     cameraForce = -500 as Entity
 }
 
-
 export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
     if(localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){
         disableTriggers(scene, entityInfo)
@@ -102,14 +102,14 @@ export function handleSceneEntitiesOnEnter(sceneId:string){
     }
 }
 
-//
-
 export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     setPointersPlayMode(scene, entityInfo)
     setAudioPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setLivePanel(scene, entityInfo)   
     setTriggersForPlayMode(scene, entityInfo)
+
+    checkMultiplayerSyncOnEnter(scene, entityInfo)
 
     let triggerEvents = getTriggerEvents(entityInfo.entity)
     triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})

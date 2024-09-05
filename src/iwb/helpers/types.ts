@@ -340,7 +340,8 @@ export enum COMPONENT_TYPES {
     DIALOG_COMPONENT = "Dialog",
     REWARD_COMPONENT = 'Reward',
     PATH_COMPONENT = 'Path',
-    VLM_COMPONENT = 'VLM'
+    VLM_COMPONENT = 'VLM',
+    MULTIPLAYER_COMPONENT = 'Multiplayer'
 }
 
 export enum BLOCKCHAINS {
@@ -458,7 +459,7 @@ export enum Actions {
     QUEST_ACTION = 'quest_action',
     PLAYER_EQUIP_WEAPON = 'player_equip_weapon',
     PLAYER_UNEQIP_WEAPON = 'player_unequip_weapon',
-    FORCE_CAMERA = 'playr_camera_force',
+    FORCE_CAMERA = 'player_camera_force',
     REMOVE_FORCE_CAMERA = 'player_camera_force_remove'
 }
 

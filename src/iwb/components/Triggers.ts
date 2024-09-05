@@ -234,10 +234,11 @@ async function evaluateDecision(decisionItem:any){
                   case 1:
                     console.log('running global channel action')
                     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {
-                      type:action.type,
+                      // type:action.type,//
+                      type:'scene-action',
                       aid:aid,
                       sceneId:sceneId,
-                      actionId:action.id,//
+                      actionId:action.id,
                       forceScene:true,
                       action:action
                     })

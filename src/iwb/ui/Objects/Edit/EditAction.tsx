@@ -49,6 +49,8 @@ export let newActionData:any = {}
 export let newActionIndex:number = 0
 export let newActionPipelineIndex:number = 0
 
+let actionPipelines:any[] = ["Individual", "Everyone"]
+
 export function updateActionView(value:string){
     actionView = value
 
@@ -67,6 +69,24 @@ export function updateActionData(value:any, clear?:boolean){
         newActionData[key] = value[key]
     }
     console.log(newActionData)
+}
+
+export function refreshActionPanel(){
+    let scene:any = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return
+    }
+
+    actionPipelines = ["Individual", "Everyone"]
+    let count = 0
+    scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((game:any)=>{
+        count++
+    })
+    
+    if(count > 0){
+        console.log('have game')
+        actionPipelines.push("Team")
+    }
 }
 
 export function EditAction(){
@@ -251,7 +271,7 @@ export function EditAction(){
             >
 
                 <Dropdown
-                    options={["Individual", "All", "Team"]}
+                    options={actionPipelines}
                     selectedIndex={0}
                     onChange={selectActionPipeline}
                     uiTransform={{
@@ -633,9 +653,9 @@ const ActionDefaults:any = {
         xLook:0,
         yLook:0,
         zLook:0,
-        sx:0,
-        sy:0,
-        sz:0,
+        sx:1,
+        sy:1,
+        sz:1,
     },
     [Actions.BATCH_ACTIONS]:{
         fn:()=>{updateEntitiesWithActions()},

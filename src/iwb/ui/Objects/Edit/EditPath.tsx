@@ -771,7 +771,7 @@ function generatePathRows(){
     let arr:any[] = []
     let count = 0
     visibleItems.forEach((point:any)=>{
-        arr.push(<PathRow count={count} point={point} />)
+        arr.push(<PathRow count={count} point={point} itemCount={((visibleIndex-1) * 6) + count} />)
         count++
     })
 
@@ -780,6 +780,7 @@ function generatePathRows(){
 
 
 function PathRow(data:any){
+    let itemCount = data.itemCount
     return(
         <UiEntity
         key={resources.slug + "edit::path::row::" + data.count}
@@ -788,7 +789,7 @@ function PathRow(data:any){
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                height: '10%',
+                height: '15%',
                 margin:{top:"1%", bottom:'1%'}
             }}
             uiBackground={{
@@ -811,56 +812,112 @@ function PathRow(data:any){
             }}
             uiText={{textWrap:'nowrap', textAlign:'middle-left', value:"Point " + (((visibleIndex - 1) * 6) + data.count + 1), fontSize:sizeFont(20,15)}}
             />
-
-            {/* re order row */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-            }}
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '20%',
+        height: '100%',
+    }}
+    >
+         <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    width: calculateSquareImageDimensions(2).width,
+                    height: calculateSquareImageDimensions(2).height,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: itemCount > 0 ? "flex" : 'none'
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.upArrowTrans)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    update('reorder', 'up', itemCount)
+                    utils.timers.setTimeout(()=>{
+                        updateEditPathPanel()
+                    }, 300)
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
             />
 
-            {/* delete row */}
-            <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20%',
-                height: '100%',
-            }}
-            >
-                <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
-                height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas1.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.trashButton)
-        }}
-        onMouseDown={() => {
-            setUIClicked(true)
-            update('deletepoint', "point", ((visibleIndex - 1) * 6) + data.count)
-            utils.timers.setTimeout(()=>{
-                updateEditPathPanel()
-            }, 200)
-            setUIClicked(false)
-        }}
-        onMouseUp={()=>{
-            setUIClicked(false)
-        }}
-            />
-            </UiEntity>
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        width: calculateSquareImageDimensions(2).width,
+        height: calculateSquareImageDimensions(2).height,
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: itemCount < pathInfo.paths.length - 1 ? "flex" : 'none'
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.downArrowTrans)
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        update('reorder', 'down', itemCount)
+        utils.timers.setTimeout(()=>{
+            updateEditPathPanel()
+        }, 200)
+        setUIClicked(false)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+/>
+</UiEntity>
+
+{/* delete row */}
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '20%',
+    height: '100%',
+}}
+>
+    <UiEntity
+uiTransform={{
+flexDirection: 'column',
+alignItems: 'center',
+justifyContent: 'center',
+width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButtonTrans)).width,
+    height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButtonTrans)).height
+}}
+uiBackground={{
+textureMode: 'stretch',
+texture: {
+    src: 'assets/atlas1.png'
+},
+uvs: getImageAtlasMapping(uiSizes.trashButtonTrans)
+}}
+onMouseDown={() => {
+setUIClicked(true)
+update('deletepoint', "point", ((visibleIndex - 1) * 6) + data.count)
+utils.timers.setTimeout(()=>{
+    updateEditPathPanel()
+}, 200)
+setUIClicked(false)
+}}
+onMouseUp={()=>{
+setUIClicked(false)
+}}
+/>
+</UiEntity>
 
 
 
@@ -880,7 +937,8 @@ function update(action:string, type:string, value:any){
             aid:selectedItem.aid, 
             sceneId:selectedItem.sceneId,
             action:action,
-            [type]:value
+            type:type,
+            data:value
         }
     )
 }

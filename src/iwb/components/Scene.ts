@@ -38,6 +38,7 @@ import { PlayerTrackingSystem } from "../systems/PlayerTrackingSystem"
 import { avatarShapeListener } from "./AvatarShape"
 import { utils } from "../helpers/libraries"
 import { LAYER_8, NO_LAYERS } from "@dcl-sdk/utils"
+import { mutiplayerListener } from "./Multiplayer"
 
 export let realmActions: any[] = []
 
@@ -135,6 +136,7 @@ async function loadSceneComponents(scene:any){
     await gameListener(scene)
     await playlistListener(scene)
     await avatarShapeListener(scene)
+    await mutiplayerListener(scene)
     
     scene.loaded = true
     console.log('scene loaded', scene.id)
@@ -161,7 +163,7 @@ async function loadSceneBoundaries(scene:any) {
     //     addBoundariesForParcel(parcel, true, scene.n === "Realm Lobby", true)
     // })
 
-    // create parent entity for scene//
+    // create parent entity for scene
     const [x1, y1] = scene.bpcl.split(",")
     let x = parseInt(x1)
     let y = parseInt(y1)
@@ -171,6 +173,16 @@ async function loadSceneBoundaries(scene:any) {
         position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16),
         rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
     })
+
+    console.log('scene.offsets is', scene.offsets)
+    let xOffset = scene.offsets[0]
+    if(xOffset !== 0){
+        console.log("scene has offset", scene.offsets)
+    }
+
+    let transform = Transform.getMutable(sceneParent).position
+    transform.x = scene.offsets[0]
+    transform.z = scene.offsets[1]
 
     // console.log('scene parent is', Transform.get(sceneParent))
 
@@ -469,15 +481,4 @@ export function updateSceneParentRotation(scene:any, degrees:number){
 
     transform.rotation = Quaternion.fromEulerDegrees(rotation.x, rotation.y, rotation.z)
 
-    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS,
-        {
-            sceneId: scene!.id,
-            name: scene!.n,
-            desc: scene!.d,
-            image: scene!.im,
-            enabled: scene!.e,
-            priv: scene!.priv,
-            lim: scene!.lim,
-            direction: degrees
-        })
 }

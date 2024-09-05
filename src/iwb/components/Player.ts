@@ -52,7 +52,7 @@ export function setLocalPlayer(player:any){
     // engine.addSystem(BuildModeVisibiltyComponents)
     engine.addSystem(FlyModeSystem)
     engine.addSystem(SelectedItemSystem)
-    // engine.addSystem(AudioFinishedSystem)//
+    // engine.addSystem(AudioFinishedSystem)
 }
 
 export function setPlayerSelectedAsset(player:any, current:any, previous:any){
@@ -90,7 +90,7 @@ export async function createPlayer(player:any){
     await getPlayerLand()
     await checkPlayerHomeWorld(player)
     await checkWorldPermissions()
-    // await createPhysics()
+    // await createPhysics()//
     await addPlayerTrigger()
     await initQuestClients()
     
@@ -120,6 +120,7 @@ export function updatePlayerLoadRadius(value:number){
             radius:value
         }]
     )
+    sendServerMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, {action:"update", key:'loadRadius', value:value})
 }
 
 function addPlayerTrigger(){
@@ -385,4 +386,12 @@ export function PendingSceneLoadSystem(){
             }
         }
     }
+}
+
+export function handleGlobalPlayerAttachitem(player:any){
+    console.log('attaching item for player', player.address, player.attachedItem)
+}
+
+export function handlePlayerDetachItem(info:any){
+
 }

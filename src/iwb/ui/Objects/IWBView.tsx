@@ -16,7 +16,7 @@ import { engine } from '@dcl/sdk/ecs'
 import { displayCatalogPanel } from './CatalogPanel'
 import { displayQuestCreatorPanel } from './QuestCreatorPanel'
 
-let show = false
+export let mainIWBPanelShow = false
 
 let buttons:any[] = [
     {label:"Worlds", pressed:false, func:()=>{
@@ -81,10 +81,10 @@ let buttons:any[] = [
 export let mainView = ""
 
 export function displayMainView(value:boolean, toggle?:boolean){
-    show = toggle ? !show : value
+    mainIWBPanelShow = toggle ? !mainIWBPanelShow : value
     resetViews()
 
-    if(!show){
+    if(!mainIWBPanelShow){
         updateIWBTable([]) 
     }
    
@@ -93,7 +93,7 @@ export function displayMainView(value:boolean, toggle?:boolean){
     updateMainView("Worlds")
     updateWorldView("Current World")
 
-    if(show && worldView === "Current World"){
+    if(mainIWBPanelShow && worldView === "Current World"){
         let scenes:any[] = []
         colyseusRoom.state.scenes.forEach((sceneInfo:any)=>{
             scenes.push(sceneInfo)
@@ -129,7 +129,7 @@ export function createMainView() {
         <UiEntity
         key={"" + resources.slug + "main-panel-ui"}
             uiTransform={{
-                display: show? 'flex' : 'none',
+                display: mainIWBPanelShow? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -273,7 +273,7 @@ function CreateMainView(){
         height: '90%',
     }}
   >
-    {   show && mainView === "CreateView" &&
+    {   mainIWBPanelShow && mainView === "CreateView" &&
         generateButtons(
             {
                 slug:"create-new-panel", 

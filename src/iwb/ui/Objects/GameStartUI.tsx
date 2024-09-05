@@ -7,12 +7,13 @@ import { uiSizes } from '../uiConfig'
 import { GAME_TYPES, SERVER_MESSAGE_TYPES, Triggers } from '../../helpers/types'
 import { sendServerMessage } from '../../components/Colyseus'
 import { localPlayer } from '../../components/Player'
-import { utils } from '../../helpers/libraries'
 
 let showGameStart = false
 let showLoadingScreen = false
+let showBackground = false
 let startGame:any
 let loadingScreen:any
+let loadingTime:number = 0
 
 export function displayGameStartUI(value:boolean, game?:any){
     showGameStart = value
@@ -275,22 +276,25 @@ export function createEndGameButton(){
     )
 }
 
+export function updateLoadingTimer(time:number){
+    loadingTime = time
+    console.log("loading time is now", loadingTime)
+}
+
 export function displayLoadingScreen(value:boolean, level?:any){
     loadingScreen = level
 
-    if(loadingScreen && loadingScreen.loadingType >= 0){
-        showLoadingScreen = value
-    }else{
-        showLoadingScreen = false
-    }
+    showLoadingScreen = value
 
-    if(!showLoadingScreen){
+    if(!level){
         loadingScreen = undefined
-    }else{
-        // utils.timers.setTimeout(()=>{
-        //     displayLoadingScreen(false)
-        // }, loadingScreen.loadingMin * 1000)
-    }
+    }   
+
+    // if(level && level.loadingScreen){
+    //     showBackground = true
+    // }else{
+    //     showBackground = false
+    // }
 }
 
 export function createLoadingScreen(){
@@ -308,9 +312,33 @@ export function createLoadingScreen(){
           position:{top:0, right:0},
           display: showLoadingScreen ? "flex" :"none"
         }}
-        uiBackground={getBackgroundType()}
-        uiText={getLoadingText()}
       >
+        <UiEntity
+        uiTransform={{
+          width: '100%',
+          height:'100%',
+          justifyContent:'center',
+          flexDirection:'column',
+          alignContent:'center',
+          alignItems:'center',
+          positionType:'absolute',
+          position:{left:0, top:0},
+        }}
+        uiBackground={getBackgroundType()}
+      ></UiEntity>
+
+<UiEntity
+        uiTransform={{
+          width: '100%',
+          height:'100%',
+          justifyContent:'center',
+          flexDirection:'column',
+          alignContent:'center',
+          alignItems:'center',
+        }}
+        uiText={{value: "Loading Level\n" + (loadingTime), textAlign:'middle-center', textWrap:'nowrap', color:Color4.White(), fontSize:sizeFont(60,30)}}
+      ></UiEntity>
+
         </UiEntity>
     )
 }
@@ -326,12 +354,13 @@ function getBackgroundType(){
     return props
 }
 
-function getLoadingText(){
-    let props:UiLabelProps = {value:"", fontSize:sizeFont(40,30)}
-    if(loadingScreen && loadingScreen.loadingType === 1){
-        props.value = ""
-    }else{
-        props.value = "Loading Level..."
-    }
-    return props
-}
+// function getLoadingText(){
+//     let props:UiLabelProps = {value:"", fontSize:sizeFont(40,30)}
+//     if(loadingScreen && loadingScreen.loadingType === 1){
+//         props.value = ""
+//     }else{
+//         props.value = "Loading Level..." + 
+//     }
+//     return props
+// }
+

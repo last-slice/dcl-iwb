@@ -16,7 +16,7 @@ import { displayQuestPanel, showQuestView } from "./QuestPanel"
 export let showToolsPanel = false
 
 export function displayToolsPanel(value: boolean) {
-    showToolsPanel = value//
+    showToolsPanel = value
 }
 
 export function createToolsPanel() {
@@ -34,7 +34,7 @@ export function createToolsPanel() {
                 positionType: 'absolute',
                 position: { right: 0, bottom: '3%' }
             }}
-            // uiBackground={{ color: Color4.Red() }}//
+            // uiBackground={{ color: Color4.Red() }}
         >
 
         {/* settings icon */}

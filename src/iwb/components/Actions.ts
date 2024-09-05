@@ -1,5 +1,5 @@
 import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
-import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
+import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, getCounterValue, setCounter, updateCounter } from "./Counter"
@@ -15,7 +15,7 @@ import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
 import { localPlayer } from "./Player"
 import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStartUI"
-import { attemptLoadLevel, disableLevelAssets, loadLevelAssets } from "./Level"
+import { attemptLoadLevel, disableLevelAssets, loadLevelAssets, startLevelCountdown } from "./Level"
 import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 import { island } from "./Config"
@@ -834,11 +834,11 @@ function handleStopLoop(scene:any, info:any, action:any){
     stopInterval(info.entity, action.id)
 }
 
-function handleLoadLevel(scene:any, info:any, action:any){
+async function handleLoadLevel(scene:any, info:any, action:any){
     console.log('handle load level action', info, action)
     let levelInfo = scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(info.aid)
     if(levelInfo){
-        displayLoadingScreen(true, levelInfo)
+        startLevelCountdown(scene, levelInfo, info)
 
         let spawnLocation = {...levelInfo.loadingSpawn} //Vector3.add(sceneTransform, {...levelInfo.loadingSpawn})
         handleMovePlayer(scene, {...spawnLocation, ...{xLook:levelInfo.loadingSpawnLook.x, yLook:levelInfo.loadingSpawnLook.y, zLook:levelInfo.loadingSpawnLook.z}})
@@ -852,8 +852,12 @@ function handleLoadLevel(scene:any, info:any, action:any){
 }
 
 function handleEndGame(scene:any, info:any, action:any){
-    attemptGameEnd({sceneId:scene.id})
-    sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
+    if(localPlayer && localPlayer.gameStatus !== PLAYER_GAME_STATUSES.NONE){
+        displaySkinnyVerticalPanel(true, getView("End_Game"), undefined, ()=>{
+            sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {sceneId:scene.id})
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You have ended the game", animate:{enabled:true, return:true, time:5}})
+        })
+    }
 }
 
 function handleLockPlayer(scene:any, info:any, action:any){

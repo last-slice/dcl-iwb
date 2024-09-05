@@ -58,7 +58,7 @@ export function EditTransform() {
     )
 }
 
-export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: number, valueFn: Function, rowHeight?:any, override?:any, entity?:Entity }) {
+export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, factor: number, valueFn: Function, rowHeight?:any, override?:any, entity?:Entity, noFactor?:boolean }) {
 
     const modifierName =
         props.modifier === EDIT_MODIFIERS.POSITION ? "Position" :
@@ -662,6 +662,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                                 justifyContent: 'center',
                                 width: '100%',
                                 height: '50%',
+                                display: props.noFactor ? "none" : 'flex'
                             }}
 
                             uiText={{value: "Factor", fontSize: sizeFont(25, 12), textAlign: 'middle-left'}}
@@ -691,6 +692,7 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                                 justifyContent: 'center',
                                 width: '75%',// calculateSquareImageDimensions(5).width,
                                 height: calculateSquareImageDimensions(4).height,
+                                display: props.noFactor ? "none" : 'flex'
                             }}
                             uiBackground={{
                                 textureMode: 'stretch',
@@ -712,7 +714,8 @@ export function TransformInputModifiers(props: { modifier: EDIT_MODIFIERS, facto
                                 justifyContent: 'center',
                                 width: '25%', //calculateSquareImageDimensions(5).width,
                                 height: calculateSquareImageDimensions(4).height,
-                                margin: {right: '2%'}
+                                margin: {right: '2%'},
+                                display: props.noFactor ? "none" : 'flex'
                             }}
                             uiText={{
                                 textWrap:'nowrap',

@@ -412,7 +412,7 @@ function update(action:string, data:any){
             // console.log('parent entity world position', parentEntityPosition)
             // console.log('parent entity transform position', Transform.get(parentEntity.entity).position)
 
-            // console.log('distance is', Vector3.subtract(selectedEntityPosition, parentEntityPosition))
+            // console.log('distance is', Vector3.subtract(selectedEntityPosition, parentEntityPosition))//
 
             sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
                 {

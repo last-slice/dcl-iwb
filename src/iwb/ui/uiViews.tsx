@@ -412,4 +412,38 @@ export let uiViews:any[] = [
             ]
         }
     },
+    {
+        view:"End_Game",
+        props:{
+            label:"Are you sure you want to end game play?",
+            text:"",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"End Game",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        try{
+                            customFunction()
+                        }
+                        catch(e){
+                            console.log('custom function button error',e)
+                        }
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        try{
+                            customFunction2()
+                        }
+                        catch(e){
+                            console.log('custom function2 button error',e)
+                        }
+                    }
+                }
+            ]
+        }
+    },
 ]

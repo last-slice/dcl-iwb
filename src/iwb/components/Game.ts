@@ -24,6 +24,7 @@ import {  handleSceneEntityOnUnload } from "../modes/Play"
 import { disableMeshColliderPlayMode } from "./Meshes"
 import { setGLTFPlayMode } from "./Gltf"
 import { resetEntitiesForBuildMode } from "../modes/Build"
+import { displayLoadingScreen } from "../ui/Objects/GameStartUI"
 //
 
 export let gameEndingtimer:any
@@ -219,6 +220,14 @@ export function attemptGameEnd(info:any){
         stopAllIntervals(true)
         disableLevelAssets(scene)
         displaySkinnyVerticalPanel(false)
+
+        //clean up loading screen timers
+        displayLoadingScreen(false)
+        scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((level:any, aid:string)=>{
+            utils.timers.clearInterval(level.loadingInterval)
+            utils.timers.clearTimeout(level.loadingTimer)
+        })
+
         //to do
         //clean up any game timers etc etc
         showScenesAfterGame(scene.id)

@@ -19,12 +19,21 @@ export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 
 export function validateScene(){
     if(tempParcels.size > 0){
-        editCurrentSceneParcels ? 
-        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS, {sceneId: scene!.id})
+        if(editCurrentSceneParcels){
+            // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS, {sceneId: scene!.id})
 
-        : 
-        console.log('sending to server')
-        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, tempScene)
+            let degrees = parseInt(Math.ceil(Quaternion.toEulerAngles(Transform.get(scene!.parentEntity).rotation).y).toFixed(0))
+            let transform = Transform.get(scene!.parentEntity).position
+            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS,
+                {
+                    sceneId: scene!.id,
+                    direction: degrees,
+                    offsets: [transform.x, transform.z]
+                })
+        }else{
+            console.log('sending to server')
+            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_NEW, tempScene)
+        }
     }    
 }
 

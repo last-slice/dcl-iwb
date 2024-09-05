@@ -24,7 +24,7 @@ import { displayPendingPanel } from './PendingInfoPanel'
 export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
 
-let show = false
+export let showSceneDetailPanel = false
 let visibleIndex = 1
 let newSceneBuilderWallet:string = ""//
 
@@ -211,7 +211,7 @@ export function refreshSpawns(){
 }
 
 export function displaySceneDetailsPanel(value:boolean, selectedScene?:any, resetScene?:boolean){
-    show = value
+    showSceneDetailPanel = value
 
     if(selectedScene){
         scene = selectedScene
@@ -258,7 +258,7 @@ export function createSceneDetailsPanel() {
         <UiEntity
         key={"" + resources.slug + "scene-details-ui"}
             uiTransform={{
-                display: show? 'flex' : 'none',
+                display: showSceneDetailPanel? 'flex' : 'none',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',

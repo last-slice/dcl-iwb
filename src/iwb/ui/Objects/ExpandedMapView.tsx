@@ -3,31 +3,34 @@ import resources from '../../helpers/resources'
 import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { setUIClicked } from '../ui'
-import { Color4, Quaternion } from '@dcl/sdk/math'
+import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { colyseusRoom, sendServerMessage } from '../../components/Colyseus'
-import { IWBScene, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
-import { addBoundariesForParcel, cancelParcelEdits, deleteCreationEntities, deleteParcelEntities, getParcels, otherTempParcels, tempParcels, validateScene } from '../../modes/Create'
+import { EDIT_MODIFIERS, IWBScene, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
+import { addBoundariesForParcel, cancelParcelEdits, deleteCreationEntities, deleteParcelEntities, getParcels, greenBeam, otherTempParcels, redBeam, tempParcels, validateScene } from '../../modes/Create'
 import { localUserId, localPlayer } from '../../components/Player'
 import { formatDollarAmount } from '../../helpers/functions'
 import { addBlankParcels, removeEmptyParcels, updateSceneParentRotation } from '../../components/Scene'
 import { scene } from './SceneMainDetailPanel'
 import { playSound } from '../../components/Sounds'
 import { rotateUVs } from '../../../ui_components/utilities'
-import { engine, Transform } from '@dcl/sdk/ecs'
+import { engine, Entity, GltfContainer, Transform } from '@dcl/sdk/ecs'
 import { teleportToScene } from '../../modes/Play'
-import { sceneEdit } from '../../modes/Build'
+import { TransformInputModifiers } from './Edit/EditTransform'
 
 export let expandedMapshow = false
 let navigation = false
 export let editCurrentSceneParcels = false
+export let editRotation = false
 
 let xMin = -22
 let xMax = 25
 let yMin = -21
 let yMax = 23
+let sceneFactor = 1
 
 let mapTiles:any[] = []
 let currentSceneParcels:any[] = []
+let entities:any[] = []
 
 let selectedScene:any
 
@@ -43,8 +46,10 @@ export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean
     }
 
     if(current){
+        editRotation = false
         editCurrentSceneParcels = current
         currentSceneParcels = [...localPlayer.activeScene.pcls]
+        createCurrentSceneBoundaries()
     }else{
         editCurrentSceneParcels = false
     }
@@ -56,6 +61,79 @@ export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean
         currentSceneParcels.length = 0
         selectedScene = undefined
     }
+}
+
+function createCurrentSceneBoundaries(){
+    let guide = engine.addEntity()
+
+    entities.push(guide)
+
+    //left
+    Transform.createOrReplace(guide, {
+        position: Vector3.create(0, 0, 0),
+        rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+        scale: Vector3.create(1, 20, 1),
+        parent: scene?.parentEntity
+    })
+    GltfContainer.create(guide, {src: "assets/c43c3465-ce60-41b3-8400-3f5458e3b860.glb"})
+    // currentSceneParcels.forEach((parcel:string, i:number)=>{
+
+    //     let x = parseInt(parcel.split(",")[0])
+    //     let y = parseInt(parcel.split(",")[1])
+        
+    //     let left = engine.addEntity()
+    //     let right = engine.addEntity()
+    //     let front = engine.addEntity()
+    //     let back = engine.addEntity()
+    
+    //     entities.push(left)
+    //     entities.push(right)
+    //     entities.push(front)
+    //     entities.push(back)
+
+    //     //left
+    //     Transform.createOrReplace(left, {
+    //         position: Vector3.create(x * 16, 0, y * 16),
+    //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+    //         scale: Vector3.create(1, 20, 1),
+    //         // parent:parent
+    //     })
+    //     GltfContainer.create(left, {src: "assets/c43c3465-ce60-41b3-8400-3f5458e3b860.glb"})
+
+    //         //right
+    //     Transform.createOrReplace(right, {
+    //         position: Vector3.create(x * 16 + 16, 0, y * 16),
+    //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+    //         scale: Vector3.create(1, 20, 1),
+    //         // parent:parent
+    //     })
+    //     GltfContainer.create(right, {src: "assets/c43c3465-ce60-41b3-8400-3f5458e3b860.glb"})
+
+    //     // front
+    //     Transform.createOrReplace(front, {
+    //         position: Vector3.create(x * 16, 0, y * 16 + 16),
+    //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+    //         scale: Vector3.create(1, 20, 1),
+    //         // parent:parent
+    //     })
+    //     GltfContainer.create(front, {src: "assets/c43c3465-ce60-41b3-8400-3f5458e3b860.glb"})
+
+    //     // back
+    //     Transform.createOrReplace(back, {
+    //         position: Vector3.create(x * 16 + 16, 0, y * 16 + 16),
+    //         rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+    //         scale: Vector3.create(1, 20, 1),
+    //         // parent:parent
+    //     })
+    //     GltfContainer.create(back, {src: "assets/c43c3465-ce60-41b3-8400-3f5458e3b860.glb"})
+    // })
+}
+
+function removeCurrentSceneBoundaries(){
+    entities.forEach((entity:Entity)=>{
+        engine.removeEntity(entity)
+    })
+    entities.length = 0
 }
 
 function createMapTiles(){
@@ -308,6 +386,34 @@ function MainLeftView(){
     uiText={{value:"File Limit: " + (getParcels() >= 20 ? "300" : getParcels() * 15) + " MB", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-center'}}
     />
 
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{top:"2%"},
+            display: editCurrentSceneParcels ? "flex" : "none"
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            playSound(SOUND_TYPES.SELECT_3)
+            editRotation = !editRotation
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        uiText={{value:"" + (!editRotation ? "Edit Rotation" : "Edit Parcels"), color:Color4.White(), fontSize:sizeFont(25,15)}}
+        />
+
         {/* create button */}
         <UiEntity
         uiTransform={{
@@ -330,9 +436,10 @@ function MainLeftView(){
             playSound(SOUND_TYPES.SELECT_3)
             validateScene()
             displayExpandedMap(false)
-            deleteCreationEntities("")//
+            deleteCreationEntities("")
+            removeCurrentSceneBoundaries()
         }}
-        uiText={{value: "" + (editCurrentSceneParcels ? "Save Parcels": "Save Scene"), color:Color4.White(), fontSize:sizeFont(25,15)}}
+        uiText={{value: "" + (editCurrentSceneParcels ? "Save Edits": "Save Scene"), color:Color4.White(), fontSize:sizeFont(25,15)}}
         onMouseUp={()=>{
             setUIClicked(false)
         }}
@@ -359,105 +466,14 @@ function MainLeftView(){
             setUIClicked(true)
             playSound(SOUND_TYPES.SELECT_3)
             cancelParcelEdits()
+            removeCurrentSceneBoundaries()
         }}
         onMouseUp={()=>{
             setUIClicked(false)
         }}
-        uiText={{value:"" + (editCurrentSceneParcels ? "Cancel Parcels" : "Cancel Scene"), color:Color4.White(), fontSize:sizeFont(25,15)}}
+        uiText={{value:"" + (editCurrentSceneParcels ? "Cancel" : "Cancel Scene"), color:Color4.White(), fontSize:sizeFont(25,15)}}
         />
 
-<UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '10%',//
-        }}
-    uiText={{value:"Scene Rotation: " + (editCurrentSceneParcels ? Math.ceil(Quaternion.toEulerAngles(Transform.get(scene!.parentEntity).rotation).y).toFixed(0) : ""), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-center'}}
-    />
-
-<UiEntity
-        uiTransform={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '15%',
-        }}
-    >
-
-<UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '50%',
-            height: '100%',
-            margin:{left:'1%', right:'1%'}
-        }}
-    >
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(3, getAspect(uiSizes.leftArrow)).width,
-            height: calculateImageDimensions(3,getAspect(uiSizes.leftArrow)).height,
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.leftArrow)
-        }}
-        onMouseDown={() => {
-            setUIClicked(true)
-            updateSceneParentRotation(scene, -90)
-        }}
-        onMouseUp={()=>{
-            setUIClicked(false)
-        }}
-        />
-    </UiEntity>
-
-    <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '50%',
-            height: '100%',
-            margin:{left:'1%', right:'1%'}
-        }}
-    >
-        <UiEntity
-        uiTransform={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: calculateImageDimensions(3, getAspect(uiSizes.rightArrow)).width,
-            height: calculateImageDimensions(3,getAspect(uiSizes.rightArrow)).height,
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.rightArrow)
-        }}
-        onMouseDown={() => {
-            setUIClicked(true)
-            updateSceneParentRotation(scene, 90)
-        }}
-        onMouseUp={()=>{
-            setUIClicked(false)
-        }}
-        />
-    </UiEntity>
-
-    </UiEntity>
 
         </UiEntity>
 
@@ -498,6 +514,7 @@ function MainLeftView(){
 
 function MainRightView(){
     return(
+
         <UiEntity
         key={resources.slug + "map-view-right-container"}
         uiTransform={{
@@ -506,7 +523,19 @@ function MainRightView(){
             justifyContent: 'center',
             width: navigation ? '90%' : '75%',
             height: '100%',
-            margin:{left:  navigation ? 0 : '1%'}
+            margin:{left:  navigation ? 0 : '1%'},
+        }}
+        
+        >
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            display: editRotation ? "none" : 'flex'
         }}
         uiBackground={{color:Color4.create(1,1,1,.1)}}
         >
@@ -514,6 +543,172 @@ function MainRightView(){
             {expandedMapshow && mapTiles.length > 0 && generateMapTiles()}
 
                 <PlayerArrow/>
+
+            </UiEntity>
+
+        {/* edit rotation panel */}
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '100%',
+            display: editRotation ? "flex" : 'none'
+        }}
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+    uiText={{value:"Scene Rotation", fontSize:sizeFont(40, 30), color:Color4.White(), textAlign:'middle-center'}}
+    />
+
+
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '15%',
+        }}
+    >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '33%',
+            height: '100%',
+            margin:{left:'1%', right:'1%'}
+        }}
+    >
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(3, getAspect(uiSizes.leftArrow)).width,
+            height: calculateImageDimensions(3,getAspect(uiSizes.leftArrow)).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.leftArrow)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            updateSceneParentRotation(scene, -90)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        />
+    </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '33%',
+            height: '100%',
+        }}
+    uiText={{value:"" + (editCurrentSceneParcels ? Math.ceil(Quaternion.toEulerAngles(Transform.get(scene!.parentEntity).rotation).y).toFixed(0) : ""), fontSize:sizeFont(40, 30), color:Color4.White(), textAlign:'middle-center'}}
+    />
+
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '33%',
+            height: '100%',
+            margin:{left:'1%', right:'1%'}
+        }}
+    >
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(3, getAspect(uiSizes.rightArrow)).width,
+            height: calculateImageDimensions(3,getAspect(uiSizes.rightArrow)).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.rightArrow)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            updateSceneParentRotation(scene, 90)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        />
+    </UiEntity>
+
+    </UiEntity>
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+        }}
+    uiText={{value:"Scene Offset", fontSize:sizeFont(40, 25), color:Color4.White(), textAlign:'middle-center'}}
+    />
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '30%',
+        }}
+    >
+        {
+            scene && 
+        Transform.has(scene.parentEntity) &&
+               <TransformInputModifiers modifier={EDIT_MODIFIERS.POSITION}
+                    override={updateSceneOffset}
+                    rowHeight={'100%'}
+                    factor={sceneFactor}
+                    entity={scene!.parentEntity}
+                    noFactor={true}
+                    valueFn={(type:string)=>{
+                        let transform = Transform.getMutable(scene!.parentEntity)
+                        switch (type) {
+                            case 'x':
+                                return transform.position.x.toFixed(3)
+                            case 'y':
+                                return transform.position.y.toFixed(3)
+                            case 'z':
+                                return (transform.position.z).toFixed(3)
+                        }
+                    }}
+                />
+                }
+        </UiEntity>
+
+        </UiEntity>
 
         </UiEntity>
   
@@ -731,4 +926,13 @@ function selectScene(parcel:string){
     })
 
     createMapTiles()
+}
+
+function updateSceneOffset(direction:string, factor:number, manual?:boolean){
+    let transform:any = Transform.getMutable(scene!.parentEntity).position
+    transform[direction] = manual ? factor : transform[direction] + (factor * sceneFactor)
+
+    // newActionData.x = transform.x
+    // newActionData.y = transform.y
+    // newActionData.z = transform.z
 }

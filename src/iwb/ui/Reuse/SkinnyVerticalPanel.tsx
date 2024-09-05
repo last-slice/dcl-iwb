@@ -71,10 +71,10 @@ export function createSkinnyVerticalPanel(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                width: '90%',
                 height: '15%',
                 display:'flex',
-                margin:{top:'10%'}
+                margin:{top:'10%', left:'2%', right:'2%'}
             }}
         uiText={{value:"" + (props && props.label), fontSize: sizeFont(45,30), color: Color4.White()}}
         />
