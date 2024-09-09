@@ -1025,7 +1025,7 @@ function generateUpdateRows(){
 
             //     getImageAtlasMapping(uiSizes.rowPillDark)
             // }}
-            uiText={{value:"- " + update, fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+            uiText={{textWrap:'nowrap', value:"- " + update, fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
             >
     
             </UiEntity>

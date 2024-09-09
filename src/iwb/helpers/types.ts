@@ -96,6 +96,7 @@ export enum SERVER_MESSAGE_TYPES {
     CREATE_GAME_LOBBY = 'create_game_lobby',
     HIT_OBJECT = 'hit_object',
     SHOOT = 'shoot',
+    LEADERBOARD_UPDATE = 'leaderboard_update',
 
     //QUESTING
     GET_QUEST_DEFINITIONS = 'get_quest_definitions',
@@ -341,7 +342,8 @@ export enum COMPONENT_TYPES {
     REWARD_COMPONENT = 'Reward',
     PATH_COMPONENT = 'Path',
     VLM_COMPONENT = 'VLM',
-    MULTIPLAYER_COMPONENT = 'Multiplayer'
+    MULTIPLAYER_COMPONENT = 'Multiplayer',
+    LEADERBOARD_COMPONENT = 'Leaderboard'
 }
 
 export enum BLOCKCHAINS {

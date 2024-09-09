@@ -109,18 +109,19 @@ export function createGameStartUI(){
         alignContent:'center',
         alignItems:'center',
         }}
-        // uiBackground={{color:Color4.Red()}}
+        // uiBackground={{color:Color4.Red()}}//
         >
             <UiEntity
             uiTransform={{
             width: '100%',
-            height:'30%',
+            height:'10%',
             justifyContent:'center',
             flexDirection:'column',
             alignContent:'center',
             alignItems:'center',
+            margin:{top:"10%"}
             }}
-            uiText={{value:"Start Game " + (startGame && startGame.name), fontSize:sizeFont(25,20)}}
+            uiText={{value:"Start Game " + (startGame && startGame.name), fontSize:sizeFont(45,20), textAlign:'middle-left'}}
             />
 
                 <UiEntity
@@ -132,19 +133,36 @@ export function createGameStartUI(){
                 alignContent:'center',
                 alignItems:'center',
                 }}
-                uiText={{value:"Type: " + (startGame && startGame.type), fontSize:sizeFont(20,15), textAlign:'top-left'}}
+                uiText={{value:"Type: " + (startGame && startGame.type), fontSize:sizeFont(30,15), textAlign:'top-left'}}
                 />
+
+                {
+                    startGame && startGame.premiumAccessType >= 0 &&
+                <UiEntity
+                        uiTransform={{
+                        width: '90%',
+                        height:'10%',
+                        justifyContent:'center',
+                        flexDirection:'column',
+                        alignContent:'center',
+                        alignItems:'center',
+                        }}
+                        uiText={{value:"Restrictions: " + getRestrictions(), fontSize:sizeFont(30,15), textAlign:'top-left'}}
+                        />
+                }
+
+
 
             <UiEntity
                 uiTransform={{
                 width: '90%',
-                height:'30%',
+                height:'20%',
                 justifyContent:'center',
                 flexDirection:'column',
                 alignContent:'center',
                 alignItems:'center',
                 }}
-                uiText={{value:"" + addLineBreak("" + (startGame && startGame.description), undefined, 50), fontSize:sizeFont(20,15), textAlign:'top-left'}}
+                uiText={{value:"" + (startGame && startGame.description), fontSize:sizeFont(30,15), textAlign:'top-left'}}
                 />
 
         <UiEntity
@@ -173,7 +191,7 @@ export function createGameStartUI(){
                 setUIClicked(true)
                 displayGameStartUI(false)
                 sendServerMessage(SERVER_MESSAGE_TYPES.START_GAME, {sceneId: startGame.id, entity:startGame.entity})
-
+                setUIClicked(false)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
@@ -364,3 +382,17 @@ function getBackgroundType(){
 //     return props
 // }
 
+
+
+function getRestrictions(){
+    switch(startGame.premiumAccessType){
+        case 0:
+            return "Requires NFT"
+
+        case 1:
+            return "Requires Wearing an Item"
+
+        case 2:
+            return "Daily play"
+    }
+}

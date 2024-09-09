@@ -51,6 +51,7 @@ import { EditPath, editPathView, resetPathEntities, updateEditPathPanel, updateE
 import { releaseQuestAction } from './Edit/ActionPanels/AddQuestAction'
 import { EditAudioComponent, updateAudioComponent } from './Edit/EditAudios'
 import { EditVLMComponent, updateVLM } from './Edit/EditVLM'
+import { EditLeaderboard, resetLeadboardInfo, refreshLeaderboardInfo } from './Edit/EditLeaderboard'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -67,6 +68,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.LEADERBOARD_COMPONENT:
+            refreshLeaderboardInfo()
+            break;
+
         case COMPONENT_TYPES.ACTION_COMPONENT:
             refreshActionPanel()
             break;
@@ -455,6 +460,17 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.LEADERBOARD_COMPONENT:
+            resetLeadboardInfo()
+            openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            // if(editPathView === "main"){
+            //     resetPathEntities(true)
+            //     openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            // }else{
+            //     updateEditPathView("main")
+            // }
+            break;
+
         case COMPONENT_TYPES.REWARD_COMPONENT:
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             break;
@@ -915,6 +931,7 @@ function EditObjectData(){
                 <EditPath/>
                 <EditAudioComponent/>
                 <EditVLMComponent/>
+                <EditLeaderboard/>
 
             </UiEntity>
 
@@ -1052,7 +1069,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.AVATAR_SHAPE_COMPONENT,
         COMPONENT_TYPES.PATH_COMPONENT,
         COMPONENT_TYPES.VLM_COMPONENT,
-        COMPONENT_TYPES.GAME_ITEM_COMPONENT
+        COMPONENT_TYPES.GAME_ITEM_COMPONENT,
+        COMPONENT_TYPES.LEADERBOARD_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1089,10 +1107,10 @@ function getAdvancedComponents(){
         }
     })
 
-    assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
+    assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)//
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-22).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1149,7 +1167,8 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.LEVEL_COMPONENT,
             COMPONENT_TYPES.PATH_COMPONENT,
             COMPONENT_TYPES.AUDIO_COMPONENT,
-            COMPONENT_TYPES.VLM_COMPONENT
+            COMPONENT_TYPES.VLM_COMPONENT,
+            COMPONENT_TYPES.LEADERBOARD_COMPONENT
         ]
 
         let components:any[] = []
@@ -1159,7 +1178,8 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-21).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-22).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        array.push(COMPONENT_TYPES.BILLBOARD_COMPONENT)
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
         array.unshift("Component List")
@@ -1178,3 +1198,6 @@ function getNoDeletes(){
         COMPONENT_TYPES.VISBILITY_COMPONENT,
     ]
 }
+
+
+//

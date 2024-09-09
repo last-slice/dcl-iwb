@@ -39,6 +39,7 @@ import { avatarShapeListener } from "./AvatarShape"
 import { utils } from "../helpers/libraries"
 import { LAYER_8, NO_LAYERS } from "@dcl-sdk/utils"
 import { mutiplayerListener } from "./Multiplayer"
+import { leaderboardListener } from "./Leaderboard"
 
 export let realmActions: any[] = []
 
@@ -137,6 +138,7 @@ async function loadSceneComponents(scene:any){
     await playlistListener(scene)
     await avatarShapeListener(scene)
     await mutiplayerListener(scene)
+    await leaderboardListener(scene)
     
     scene.loaded = true
     console.log('scene loaded', scene.id)

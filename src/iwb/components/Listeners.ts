@@ -4,7 +4,7 @@ import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, PLAYER_GAME_
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addLocalWorldPermissionsUser, addPlayerToHideArray, addTutorial, excludeHidingUsers, isGCScene, island, iwbConfig, realm, removeLocalWorldPermissionsUser, removePlayerFromHideArray, removeTutorial, setConfig, setHidPlayersArea, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
+import { addLocalWorldPermissionsUser, addPlayerToHideArray, addTutorial, excludeHidingUsers, isGCScene, island, iwbConfig, playerMode, realm, removeLocalWorldPermissionsUser, removePlayerFromHideArray, removeTutorial, setConfig, setHidPlayersArea, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { addScene, checkAllScenesLoaded, checkSceneCount, enablePrivateModeForScene, isPrivateScene, loadScene, loadSceneAsset, pendingSceneLoad, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
@@ -26,6 +26,7 @@ import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
 import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { playAudiusTrack } from "./Sounds";
 import { setServerQuests, updateQuestsDefinitions } from "./Quests";
+import { updateLeaderboardInfo } from "./Leaderboard";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -566,6 +567,26 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, (info:any) => {
         // log(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS + ' received', info)
         updateQuestsDefinitions(info)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.LEADERBOARD_UPDATE, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.LEADERBOARD_UPDATE + ' received', info)
+        
+        if(!info || !info.sceneId){
+            return
+        }
+
+        let scene = colyseusRoom.state.scenes.get(info.sceneId)
+        if(!scene){
+            return
+        }
+
+        let leaderboardInfo = scene[COMPONENT_TYPES.LEADERBOARD_COMPONENT].get(info.aid)
+        if(!leaderboardInfo || playerMode === SCENE_MODES.BUILD_MODE){
+            return
+        }
+
+        updateLeaderboardInfo(leaderboardInfo, info.data)
     })
 
     room.state.listen("sceneCount", (c:any, p:any)=>{

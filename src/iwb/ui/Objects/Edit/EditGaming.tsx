@@ -29,13 +29,15 @@ let premiumAccessTypes:any[] = [
     "TIME - DAILY",
     "TIME - WEEKLY",
     "TIME - MONTHLY",
-    "TIME - CUSTOM"
+    "TIME - CUSTOM"//
 ]
 
 let gameTypeIndex:number = 0
 
 let newVariable:string = ""
 let newVariableValue:string = ""
+let visibleVariables:any[] = []
+let visibleVariableIndex:number = 1
 
 let editTeam:any
 
@@ -181,6 +183,18 @@ export function updateGamingInfo(reset?:boolean){
     newVariable = ""
     newVariableValue = ""
     console.log('gaming info', gamingInfo)
+
+    let variables:any[] = []
+    if(gamingInfo.pvariables.size > 0){
+        gamingInfo.pvariables.forEach((data:any, variable:string)=>{
+            variables.push({id:variable, variable:data})
+        })
+    }
+    // for(let key in gamingInfo.pvariables){
+    //     variables.push({id:key, variable:gamingInfo.pvariables[key]})
+    // }
+
+    visibleVariables = paginateArray(variables, visibleVariableIndex, 6)
 }
 
 export function EditGaming(){
@@ -199,7 +213,7 @@ export function EditGaming(){
             <GameMainView/>
             <GameMetadataView/>
             <GameConfigurationView/>
-            <GameVariablesView/>
+            {/* <GameVariablesView/> */}
             <GamePlayerVariablesView/>
             <GameLevelsView/>
             <GameTeamsView/>
@@ -365,7 +379,7 @@ function GameMainView(){
                 }}
             />
 
-            <UiEntity
+            {/* <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -383,7 +397,7 @@ function GameMainView(){
                 onMouseUp={()=>{
                     setUIClicked(false)
                 }}
-            />
+            /> */}
 
             <UiEntity
                 uiTransform={{
@@ -965,7 +979,7 @@ function GameConfigurationView(){
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: gamingInfo.premiumAccessType >= 0 ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                uvs: gamingInfo && gamingInfo.premiumAccessType >= 0 ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
             }}
             onMouseDown={() => {
                 if(gamingInfo.premiumAccessType >= 0){
@@ -996,7 +1010,7 @@ function GameConfigurationView(){
                     alignContent:'center',
                     width: '90%',
                     height: '12%',
-                    display: gamingInfo.premiumAccessType >= 0 ? "flex" : 'none'
+                    display: gamingInfo && gamingInfo.premiumAccessType >= 0 ? "flex" : 'none'
                 }}
             >
                 <Dropdown
@@ -1028,7 +1042,7 @@ function GameConfigurationView(){
             alignContent:'center',
             width: '100%',
             height: '25%',
-            display: gamingInfo.premiumAccessType >= 0? "flex" : 'none',
+            display: gamingInfo && gamingInfo.premiumAccessType >= 0? "flex" : 'none',
             margin:{bottom:'2%'}
         }}
     >
@@ -1153,7 +1167,7 @@ function GameVariablesView(){
                     setUIClicked(true)
                     update("edit", "variables", newVariable)
                     utils.timers.setTimeout(()=>{
-                        updateGamingInfo()
+                        // updateGamingInfo()
                     }, 200)
                 }}
                 onMouseUp={()=>{
@@ -1223,7 +1237,7 @@ function GamePlayerVariablesView(){
         alignItems: 'center',
         justifyContent: 'center',
         width: '70%',
-        height: '100%',
+        height: '100%',//
     }}
     >
             <UiEntity
@@ -1370,9 +1384,9 @@ function GamePlayerVariablesView(){
         uiText={{value: "Add", fontSize: sizeFont(20, 16)}}
         onMouseDown={() => {
             setUIClicked(true)
-            update("edit", "pvariables", {id:newVariable, value:newVariableValue})
+            update("edit", "pvariables", {id:newVariable, value: isNaN(parseInt(newVariableValue)) ? 0 : parseInt(newVariableValue)})
             utils.timers.setTimeout(()=>{
-                updateGamingInfo()
+                // updateGamingInfo()
             }, 200)
         }}
         onMouseUp={()=>{
@@ -1783,7 +1797,7 @@ function update(action:string, type:string, value:any, team?:any){
     )
     if(team){}
     else{
-        gamingInfo[type] = value
+        gamingInfo[type] = {value:value, save:false}
     }
    
 }
@@ -1904,7 +1918,7 @@ function LevelRow(data:any){
 function generateVariableRows(){
     let arr:any[] = []
     let count:number = 0
-    gamingInfo && gamingInfo.variables.forEach((variable:string, i:number)=>{
+    visibleVariables.forEach((variable:any, i:number)=>{
         arr.push(<Row count={count} variable={variable} />)
         count++
     })
@@ -1918,8 +1932,8 @@ function generatePlayerVariableRows(){
         return arr
     }
 
-    gamingInfo && gamingInfo.pvariables.forEach((value:any, variable:string)=>{
-        arr.push(<PRow count={count} variable={value} id={variable} />)
+    visibleVariables.forEach((variable:any, i:number)=>{
+        arr.push(<PRow count={count} variable={variable} id={variable.id} />)
         count++
     })
     return arr
@@ -2010,6 +2024,8 @@ function Row(data:any){
 }
 
 function PRow(data:any){
+    // console.log('variable data is', data)
+    let varirable = data.variable.variable
     return(
         <UiEntity
                 key={resources.slug + "gaming::pvariable::row" + data.count}
@@ -2017,7 +2033,7 @@ function PRow(data:any){
                     flexDirection: 'row',
                     alignItems: 'center',
                     width: '100%',
-                    height: '10%',
+                    height: '15%',
                     margin:{top:"1%", bottom:"1%"}
                 }}
                 uiBackground={{
@@ -2029,31 +2045,139 @@ function PRow(data:any){
                 }}
             >
 
-            <UiEntity
+                {/* player variable name */}
+                <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
-                    width: '60%',
+                    width: '40%',
                     height: '100%',
                     margin:{left:'5%'}
                 }}
-                uiText={{value:"" + data.id, fontSize:sizeFont(20,15), textAlign:'middle-left'}}
+                >
+                    <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '50%',
+                }}
+                uiText={{value:"Variable Name", fontSize:sizeFont(20,15), textAlign:'middle-left'}}
                 />
 
-            <UiEntity
+                    <UiEntity
+                        uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        width: '100%',
+                        height: '50%',
+                    }}
+                    uiText={{value:"" + data.id, fontSize:sizeFont(20,15), textAlign:'middle-left'}}
+                    />
+
+                </UiEntity>
+
+                    {/* start value */}
+                <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
                     width: '20%',
                     height: '100%',
                 }}
-                uiText={{value:"" + data.variable, fontSize:sizeFont(20,15), textAlign:'middle-left'}}
+                >
+                
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '50%',
+                }}
+                uiText={{value:"Start Value", fontSize:sizeFont(20,15), textAlign:'middle-center'}}
                 />
+
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        width: '100%',
+                        height: '50%',
+                    }}
+                    uiText={{value:"" + varirable.value, fontSize:sizeFont(20,15), textAlign:'middle-center'}}
+                    />
+
+
+                </UiEntity>
+
+                   {/* save data column */}
+                   <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '20%',
+                    height: '100%',
+                }}
+                >
+                
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '40%',
+                }}
+                uiText={{value:"Save Data", fontSize:sizeFont(20,15), textAlign:'middle-center'}}
+                />
+
+                <UiEntity
+                    uiTransform={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        width: '100%',
+                        height: '60%',
+                    }}
+                    >
+                        <UiEntity
+                            uiTransform={{
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: calculateSquareImageDimensions(4).width,
+                                height: calculateSquareImageDimensions(4).height,
+                                margin:{top:"1%", bottom:'1%'},
+                            }}
+                            uiBackground={{
+                                textureMode: 'stretch',
+                                texture: {
+                                    src: 'assets/atlas2.png'
+                                },
+                                uvs: varirable.save ?getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                            }}
+                            onMouseDown={() => {
+                                sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+                                    {
+                                        component:COMPONENT_TYPES.GAME_COMPONENT,
+                                        aid:selectedItem.aid, 
+                                        sceneId:selectedItem.sceneId,
+                                        action:'pvariable-save',
+                                        variable:data.id,
+                                        value:!varirable.save
+                                    }
+                                )
+                            }}
+                            />
+                        
+                    </UiEntity>
+
+
+                </UiEntity>
 
             <UiEntity
                 uiTransform={{
                     flexDirection: 'column',
                     alignItems: 'center',
+                    justifyContent:'center',
                     width: '20%',
                     height: '100%',
                     margin:{right:'5%'}

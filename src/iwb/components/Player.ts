@@ -32,7 +32,8 @@ export let localPlayer:any
 export let tutorialVideo:Entity
 export let settings:any = {
     triggerDebug: false,
-    sceneCheck:false
+    sceneCheck:false,
+    loadRadius:10
 }
 
 export function isLocalPlayer(userId:string){

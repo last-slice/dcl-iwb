@@ -100,7 +100,7 @@ export function handleSceneEntitiesOnEnter(sceneId:string){
             }
         })
     }
-}
+}//
 
 export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     setPointersPlayMode(scene, entityInfo)
