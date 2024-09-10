@@ -97,6 +97,7 @@ export enum SERVER_MESSAGE_TYPES {
     HIT_OBJECT = 'hit_object',
     SHOOT = 'shoot',
     LEADERBOARD_UPDATE = 'leaderboard_update',
+    GAME_ACTION = 'game_action',
 
     //QUESTING
     GET_QUEST_DEFINITIONS = 'get_quest_definitions',
@@ -188,12 +189,13 @@ export interface Player {
 
 export interface IWBScene {
     parentEntity:Entity,
+    metadata:any,
     id:string,
-    n:string, 
-    d:string,
-    o:string,
-    ona:string,
-    cat:string,
+    // n:string, 
+    // d:string,
+    // o:string,
+    // ona:string,
+    // cat:string,
     bpcl:string,
     ass:SceneItem[],
     bps:string[],
@@ -211,7 +213,7 @@ export interface IWBScene {
     isdl:boolean,
     e:boolean,
     entities:Entity[],
-    im?:string,
+    // im?:string,
     priv:boolean,
     lim:boolean
     direction:boolean

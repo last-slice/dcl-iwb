@@ -721,7 +721,7 @@ export function resetAdditionalAssetFeatures(){
     resetSpawnLocationEntities()
     releaseQuestAction()
     resetActionAttachEntity()
-    resetLeadboardInfo()
+    resetLeadboardInfo()//
 }
 
 export function dropGrabbedItems(){
@@ -1719,7 +1719,7 @@ export function disableTweenPlacementEntity() {
 export function checkPlayerBuildRights(){
     let canBuild = false
     colyseusRoom.state.scenes.forEach((scene: IWBScene, key: string) => {
-        if (scene.pcls.find((parcel) => parcel === localPlayer!.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
+        if (scene.pcls.find((parcel) => parcel === localPlayer!.currentParcel && (scene.metadata.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
             canBuild = true
         }
     })

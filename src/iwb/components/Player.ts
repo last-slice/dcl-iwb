@@ -25,6 +25,7 @@ import { AudioFinishedSystem, createSounds } from "./Sounds";
 import { createPhysics } from "../physics";
 import { LAYER_1, LAYER_8, NO_LAYERS } from "@dcl-sdk/utils";
 import { initQuestClients } from "./Quests";
+import { addTestVehicle } from "./Vehicle";
 // import VLM from "vlm-dcl";//
 
 export let localUserId: string
@@ -91,9 +92,11 @@ export async function createPlayer(player:any){
     await getPlayerLand()
     await checkPlayerHomeWorld(player)
     await checkWorldPermissions()
-    // await createPhysics()//
+    await createPhysics()
     await addPlayerTrigger()
     await initQuestClients()
+
+    addTestVehicle()
     
     engine.addSystem(PendingSceneLoadSystem)
     getAssetUploadToken()
@@ -178,6 +181,7 @@ function setPlayerDefaults(player:any){
     player.gameStatus = PLAYER_GAME_STATUSES.NONE
     player.questClients = new Map<string, any>()
     player.hasWeaponEquipped = false
+    player.inVehicle = false
 
     let playerData = getPlayer()
     player.dclData = playerData

@@ -462,6 +462,11 @@ function handleAddNumber(scene:any, info:any, action:any){
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {input:0, pointer:0, entity:info.entity})
 
+        if(scene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].has(info.aid)){
+            console.log('send adding number action message to server')
+            sendServerMessage(SERVER_MESSAGE_TYPES.GAME_ACTION, {sceneId:scene.id, aid:info.aid, action:Actions.ADD_NUMBER, value:action.value})
+        }
+
         //if multiplayer, send to server
         // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
     }
@@ -478,7 +483,7 @@ export function handleSetNumber(scene:any, info:any, action:any){
 
         //single player
         // const triggerEvents = getTriggerEvents(info.entity)
-        // triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})
+        // triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {})//
         //if multiplayer, send to server
         // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {sceneId:scene.id, aid:info.aid, action:action})
     }

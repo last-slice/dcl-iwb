@@ -7,6 +7,8 @@ import { setupUI } from "./ui/ui";
 import { getPreview } from "./helpers/functions";
 import { setLocalUserId } from "./components/Player";
 import { getExplorerConfiguration } from "~system/EnvironmentApi"
+import { createPhysics } from "./physics";
+import { addTestVehicle } from "./components/Vehicle";
 
 export function initIWB() {
     setupUI()
@@ -28,6 +30,9 @@ export function initIWB() {
                     await setRealm(sceneJson, data.clientUri)
         
                     joinWorld(realm)
+
+                    // await createPhysics()
+                    // addTestVehicle()
                 })
             }
         })

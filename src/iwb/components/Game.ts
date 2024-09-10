@@ -17,7 +17,7 @@ import { addGunRecoilSystem, isProcessingGunRay, processGunArray } from "../syst
 import { displayCooldown } from "../ui/Objects/GameCooldownUI"
 import { stopAllIntervals } from "./Timer"
 import { updateAssetBuildVisibility } from "./Visibility"
-import { disableCounterForPlayMode } from "./Counter"
+import { disableCounterForPlayMode, getCounterComponentByAssetId, setCounter } from "./Counter"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { playerMode, setExcludePlayersToSoloGame } from "./Config"
 import {  handleSceneEntityOnUnload } from "../modes/Play"
@@ -166,6 +166,11 @@ export function attemptGameStart(info:any){
             if(foundLevelAid){
                 attemptLoadLevel(scene, gameInfo.currentLevelAid, foundLevelAid)
                 hideWorldDuringGame(scene.id, [localUserId])
+
+                //load saved player info
+                loadSavedPlayerInfo(scene, gameInfo, info.savedData)
+            }else{
+                console.log('didnt find level to load, not sure what to do here')
             }
 
             
@@ -791,4 +796,25 @@ function showScenesAfterGame(sceneId:string){
             scene.hiddenForGame = false
         }
     })
+}
+
+
+function loadSavedPlayerInfo(scene:any, gameInfo:any, data:any){
+    let gameVariables = gameInfo.pvariables
+    console.log('player saved data is', data)
+    for(let variable in data){
+        let gameVariable = gameVariables.get(variable)
+        if(gameVariable){
+            console.log('player data is a game variable', variable, data[variable])
+            if(gameVariable.aid){
+                let entityInfo = getEntity(scene, gameVariable.aid)
+                let counter = getCounterComponentByAssetId(scene, gameVariable.aid, {})
+                console.log('counter is', counter)
+                if(counter){
+                    setCounter(counter, data[variable])
+                    uiDataUpdate(scene, entityInfo)//
+                }
+            }
+        }
+    }
 }

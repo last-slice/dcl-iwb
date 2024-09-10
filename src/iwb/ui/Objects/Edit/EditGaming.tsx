@@ -170,6 +170,7 @@ export function updateGamingInfo(reset?:boolean){
     }
     gamingInfo = {...localPlayer.activeScene[COMPONENT_TYPES.GAME_COMPONENT].get(selectedItem.aid)}
     gameTypes.length = 0
+    visibleItems.length = 0
 
     gameTypes = [...Object.keys(GAME_TYPES)]
     gameTypes.unshift("Select Game Type")
@@ -181,7 +182,7 @@ export function updateGamingInfo(reset?:boolean){
         }
     }
     newVariable = ""
-    newVariableValue = ""
+    newVariableValue = "0"
     console.log('gaming info', gamingInfo)
 
     let variables:any[] = []
@@ -1167,7 +1168,7 @@ function GameVariablesView(){
                     setUIClicked(true)
                     update("edit", "variables", newVariable)
                     utils.timers.setTimeout(()=>{
-                        // updateGamingInfo()
+                        updateGamingInfo()
                     }, 200)
                 }}
                 onMouseUp={()=>{
@@ -1386,8 +1387,9 @@ function GamePlayerVariablesView(){
             setUIClicked(true)
             update("edit", "pvariables", {id:newVariable, value: isNaN(parseInt(newVariableValue)) ? 0 : parseInt(newVariableValue)})
             utils.timers.setTimeout(()=>{
-                // updateGamingInfo()
+                updateGamingInfo()
             }, 200)
+            setUIClicked(false)
         }}
         onMouseUp={()=>{
             setUIClicked(false)
@@ -2195,7 +2197,7 @@ function PRow(data:any){
                 uiBackground={{
                     textureMode: 'stretch',
                     texture: {
-                        src: 'assets/atlas1.png'//
+                        src: 'assets/atlas1.png'
                     },
                     uvs: getImageAtlasMapping(uiSizes.trashButton)
                 }}

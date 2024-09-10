@@ -173,18 +173,18 @@ async function loadSceneBoundaries(scene:any) {
     const sceneParent = engine.addEntity()
     Transform.createOrReplace(sceneParent, {
         position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16),
-        rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
+        // rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
     })
 
     console.log('scene.offsets is', scene.offsets)
-    let xOffset = scene.offsets[0]
-    if(xOffset !== 0){
-        console.log("scene has offset", scene.offsets)
-    }
+    // let xOffset = scene.offsets[0]
+    // if(xOffset !== 0){
+    //     console.log("scene has offset", scene.offsets)
+    // }
 
-    let transform = Transform.getMutable(sceneParent).position
-    transform.x = scene.offsets[0]
-    transform.z = scene.offsets[1]
+    // let transform = Transform.getMutable(sceneParent).position
+    // transform.x = scene.offsets[0]
+    // transform.z = scene.offsets[1]
 
     // console.log('scene parent is', Transform.get(sceneParent))
 
@@ -333,14 +333,14 @@ export function updateAsset(asset: any) {
 // }
 
 export function checkBuildPermissionsForScene(scene: IWBScene) {
-    return scene &&  (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId) || localPlayer.worldPermissions)
+    return scene &&  (scene.metadata.o === localUserId || scene.bps.find((permission) => permission === localUserId) || localPlayer.worldPermissions)
 }
 
 export async function checkScenePermissions() {
     let canbuild = false
     let activeScene: any
     colyseusRoom.state.scenes.forEach((scene: IWBScene, key: string) => {
-        if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel && (scene.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
+        if (scene.pcls.find((parcel) => parcel === localPlayer.currentParcel && (scene.metadata.o === localUserId || scene.bps.find((permission) => permission === localUserId)))) {
             canbuild = true
         }
 

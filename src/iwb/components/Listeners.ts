@@ -532,6 +532,7 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.START_GAME, (info:any) => {
         log(SERVER_MESSAGE_TYPES.START_GAME + ' received', info)
         attemptGameStart(info)
+
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.END_GAME, (info:any) => {
@@ -657,10 +658,10 @@ function setSceneListeners(room:any){
 
     room.state.scenes.onRemove((scene:any, key:string)=>{
         log('removing scene from state', key, scene)
-        if(scene.o === localUserId){
-            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You deleted scene " + scene.n, animate:{enabled:true, return:true, time:5}})
+        if(scene.metadata.o === localUserId){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You deleted scene " + scene.metadata.n, animate:{enabled:true, return:true, time:5}})
         }else{
-            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.ona + " just deleted their scene " + scene.n, animate:{enabled:true, return:true, time:5}})
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + scene.metadata.ona + " just deleted their scene " + scene.metadata.n, animate:{enabled:true, return:true, time:5}})
         }
         unloadScene(scene)
     })

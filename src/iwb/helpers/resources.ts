@@ -72,7 +72,7 @@ export default {
 
     slug:"in::world::builder::",
 
-    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
+    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",//
 
     endpoints:{
         wsTest: "ws://localhost:2751",

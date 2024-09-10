@@ -306,7 +306,7 @@ export function createSceneDetailsPanel() {
                     margin:{left:'10%', bottom:'0%'}
                 }}
                 // uiBackground={{color:Color4.Green()}}
-                uiText={{value:"Editing Scene: " + (scene? scene.n : ""), fontSize: sizeFont(35,25), color:Color4.White(), textAlign:'middle-left'}}
+                uiText={{value:"Editing Scene: " + (scene? scene.metadata.n : ""), fontSize: sizeFont(35,25), color:Color4.White(), textAlign:'middle-left'}}
                 >
                 </UiEntity>
 
@@ -656,16 +656,16 @@ export function InfoPanel() {
 
 
             <Input
-                onChange={(e) =>{ scene!.n = e.trim() }}
+                onChange={(e) =>{ scene!.metadata.n = e.trim() }}
                 fontSize={sizeFont(20,15)}
-                placeholder={"" + (scene && scene !== null ? scene.n : "")}
+                placeholder={"" + (scene && scene !== null ? scene.metadata.n : "")}
                 placeholderColor={Color4.White()}
                 uiTransform={{
                     width: '80%',
                     height:'100%',
                 }}
                 color={Color4.White()}
-                value={"" + (scene && scene !== null ? scene.n : "")}
+                value={"" + (scene && scene !== null ? scene.metadata.n : "")}
             />
             </UiEntity>
 
@@ -698,16 +698,16 @@ export function InfoPanel() {
 
 
             <Input
-                onChange={(e) =>{ scene!.d = e }}
+                onChange={(e) =>{ scene!.metadata.d = e }}
                 fontSize={sizeFont(20,15)}
-                placeholder={"" + (scene && scene !== null ? scene.d : "")}
+                placeholder={"" + (scene && scene !== null ? scene.metadata.d : "")}
                 placeholderColor={Color4.White()}
                 uiTransform={{
                     width: '80%',
                     height:'100%',
                 }}
                 color={Color4.White()}
-                value={"" + (scene && scene !== null ? scene.d : "")}
+                value={"" + (scene && scene !== null ? scene.metadata.d : "")}
             />
             </UiEntity>
 
@@ -740,16 +740,16 @@ export function InfoPanel() {
 
 
             <Input
-                onChange={(e) =>{ scene!.im = e.trim() }}
+                onChange={(e) =>{ scene!.metadata.im = e.trim() }}
                 fontSize={sizeFont(20,15)}
-                placeholder={"" + (scene && scene !== null && scene.im ? scene.im : "")}
+                placeholder={"" + (scene && scene !== null && scene.metadata.im ? scene.metadata.im : "")}
                 placeholderColor={Color4.White()}
                 color={Color4.White()}
                 uiTransform={{
                     width: '80%',
                     height:'100%',
                 }}
-                value={"" + (scene && scene !== null ? scene.im : "")}
+                value={"" + (scene && scene !== null ? scene.metadata.im : "")}
             />
             </UiEntity>
 
@@ -987,9 +987,9 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_SAVE_EDITS,
                 {
                     sceneId: scene!.id,
-                    name: scene!.n,
-                    desc: scene!.d,
-                    image: scene!.im,
+                    name: scene!.metadata.n,
+                    desc: scene!.metadata.d,
+                    image: scene!.metadata.im,
                     enabled: scene!.e,
                     priv: scene!.priv,
                     lim: scene!.lim
@@ -1018,7 +1018,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
         onMouseDown={() => {
             displaySceneDetailsPanel(false)
             updateSceneDetailsView("Info")
-            displaySkinnyVerticalPanel(true, getView("Confirm Delete Scene"), scene && scene.n)
+            displaySkinnyVerticalPanel(true, getView("Confirm Delete Scene"), scene && scene.metadata.n)
         }}
         uiText={{value: "Delete Scene", color:Color4.White(), fontSize:sizeFont(20,15)}}
         />
@@ -1040,7 +1040,7 @@ uiText={{value:"Toggle poly count and size restrictions", fontSize:sizeFont(22,1
             }}
             uiText={{value:"View Image", fontSize:sizeFont(15,10), color:Color4.White(), textAlign:'middle-left'}}
             onMouseDown={()=>{
-                openExternalUrl({url:"" + scene!.im})
+                openExternalUrl({url:"" + scene!.metadata.im})
             }}
             />
 

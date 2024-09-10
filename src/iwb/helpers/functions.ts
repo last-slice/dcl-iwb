@@ -1,11 +1,13 @@
 import { getRealm } from "~system/Runtime";
 import {Animator, engine, Entity, Transform} from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
-import { Quaternion, Vector3 } from "@dcl/sdk/math";
+import { DEG2RAD, Quaternion, Vector3 } from "@dcl/sdk/math";
 import { eth, utils } from "./libraries";
 import { openExternalUrl } from "~system/RestrictedActions";
 import resources from "./resources";
 import { localPlayer, localUserId } from "../components/Player";
+import CANNON, { Vec3 } from "cannon"
+
 
 export function paginateArray(array:any[], page:number, itemsPerPage:number){
   const startIndex = (page - 1) * itemsPerPage;
@@ -231,4 +233,15 @@ export function getRandomPointInArea(boxPosition:Vector3, boxWidth: number, boxH
   const z = boxPosition.z + Math.random() * boxDepth;
   
   return { x, y, z };
+}
+
+
+export function getForwardDirectionFromRotation(yRot: number): CANNON.Vec3 {
+	// Convert to rads
+	yRot = yRot * DEG2RAD
+	
+	// Workout forwards
+    const forward = new CANNON.Vec3(Math.sin(yRot), 0, Math.cos(yRot));
+    forward.normalize();
+	return forward
 }
