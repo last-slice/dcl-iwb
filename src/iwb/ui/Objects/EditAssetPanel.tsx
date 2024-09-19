@@ -52,6 +52,7 @@ import { releaseQuestAction } from './Edit/ActionPanels/AddQuestAction'
 import { EditAudioComponent, updateAudioComponent } from './Edit/EditAudios'
 import { EditVLMComponent, updateVLM } from './Edit/EditVLM'
 import { EditLeaderboard, resetLeadboardInfo, refreshLeaderboardInfo } from './Edit/EditLeaderboard'
+import { clearAssetPhysicsData, EditPhysics, getAssetPhysicsData, physicsView, updatePhysicsView } from './Edit/EditPhysics'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -148,6 +149,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             updateVLM()
             break;
             
+         case COMPONENT_TYPES.PHYSICS_COMPONENT:
+            getAssetPhysicsData()
+            break;
+
         // case COMPONENT_TYPES.NPC_COMPONENT:
         //     updateNPCView('main')
         //     break;
@@ -452,14 +457,22 @@ function EditObjectDetails() {
                 />
 
             </UiEntity>
-
-            
         </UiEntity>
     )
 }
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.PHYSICS_COMPONENT:
+            if(physicsView !== "main"){
+                updatePhysicsView("main")
+            }
+            else{
+                clearAssetPhysicsData()
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }
+            break;
+
         case COMPONENT_TYPES.LEADERBOARD_COMPONENT:
             resetLeadboardInfo()
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
@@ -932,6 +945,7 @@ function EditObjectData(){
                 <EditAudioComponent/>
                 <EditVLMComponent/>
                 <EditLeaderboard/>
+                <EditPhysics/>
 
             </UiEntity>
 
@@ -1070,7 +1084,9 @@ function getBasicComponents(){
         COMPONENT_TYPES.PATH_COMPONENT,
         COMPONENT_TYPES.VLM_COMPONENT,
         COMPONENT_TYPES.GAME_ITEM_COMPONENT,
-        COMPONENT_TYPES.LEADERBOARD_COMPONENT
+        COMPONENT_TYPES.LEADERBOARD_COMPONENT,
+        COMPONENT_TYPES.VEHICLE_COMPONENT,
+        COMPONENT_TYPES.PHYSICS_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1110,7 +1126,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)//
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-22).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-24).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1178,7 +1194,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-22).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-24).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.push(COMPONENT_TYPES.BILLBOARD_COMPONENT)
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null
@@ -1198,6 +1214,3 @@ function getNoDeletes(){
         COMPONENT_TYPES.VISBILITY_COMPONENT,
     ]
 }
-
-
-//

@@ -1,6 +1,6 @@
 import { Room } from "colyseus.js";
 import { createPlayer, handleGlobalPlayerAttachitem, localPlayer, localUserId, removePlayer, setPlayMode, setPlayerSelectedAsset, setPlayerVersion, setSettings, worldTravel } from './Player'
-import { COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
+import { Actions, COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, SOUND_TYPES, Triggers } from "../helpers/types";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
@@ -25,7 +25,7 @@ import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
 import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { playAudiusTrack } from "./Sounds";
-import { setServerQuests, updateQuestsDefinitions } from "./Quests";
+import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setServerConditions, setServerQuests, startQuest, updateQuestsDefinitions } from "./Quests";
 import { updateLeaderboardInfo } from "./Leaderboard";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
@@ -92,6 +92,7 @@ export async function createColyseusListeners(room:Room){
             case 'live-players-get':
                 updatePlayers(info.players)
                 break;
+                
         }
     })
 
@@ -121,6 +122,7 @@ export async function createColyseusListeners(room:Room){
 
         // setHidPlayersArea()//
 
+        await setServerConditions(info.prerequisites)//
         await setServerQuests(info.quests)
         await setRealmAssets(info.realmAssets)
 
@@ -527,12 +529,11 @@ export async function createColyseusListeners(room:Room){
     // room.onMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, (info: any) => {
     //     log(SERVER_MESSAGE_TYPES.VERIFY_ACCESS + ' received', info)
     //     findEntitiesWithTrigger(info.sceneId, info.access ? Triggers.ON_ACCESS_VERIFIED : Triggers.ON_ACCESS_DENIED)
-    // })
+    // })//
 
     room.onMessage(SERVER_MESSAGE_TYPES.START_GAME, (info:any) => {
         log(SERVER_MESSAGE_TYPES.START_GAME + ' received', info)
         attemptGameStart(info)
-
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.END_GAME, (info:any) => {
@@ -588,6 +589,52 @@ export async function createColyseusListeners(room:Room){
         }
 
         updateLeaderboardInfo(leaderboardInfo, info.data)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.QUEST_ACTION + ' received', info)
+        switch(info.action){
+            case 'COMPLETE':
+                handlePlayerQuestAction(info.quest)
+                handlePlayerCompleteQuest(info.quest)
+                break;
+            case Actions.QUEST_START:
+                console.log('starting local quest for player')
+                startQuest(info.quest)
+            break;
+
+            case Actions.QUEST_ACTION:
+                handlePlayerQuestAction(info.quest)
+                break;
+        }
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_CREATE_QUEST, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_CREATE_QUEST + ' received', info)
+        if(!info){
+            return
+        }
+        setServerQuests([info.quest])
+
+        if(info.creator === localUserId){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your quest " + info.quest.name + " has been created!!", animate:{enabled:true, return:true, time:5}})
+        }else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"A new quest is available at " + info.world + "!", animate:{enabled:true, return:true, time:5}})
+        }
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DELETE_QUEST, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DELETE_QUEST + ' received', info)
+        if(!info){
+            return
+        }
+        removeQuest(info.id)
+
+        if(info.creator === localUserId){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Quest deleted!", animate:{enabled:true, return:true, time:5}})
+        }else{
+            // showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"A new quest is available at " + info.world + "!", animate:{enabled:true, return:true, time:5}})
+        }
     })
 
     room.state.listen("sceneCount", (c:any, p:any)=>{

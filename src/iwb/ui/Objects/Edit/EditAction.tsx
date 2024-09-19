@@ -41,6 +41,8 @@ import { AddQuestActionPanel, updateQuests } from './ActionPanels/AddQuestAction
 import { AddCameraChangelPanel } from './ActionPanels/AddChangeCameraPanel'
 import { AddCameraForcePanel } from './ActionPanels/AddForceCameraPanel'
 import { AddPlayerEquipWeaponPanel } from './ActionPanels/AddPlayerEquipWeaponPanel'
+import { AddQuestStartPanel, updateQuestsList } from './ActionPanels/AddQuestStart'
+import { quests } from '../../../components/Quests'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -68,7 +70,7 @@ export function updateActionData(value:any, clear?:boolean){
     for(let key in value){
         newActionData[key] = value[key]
     }
-    console.log(newActionData)
+    console.log('newactiondata is', newActionData)
 }
 
 export function refreshActionPanel(){
@@ -332,8 +334,9 @@ export function EditAction(){
             }}
             uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
-                setUIClicked(false)
+                setUIClicked(true)
                 buildAction()
+                setUIClicked(false)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
@@ -557,6 +560,12 @@ function getActionDataPanel(){
          case Actions.PLAYER_EQUIP_WEAPON.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddPlayerEquipWeaponPanel/>
 
+        case Actions.QUEST_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddQuestActionPanel/>
+
+         case Actions.QUEST_START.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddQuestStartPanel/>
+
         }
 }
 
@@ -743,6 +752,9 @@ const ActionDefaults:any = {
     [Actions.FOLLOW_PATH]:{
         pathAid:""
     },
+    [Actions.QUEST_START]:{
+        fn:()=>{updateQuestsList()},
+    },
     [Actions.QUEST_ACTION]:{
         fn:()=>{updateQuests()},
         questId:"",
@@ -758,3 +770,8 @@ const ActionDefaults:any = {
         game:""
     }
 }
+
+
+
+
+//

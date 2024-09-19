@@ -623,11 +623,51 @@ export let settingsIconData: any =
     }
 
 export let uiSizes: any = {
+    emptyCheckWhite: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 240,
+        sourceLeft: 873,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    checkWhite: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 240,
+        sourceLeft: 843,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    checkWithBoxWhite: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 240,
+        sourceLeft: 903,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
     trophyIcon: {
         atlasHeight: 1024,
         atlasWidth: 1024,
         sourceTop: 90,
         sourceLeft: 995,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    trophyIconGray: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 965,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
+    trophyIconWhite: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 120,
+        sourceLeft: 996,
         sourceWidth: 30,
         sourceHeight: 30
     },

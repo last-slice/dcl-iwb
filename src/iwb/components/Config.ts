@@ -25,6 +25,7 @@ import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { stopAllPlaylists } from "./Playlist"
 import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload, removeForceCamera } from "../modes/Play"
 import { disableLevelAssets } from "./Level"
+import { displayQuestPanel } from "../ui/Objects/QuestPanel"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -192,6 +193,7 @@ export async function setPlayerMode(mode:SCENE_MODES){
         displayLiveControl(false)
         displayLivePanel(false)
         displaySkinnyVerticalPanel(false)
+        displayQuestPanel(false)
         removeForceCamera()
         
         

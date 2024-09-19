@@ -13,6 +13,10 @@ export function checkMeshRenderComponent(scene:any, entityInfo:any){
             case 1:
                 MeshRenderer.setBox(entityInfo.entity)
                 break;
+
+            case 2:
+                MeshRenderer.setSphere(entityInfo.entity)
+                break;
         }
         // MeshRenderLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
         // console.log('setting mesh renderer for entity', entityInfo.aid)
@@ -30,6 +34,9 @@ export function checkMeshColliderComponent(scene:any, entityInfo:any){
                 break;
             case 1:
                 MeshCollider.setBox(entityInfo.entity, mesh.layer)
+                break;
+            case 2:
+                MeshCollider.setSphere(entityInfo.entity, mesh.layer)
                 break;
             
         }
@@ -55,6 +62,10 @@ export function meshListener(scene:any){
 
                     case 1:
                         MeshCollider.setBox(entityInfo.entity, c)
+                        break;
+
+                    case 2:
+                        MeshCollider.setSphere(entityInfo.entity, c)
                         break;
                 }
             }

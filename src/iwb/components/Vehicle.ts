@@ -1,112 +1,181 @@
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { getForwardDirectionFromRotation, getRandomString } from "../helpers/functions"
-import { localUserId } from "./Player"
-import { AvatarAttach, ColliderLayer, EasingFunction, engine, GltfContainer, InputAction, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, Tween } from "@dcl/sdk/ecs"
-import CANNON, { Vec3 } from "cannon"
-import { world } from "../physics"
+import {  ColliderLayer, EasingFunction, engine, GltfContainer, InputAction, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, Tween } from "@dcl/sdk/ecs"
 import { movePlayerTo } from "~system/RestrictedActions"
-import { playerMaterial, wallPhysicsMaterial, vehiclePhysicsMaterial, ballMaterial } from "../physics/world"
+import { COMPONENT_TYPES } from "../helpers/types"
+import { getEntity } from "./IWB"
+import { createCannonBody } from "../physics"
+import { CANNON } from "../helpers/libraries"
+import { localUserId } from "./Player"
+import { cannonMaterials } from "./Physics"
+
 
 export let testVehicles:Map<string, any> = new Map()
 export let physicsObjects:Map<string,any> = new Map()
 
-export let playerPhysics:CANNON.Body
-
-
 export let localAid:string = getRandomString(5)
 
+export function vehicleListener(scene:any){
+    scene[COMPONENT_TYPES.VEHICLE_COMPONENT].onAdd((vehicleData:any, aid:any)=>{
+        console.log('vehicle added', vehicleData)
+        let entityInfo = getEntity(scene, aid)
+
+        let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(aid)
+        let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
+
+        if(!entityInfo || !transform || !iwbInfo){
+            return
+        }
+
+        vehicleData.entityPos = engine.addEntity()
+        vehicleData.entityRot = engine.addEntity()
+        vehicleData.holder = engine.addEntity()
+
+        Transform.createOrReplace(vehicleData.entityPos, {
+            position: transform.p
+        })
+
+        Transform.createOrReplace(vehicleData.entityRot, {
+            parent:vehicleData.entityPos,
+            scale: transform.s
+        })
+
+        // if(!vehicleData.locked){
+        //     console.log('vehicle is unlocked')
+        // }
+
+        // pointerEventsSystem.onPointerDown({entity: vehicleData.entityRot,
+        //     opts:{button: InputAction.IA_POINTER, hoverText:"Enter", showFeedback:true, maxDistance:5}
+        // },
+        //     ()=>{
+        //         let holder = Transform.get(vehicleData.holder).position
+        //         let car = Transform.get(vehicleData.entityPos).position
+        //         let slot = Vector3.add(car, holder)
+
+        //         movePlayerTo({newRelativePosition:{x:slot.x, y:slot.y + 0.5, z:slot.z}, cameraTarget:{x:car.x, y:1, z:car.z+3}})
+        //         vehicleData.active = true
+        //     }
+        // )
+
+        // Transform.create(vehicleData.holder, {position: vehicleData.holderPos,parent:vehicleData.entityRot})
+        // let left = engine.addEntity()
+        // MeshRenderer.setPlane(left)
+        // MeshCollider.setPlane(left)
+        // Transform.create(left, {parent:vehicleData.holder, 
+        //     position:Vector3.create(-vehicleData.holderScl.x/2,0,0), 
+        //     rotation:Quaternion.fromEulerDegrees(0,90,0), 
+        //     scale:Vector3.create(vehicleData.holderScl.x,vehicleData.holderScl.y, 1)
+        // })
+
+        // let front = engine.addEntity()
+        // MeshRenderer.setPlane(front)
+        // MeshCollider.setPlane(front)
+        // Transform.create(front, {parent:vehicleData.holder, 
+        //     position:Vector3.create(0,0,vehicleData.holderScl.z/4), 
+        //     rotation:Quaternion.fromEulerDegrees(0,0,0), 
+        //     scale:Vector3.create(vehicleData.holderScl.x,vehicleData.holderScl.y, 1)
+        // })
+
+        // let right = engine.addEntity()
+        // MeshRenderer.setPlane(right)
+        // MeshCollider.setPlane(right)
+        // Transform.create(right, {parent:vehicleData.holder, 
+        //     position:Vector3.create(vehicleData.holderScl.x/2,0,0), 
+        //     rotation:Quaternion.fromEulerDegrees(0,90,0), 
+        //     scale:Vector3.create(vehicleData.holderScl.x,vehicleData.holderScl.y, 1)
+        // })
+
+        vehicleData.onChange((value:any, key:any) => {
+            console.log(key, "changed to", value);
+        });
+
+    })
+}
+
 export function addTestVehicle(){
-    console.log('adding test vehicles')
+    // console.log('adding test vehicles')
 
-    playerPhysics = createCannonBody({
-        mass:60,
-        material: playerMaterial,
-        shape:new CANNON.Box(new CANNON.Vec3(0.35, 0.95, 0.35)),
-        position: new CANNON.Vec3(0,0,0),
-        quaternion: new CANNON.Quaternion(),
-    }, true, 2)
+    // let wall = engine.addEntity()
+    // MeshRenderer.setBox(wall)
+    // Transform.create(wall, {position: Vector3.create(0,4,20), scale:Vector3.create(3,8,0.5)})
 
-    let wall = engine.addEntity()
-    MeshRenderer.setBox(wall)
-    Transform.create(wall, {position: Vector3.create(0,4,20), scale:Vector3.create(3,8,0.5)})
+    // let newWallAid = getRandomString(5)
+    // physicsObjects.set(newWallAid,{
+    //     entity:wall,
+    //     cannonBody:createCannonBody({
+    //         mass:10000,
+    //         material: wallPhysicsMaterial,
+    //         shape:new CANNON.Box(new CANNON.Vec3(1.5, 4, 0.5)),
+    //         position: new CANNON.Vec3(0,4,20),
+    //         quaternion: new CANNON.Quaternion(),
+    //         linearDamping:0,
+    //         angularDamping:0
+    //     }, false, 3),
+    // })
 
-    let newWallAid = getRandomString(5)
-    physicsObjects.set(newWallAid,{
-        entity:wall,
-        cannonBody:createCannonBody({
-            mass:300,
-            material: wallPhysicsMaterial,
-            shape:new CANNON.Box(new CANNON.Vec3(1.5, 4, 0.5)),
-            position: new CANNON.Vec3(0,4,20),
-            quaternion: new CANNON.Quaternion(),
-            linearDamping:0.4,
-            angularDamping:0.4
-        }, false, 3),
-    })
+    // let ball = engine.addEntity()
+    // MeshRenderer.setSphere(ball)
+    // Transform.create(ball, {position: Vector3.create(22,1,18), scale:Vector3.create(1,1,1)})
+    // let position = Transform.get(ball).position
 
-    let ball = engine.addEntity()
-    MeshRenderer.setSphere(ball)
-    Transform.create(ball, {position: Vector3.create(22,0,18), scale:Vector3.create(1,1,1)})
-    let position = Transform.get(ball).position
+    // let ballAid = getRandomString(5)
+    // physicsObjects.set(ballAid,{
+    //     entity:ball,
+    //     cannonBody:createCannonBody({
+    //         mass:1,
+    //         material: ballMaterial,
+    //         shape:new CANNON.Sphere(1),
+    //         position: new CANNON.Vec3(position.x, position.y, position.z),
+    //         quaternion: new CANNON.Quaternion(),
+    //         linearDamping:0.4,
+    //         angularDamping:0.4
+    //     }, false, 4),
+    // })
 
-    let ballAid = getRandomString(5)
-    physicsObjects.set(ballAid,{
-        entity:ball,
-        cannonBody:createCannonBody({
-            mass:1,
-            material: ballMaterial,
-            shape:new CANNON.Sphere(1),
-            position: new CANNON.Vec3(position.x, position.y, position.z),
-            quaternion: new CANNON.Quaternion(),
-            linearDamping:0.4,
-            angularDamping:0.4
-        }, false, 4),
-    })
+    // ball = engine.addEntity()
+    // MeshRenderer.setSphere(ball)
+    // Transform.create(ball, {position: Vector3.create(23,0,20), scale:Vector3.create(1,1,1)})
+    // position = Transform.get(ball).position
 
-    ball = engine.addEntity()
-    MeshRenderer.setSphere(ball)
-    Transform.create(ball, {position: Vector3.create(23,0,20), scale:Vector3.create(1,1,1)})
-    position = Transform.get(ball).position
+    // ballAid = getRandomString(5)
+    // physicsObjects.set(ballAid,{
+    //     entity:ball,
+    //     cannonBody:createCannonBody({
+    //         mass:1,
+    //         material: ballMaterial,
+    //         shape:new CANNON.Sphere(1),
+    //         position: new CANNON.Vec3(position.x, position.y, position.z),
+    //         quaternion: new CANNON.Quaternion(),
+    //         linearDamping:0.4,
+    //         angularDamping:0.4
+    //     }, false, 4),
+    // })
 
-    ballAid = getRandomString(5)
-    physicsObjects.set(ballAid,{
-        entity:ball,
-        cannonBody:createCannonBody({
-            mass:1,
-            material: ballMaterial,
-            shape:new CANNON.Sphere(1),
-            position: new CANNON.Vec3(position.x, position.y, position.z),
-            quaternion: new CANNON.Quaternion(),
-            linearDamping:0.4,
-            angularDamping:0.4
-        }, false, 4),
-    })
+    // ball = engine.addEntity()
+    // MeshRenderer.setSphere(ball)
+    // Transform.create(ball, {position: Vector3.create(25,0,20), scale:Vector3.create(1,1,1)})
+    // position = Transform.get(ball).position
 
-    ball = engine.addEntity()
-    MeshRenderer.setSphere(ball)
-    Transform.create(ball, {position: Vector3.create(25,0,20), scale:Vector3.create(1,1,1)})
-    position = Transform.get(ball).position
-
-    ballAid = getRandomString(5)
-    physicsObjects.set(ballAid,{
-        entity:ball,
-        cannonBody:createCannonBody({
-            mass:1,
-            material: ballMaterial,
-            shape:new CANNON.Sphere(1),
-            position: new CANNON.Vec3(position.x, position.y, position.z),
-            quaternion: new CANNON.Quaternion(),
-            linearDamping:0.4,
-            angularDamping:0.4
-        }, false, 4),
-    })
+    // ballAid = getRandomString(5)
+    // physicsObjects.set(ballAid,{
+    //     entity:ball,
+    //     cannonBody:createCannonBody({
+    //         mass:1,
+    //         material: ballMaterial,
+    //         shape:new CANNON.Sphere(1),
+    //         position: new CANNON.Vec3(position.x, position.y, position.z),
+    //         quaternion: new CANNON.Quaternion(),
+    //         linearDamping:0.4,
+    //         angularDamping:0.4
+    //     }, false, 4),
+    // })
 
     testVehicles.set(localAid,
         {
             src:"assets/c59efa22-c881-4aeb-9496-b00c6401f67b.glb",
             acceleration:800,
             currentSpeed:0,
-            maxSpeed:100,
+            maxSpeed:70,
             maxTurn: 200,
             userId:localUserId,
             name:"",
@@ -135,7 +204,7 @@ export function addTestVehicle(){
                 quaternion: new CANNON.Quaternion(),
                 // shape: new CANNON.Box(new CANNON.Vec3(1, 0.5, 2.5)),
                 shape:new CANNON.Sphere(1),
-                material:vehiclePhysicsMaterial,
+                material:cannonMaterials.get("vehicle") || new CANNON.Material("vehicle"),
                 linearDamping:0.7,
                 angularDamping:0.7
             }, true, 5),
@@ -183,7 +252,7 @@ export function addTestVehicle(){
             let slot = Vector3.add(car, holder)
 
             console.log('slot is', slot)
-            movePlayerTo({newRelativePosition:{x:slot.x, y:slot.y + 0.5, z:slot.z}, cameraTarget:{x:car.x, y:1, z:car.z+3}})
+            movePlayerTo({newRelativePosition:{x:slot.x, y:slot.y, z:slot.z}, cameraTarget:{x:car.x, y:1, z:car.z+3}})
             vehicle.active = true
         }
     )
@@ -195,16 +264,25 @@ export function addTestVehicle(){
     Transform.create(left, {parent:vehicle.holder, 
         position:Vector3.create(-vehicle.holderScl.x/2,0,0), 
         rotation:Quaternion.fromEulerDegrees(0,90,0), 
-        scale:Vector3.create(vehicle.holderScl.x,vehicle.holderScl.y, 1)
+        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
     })
 
     let front = engine.addEntity()
-    // MeshRenderer.setPlane(front)
+    // MeshRenderer.setPlane(front)//
     MeshCollider.setPlane(front)
     Transform.create(front, {parent:vehicle.holder, 
         position:Vector3.create(0,0,vehicle.holderScl.z/4), 
         rotation:Quaternion.fromEulerDegrees(0,0,0), 
-        scale:Vector3.create(vehicle.holderScl.x,vehicle.holderScl.y, 1)
+        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
+    })
+
+    let back = engine.addEntity()
+    // MeshRenderer.setPlane(back)
+    MeshCollider.setPlane(back)
+    Transform.create(back, {parent:vehicle.holder, 
+        position:Vector3.create(0,0,-vehicle.holderScl.z/4), 
+        rotation:Quaternion.fromEulerDegrees(0,0,0), 
+        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
     })
 
     let right = engine.addEntity()
@@ -213,34 +291,26 @@ export function addTestVehicle(){
     Transform.create(right, {parent:vehicle.holder, 
         position:Vector3.create(vehicle.holderScl.x/2,0,0), 
         rotation:Quaternion.fromEulerDegrees(0,90,0), 
+        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
+    })
+
+    let roof = engine.addEntity()
+    // MeshRenderer.setPlane(roof)
+    MeshCollider.setPlane(roof)
+    Transform.create(roof, {parent:vehicle.holder, 
+        position:Vector3.create(0,vehicle.holderScl.y,0), 
+        rotation:Quaternion.fromEulerDegrees(90,0,0), 
         scale:Vector3.create(vehicle.holderScl.x,vehicle.holderScl.y, 1)
     })
-}
 
-function createCannonBody(data:any, rotation:boolean, cGroup:number){
-    let cannonBody = new CANNON.Body(data)
-    cannonBody.fixedRotation = rotation
-    cannonBody.collisionFilterGroup = 1
-    cannonBody.collisionFilterMask = 1
-
-    const collideEventListener = (event: CANNON.ICollisionEvent) => {
-        onCollideWithBody(event)
-    };
-
-    cannonBody.addEventListener("collide", collideEventListener)
-
-    // cannonBody.sleep()
-    world.addBody(cannonBody)
-
-    return cannonBody
-}
-
-function onCollideWithBody(event: CANNON.ICollisionEvent){
-    // console.log('event is', event)
-    // if(event.body.collisionFilterGroup === 2){
-    //     // console.log('bumped a car')
-    // }
-    console.log('bumped')
+    let floor = engine.addEntity()
+    // MeshRenderer.setPlane(floor)
+    MeshCollider.setPlane(floor)
+    Transform.create(floor, {parent:vehicle.holder, 
+        position:Vector3.create(0, 0 - (vehicle.holderScl.y /2),0), 
+        rotation:Quaternion.fromEulerDegrees(90,0,0), 
+        scale:Vector3.create(vehicle.holderScl.x,vehicle.holderScl.y, 1)
+    })
 }
 
 export function updateVehicleDirection(dt:number){
@@ -258,7 +328,7 @@ export function updateVehicleDirection(dt:number){
     }
 }
 
-export function updateVehicleSpeed(dt:number, player:any){
+export function updateVehicleSpeed(dt:number){
     let vehicle = testVehicles.get(localAid)
     if(vehicle.accelerating){
         if(vehicle.currentSpeed < vehicle.maxSpeed){

@@ -5,6 +5,7 @@ import * as utils from '@dcl-sdk/utils'
 // import {NPC} from '@dcl/npc-scene-utils'
 import * as eth from 'eth-connect'
 // import {hud} from '@dcl/builder-hud'
+import * as CANNON from 'cannon/build/cannon'
 
 export {
     utils, 
@@ -14,5 +15,6 @@ export {
     // NPC, 
     eth, 
     // hud
+    CANNON
 }
 

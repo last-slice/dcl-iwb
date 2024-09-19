@@ -274,7 +274,7 @@ export function createSceneInfoPanel() {
                         height: '100%',
                     }}
                     uiText={{
-                        value: localPlayer?.activeScene?.n || "",
+                        value: localPlayer?.activeScene?.metadata.n || "",
                         fontSize: sizeFont(35, 25),
                         textAlign: 'middle-left',
                         color: Color4.White()

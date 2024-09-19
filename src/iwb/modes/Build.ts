@@ -57,6 +57,7 @@ import { resetSpawnLocationEntities } from "../ui/Objects/AddSpawnPointPanel"
 import { releaseQuestAction } from "../ui/Objects/Edit/ActionPanels/AddQuestAction"
 import { resetActionAttachEntity } from "../ui/Objects/Edit/ActionPanels/AddAttachPlayerPanel"
 import { resetLeadboardInfo } from "../ui/Objects/Edit/EditLeaderboard"
+import { clearAssetPhysicsData } from "../ui/Objects/Edit/EditPhysics"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -412,14 +413,31 @@ function selectVisualGrabbedItem(grabbedItem:any, itemHeight:any, itemDepth:any,
             MeshRenderer.setBox(grabbedItem.entity)
             itemPosition = {x: 0, y: .5, z: itemDepth}
             grabbedItem.initialHeight = .88
-            scale = Vector3.create(.5, .5, .5)
+            scale = Vector3.create(1,1,1)
             MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
         } else if (grabbedItem.itemData.ty === "SM") {
-            MeshRenderer.setBox(grabbedItem.entity)
-            itemPosition = {x: 0, y: .5, z: itemDepth}//
-            grabbedItem.initialHeight = .88
-            scale = Vector3.create(1, 1, 1)
-            MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+            if (grabbedItem.catalogId === "0a57bbc6-523a-427c-aed3-3f2da69efd16") {
+                MeshRenderer.setPlane(grabbedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                grabbedItem.initialHeight = .88
+                scale = Vector3.create(1,1,1)
+                MeshCollider.setPlane(grabbedItem.entity, ColliderLayer.CL_POINTER)//
+            } 
+            else if (grabbedItem.catalogId === "c50a69f9-50e6-4d90-882d-9d36aebdffa3") {
+                MeshRenderer.setSphere(grabbedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}
+                grabbedItem.initialHeight = .88
+                scale = Vector3.create(1,1,1)
+                MeshCollider.setSphere(grabbedItem.entity, ColliderLayer.CL_POINTER)
+                console.log('grabbed item sphere')
+            }
+            else{
+                MeshRenderer.setBox(grabbedItem.entity)
+                itemPosition = {x: 0, y: .5, z: itemDepth}//
+                grabbedItem.initialHeight = .88
+                scale = Vector3.create(1, 1, 1)
+                MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
+            }
         } else if (grabbedItem.itemData.ty === "Audio" || grabbedItem.itemData.ty === "Audio Stream") {
             MeshRenderer.setBox(grabbedItem.entity)
             itemPosition = {x: 0, y: .5, z: itemDepth}
@@ -451,13 +469,6 @@ function selectVisualGrabbedItem(grabbedItem:any, itemHeight:any, itemDepth:any,
             grabbedItem.initialHeight = .88
             scale = Vector3.create(1,1,1)
             MeshCollider.setBox(grabbedItem.entity, ColliderLayer.CL_POINTER)
-        } 
-        else if (grabbedItem.itemData.n === "Plane Shape") {
-            MeshRenderer.setPlane(grabbedItem.entity)
-            itemPosition = {x: 0, y: .5, z: itemDepth}
-            grabbedItem.initialHeight = .88
-            scale = Vector3.create(1,1,1)//
-            MeshCollider.setPlane(grabbedItem.entity, ColliderLayer.CL_POINTER)
         } 
         else if (grabbedItem.itemData.n === "Path System") {
             MeshRenderer.setBox(grabbedItem.entity)
@@ -721,7 +732,8 @@ export function resetAdditionalAssetFeatures(){
     resetSpawnLocationEntities()
     releaseQuestAction()
     resetActionAttachEntity()
-    resetLeadboardInfo()//
+    resetLeadboardInfo()
+    clearAssetPhysicsData()
 }
 
 export function dropGrabbedItems(){

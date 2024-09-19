@@ -39,6 +39,7 @@ export function updateWorldView(view:string){
         colyseusRoom.state.scenes.forEach((sceneInfo:any)=>{
             scenes.push(sceneInfo)
         })
+        console.log('scenes are ', scenes)
         updateIWBTable(scenes)
     }
 }
@@ -86,31 +87,34 @@ export let horiztonalButtons:any[] = [
 export let currentWorldTableConfig:any = {
     height:'10%', width:'100%', rowCount:6,
     headerData:[
-        {n:"Name", pcnt:"Parcel Count", si:"Size", pc:"Poly Count", go:"Visit"},
+        {metadata:"Name", pcnt:"Parcel Count", si:"Size", pc:"Poly Count", go:"Visit"},
     ],
     tableSortFn:(a:any, b:any)=>{
         // Check if either of the names is "Realm Lobby"
-        if (a.n === "Realm Lobby" && b.n !== "Realm Lobby") {
+        if (a.metadata.n === "Realm Lobby" && b.metadata.n !== "Realm Lobby") {
           return -1; // "Realm Lobby" comes first
-        } else if (a.n !== "Realm Lobby" && b.n === "Realm Lobby") {
+        } else if (a.metadata.n !== "Realm Lobby" && b.metadata.n === "Realm Lobby") {
           return 1; // "Realm Lobby" comes first
         } else {
           // Both names are not "Realm Lobby", sort by parcel size (high to low)
         //   return b.pcnt - a.pcnt;
-        return a.n.localeCompare(b.n)
+        return a.metadata.n.localeCompare(b.metadata.n)
         }
     },
 
     rowConfig:[
     { 
-        key:"n",
+        key:"metadata",
         width:'30%',
         height:'100%',
         margin:{left:"1%"},
         value:"",
         fontSize:sizeFont(25,15),
         textAlign: 'middle-left',
-        color:Color4.White()
+        color:Color4.White(),
+        func:(data:any)=>{
+            return "" + (data.n)//
+        }
     },
     {
         key:"pcnt",
@@ -229,7 +233,7 @@ export let myWorldConfig:any = {
         fontSize:sizeFont(25,15),
         textAlign: 'middle-center',
         color:Color4.White(),
-        func:(data:any)=>{
+        func:(data:any)=>{//
             return "" + (data > 0 ? Math.floor((Math.floor(Date.now()/1000) - data) / 86400) + " days ago" : "Never" )
         }
     },

@@ -40,6 +40,8 @@ import { utils } from "../helpers/libraries"
 import { LAYER_8, NO_LAYERS } from "@dcl-sdk/utils"
 import { mutiplayerListener } from "./Multiplayer"
 import { leaderboardListener } from "./Leaderboard"
+import { vehicleListener } from "./Vehicle"
+import { physicsListener } from "./Physics"
 
 export let realmActions: any[] = []
 
@@ -139,6 +141,8 @@ async function loadSceneComponents(scene:any){
     await avatarShapeListener(scene)
     await mutiplayerListener(scene)
     await leaderboardListener(scene)
+    await vehicleListener(scene)
+    await physicsListener(scene)
     
     scene.loaded = true
     console.log('scene loaded', scene.id)

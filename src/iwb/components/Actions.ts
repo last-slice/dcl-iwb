@@ -30,6 +30,7 @@ import { addForceCamera, entitiesWithPathingEnabled, removeForceCamera } from ".
 import { walkPath } from "./Path"
 import { checkTransformComponent } from "./Transform"
 import { equipUserWeapon, unequipUserWeapon } from "./Weapon"
+import { checPhysicskBody, pendingBodies } from "./Physics"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -349,6 +350,22 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.PLAYER_UNEQIP_WEAPON:
                 handleEquipWeapon(scene, info, action)
+                break;
+
+            case Actions.ENABLE_PHYSICS:
+                handleEnablePhysics(scene, info, action)
+                break;
+
+            case Actions.DISABLE_PHYSICS:
+                // handleDisablePhysics(scene, info, action)
+                break;
+
+            case Actions.QUEST_START:
+                handleQuestStart(scene, info, action)
+                break;
+
+            case Actions.QUEST_ACTION:
+                handleQuestAction(scene, info, action)
                 break;
         }
     })
@@ -1538,4 +1555,25 @@ function handleUnequipWeapon(scene:any, info:any, action:any){
     console.log('handle unequip item for player')
     localPlayer.hasWeaponEquipped = false
     unequipUserWeapon(scene)
+}
+
+
+function handleEnablePhysics(scene:any, info:any, action:any){
+    console.log('handle enable physics for object')
+    let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(info.aid)
+    console.log('physics data action', physicsData)
+    if(!physicsData){
+        return
+    }
+    checPhysicskBody(scene.id, info.aid, info.entity, physicsData)
+}
+
+function handleQuestStart(scene:any, info:any, action:any){
+    console.log('handling start quest', action)
+    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_START, quest:{id:action.questId}})
+}
+
+function handleQuestAction(scene:any, info:any, action:any){
+    console.log('handling quest action', action)
+    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_ACTION, quest:{id:action.questId, stepId:action.actionId}})
 }

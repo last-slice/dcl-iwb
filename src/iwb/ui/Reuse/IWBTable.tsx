@@ -31,6 +31,7 @@ export function refreshVisibleItems(){
     }
 
     visibleItems = paginateArray([...tableArray], visibleIndex, tableConfig && tableConfig.rowCount ? tableConfig.rowCount : 6)
+    console.log('visible items are ', visibleItems)
 }
 
 export function updateIWBTable(data:any){

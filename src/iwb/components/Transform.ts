@@ -6,6 +6,7 @@ import { COMPONENT_TYPES } from "../helpers/types"
 import { updateTriggerArea } from "./Triggers"
 
 export function checkTransformComponent(scene:any, entityInfo:any){
+    console.log('checking transform component', scene.parentEntity)
     let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
     // console.log('transform is', transform)
     if(transform){

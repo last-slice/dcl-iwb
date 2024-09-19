@@ -85,7 +85,7 @@ export function displayMainView(value:boolean, toggle?:boolean){
     resetViews()
 
     if(!mainIWBPanelShow){
-        updateIWBTable([]) 
+        updateIWBTable([])
     }
    
 
@@ -281,10 +281,10 @@ function CreateMainView(){
                      {label:"Scenes", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
                         updateMainView("Create")
                      }},
-                    //  {label:"Quests", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
-                    //     displayMainView(false)
-                    //     displayQuestCreatorPanel(true)
-                    //  }}
+                     {label:"Quests", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                        displayMainView(false)
+                        displayQuestCreatorPanel(true)
+                     }}
                     ]
                 }
         )

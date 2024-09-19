@@ -162,18 +162,20 @@ export function triggerListener(scene:any){
 export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   const triggerEvents = getTriggerEvents(entityInfo.entity)
 
-  if(triggerInfo.type === Triggers.ON_INPUT_ACTION && triggerEvents.isListening(triggerInfo.type)){
+  if(triggerEvents.isListening(triggerInfo.type)){
     console.log('alreadly listening for input trigger on entity', entityInfo.entity)
     return
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
       // console.log('trigger event', triggerInfo, triggerEvent)
-      let trigger = findTrigger(scene, triggerEvent)
+      let trigger = findTrigger(scene, triggerEvent, triggerInfo.type)
       if(!trigger){
         console.log('cant find trigger')
         return
       }
+
+      console.log('trigger found', triggerEvent, trigger.decisions)
 
       checkDecisionPaths(scene, trigger, entityInfo)
     })
@@ -186,7 +188,7 @@ function checkDecisionPaths(scene:any, trigger:any, entityInfo:any){
   })
 }
 
-function findTrigger(scene:any, triggerEvent:any){
+function findTrigger(scene:any, triggerEvent:any, type:Triggers){
   let aid = getAssetIdByEntity(scene, triggerEvent.entity)
   if(!aid){
     return false
@@ -197,7 +199,7 @@ function findTrigger(scene:any, triggerEvent:any){
     }
     // console.log('triggers', triggers)
     // console.log('trigger found', triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer))
-    return triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer)
+    return triggers.triggers.find(($:any)=> $.input === triggerEvent.input && $.pointer === triggerEvent.pointer && $.type === type)
 }
 
 function isValidAction(action: string /*TriggerAction*/) {
@@ -213,9 +215,9 @@ async function evaluateDecision(decisionItem:any){
   }
 
   if(await checkConditions(scene, decision, aid, entity)){
-    console.log('passed check conditions')
+    // console.log('passed check conditions')
       for(const triggerAction of decision.actions){
-        console.log('trigger actions area', triggerAction)
+        // console.log('trigger actions area', triggerAction)
           if(isValidAction(triggerAction)){
             // console.log('is valid action')
               let {aid, action, entity} = getActionsByActionId(scene, triggerAction)
@@ -278,7 +280,7 @@ async function checkConditions(scene:any, decision:any, aid:string, entity:Entit
         })
     })
     const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition))
-    // console.log('condition evaluations', conditions)
+    console.log('condition evaluations', conditions)
     const isTrue = (result?: boolean) => !!result
     const operation = decision.operator || TriggerConditionOperation.AND
     switch (operation) {
@@ -300,7 +302,7 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
-          // console.log('checking condition', condition)
+          console.log('checking condition', condition)
           switch (condition.condition) {
             case TriggerConditionType.WHEN_STATE_IS: {
               const states = States.getOrNull(entity)
@@ -500,6 +502,7 @@ export function checkDecisionActions(decisionId:string){
 }
 
 export function PlayTriggerDecisionSystem(dt:number){
+  // console.log('decision queue', decisionQueue.length)
   while (decisionQueue.length > 0 && !runningDecision) {
       runningDecision = true
 
@@ -544,6 +547,7 @@ export function runGlobalTrigger(scene:any, type:Triggers, data:any){
   scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
     let entityInfo = getEntity(scene, item.aid)
     if(entityInfo){
+      console.log('emitting trigger for entity', entityInfo.entity)
       data.entity = entityInfo.entity
       let triggerEvents = getTriggerEvents(entityInfo.entity)
       triggerEvents.emit(type, data)

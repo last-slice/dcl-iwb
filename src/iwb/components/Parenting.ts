@@ -16,6 +16,11 @@ export function getAssetIdByEntity(scene:any, entity:Entity){
 
 export function findAssetParent(scene:any, aid:string){
     // console.log('finding asset parent', aid)
+
+    // if(scene[COMPONENT_TYPES.PHYSICS_COMPONENT].has(aid)){
+    //     return engine.RootEntity
+    // }//
+
     if(scene[COMPONENT_TYPES.PARENTING_COMPONENT].length > 0){
         for(const parent of scene[COMPONENT_TYPES.PARENTING_COMPONENT]){
             if(parent.children.includes(aid)){

@@ -16,47 +16,34 @@ export function releaseQuestAction(){
     updated = false
     selectedQuestIndex = 0
     selectedQuestAction = 0 
-    selectedQuestActions.length = 0//
+    selectedQuestActions.length = 0
     displayQuestActions = false
 }
 
-export function updateQuests(){
+export async function updateQuests(){
     if(updated){
         return
     }
-    updated = true
-    updateActionData({questId:quests[selectedQuestIndex].id})
-    updateQuestActions()
+    // updated = true//
+    await updateQuestActions()
+    updateActionData({actionId: selectedQuestActions.sort((a:any, b:any)=> a.description.localeCompare(b.description))[selectedQuestIndex].id})
 
     if(selectedQuestActions.length > 0){
         displayQuestActions = true
-        updateActionData({actionId:selectedQuestActions[selectedQuestIndex]})
+        updateActionData({actionId:selectedQuestActions.sort((a:any, b:any)=> a.description.localeCompare(b.description))[selectedQuestIndex].id, questId: {...quests[selectedQuestIndex]}.id})
     }
 }
 
 function updateQuestActions(){
-    let definition = quests[selectedQuestIndex].definition
+    selectedQuestActions.length = 0
+
+    let definition = quests.slice()[selectedQuestIndex]
     console.log('definition is', definition)
     if(definition){
-        let steps = definition.steps
+        let steps = definition.steps.slice()
         console.log('stesps are ', steps)
         if(steps){
-            steps.forEach((step:any) => {
-                let tasks = step.tasks
-                console.log('tasks are', tasks)
-                if(tasks){
-                    tasks.forEach((task:any) => {
-                        let actions = task.actionItems
-                        console.log('actions are a', actions)
-                        if(actions){
-                           
-                            actions.forEach((action:any) => {
-                                selectedQuestActions.push(action.parameters.id);
-                              });
-                        }
-                      });
-                }
-              });
+            selectedQuestActions = steps
         }
     }
 }
@@ -72,7 +59,7 @@ export function AddQuestActionPanel(){
             width: '100%',
             height: '100%',
         }}
-        // uiBackground={{color:Color4.Green()}}
+        // uiBackground={{color:Color4.Green()}}//
     >
 
         <UiEntity
@@ -140,11 +127,11 @@ export function AddQuestActionPanel(){
         }}
     >
         <Dropdown
-        options={[...selectedQuestActions.sort((a:any, b:any)=> a.localeCompare(b))]}
+        options={[...selectedQuestActions.map(step => step.description).sort((a:any, b:any)=> a.localeCompare(b))]}
         selectedIndex={0}
         onChange={(index:number)=>{
             selectedQuestAction = index
-            updateActionData({actionId: selectedQuestActions[index]})
+            updateActionData({actionId: selectedQuestActions.sort((a:any, b:any)=> a.description.localeCompare(b.description))[index].id})
         }}
         uiTransform={{
             width: '100%',

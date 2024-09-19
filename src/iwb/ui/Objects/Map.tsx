@@ -183,7 +183,7 @@ export function createIWBMap(){
           width: '100%',
           height: '100%',
       }}
-      uiText={{textWrap:'nowrap', value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
+      uiText={{textWrap:'nowrap', value:"" + (localPlayer && localPlayer.activeScene ? localPlayer.activeScene.metadata.n : "No Scene"), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}            
       />
 
 

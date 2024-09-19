@@ -4,31 +4,51 @@ import { calculateImageDimensions, getImageAtlasMapping, sizeFont, calculateSqua
 import { uiSizes } from '../uiConfig'
 import resources from '../../helpers/resources'
 import { setUIClicked } from '../ui'
+import { abortQuest, attemptStartQuest, prerequisitesMet, quests } from '../../components/Quests'
+import { teleportToScene } from '../../modes/Play'
+import { colyseusRoom } from '../../components/Colyseus'
 import { Color4 } from '@dcl/sdk/math'
-import { abortQuest, attemptStartQuest, quests } from '../../components/Quests'
+import { Quest } from '../../helpers/types'
 
 export let showQuestView = false
 let questView = "main"
 let viewType = "expanded"
+let selected = "tasks"
 
 let visibleStartedIndex = 1
 let visibleNotStartedIndex = 1
 
 let visibleStartedQuests:any[] = []
 let visibleNotStartedQuests:any[] = []
+let availableSteps:any[] = []
+
+let questInfo:any = {}
+
+export function updateQuestPanel(quest:Quest){
+    console.log('updating quest panel', quest)
+    questInfo = {...quest}
+    generateSteps()
+}
 
 export function displayQuestPanel(value: boolean) {
     showQuestView = value
 
     // switch(viewType){
     //     case 
-    // }
+    // }//
 
     visibleStartedIndex = 1
     visibleNotStartedIndex = 1
 
     visibleStartedQuests.length = 0
     visibleNotStartedQuests.length = 0
+
+    if(value){
+        questInfo = {}
+    }else{
+        viewType = "expanded"
+        selected = "tasks"
+    }
 }
 
 export function createQuestPanel() {
@@ -47,6 +67,7 @@ export function createQuestPanel() {
         >
 
             <QuestExpandedView/>
+            <QuestInfoView/>
             </UiEntity>
     )
 }
@@ -103,110 +124,76 @@ function QuestExpandedView(){
             uiText={{textWrap:"nowrap", value:"IWB Quests", textAlign:'middle-center', fontSize:sizeFont(25,20)}}
             />
 
-            <QuestList started={true}/>
-            <QuestList started={false}/>
+
+{
+    showQuestView &&
+    viewType === "expanded" &&
+    generateQuestRows()
+    }
             </UiEntity>
 
         </UiEntity>
     )
 }
 
-function QuestList(data:any){
-    return(
-<UiEntity
-key={resources.slug + "started::quests:panel"}
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        width: '100%',
-        height: '45%',
-        margin:{top:'2%'}
-    }}
-    >
-
-{/* header row */}
-<UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '10%',
-        margin:{bottom:'2%'}
-    }}
-    >
-
-<UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '50%',
-        height: '100%',
-        
-    }}
-    uiText={{textWrap:"nowrap", value:data.started ? "Started Quests" : "Not Started Quests", textAlign:'top-left', fontSize:sizeFont(25,20)}}
-    />
-
-    <UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '50%',
-        height: '100%',
-    }}
-    >
-        
-    </UiEntity>
-
-    </UiEntity>
-
-
-    <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        alignSelf:'flex-start',
-        justifyContent: 'flex-start',
-        width: '100%',
-        height: '90%',
-        flexShrink:1
-    }}
-    // uiBackground={{color:Color4.create(1,0,1,.5)}}
-    >
-        {
-            showQuestView &&
-            viewType === "expanded" &&
-            generateQuestRows(data.started)
-        }
-    </UiEntity>
-
-    </UiEntity>
-    )
-}
-
-function generateQuestRows(started:boolean){
+function generateQuestRows(){
     let arr:any[] = []
     let count = 0
-    quests.filter(($:any)=> $.started === started).forEach((quest:any)=>{
-        arr.push(<QuestRow count={count} type={started ? 0 : 1} quest={quest} />)
+    quests.forEach((quest:any)=>{
+        arr.push(<QuestRow count={count} quest={quest} />)
         count++
     })
     return arr
 }
 
+function generateSteps(){
+    let arr:any[] = []
+    let count = 0
+    availableSteps.forEach((step:any)=>{
+        arr.push(<StepRow count={count} step={step} />)
+        count++
+    })
+    return arr
+}
+
+function generateRewards(){
+    let arr:any[] = []
+    let count = 0
+    // availableSteps.forEach((step:any)=>{
+    //     arr.push(<StepRow count={count} step={step} />)
+    //     count++
+    // })
+    return arr
+}
+
+function getAvailableSteps(){
+    availableSteps.length = 0
+    console.log('quest info is', questInfo)
+
+    if(questInfo.started){
+        questInfo.steps.forEach((step:any)=>{
+            if(questInfo.playerData.completedSteps.includes(step.id)){
+                availableSteps.push({description:step.description, completed:true})
+            }else if(prerequisitesMet(questInfo.playerData, step.prerequisites)){
+                availableSteps.push({description:step.description, completed:false})
+            }
+        })
+    }
+
+    console.log('available steps', availableSteps)
+}
+
 function QuestRow(data:any){
     return(
 <UiEntity
-    key={resources.slug + "quest::row::" + data.type + "::" + data.count}
+    key={resources.slug + "quest::row::" + data.count}
     uiTransform={{
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        alignSelf:'center',
+        justifyContent: 'flex-start',
         width: '100%',
-        height: '25%',
+        height: '20%',
         margin:{top:"1%", bottom:"1%"}
     }}
     uiBackground={{
@@ -218,27 +205,107 @@ function QuestRow(data:any){
     }}
     >
 
-{/* started quest info */}
 <UiEntity
     uiTransform={{
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        width: '100%',
-        height: '100%',
-        display: data.type === 0 ? "flex" : "none"
+        justifyContent: 'center',
+        width: '96%',
+        height: '15%',
+        margin:{top:'2%'}
     }}
-    >
+    uiText={{textWrap:"nowrap", value:"" + data.quest.name, textAlign:'middle-left', fontSize:sizeFont(25,20)}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '96%',
+        height: '35%',
+        margin:{bottom:'2%'}
+    }}
+    uiText={{value:"" + data.quest.description, textAlign:'top-left', fontSize:sizeFont(20,12)}}
+    />
 
 <UiEntity
     uiTransform={{
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '70%',
+        width: '96%',
+        height: '15%',
+        margin:{top:'1%'}
+    }}
+>
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
         height: '100%',
-        margin:{left:"3%"},
-        display: data.type === 0 ? "flex" : "none"
+    }}
+    uiText={{textWrap:"nowrap", value:"Status: " + (data.quest.started ? data.quest.playerData.status : "Not Started"), textAlign:'middle-left', fontSize:sizeFont(20,12)}}
+    />
+
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
+        height: '100%',
+    }}
+    uiText={{textWrap:"nowrap", value:"Start Location: ", textAlign:'middle-left', fontSize:sizeFont(20,12)}}
+    />
+
+
+    </UiEntity>
+
+    {/* <UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '96%',
+        height: '15%',
+    }}
+>
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
+        height: '100%',
+    }}
+    uiText={{textWrap:"nowrap", value: !data.quest.started ? ""  : "Progress: " + (data.playerData ? Math.round(data.playerData.completedSteps.length / data.steps.length) : 0) + "%", textAlign:'middle-left', fontSize:sizeFont(20,12)}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
+        height: '100%',
+    }}
+    uiText={{textWrap:"nowrap", value:"Rewards: ", textAlign:'middle-left', fontSize:sizeFont(20,12)}}
+    />
+    </UiEntity> */}
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        width: '96%',
+        height: '15%',
+        positionType:'absolute',
+        position:{right: '3%', bottom:'10%'},
     }}
 >
 
@@ -247,35 +314,101 @@ function QuestRow(data:any){
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '90%',
-        height: '100%',
+        width: calculateImageDimensions(1.5, getAspect(uiSizes.infoButtonOpaque)).width,
+        height: calculateImageDimensions(1.5, getAspect(uiSizes.infoButtonOpaque)).height,
     }}
-    uiText={{textWrap:"nowrap", value:"" + data.quest.name, textAlign:'middle-left', fontSize:sizeFont(25,20)}}
-    />
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas1.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.infoButtonOpaque)
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        questInfo = {...data.quest}
+        viewType = "info"
+        getAvailableSteps()
+        setUIClicked(false)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+/>
 
 <UiEntity
     uiTransform={{
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '10%',
-        height: '100%',
+        width: calculateImageDimensions(1.5, getAspect(uiSizes.goIcon)).width,
+        height: calculateImageDimensions(1.5, getAspect(uiSizes.goIcon)).height,
+        display: !data.quest.started ? "flex" : "none"
     }}
-    uiText={{textWrap:"nowrap", value:"95%", textAlign:'middle-center', fontSize:sizeFont(25,20)}}
-    />
-
-
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.goIcon)
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        teleportToScene({id:data.quest.scene})
+        displayQuestPanel(false)
+        setUIClicked(false)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+/>
 </UiEntity>
+    </UiEntity>
+    )
+}
 
+function StepRow(data:any){
+    return(
 <UiEntity
+    key={resources.slug + "step::row::" + data.count}
     uiTransform={{
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        width: '30%',
+        alignSelf:'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '8%',
+        margin:{top:"1%", bottom:"1%"}
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.rowPillDark)
+    }}
+    >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '90%',
         height: '100%',
-        margin:{right:'3%'},
-        display: data.type === 0 ? "flex" : "none"
+        margin:{left:'2%'}
+    }}
+    uiText={{textWrap:"nowrap", value:"" + data.step.description, textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+    />
+
+
+    <UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '10%',
+        height: '100%',
     }}
     >
          <UiEntity
@@ -283,152 +416,298 @@ function QuestRow(data:any){
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: calculateImageDimensions(1.5, getAspect(uiSizes.infoButtonBlack)).width,
-        height: calculateImageDimensions(1.5, getAspect(uiSizes.infoButtonBlack)).height,
-        margin:{right:"2%"}
+        width: calculateImageDimensions(1.5, getAspect(uiSizes.emptyCheckWhite)).width,
+        height: calculateImageDimensions(1.5, getAspect(uiSizes.emptyCheckWhite)).height,
     }}
     uiBackground={{
         textureMode: 'stretch',
         texture: {
-            src: 'assets/atlas1.png'
+            src: 'assets/atlas2.png'
         },
-        uvs: getImageAtlasMapping(uiSizes.infoButtonBlack)
+        uvs: getImageAtlasMapping(data.step.completed ? uiSizes.checkWithBoxWhite : uiSizes.emptyCheckWhite)
     }}
     onMouseDown={() => {
         setUIClicked(true)
-        setUIClicked(true)
+        setUIClicked(false)
     }}
     onMouseUp={()=>{
         setUIClicked(false)
     }}
 />
-
-        <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
-        height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
-        margin:{right:"2%"}
-    }}
-    uiBackground={{
-        textureMode: 'stretch',
-        texture: {
-            src: 'assets/atlas1.png'
-        },
-        uvs: getImageAtlasMapping(uiSizes.trashButton)
-    }}
-    onMouseDown={() => {
-        setUIClicked(true)
-        abortQuest(data.quest.id)
-        setUIClicked(true)
-    }}
-    onMouseUp={()=>{
-        setUIClicked(false)
-    }}
-/>
-
     </UiEntity>
 
     </UiEntity>
+    )
+}
 
-{/* not started quest info */}
-<UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        width: '100%',
-        height: '100%',
-        display: data.type === 1 ? "flex" : "none"
-    }}
-    >
-
-    <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '70%',
-        height: '100%',
-        margin:{left:"3%"},
-    }}
-    uiText={{textWrap:"nowrap", value:"" + data.quest.name, textAlign:'middle-left', fontSize:sizeFont(25,20)}}
-    />
-
-{/* start quest button column */}
-<UiEntity
-    uiTransform={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        width: '30%',
-        height: '100%',
-        margin:{right:'3%'},
-    }}
-    >
+function QuestInfoView(){
+    return(
         <UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: calculateImageDimensions(1.5, getAspect(uiSizes.infoButtonBlack)).width,
-        height: calculateImageDimensions(1.5, getAspect(uiSizes.infoButtonBlack)).height,
-        margin:{right:"2%"}
-    }}
-    uiBackground={{
-        textureMode: 'stretch',
-        texture: {
-            src: 'assets/atlas1.png'
-        },
-        uvs: getImageAtlasMapping(uiSizes.infoButtonBlack)
-    }}
-    onMouseDown={() => {
-        setUIClicked(true)
-        console.log('need to show quest info')
-        setUIClicked(true)
-    }}
-    onMouseUp={()=>{
-        setUIClicked(false)
-    }}
-/>
-
-           <UiEntity
+            key={resources.slug + "quest::info::panel"}
             uiTransform={{
-                flexDirection: 'row',
+                display: viewType === "info" ? 'flex' : 'none',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: calculateImageDimensions(3, getAspect(uiSizes.buttonPillBlue)).width,
-                height: calculateImageDimensions(3, getAspect(uiSizes.buttonPillBlue)).height,
+                width: calculateImageDimensions(25, 345 / 511).width,
+                height: calculateImageDimensions(20, 345 / 511).height,
+                positionType: 'absolute',
+                position: {right: '3%', top: '1%'}
             }}
             uiBackground={{
                 textureMode: 'stretch',
                 texture: {
                     src: 'assets/atlas2.png'
                 },
-                uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+                uvs: getImageAtlasMapping(uiSizes.vertRectangle)
             }}
-            uiText={{
-                value: "Start",
-                fontSize: sizeFont(25, 15),
-                color: Color4.White(),
-                textAlign: 'middle-center',
-                textWrap:'nowrap'
-            }}
-            onMouseDown={() => {
+            onMouseDown={()=>{
                 setUIClicked(true)
-                attemptStartQuest(data.quest.id)
-                setUIClicked(true)
+                setUIClicked(false)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)
             }}
-        />
-    </UiEntity>
+        >
 
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '80%',
+        height: '85%',
+        margin:{bottom:'5%'}
+    }}
+    >
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '10%',
+                margin:{top:'2%'}
+            }}
+            uiText={{textWrap:"nowrap", value:"" + questInfo.name + " Quest", textAlign:'top-left', fontSize:sizeFont(25,20)}}
+            />
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+    height: '10%',
+    margin:{top:'1%', bottom:'1%'}
+}}
+uiText={{value:"" + questInfo.description, textAlign:'top-left', fontSize:sizeFont(20, 15)}}
+/>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '7%',
+}}
+// uiBackground={{color:Color4.Green()}}//
+>
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
+    height: '100%',
+}}
+>
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+    height: '10%',
+}}
+uiText={{textWrap:"nowrap", value:"Start Location: ", textAlign:'middle-left', fontSize:sizeFont(20, 15)}}
+/>
 
 </UiEntity>
-    </UiEntity>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
+    height: '100%',
+}}
+>
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+    height: '10%',
+    display: questInfo.started ? "flex" : "none"
+}}
+uiText={{textWrap:"nowrap", value:"Progress: " + (questInfo.started && questInfo.playerData ? Math.round(questInfo.playerData.completedSteps.length / questInfo.steps.length) : 0) + "%", textAlign:'middle-left', fontSize:sizeFont(20, 15)}}
+/>  
+</UiEntity>
+
+</UiEntity>
+
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'row',
+    alignSelf:'flex-start',
+    alignItems: 'flex-start',
+    alignContent:'flex-start',
+    justifyContent: 'flex-start',
+    width: '60%',
+    height: '10%',
+    margin:{top:'1%'}
+}}
+>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
+    height: '100%',
+    margin:'1%',
+}}
+>
+<UiEntity
+      uiTransform={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+          height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+      }}
+      uiBackground={{
+          textureMode: 'stretch',
+          texture: {
+              src: 'assets/atlas2.png'
+          },
+          uvs: getImageAtlasMapping(selected === "tasks" ? uiSizes.buttonPillBlue : uiSizes.buttonPillBlack)
+      }}
+      onMouseDown={() => {
+        setUIClicked(true)
+        // playSound(SOUND_TYPES.WOOD_3)
+        selected = "tasks"
+        setUIClicked(false)
+      }}
+      onMouseUp={()=>{
+        setUIClicked(false)
+      }}
+      uiText={{textWrap:'nowrap', value: "Tasks", color:Color4.White(), fontSize:sizeFont(25,15)}}
+      />
+</UiEntity>
+
+<UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
+    height: '100%',
+    margin:'1%'
+}}
+>
+<UiEntity
+      uiTransform={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+          height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+      }}
+      uiBackground={{
+          textureMode: 'stretch',
+          texture: {
+              src: 'assets/atlas2.png'
+          },
+          uvs: getImageAtlasMapping(selected === "rewards" ? uiSizes.buttonPillBlue : uiSizes.buttonPillBlack)
+      }}
+      onMouseDown={() => {
+        setUIClicked(true)
+        // playSound(SOUND_TYPES.WOOD_3)
+        selected = "rewards"
+        setUIClicked(false)
+      }}
+      onMouseUp={()=>{
+        setUIClicked(false)
+      }}
+      uiText={{textWrap:'nowrap', value: "Rewards", color:Color4.White(), fontSize:sizeFont(25,15)}}
+      />
+</UiEntity>
+
+</UiEntity>
+
+{
+    viewType === "info" &&
+    questInfo.started && 
+    selected === "tasks" &&
+    generateSteps()
+}
+
+{
+    viewType === "info" &&
+    questInfo.started && 
+    selected === "rewards" &&
+    generateRewards()
+}
+
+    <UiEntity
+uiTransform={{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+    height: '10%',
+    display: !questInfo.started && selected === "tasks" ? "flex" : "none"
+}}
+uiText={{value:"Tasks will be visible after starting the quest.", textAlign:'middle-left', fontSize:sizeFont(20, 15)}}
+/>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(1.5, getAspect(uiSizes.backButton)).width,
+        height: calculateImageDimensions(1.5, getAspect(uiSizes.backButton)).height,
+        positionType:'absolute',
+        position:{right: '2%', top:'2%'},
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'//
+        },
+        uvs: getImageAtlasMapping(uiSizes.backButton)
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        viewType = "expanded"
+        questInfo = {}
+        setUIClicked(false)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+/>
+
+</UiEntity>
+        </UiEntity>
     )
 }
