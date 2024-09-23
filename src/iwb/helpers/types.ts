@@ -404,6 +404,8 @@ export enum Actions {
     STOP_VIDEO_STREAM = 'video_stream_stop',
     PLAY_AUDIO_STREAM = 'audio_stream_play',
     STOP_AUDIO_STREAM = 'audio_stream_stop',
+    PLAY_AUDIUS_TRACK = 'audius_track_play',
+    STOP_AUDIUS_TRACK = 'audius_track_stop',
     TELEPORT_PLAYER = 'player_teleport',
     EMOTE = 'player_emote',
     OPEN_LINK = 'open_link',

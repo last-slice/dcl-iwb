@@ -31,6 +31,8 @@ import { walkPath } from "./Path"
 import { checkTransformComponent } from "./Transform"
 import { equipUserWeapon, unequipUserWeapon } from "./Weapon"
 import { checPhysicskBody, pendingBodies } from "./Physics"
+import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
+import resources from "../helpers/resources"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -110,11 +112,19 @@ export function updateActions(scene:any, info:any, action:any){
                 break;
 
             case Actions.PLAY_AUDIO_STREAM:
-                handlePlayAudioStream(info)//
+                handlePlayAudioStream(info)
                 break;
 
             case Actions.STOP_AUDIO_STREAM:
                 handleStopAudioStream(info)
+                break;
+
+            case Actions.PLAY_AUDIUS_TRACK:
+                handlePlayAudiusTrack(scene, info)
+                break;
+
+            case Actions.STOP_AUDIUS_TRACK:
+                handleStopAudiusTrack(info)
                 break;
 
             case Actions.SET_VISIBILITY:
@@ -572,6 +582,42 @@ function handlePlayAudioStream(info:any){
 }
 
 function handleStopAudioStream(info:any){
+    let audio = AudioStream.getMutableOrNull(info.entity)
+    if(audio){
+        audio.playing = false
+    }
+}
+
+async function handlePlayAudiusTrack(scene:any, info:any){
+    let itemInfo = scene[COMPONENT_TYPES.AUDIO_COMPONENT].get(info.aid)
+    if(itemInfo && itemInfo.type === 2){
+        if(!initAudiusServers){
+            updateAudiusInit(true)
+            await getServers()
+        }
+        chooseServer()
+    
+    
+        // AudioStream.createOrReplace(info.entity,
+        //     {
+        //         url:server + "/" + resources.audius.endpoints.stream + "/" + info.url + "/stream?app_name=" + APP_NAME + "&t=" +Math.floor(Date.now()/1000),
+        //         playing:true,
+        //         volume:1
+        //     }
+        // )
+
+        let audio = AudioStream.getMutableOrNull(info.entity)
+        console.log('audio is', audio)
+        if(audio){
+            audio.playing = false
+            audio.volume = itemInfo.volume
+            audio.url = server + "/" + resources.audius.endpoints.stream + "/" + itemInfo.url + "/stream?app_name=" + APP_NAME + "&t=" +Math.floor(Date.now()/1000),
+            audio.playing = true
+        }
+    }
+}
+
+function handleStopAudiusTrack(info:any){
     let audio = AudioStream.getMutableOrNull(info.entity)
     if(audio){
         audio.playing = false

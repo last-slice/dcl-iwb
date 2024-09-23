@@ -76,6 +76,7 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
         disableTriggers(scene, entityInfo)
         disableLivePanel(scene, entityInfo)
         resetAttachedEntity(scene, entityInfo)
+        disableAudioPlayMode(scene, entityInfo)
     }
 
     checkGameplay(scene)

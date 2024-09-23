@@ -175,7 +175,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
         return
       }
 
-      console.log('trigger found', triggerEvent, trigger.decisions)
+      // console.log('trigger found', triggerEvent, trigger.decisions)
 
       checkDecisionPaths(scene, trigger, entityInfo)
     })
@@ -547,7 +547,7 @@ export function runGlobalTrigger(scene:any, type:Triggers, data:any){
   scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
     let entityInfo = getEntity(scene, item.aid)
     if(entityInfo){
-      console.log('emitting trigger for entity', entityInfo.entity)
+      // console.log('emitting trigger for entity', entityInfo.entity)
       data.entity = entityInfo.entity
       let triggerEvents = getTriggerEvents(entityInfo.entity)
       triggerEvents.emit(type, data)

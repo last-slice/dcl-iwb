@@ -860,9 +860,9 @@ function AudiusRow(data:any){
         uiBackground={{
             textureMode: 'stretch',
             texture: {
-                src: resources.textures.audiusPlayButton
+                src: resources.textures.atlas2
             },
-            // uvs: getImageAtlasMapping(uiSizes.trashButton)
+            uvs: getImageAtlasMapping(uiSizes.plusButton)
         }}
         onMouseDown={() => {
             setUIClicked(true)
