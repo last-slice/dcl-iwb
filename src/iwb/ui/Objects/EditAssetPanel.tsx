@@ -53,6 +53,9 @@ import { EditAudioComponent, updateAudioComponent } from './Edit/EditAudios'
 import { EditVLMComponent, updateVLM } from './Edit/EditVLM'
 import { EditLeaderboard, resetLeadboardInfo, refreshLeaderboardInfo } from './Edit/EditLeaderboard'
 import { clearAssetPhysicsData, EditPhysics, getAssetPhysicsData, physicsView, updatePhysicsView } from './Edit/EditPhysics'
+import { clearEditVehicleData, EditVehicle, getVehicleData, removeEditVehicleObjects, upateEditVehicleView, vehicleView } from './Edit/EditVehicle'
+import { displayQuestCreatorPanel } from './QuestCreatorPanel'
+import { EditQuest, getQuestDefinition, questEditView, updateQuestEditView } from './Edit/EditQuest'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -69,6 +72,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.QUEST_COMPONENT:
+            getQuestDefinition()
+            break;
+
         case COMPONENT_TYPES.LEADERBOARD_COMPONENT:
             refreshLeaderboardInfo()
             break;
@@ -153,9 +160,13 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             getAssetPhysicsData()
             break;
 
+        case COMPONENT_TYPES.VEHICLE_COMPONENT:
+            getVehicleData()
+            break;
+
         // case COMPONENT_TYPES.NPC_COMPONENT:
         //     updateNPCView('main')
-        //     break;
+        //     break;//
 
         // case COMPONENT_TYPES.TRIGGER_AREA_COMPONENT:
         //     updateTriggerAreaActionView("main")//
@@ -258,6 +269,7 @@ export function createEditAssetPanel() {
                         onMouseDown={() => {
                             setUIClicked(true)
                             saveItem()
+                            setUIClicked(false)
                         }}
                         onMouseUp={()=>{
                             setUIClicked(false)
@@ -463,6 +475,32 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.QUEST_COMPONENT:
+            switch(questEditView){
+                case 'add-step':
+                    updateQuestEditView("steps")
+                    break;
+                case 'details':
+                case 'steps':
+                case 'conditions':
+                    updateQuestEditView("main")
+                    break;
+                default:
+                    openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+                    break;
+            }
+            break;
+
+        case COMPONENT_TYPES.VEHICLE_COMPONENT:
+            if(vehicleView !== "main"){
+                removeEditVehicleObjects()
+                upateEditVehicleView("main")
+            }
+            else{
+                clearEditVehicleData()
+                openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+            }
+            break;
         case COMPONENT_TYPES.PHYSICS_COMPONENT:
             if(physicsView !== "main"){
                 updatePhysicsView("main")
@@ -946,6 +984,8 @@ function EditObjectData(){
                 <EditVLMComponent/>
                 <EditLeaderboard/>
                 <EditPhysics/>
+                <EditVehicle/>
+                <EditQuest/>
 
             </UiEntity>
 
@@ -1086,7 +1126,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.GAME_ITEM_COMPONENT,
         COMPONENT_TYPES.LEADERBOARD_COMPONENT,
         COMPONENT_TYPES.VEHICLE_COMPONENT,
-        COMPONENT_TYPES.PHYSICS_COMPONENT
+        COMPONENT_TYPES.PHYSICS_COMPONENT,
+        COMPONENT_TYPES.QUEST_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1126,7 +1167,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)//
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-24).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-25).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1184,7 +1225,8 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.PATH_COMPONENT,
             COMPONENT_TYPES.AUDIO_COMPONENT,
             COMPONENT_TYPES.VLM_COMPONENT,
-            COMPONENT_TYPES.LEADERBOARD_COMPONENT
+            COMPONENT_TYPES.LEADERBOARD_COMPONENT,
+            COMPONENT_TYPES.QUEST_COMPONENT
         ]
 
         let components:any[] = []
@@ -1194,7 +1236,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-24).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-25).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.push(COMPONENT_TYPES.BILLBOARD_COMPONENT)
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null

@@ -129,7 +129,7 @@ export function displayQuestCreatorPanel(value:boolean){
       resetNewQuest()
       resetNewCondition()
     }else{
-      resetNewStep()//
+      resetNewStep()
       validQuest = false
       updateQuestCreateView("List", horiztonalButtons)
     }

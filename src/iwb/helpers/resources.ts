@@ -67,12 +67,12 @@ export let audiusMoodEndpoints:any = {
 }
 
 export default {
-    DEBUG: false,
+    DEBUG: true,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
 
-    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",//
+    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
 
     endpoints:{
         wsTest: "ws://localhost:2751",

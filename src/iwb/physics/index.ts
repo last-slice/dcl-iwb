@@ -43,9 +43,9 @@ export function createCannonBody(data:any, rotation:boolean, cGroup:number){
   };
 
   cannonBody.addEventListener("collide", collideEventListener)
-
-  // cannonBody.sleep()
   world.addBody(cannonBody)
+
+  console.log('creating cannon body')
 
   return cannonBody
 }

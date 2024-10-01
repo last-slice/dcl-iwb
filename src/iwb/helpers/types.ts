@@ -350,7 +350,8 @@ export enum COMPONENT_TYPES {
     MULTIPLAYER_COMPONENT = 'Multiplayer',
     LEADERBOARD_COMPONENT = 'Leaderboard',
     VEHICLE_COMPONENT = 'Vehicle',
-    PHYSICS_COMPONENT = 'Physics'
+    PHYSICS_COMPONENT = 'Physics',
+     QUEST_COMPONENT = 'Quest'
 }
 
 export enum BLOCKCHAINS {
@@ -475,6 +476,8 @@ export enum Actions {
     REMOVE_FORCE_CAMERA = 'player_camera_force_remove',
     ENABLE_PHYSICS = 'physics_enable',
     DISABLE_PHYSICS = 'physics_disable',
+    ENTER_VEHICLE = 'vehicle_enter',
+    EXIT_VEHICLE = 'vehicle_exit'
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 
@@ -520,7 +523,9 @@ export enum Triggers {
     ON_WEAPON_SHOOT = 'on_weapon_shoot',
     ON_PHYSICS_ENABLED = 'on_physics_enabled',
     ON_PHYSICS_DISABLED = 'on_physics_disabled',
-    ON_QUEST_COMPLETE = 'on_quest_complete'
+    ON_QUEST_COMPLETE = 'on_quest_complete',
+    ON_VEHICLE_ACCELERATE = 'on_vehicle_accelerate',
+    ON_VEHICLE_DECELERATE = 'on_vehicle_decelerate'
 }
 
 export enum Pointers {

@@ -10,7 +10,7 @@ import { utils } from "../helpers/libraries";
 import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
 import { Color3, Vector3 } from "@dcl/sdk/math";
 import { getAssetIdByEntity } from "./Parenting";
-import { colyseusRoom, sendServerMessage } from "./Colyseus";
+import { colyseusRoom, connected, sendServerMessage } from "./Colyseus";
 
 export const actionQueue:any[] = []
 export const decisionQueue:any[] = []
@@ -175,7 +175,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
         return
       }
 
-      // console.log('trigger found', triggerEvent, trigger.decisions)
+      console.log('trigger found', triggerEvent, trigger.decisions)
 
       checkDecisionPaths(scene, trigger, entityInfo)
     })
@@ -183,7 +183,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
 
 function checkDecisionPaths(scene:any, trigger:any, entityInfo:any){
   trigger.decisions.forEach(async (decision:any, i:number)=>{
-    // console.log('decisin is', decision)//
+    console.log('decisin is', decision)
     decisionQueue.push({sceneId:scene.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision})
   })
 }
@@ -544,20 +544,38 @@ export function setTriggersForPlayMode(scene:any, entityInfo:any){
 }
 
 export function runGlobalTrigger(scene:any, type:Triggers, data:any){
-  scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
-    let entityInfo = getEntity(scene, item.aid)
-    if(entityInfo){
-      // console.log('emitting trigger for entity', entityInfo.entity)
-      data.entity = entityInfo.entity
-      let triggerEvents = getTriggerEvents(entityInfo.entity)
-      triggerEvents.emit(type, data)
+  if(scene){
+    scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
+      let entityInfo = getEntity(scene, item.aid)
+      if(entityInfo){
+        // console.log('emitting trigger for entity', entityInfo.entity)//
+        data.entity = entityInfo.entity
+        let triggerEvents = getTriggerEvents(entityInfo.entity)
+        triggerEvents.emit(type, data)
+      }
+    })
+  }else{
+    if(!connected){
+      return
     }
-  })
+    colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
+      scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any)=>{
+        let entityInfo = getEntity(scene, item.aid)
+        if(entityInfo){
+          data.entity = entityInfo.entity
+          let triggerEvents = getTriggerEvents(entityInfo.entity)
+          triggerEvents.emit(type, data)
+        }
+      })
+    })
+  }
 }
 
 export function runSingleTrigger(entityInfo:any, type:Triggers, data:any){
   let triggerEvents = getTriggerEvents(entityInfo.entity)
+  data.entity = entityInfo.entity
   triggerEvents.emit(type, data)
+  console.log('running single trigger', type, data)
 }
 
 // ON_TWEEN_END

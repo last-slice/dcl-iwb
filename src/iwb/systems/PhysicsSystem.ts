@@ -89,12 +89,12 @@ export function PhysicsUpdateSystem(dt: number): void {
       })  
     })
 
-    physicsObjects.forEach((object:any, aid:string)=>{
-        let objectTransform = Transform.getMutableOrNull(object.entity)
-        if(objectTransform){
-            // console.log('vehicle position', object.cannonBody.position)
-            objectTransform.position = object.cannonBody.position
-            objectTransform.rotation = object.cannonBody.quaternion
-        }
-    })
+    // physicsObjects.forEach((object:any, aid:string)=>{
+    //     let objectTransform = Transform.getMutableOrNull(object.entity)
+    //     if(objectTransform){
+    //         // console.log('vehicle position', object.cannonBody.position)
+    //         objectTransform.position = object.cannonBody.position
+    //         objectTransform.rotation = object.cannonBody.quaternion
+    //     }
+    // })
   }

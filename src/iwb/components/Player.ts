@@ -100,7 +100,7 @@ export async function createPlayer(player:any){
     await addPlayerTrigger()
     await initQuestClients()
 
-    addTestVehicle()
+    // addTestVehicle()
     
     engine.addSystem(PendingSceneLoadSystem)
     getAssetUploadToken()
@@ -132,7 +132,8 @@ export function updatePlayerLoadRadius(value:number){
 }
 
 function addPlayerTrigger(){
-    utils.triggers.addTrigger(engine.PlayerEntity, LAYER_8, NO_LAYERS,
+    Transform.createOrReplace(localPlayer.loadRadiusEntity, {parent: engine.PlayerEntity})
+    utils.triggers.addTrigger(localPlayer.loadRadiusEntity, LAYER_8, NO_LAYERS,
         [{type:'sphere',
             radius:20
         }],
@@ -167,6 +168,7 @@ function checkPlayerHomeWorld(player:any){
 
 function setPlayerDefaults(player:any){
     player.dclData = null
+    player.loadRadiusEntity = engine.addEntity()
     player.scenes = []
     player.worlds = []
     player.objects = []

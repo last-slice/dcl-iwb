@@ -27,6 +27,7 @@ import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { playAudiusTrack } from "./Sounds";
 import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setServerConditions, setServerQuests, startQuest, updateQuestsDefinitions } from "./Quests";
 import { updateLeaderboardInfo } from "./Leaderboard";
+import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
 // import { addNameComponent } from "./Name";
@@ -567,8 +568,9 @@ export async function createColyseusListeners(room:Room){
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, (info:any) => {
-        // log(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS + ' received', info)
-        updateQuestsDefinitions(info)
+        log(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS + ' received', info)
+        // updateQuestsDefinitions(info)
+        updateEditQuestInfo(info)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.LEADERBOARD_UPDATE, (info: any) => {

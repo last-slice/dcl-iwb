@@ -32,7 +32,7 @@ export function initIWB() {
                     joinWorld(realm)
 
                     // await createPhysics()
-                    // addTestVehicle()
+                    // addTestVehicle()//
                 })
             }
         })

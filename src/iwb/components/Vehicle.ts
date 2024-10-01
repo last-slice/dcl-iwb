@@ -1,19 +1,133 @@
-import { Quaternion, Vector3 } from "@dcl/sdk/math"
+import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { getForwardDirectionFromRotation, getRandomString } from "../helpers/functions"
-import {  ColliderLayer, EasingFunction, engine, GltfContainer, InputAction, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, Tween } from "@dcl/sdk/ecs"
+import {  AvatarShape, CameraMode, CameraModeArea, CameraType, ColliderLayer, EasingFunction, engine, Entity, GltfContainer, InputAction, Material, MeshCollider, MeshRenderer, PBMaterial_PbrMaterial, pointerEventsSystem, Transform, Tween } from "@dcl/sdk/ecs"
 import { movePlayerTo } from "~system/RestrictedActions"
-import { COMPONENT_TYPES } from "../helpers/types"
+import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import { getEntity } from "./IWB"
 import { createCannonBody } from "../physics"
-import { CANNON } from "../helpers/libraries"
-import { localUserId } from "./Player"
-import { cannonMaterials } from "./Physics"
-
+import { CANNON, utils } from "../helpers/libraries"
+import { localPlayer, localUserId } from "./Player"
+import { addCannonMaterial, cannonMaterials } from "./Physics"
+import { updatePointer } from "./Pointers"
+import { getWorldPosition, LAYER_1, NO_LAYERS } from "@dcl-sdk/utils"
+import { runGlobalTrigger, runSingleTrigger } from "./Triggers"
+import { updateVehicle, vehicleInfo } from "../ui/Objects/Edit/EditVehicle"
+import { sendServerMessage } from "./Colyseus"
 
 export let testVehicles:Map<string, any> = new Map()
 export let physicsObjects:Map<string,any> = new Map()
 
+export let localVehicleEntities:Map<Entity, Entity> = new Map()
+
 export let localAid:string = getRandomString(5)
+
+export function updateVehiclePointersPlayMode(scene:any, entityInfo:any){
+    let vehicleInfo = scene[COMPONENT_TYPES.VEHICLE_COMPONENT].get(entityInfo.aid)
+    if(!vehicleInfo){
+        return
+    }
+
+    updatePointer({entity:vehicleInfo.entityRot}, {events:[
+        {
+            "eventType": 1,
+            "button": 0,
+            "hoverText": "Enter Vehicle",
+            "maxDistance": 5,
+            "showFeedback": true
+        },
+        {
+            "eventType": 1,
+            "button": 8,
+            "hoverText": "Exit Vehicle",
+            "maxDistance": 5,
+            "showFeedback": true
+        }
+    ]})
+}
+
+export function attemptVehicleEntry(scene:any, entityInfo:any){
+    let vehicleInfo = scene[COMPONENT_TYPES.VEHICLE_COMPONENT].get(entityInfo.aid)
+    let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
+    let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
+
+    if(!vehicleInfo){
+        console.log('no vehicle info to attempt entry')
+        return
+    }
+
+    if(vehicleInfo.active || vehicleInfo.driver !== ""){
+        console.log('vehicle already has driver')
+        return
+    }
+
+    let holderPosition = getWorldPosition(vehicleInfo.holderG)
+
+    // let holder = Transform.get(entityInfo.entity).position
+    // let car = transform.p
+    // let slot = Vector3.add(car, holder)
+    // let playerCarPosition = getWorldPosition(slot)
+
+    MeshCollider.setPlane(vehicleInfo.holderL)
+    MeshCollider.setPlane(vehicleInfo.holderF)
+    MeshCollider.setPlane(vehicleInfo.holderR)
+    MeshCollider.setPlane(vehicleInfo.holderB)
+    MeshCollider.setPlane(vehicleInfo.holderG)
+
+    movePlayerTo({newRelativePosition:{x:holderPosition.x, y:holderPosition.y + 1, z:holderPosition.z}})
+    vehicleInfo.active = true
+    vehicleInfo.driver = localUserId
+    vehicleInfo.prevCamMode = CameraMode.get(engine.CameraEntity).mode
+
+    if(vehicleInfo.forceFPV){
+        vehicleInfo.forceFPVEntity = engine.addEntity()
+        Transform.create(vehicleInfo.forceFPVEntity, {parent: vehicleInfo.holder})
+
+        CameraModeArea.create(vehicleInfo.forceFPVEntity, {
+            area: Vector3.create(4, 3, 4),
+            mode: CameraType.CT_FIRST_PERSON,
+        })
+    }
+
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+        {
+            component:COMPONENT_TYPES.VEHICLE_COMPONENT, 
+            aid:entityInfo.aid, 
+            sceneId:localPlayer.activeScene.id,
+            action:'driver',
+            occupied:localUserId,
+        }
+    )
+}
+
+export function attemptVehicleExit(scene:any, entityInfo:any){
+    let vehicleInfo = scene[COMPONENT_TYPES.VEHICLE_COMPONENT].get(entityInfo.aid)
+
+    if(!vehicleInfo){
+        console.log('no vehicle info to attempt entry')
+        return
+    }
+
+    if(vehicleInfo.driver !== localUserId || localPlayer.vehicle !== entityInfo.aid){
+        console.log('player is not driving vehicle')
+        return
+    }
+
+    sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, 
+        {
+            component:COMPONENT_TYPES.VEHICLE_COMPONENT, 
+            aid:entityInfo.aid, 
+            sceneId:localPlayer.activeScene.id,
+            action:'driver',
+            occupied:"",
+        }
+    )
+
+    MeshCollider.deleteFrom(vehicleInfo.holderL)
+    MeshCollider.deleteFrom(vehicleInfo.holderF)
+    MeshCollider.deleteFrom(vehicleInfo.holderR)
+    MeshCollider.deleteFrom(vehicleInfo.holderB)
+    MeshCollider.deleteFrom(vehicleInfo.holderG)
+}
 
 export function vehicleListener(scene:any){
     scene[COMPONENT_TYPES.VEHICLE_COMPONENT].onAdd((vehicleData:any, aid:any)=>{
@@ -27,73 +141,108 @@ export function vehicleListener(scene:any){
             return
         }
 
-        vehicleData.entityPos = engine.addEntity()
-        vehicleData.entityRot = engine.addEntity()
-        vehicleData.holder = engine.addEntity()
+        vehicleData.listen("type", (current:any, previous:any)=>{
+            console.log('vehicle type changed', previous, current)
+            if(current !== -1){
+                console.log('need to apply physics to the vehicle')
 
-        Transform.createOrReplace(vehicleData.entityPos, {
-            position: transform.p
+                vehicleData.cannonBody = createCannonBody({
+                    mass:vehicleData.mass,
+                    position: new CANNON.Vec3(transform.p.x, transform.p.y, transform.p.z),
+                    quaternion: new CANNON.Quaternion(),
+                    // shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2.5)),
+                    shape:new CANNON.Sphere(1),
+                    material:cannonMaterials.get("vehicle") || addCannonMaterial("vehicle"),
+                    linearDamping:0.8,
+                    angularDamping:0.8
+                }, true, 5),
+
+                vehicleData.entityPos = entityInfo.entity
+                vehicleData.entityRot = engine.addEntity()
+                vehicleData.holder = engine.addEntity()
+
+                console.log('vehicle rot is', vehicleData.entityRot)
+
+                localVehicleEntities.set(vehicleData.entityRot, entityInfo.entity)
+
+                Transform.createOrReplace(vehicleData.entityRot, {
+                    parent:entityInfo.entity
+                })
+
+                GltfContainer.deleteFrom(entityInfo.entity)
+
+                // Add the gltf shape to the child 
+                GltfContainer.createOrReplace(vehicleData.entityRot, {
+                    src: "assets/"+iwbInfo.id + ".glb",
+                    visibleMeshesCollisionMask  : ColliderLayer.CL_POINTER,
+                    invisibleMeshesCollisionMask: ColliderLayer.CL_NONE,
+                })
+
+                addVehicleHolder(vehicleData)
+            }
+            
         })
-
-        Transform.createOrReplace(vehicleData.entityRot, {
-            parent:vehicleData.entityPos,
-            scale: transform.s
-        })
-
-        // if(!vehicleData.locked){
-        //     console.log('vehicle is unlocked')
-        // }
-
-        // pointerEventsSystem.onPointerDown({entity: vehicleData.entityRot,
-        //     opts:{button: InputAction.IA_POINTER, hoverText:"Enter", showFeedback:true, maxDistance:5}
-        // },
-        //     ()=>{
-        //         let holder = Transform.get(vehicleData.holder).position
-        //         let car = Transform.get(vehicleData.entityPos).position
-        //         let slot = Vector3.add(car, holder)
-
-        //         movePlayerTo({newRelativePosition:{x:slot.x, y:slot.y + 0.5, z:slot.z}, cameraTarget:{x:car.x, y:1, z:car.z+3}})
-        //         vehicleData.active = true
-        //     }
-        // )
-
-        // Transform.create(vehicleData.holder, {position: vehicleData.holderPos,parent:vehicleData.entityRot})
-        // let left = engine.addEntity()
-        // MeshRenderer.setPlane(left)
-        // MeshCollider.setPlane(left)
-        // Transform.create(left, {parent:vehicleData.holder, 
-        //     position:Vector3.create(-vehicleData.holderScl.x/2,0,0), 
-        //     rotation:Quaternion.fromEulerDegrees(0,90,0), 
-        //     scale:Vector3.create(vehicleData.holderScl.x,vehicleData.holderScl.y, 1)
-        // })
-
-        // let front = engine.addEntity()
-        // MeshRenderer.setPlane(front)
-        // MeshCollider.setPlane(front)
-        // Transform.create(front, {parent:vehicleData.holder, 
-        //     position:Vector3.create(0,0,vehicleData.holderScl.z/4), 
-        //     rotation:Quaternion.fromEulerDegrees(0,0,0), 
-        //     scale:Vector3.create(vehicleData.holderScl.x,vehicleData.holderScl.y, 1)
-        // })
-
-        // let right = engine.addEntity()
-        // MeshRenderer.setPlane(right)
-        // MeshCollider.setPlane(right)
-        // Transform.create(right, {parent:vehicleData.holder, 
-        //     position:Vector3.create(vehicleData.holderScl.x/2,0,0), 
-        //     rotation:Quaternion.fromEulerDegrees(0,90,0), 
-        //     scale:Vector3.create(vehicleData.holderScl.x,vehicleData.holderScl.y, 1)
-        // })
-
-        vehicleData.onChange((value:any, key:any) => {
-            console.log(key, "changed to", value);
-        });
-
     })
 }
 
-export function addTestVehicle(){
-    // console.log('adding test vehicles')
+function addVehicleHolder(vehicle:any){
+    Transform.create(vehicle.holder, {position: vehicle.holderPos, parent:vehicle.entityRot})
+    utils.triggers.addTrigger(vehicle.holder, NO_LAYERS, LAYER_1, [{type:"box", scale:Vector3.create(2,4,2)}],
+()=>{
+
+},()=>{
+    console.log('left vehicle')
+})
+
+
+    vehicle.holderL = engine.addEntity()
+    // MeshRenderer.setPlane(left)
+    // MeshCollider.setPlane(vehicle.holderL)
+    Transform.create(vehicle.holderL, {parent:vehicle.holder, 
+        position:Vector3.create(-1,0,0), 
+        rotation:Quaternion.fromEulerDegrees(0,90,0), 
+        scale:Vector3.create(7,6,1)
+    })
+
+    vehicle.holderF = engine.addEntity()
+    // MeshRenderer.setPlane(front)
+    // MeshCollider.setPlane(vehicle.holderF)
+    Transform.create(vehicle.holderF, {parent:vehicle.holder, 
+        position:Vector3.create(0,0,1.1), 
+        rotation:Quaternion.fromEulerDegrees(0,0,0), 
+        scale:Vector3.create(7,6, 1)
+    })
+
+    vehicle.holderB = engine.addEntity()
+    // MeshRenderer.setPlane(back)
+    // MeshCollider.setPlane(vehicle.holderB)
+    Transform.create(vehicle.holderB, {parent:vehicle.holder, 
+        position:Vector3.create(0,0,-1.1), 
+        rotation:Quaternion.fromEulerDegrees(0,0,0), 
+        scale:Vector3.create(7,6, 1)
+    })
+
+    vehicle.holderR = engine.addEntity()
+    // MeshRenderer.setPlane(right)
+    // MeshCollider.setPlane(vehicle.holderR)
+    Transform.create(vehicle.holderR, {parent:vehicle.holder, 
+        position:Vector3.create(1,0,0), 
+        rotation:Quaternion.fromEulerDegrees(0,90,0), 
+        scale:Vector3.create(7,6, 1)
+    })
+
+    vehicle.holderG = engine.addEntity()
+    // MeshRenderer.setPlane(floor)
+    // MeshCollider.setPlane(vehicle.holderG)
+    Transform.create(vehicle.holderG, {parent:vehicle.holder, 
+        position:Vector3.create(0, -2,0), 
+        rotation:Quaternion.fromEulerDegrees(90,0,0), 
+        scale:Vector3.create(7,4, 1)
+    })
+}
+
+export function addTestPhysicsObjects(){
+// console.log('adding test vehicles')
 
     // let wall = engine.addEntity()
     // MeshRenderer.setBox(wall)
@@ -170,16 +319,21 @@ export function addTestVehicle(){
     //     }, false, 4),
     // })
 
+
+
+}
+
+export function addTestVehicle(){
     testVehicles.set(localAid,
         {
-            src:"assets/c59efa22-c881-4aeb-9496-b00c6401f67b.glb",
-            acceleration:800,
+            model:"c59efa22-c881-4aeb-9496-b00c6401f67b",
+            acceleration:500,
             currentSpeed:0,
             maxSpeed:70,
             maxTurn: 200,
             userId:localUserId,
             name:"",
-            position:Vector3.create(0,0.5,4),
+            position:Vector3.create(0,1,4),
             turning:0,
             heading:0,
             targetHeading:0,
@@ -192,35 +346,31 @@ export function addTestVehicle(){
             timeSinceLastTweenRot:0,
             timeToNextTweenPos:0,
             timeToNextTweenRot:0,
-            entityOffset: Vector3.create(0,-0.5,0),
+            entityOffset: Vector3.create(0,-1,0),
             holderPos:Vector3.create(0,3,-1),
-            holderScl:Vector3.create(2,4,4),
             holder:engine.addEntity(),
             entityPos:engine.addEntity(),
             entityRot:engine.addEntity(),
+            // forceFPV:true,
             cannonBody:createCannonBody({
                 mass:500,
                 position: new CANNON.Vec3(0,0,4),
                 quaternion: new CANNON.Quaternion(),
-                // shape: new CANNON.Box(new CANNON.Vec3(1, 0.5, 2.5)),
+                // shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2.5)),
                 shape:new CANNON.Sphere(1),
-                material:cannonMaterials.get("vehicle") || new CANNON.Material("vehicle"),
-                linearDamping:0.7,
-                angularDamping:0.7
+                material:cannonMaterials.get("vehicle") || addCannonMaterial("vehicle"),
+                linearDamping:0.8,
+                angularDamping:0.8
             }, true, 5),
             forward:true,
             accelerating:false,
-            active:false//
+            active:false
     })
 
     let vehicle = testVehicles.get(localAid)
     Transform.createOrReplace(vehicle.entityPos, {
         position: vehicle.position
     })
-
-    let collider = engine.addEntity()
-    // MeshRenderer.setBox(collider)
-    Transform.create(collider, {parent:vehicle.entityPos,scale:Vector3.create(2,1,5), position:Vector3.create(0,0.5,0)})
 
     Transform.createOrReplace(vehicle.entityRot, {
         parent:vehicle.entityPos,
@@ -229,7 +379,7 @@ export function addTestVehicle(){
 
     // Add the gltf shape to the child 
     GltfContainer.createOrReplace(vehicle.entityRot, {
-        src: vehicle.src,
+        src: "assets/"+vehicle.model + ".glb",
         visibleMeshesCollisionMask  : ColliderLayer.CL_POINTER,
         invisibleMeshesCollisionMask: ColliderLayer.CL_PHYSICS,
     })
@@ -244,7 +394,7 @@ export function addTestVehicle(){
     //     })
 
     pointerEventsSystem.onPointerDown({entity: vehicle.entityRot,
-        opts:{button: InputAction.IA_POINTER, hoverText:"enter", showFeedback:true, maxDistance:5}
+        opts:{button: InputAction.IA_POINTER, hoverText:"Enter", showFeedback:true, maxDistance:5}
     },
         ()=>{
             let holder = Transform.get(vehicle.holder).position
@@ -254,87 +404,162 @@ export function addTestVehicle(){
             console.log('slot is', slot)
             movePlayerTo({newRelativePosition:{x:slot.x, y:slot.y, z:slot.z}, cameraTarget:{x:car.x, y:1, z:car.z+3}})
             vehicle.active = true
+            vehicle.driver = localUserId
+
+            if(vehicle.forceFPV){
+                vehicle.forceFPVEntity = engine.addEntity()
+                CameraModeArea.create(vehicle.forceFPVEntity, {
+                    area: Vector3.create(4, 3, 4),
+                    mode: CameraType.CT_FIRST_PERSON,
+                })
+                Transform.create(vehicle.forceFPVEntity, {parent: vehicle.holder})
+                vehicle.prevCamMode = CameraMode.get(engine.CameraEntity).mode
+
+            }
         }
     )
 
-    Transform.create(vehicle.holder, {position: vehicle.holderPos,parent:vehicle.entityRot})
+    Transform.create(vehicle.holder, {position: vehicle.holderPos, parent:vehicle.entityRot})
+
+    let transAlbedo:PBMaterial_PbrMaterial = {albedoColor: Color4.create(0,1,0,.2)}
+
     let left = engine.addEntity()
     // MeshRenderer.setPlane(left)
     MeshCollider.setPlane(left)
     Transform.create(left, {parent:vehicle.holder, 
-        position:Vector3.create(-vehicle.holderScl.x/2,0,0), 
+        position:Vector3.create(-1,0,0), 
         rotation:Quaternion.fromEulerDegrees(0,90,0), 
-        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
+        scale:Vector3.create(7,6,1)
     })
 
     let front = engine.addEntity()
-    // MeshRenderer.setPlane(front)//
+    // MeshRenderer.setPlane(front)
     MeshCollider.setPlane(front)
     Transform.create(front, {parent:vehicle.holder, 
-        position:Vector3.create(0,0,vehicle.holderScl.z/4), 
+        position:Vector3.create(0,0,1.1), 
         rotation:Quaternion.fromEulerDegrees(0,0,0), 
-        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
+        scale:Vector3.create(7,6, 1)
     })
 
     let back = engine.addEntity()
-    // MeshRenderer.setPlane(back)
+    // MeshRenderer.setPlane(back)//
     MeshCollider.setPlane(back)
     Transform.create(back, {parent:vehicle.holder, 
-        position:Vector3.create(0,0,-vehicle.holderScl.z/4), 
+        position:Vector3.create(0,0,-1.1), 
         rotation:Quaternion.fromEulerDegrees(0,0,0), 
-        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
+        scale:Vector3.create(7,6, 1)
     })
 
     let right = engine.addEntity()
     // MeshRenderer.setPlane(right)
     MeshCollider.setPlane(right)
     Transform.create(right, {parent:vehicle.holder, 
-        position:Vector3.create(vehicle.holderScl.x/2,0,0), 
+        position:Vector3.create(1,0,0), 
         rotation:Quaternion.fromEulerDegrees(0,90,0), 
-        scale:Vector3.create(vehicle.holderScl.x + 5,vehicle.holderScl.y, 1)
+        scale:Vector3.create(7,6, 1)
     })
 
-    let roof = engine.addEntity()
+    // let roof = engine.addEntity()
     // MeshRenderer.setPlane(roof)
-    MeshCollider.setPlane(roof)
-    Transform.create(roof, {parent:vehicle.holder, 
-        position:Vector3.create(0,vehicle.holderScl.y,0), 
-        rotation:Quaternion.fromEulerDegrees(90,0,0), 
-        scale:Vector3.create(vehicle.holderScl.x,vehicle.holderScl.y, 1)
-    })
+    // MeshCollider.setPlane(roof)
+    // Transform.create(roof, {parent:vehicle.holder, 
+    //     position:Vector3.create(0,2,0), 
+    //     rotation:Quaternion.fromEulerDegrees(90,0,0), 
+    //     scale:Vector3.create(7,4,1)
+    // })
 
     let floor = engine.addEntity()
     // MeshRenderer.setPlane(floor)
     MeshCollider.setPlane(floor)
     Transform.create(floor, {parent:vehicle.holder, 
-        position:Vector3.create(0, 0 - (vehicle.holderScl.y /2),0), 
+        position:Vector3.create(0, -2,0), 
         rotation:Quaternion.fromEulerDegrees(90,0,0), 
-        scale:Vector3.create(vehicle.holderScl.x,vehicle.holderScl.y, 1)
+        scale:Vector3.create(7,4, 1)
     })
+
+    Material.setPbrMaterial(left, transAlbedo)
+    Material.setPbrMaterial(front, transAlbedo)
+    Material.setPbrMaterial(right, transAlbedo)
+    Material.setPbrMaterial(back, transAlbedo)
+    Material.setPbrMaterial(floor, transAlbedo)
+
+//     let fake = engine.addEntity()
+//     AvatarShape.create(fake)
+
+//     let holder = Transform.get(vehicle.holder).position
+//     let car = Transform.get(vehicle.entityPos).position
+//     let slot = Vector3.add(car, holder)
+
+//     Transform.create(fake, {position: slot})
+//     let faket = Transform.getMutable(fake)
+//     faket.position = Vector3.subtract(faket.position, Vector3.create(0,2.5,-0.3))
 }
 
-export function updateVehicleDirection(dt:number){
-    let vehicle = testVehicles.get(localAid)
+export function turning(vehicle:any, direction:any){
+    // let vehicle = testVehicles.get(localAid)
+    if(vehicle.currentSpeed > 10){
+        vehicle.turning = direction
+    }else{
+        vehicle.turning = 0
+    }
+}
+
+export function accelerateVehicle(vehicle:any){
+    // let vehicle = testVehicles.get(localAid)//
+    // if(vehicle.active){
+        vehicle.accelerating = true
+        runSingleTrigger({entity: vehicle.entityPos}, Triggers.ON_VEHICLE_ACCELERATE, {entity:vehicle.entityPos, input:0, pointer:0})
+    // }  
+}
+
+export function decelerateVehicle(vehicle:any){
+    // let vehicle = testVehicles.get(localAid)
+    vehicle.accelerating = false
+    runSingleTrigger({entity: vehicle.entityPos}, Triggers.ON_VEHICLE_DECELERATE, {entity:vehicle.entityPos, input:0, pointer:0})
+}
+
+export function setTargetHeading(vehicle:any, heading:number){
+    // let vehicle = testVehicles.get(localAid)
+    if(vehicle.active){
+        vehicle.targetHeading += heading
+    } 
+}
+
+export function updateVehicleDirection(vehicle:any){
+    // let vehicle = testVehicles.get(localAid)
     if(vehicle.turning > 0){
         switch(vehicle.turning){
             case 1:
-                setTargetHeading(-2)
+                setTargetHeading(vehicle, -2)
                 break;
 
             case 2:
-                setTargetHeading(2)
+                setTargetHeading(vehicle, 2)
                 break;
         }
     }
 }
 
-export function updateVehicleSpeed(dt:number){
-    let vehicle = testVehicles.get(localAid)
+export function updateVehicleSpeed(vehicle:any, dt:number){
+    // let vehicle = testVehicles.get(localAid)
+
+
+
     if(vehicle.accelerating){
-        if(vehicle.currentSpeed < vehicle.maxSpeed){
-            vehicle.currentSpeed += (vehicle.acceleration * dt)
-            vehicle.currentSpeed = Math.min(vehicle.currentSpeed, vehicle.maxSpeed)
+        if(vehicle.forward){
+            if(vehicle.currentSpeed < vehicle.maxSpeed){
+                vehicle.currentSpeed += (vehicle.acceleration * dt)
+                vehicle.currentSpeed = Math.min(vehicle.currentSpeed, vehicle.maxSpeed)
+                // console.log('speed is ', vehicle.currentSpeed)
+            }
         }
+        // else{
+        //     if(vehicle.currentSpeed < vehicle.maxSpeed){
+        //         vehicle.currentSpeed += (vehicle.acceleration * dt)
+        //         vehicle.currentSpeed = Math.min(vehicle.currentSpeed, vehicle.maxSpeed)
+        //         // console.log('speed is ', vehicle.currentSpeed)
+        //     }
+        // }
     }else{
         if (vehicle.currentSpeed > 0) {
             vehicle.currentSpeed -= (vehicle.acceleration * dt);
@@ -343,38 +568,13 @@ export function updateVehicleSpeed(dt:number){
     }
 }
 
-export function turning(direction:any){
-    let vehicle = testVehicles.get(localAid)
-    if(vehicle.currentSpeed > 10){
-        vehicle.turning = direction
-    }else{
-        vehicle.turning = 0
+export function applyVehiceForce(vehicle:any){
+    // let vehicle = testVehicles.get(localAid)
+
+
+    if(!vehicle.cannonBody){
+        return
     }
-}
-
-export function accelerateVehicle(){
-    let vehicle = testVehicles.get(localAid)
-    if(vehicle.active){
-        vehicle.accelerating = true
-    }  
-}
-
-export function decelerateVehicle(){
-    let vehicle = testVehicles.get(localAid)
-    if(vehicle.active){
-        vehicle.accelerating = false
-    } 
-}
-
-export function setTargetHeading(heading:number){
-    let vehicle = testVehicles.get(localAid)
-    if(vehicle.active){
-        vehicle.targetHeading += heading
-    } 
-}
-
-export function applyVehiceForce(dt:number){
-    let vehicle = testVehicles.get(localAid)
 
         //Velocity direction
 		//Apply a force to the cannon body in the direction the vehicle is currently facing
@@ -384,12 +584,15 @@ export function applyVehiceForce(dt:number){
 		vehicle.cannonBody.applyForce(targetVelocity, vehicle.cannonBody.position)
 		
 		// Clamp the velocity to the max speed		
-		if (Vector3.lengthSquared(vehicle.cannonBody.velocity) > (vehicle.maxSpeed * vehicle.maxSpeed)) {
-			const velocityNorm = vehicle.cannonBody.velocity.clone()
-				  velocityNorm.normalize()
-				  velocityNorm.mult(vehicle.maxSpeed)
-                  vehicle.cannonBody.velocity.copy(velocityNorm)
-		}
+		// if (Vector3.lengthSquared(vehicle.cannonBody.velocity) > (vehicle.maxSpeed * vehicle.maxSpeed)) {
+		// 	const velocityNorm = vehicle.cannonBody.velocity.clone()
+		// 		  velocityNorm.normalize()
+		// 		  velocityNorm.mult(vehicle.maxSpeed)
+        //           vehicle.cannonBody.velocity.copy(velocityNorm)
+		// }
+
+        // console.log('vehicle velocity', targetVelocity)
+        // console.log('vehicle osition', vehicle.cannonBody.position)
 
         // if(vehicle.active){
     
@@ -413,36 +616,43 @@ export function applyVehiceForce(dt:number){
 export function tweenToPosition(vehicle:any){
     // Reset timer
 
-    let cannonPosition = vehicle.cannonBody.position
-    let dclPosition = Vector3.create(cannonPosition.x, cannonPosition.y, cannonPosition.z)
+    if(!vehicle.cannonBody){
+        // console.log('no cannon body for vehicle')
+        return
+    }
 
-    vehicle.timeSinceLastTweenPos = 0
-    vehicle.timeToNextTweenPos    = vehicle.tweenPosDuration - 50
-		
-		// Define the start and end Positions
-		const startPos = Transform.get(vehicle.entityPos).position
-		
-		const endPos = Vector3.create(
-			dclPosition.x + vehicle.entityOffset.x, 
-			dclPosition.y + vehicle.entityOffset.y, 
-			dclPosition.z + vehicle.entityOffset.z
-		)
-		
-		// Use the built in Tween component
-		// Start Tween on the entityPos (parent) to position it
-		Tween.createOrReplace(vehicle.entityPos, {
-			mode: Tween.Mode.Move({
-				start: startPos,
-				end  : endPos
-			}),
-			duration: vehicle.tweenPosDuration, // Tween component needs times in ms
-			easingFunction: EasingFunction.EF_LINEAR,
-		})
+    let cannonPosition = vehicle.cannonBody.position
+    if(cannonPosition){
+        let dclPosition = Vector3.create(cannonPosition.x, cannonPosition.y, cannonPosition.z)
+
+        vehicle.timeSinceLastTweenPos = 0
+        vehicle.timeToNextTweenPos = vehicle.tweenPosDuration - 50
+            
+            // Define the start and end Positions
+            const startPos = Transform.get(vehicle.entityPos).position
+            
+            const endPos = Vector3.create(
+                dclPosition.x + vehicle.entityOffset.x, 
+                dclPosition.y + vehicle.entityOffset.y, 
+                dclPosition.z + vehicle.entityOffset.z
+            )
+            
+            // Use the built in Tween component
+            // Start Tween on the entityPos (parent) to position it
+            Tween.createOrReplace(vehicle.entityPos, {
+                mode: Tween.Mode.Move({
+                    start: startPos,
+                    end  : endPos
+                }),
+                duration: vehicle.tweenPosDuration, // Tween component needs times in ms
+                easingFunction: EasingFunction.EF_LINEAR,
+            })
+    }
 }
 
 export function tweenToHeading(vehicle:any){
-    const transformRot = Transform.getMutable(vehicle.entityRot);
-		if (transformRot) {
+    const transformRot = Transform.getMutableOrNull(vehicle.entityRot);
+		if (transformRot && vehicle.cannonBody) {
 			
 			// Reset timer 
 			vehicle.timeSinceLastTweenRot = 0	
@@ -468,9 +678,4 @@ export function tweenToHeading(vehicle:any){
 				easingFunction: EasingFunction.EF_LINEAR,
 			})
 		} 
-}
-
-export function leaveVehicle(){
-    let vehicle = testVehicles.get(localAid)
-    vehicle.active = false
 }

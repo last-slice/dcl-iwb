@@ -50,7 +50,7 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
-                if(entityInfo){ 
+                if(entityInfo && !scene[COMPONENT_TYPES.VEHICLE_COMPONENT].has(entityInfo.aid)){ 
                     handleSceneEntityOnLeave(scene, entityInfo)
                 }
             }
@@ -195,7 +195,7 @@ export async function handleSceneEntitiesOnLoad(sceneId:string){
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
-                if(entityInfo){
+                if(entityInfo && !scene[COMPONENT_TYPES.VEHICLE_COMPONENT].has(entityInfo.aid)){
                     handleSceneEntityOnLoad(scene, entityInfo)
                 }
             }

@@ -33,6 +33,7 @@ import { equipUserWeapon, unequipUserWeapon } from "./Weapon"
 import { checPhysicskBody, pendingBodies } from "./Physics"
 import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
 import resources from "../helpers/resources"
+import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -376,6 +377,14 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.QUEST_ACTION:
                 handleQuestAction(scene, info, action)
+                break;
+
+            case Actions.ENTER_VEHICLE:
+                handleVehicleEntry(scene, info, action)
+                break;
+
+            case Actions.EXIT_VEHICLE:
+                handleVehicleExit(scene, info, action)
                 break;
         }
     })
@@ -1622,4 +1631,14 @@ function handleQuestStart(scene:any, info:any, action:any){
 function handleQuestAction(scene:any, info:any, action:any){
     console.log('handling quest action', action)
     sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_ACTION, quest:{id:action.questId, stepId:action.actionId}})
+}
+
+function handleVehicleEntry(scene:any, info:any, action:any){
+    console.log('handling vehicle entry')
+    attemptVehicleEntry(scene, info)
+}
+
+function handleVehicleExit(scene:any, info:any, action:any){
+    console.log('handling vehicle exit')
+    attemptVehicleExit(scene, info)
 }

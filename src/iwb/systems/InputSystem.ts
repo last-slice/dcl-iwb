@@ -13,6 +13,7 @@ import { getAssetIdByEntity } from "../components/Parenting"
 import { getEntity } from "../components/IWB"
 import { addNegativeGrabSystem, addPositiveGrabSystem, removeNegativeGrabSystem, removePositiveGrabSystem, updateGrabModifier } from "./GrabChangeSystems"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
+import { localVehicleEntities } from "../components/Vehicle"
 
 
 export let added = false
@@ -116,7 +117,16 @@ export function InputListenSystem(dt:number){
                 if (result) {
                     console.log('rsult is', result)
                     if(result.hit && result.hit.entityId){
-                        let aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+                        let aid:any
+                        
+                        //check vehicle
+                        let vehicle = localVehicleEntities.get(result.hit.entityId as Entity)
+                        if(vehicle){
+                            aid = getAssetIdByEntity(localPlayer.activeScene, vehicle)
+                        }else{
+                            aid = getAssetIdByEntity(localPlayer.activeScene, result.hit.entityId as Entity)
+                        }
+                        
                         if(aid){
                             editItem(aid, EDIT_MODES.EDIT)
                         }

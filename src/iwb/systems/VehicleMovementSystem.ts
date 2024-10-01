@@ -8,7 +8,6 @@ export function VehicleMovementSystem(dt:number){
 	if(connected){
 		colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
 			scene[COMPONENT_TYPES.VEHICLE_COMPONENT].forEach((vehicle:any, aid:string)=>{
-				if(vehicle.active){
 				// Increase Tween TimeSince
 				vehicle.timeSinceLastTweenPos += (dt * 1000)
 				vehicle.timeSinceLastTweenRot += (dt * 1000) 
@@ -34,7 +33,6 @@ export function VehicleMovementSystem(dt:number){
 					// vehicle.tweenToHeading()
 					tweenToHeading(vehicle)
 				}
-			}
 			})
 		})
 	}

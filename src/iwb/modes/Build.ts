@@ -58,6 +58,7 @@ import { releaseQuestAction } from "../ui/Objects/Edit/ActionPanels/AddQuestActi
 import { resetActionAttachEntity } from "../ui/Objects/Edit/ActionPanels/AddAttachPlayerPanel"
 import { resetLeadboardInfo } from "../ui/Objects/Edit/EditLeaderboard"
 import { clearAssetPhysicsData } from "../ui/Objects/Edit/EditPhysics"
+import { clearEditVehicleData } from "../ui/Objects/Edit/EditVehicle"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -734,6 +735,7 @@ export function resetAdditionalAssetFeatures(){
     resetActionAttachEntity()
     resetLeadboardInfo()
     clearAssetPhysicsData()
+    clearEditVehicleData()
 }
 
 export function dropGrabbedItems(){
@@ -1445,6 +1447,15 @@ function addUseItemPointers(ent: Entity) {
 }
 
 export function addBuildModePointers(ent: Entity) {
+     //check vehicle pointers
+
+     let aid = getAssetIdByEntity(localPlayer.activeScene, ent)
+     if(localPlayer.activeScene[COMPONENT_TYPES.VEHICLE_COMPONENT].has(aid)){
+        console.log('need to add build mode pointer for vehicle', ent)
+        
+        let vehicleInfo = localPlayer.activeScene[COMPONENT_TYPES.VEHICLE_COMPONENT].get(aid)
+        ent = vehicleInfo.entityRot
+    }
     PointerEvents.deleteFrom(ent)
     PointerEvents.createOrReplace(ent, {
         pointerEvents: [

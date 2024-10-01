@@ -4,6 +4,7 @@ import { getEntitiesWithParent } from "@dcl-sdk/utils"
 import { getEntity } from "./IWB"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { playerMode } from "./Config"
+import { updateVehiclePointersPlayMode } from "./Vehicle"
 
 export function checkPointerComponent(scene:any, entityInfo:any, dontInit?:boolean){
     // let itemInfo = scene[COMPONENT_TYPES.POINTER_COMPONENT].get(entityInfo.aid)
@@ -31,7 +32,7 @@ export function checkPointerComponent(scene:any, entityInfo:any, dontInit?:boole
     // }
 }
 
-function updatePointer(pointerInfo:any, pointer:any){
+export function updatePointer(pointerInfo:any, pointer:any){
     if(playerMode === SCENE_MODES.PLAYMODE){
         PointerEvents.deleteFrom(pointerInfo.entity)
 
@@ -99,6 +100,9 @@ export function setPointersPlayMode(scene:any, entityInfo:any){
                 pointerEvents:pointers
             })
 
+        }else if(scene[COMPONENT_TYPES.VEHICLE_COMPONENT].has(entityInfo.aid)){
+            console.log("entity is vehicle, need to update sub entitu pointer")
+            updateVehiclePointersPlayMode(scene, entityInfo)
         }
     //     PointersLoadedComponent.getMutable(entityInfo.entity).init = true
     // } 
