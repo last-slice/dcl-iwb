@@ -44,7 +44,7 @@ export function getAssetName(sceneId:string, aid:string){
     return name.value
 }
 
-export function getAllAssetNames(sceneId:string, sort?:boolean){
+export function getAllAssetNames(sceneId:string, sort?:boolean, includeQuests?:boolean){
     let scene = colyseusRoom.state.scenes.get(sceneId)
     if(!scene){
         return []
@@ -56,6 +56,13 @@ export function getAllAssetNames(sceneId:string, sort?:boolean){
         let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
         names.push({name:name.value, aid:aid})
     });
+
+    if(includeQuests){
+        scene[COMPONENT_TYPES.QUEST_COMPONENT].forEach((actionComponent:any, aid:string) => {
+            let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
+            names.push({name:name.value, aid:aid})
+        });
+    }
 
     // scene[COMPONENT_TYPES.NAMES_COMPONENT].forEach((nameComponent:any, aid:string) => {
     //     names.push({name:nameComponent.value, aid:aid})

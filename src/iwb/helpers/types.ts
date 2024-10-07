@@ -79,6 +79,8 @@ export enum SERVER_MESSAGE_TYPES {
     WORLD_TRAVEL = 'world_travel',
     WORLD_ADD_BP = 'world_add_build_permissions',
     WORLD_DELETE_BP = 'world_delete_build_permissions',
+    WORLD_ADD_BAN = 'world_add_ban',
+    WORLD_DELETE_BAN = 'world_delete_ban',
     GET_MARKETPLACE = 'get_marketplace',
     START_GAME = 'start_game',
     END_GAME = 'end_game',
@@ -104,7 +106,10 @@ export enum SERVER_MESSAGE_TYPES {
     //QUESTING
     GET_QUEST_DEFINITIONS = 'get_quest_definitions',
     QUEST_EDIT = 'edit_quest',
-    QUEST_ACTION = 'quest_action'
+    QUEST_ACTION = 'quest_action',
+    QUEST_PLAYER_DATA = 'quest_player_data',
+    QUEST_STEP_DATA = 'quest_step_data'
+
 }
 
 export enum IWB_MESSAGE_TYPES {
@@ -429,7 +434,7 @@ export enum Actions {
     ENABLE_TRIGGER_AREA = 'trigger_area_enable',
     DISABLE_TRIGGER_AREA = 'trigger_area_disable',
     GIVE_REWARD = 'reward_give',
-    VERIFY_ACCESS = 'access_verify',
+    VERIFY_ACCESS = 'blockchain_verify',
     ADD_NUMBER = 'number_add',
     SET_NUMBER = 'number_set',
     SUBTRACT_NUMBER = 'number_subtract',
@@ -523,9 +528,11 @@ export enum Triggers {
     ON_WEAPON_SHOOT = 'on_weapon_shoot',
     ON_PHYSICS_ENABLED = 'on_physics_enabled',
     ON_PHYSICS_DISABLED = 'on_physics_disabled',
+    ON_QUEST_START = 'on_quest_start',
+    ON_QUEST_STEP = 'on_quest_step',
     ON_QUEST_COMPLETE = 'on_quest_complete',
     ON_VEHICLE_ACCELERATE = 'on_vehicle_accelerate',
-    ON_VEHICLE_DECELERATE = 'on_vehicle_decelerate'
+    ON_VEHICLE_DECELERATE = 'on_vehicle_decelerate'//
 }
 
 export enum Pointers {
@@ -716,20 +723,6 @@ export enum REWARD_TYPES {
     DCL_ITEM = 'dcl_item'
 }
 
-export enum ACCESS_TYPES {
-    NFT_OWNERSHP = 'nft_ownership'
-}
-
-export enum ACCESS_CATEGORIES {
-    HAS_OWNERSHIP = 'has_ownership',
-    HAS_ON = 'has_on'
-}
-
-export enum ACCESS_FILTERS {
-    HAS_ALL = 'has_all',
-    HAS_ANY = 'has_any'
-}
-
 export enum COUNTER_VALUE {
     CURRENT,
     PREVIOUS
@@ -787,6 +780,23 @@ export enum CATALOG_IDS {
     WHITE_ARROW = "cb3a9e83-4b2d-4b3b-b9c1-2b636a94b36c",
     BLANK_GRASS = 'assets/a20e1fbd-9d55-4536-8a06-db8173c1325e.glb',
     AUDIO_STREAM = "e6991f31-4b1e-4c17-82c2-2e484f53a124"
+}
+
+export enum ACCESS_TYPE {
+    NFT = 'nft',
+    // HASWEARABLES = 'has_wearables',
+    // WEARABLESON = 'has_wearables_on',
+    // ADDRESS = "address"
+}   
+
+export enum ACCESS_MATCH {
+    ANY,
+    ALL
+}
+
+export enum CHAIN_TYPE {
+    ETH,
+    POLYGON
 }
 
 export enum GAME_TYPES {

@@ -1,6 +1,6 @@
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import resources from '../../../helpers/resources'
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { visibleComponent } from '../EditAssetPanel'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../../helpers'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
@@ -10,6 +10,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { utils } from '../../../helpers/libraries'
 import { uiSizes } from '../../uiConfig'
 import { getAssetPhysicsData } from './EditPhysics'
+import { showNotification } from '../NotificationPanel'
 
 
 export let questEditView = "main"
@@ -26,7 +27,8 @@ let editQuest:any = {
 let tempStep:any = {
     id:"",
     description:"",
-    prerequisites:[]
+    prerequisites:[],
+    order:true
 }
 
 export function updateQuestLoading(value:boolean){
@@ -318,9 +320,13 @@ function Details(){
         }}
         onMouseDown={() => {
             setUIClicked(true)
-            editQuest.enabled = !editQuest.enabled
-            utils.timers.setTimeout(()=>{
-            }, 200)
+            if(editQuest.steps.length > 0){
+                editQuest.enabled = !editQuest.enabled
+                utils.timers.setTimeout(()=>{
+                }, 200)
+            }else{
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Create at least one(1) step for your quest before enabling.", animate:{enabled:true, return:true, time:3}})
+            }
             setUIClicked(false)
         }}
         onMouseUp={()=>{

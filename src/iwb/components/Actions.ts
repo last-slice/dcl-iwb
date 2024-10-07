@@ -1,5 +1,5 @@
 import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
-import { Actions, COLLIDER_LAYERS, COMPONENT_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
+import { ACCESS_TYPE, Actions, CHAIN_TYPE, COLLIDER_LAYERS, COMPONENT_TYPES, NFT_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { getCounterComponentByAssetId, getCounterValue, setCounter, updateCounter } from "./Counter"
@@ -7,19 +7,19 @@ import { getStateComponentByAssetId, setState } from "./States"
 import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers"
 import { changeRealm, movePlayerTo, openExternalUrl, openNftDialog, teleportTo, triggerEmote } from "~system/RestrictedActions"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
-import { utils } from "../helpers/libraries"
+import { eth, utils } from "../helpers/libraries"
 import { getEntity } from "./IWB"
 import { startInterval, startTimeout, stopInterval, stopTimeout } from "./Timer"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { UiTexts, uiDataUpdate } from "./UIText"
 import { UiImages, uiImageDataUpdate } from "./UIImage"
-import { localPlayer } from "./Player"
+import { localPlayer, localUserId } from "./Player"
 import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStartUI"
 import { attemptLoadLevel, disableLevelAssets, loadLevelAssets, startLevelCountdown } from "./Level"
 import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 import { island } from "./Config"
-import { getRandomIntInclusive } from "../helpers/functions"
+import { createBlockchainContract, getRandomIntInclusive } from "../helpers/functions"
 import { removedEntities, sceneAttachedParents } from "./Scene"
 import { showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
@@ -833,8 +833,80 @@ function handleGiveReward(scene:any, info:any, action:any){
     })
 }
 
-function handleVerifyAccess(scene:any, info:any, action:any){
-    // sendServerMessage(SERVER_MESSAGE_TYPES.VERIFY_ACCESS, {sceneId:"" + localPlayer.activeScene?.id, aid:action.aid, action:action.type})//
+async function handleVerifyAccess(scene:any, info:any, action:any){
+    console.log('handling verify access', action)
+    
+    let verified = false
+    let contract:any
+    let value:any
+
+    switch(action.label){
+        case ACCESS_TYPE.NFT:
+            try{
+                contract = await createBlockchainContract(action.value, action.message, Object.values(NFT_TYPES)[action.ttype])
+                if(action.variableText){
+                    console.log('checking 721 specific nft ownership')
+                    if(Object.values(NFT_TYPES)[action.ttype] == NFT_TYPES.ERC721){
+                        value = await contract.ownerOf(action.variableText)
+                        if(value.toLowerCase() == localUserId.toLowerCase()){
+                            verified = true 
+                        }
+                        else{
+                            verified = false
+                        }
+                    }
+                    else{
+                        value = await contract.balanceOf(localUserId, action.variableText)
+                        console.log('nft balance of is', value)
+                        if(value > 0){
+                            verified = true
+                        }
+                        else{
+                            verified = false
+                        }
+                    }
+
+                }
+                else{
+                    value = await contract.balanceOf(localUserId)
+                    console.log('nft balance of is', value)
+                    if(value > 0){
+                        verified = true
+                    }
+                    else{
+                        verified = false
+                    }
+                }
+            }
+            catch(e){
+                console.log('error validating nft ownership', e)
+            }
+            break;
+
+        // case ACCESS_TYPE.ADDRESS:
+        //     if(localPlayer.dclData.isGuest){
+        //         verified = false
+        //     }else{
+        //         if(action.actions.find(($:string)=> $ === localUserId)){
+        //             verified = true
+        //         }else{
+        //             verified = false
+        //         }
+        //     }
+        //     break;
+
+        // case ACCESS_TYPE.HASWEARABLES:
+        // case ACCESS_TYPE.WEARABLESON:
+        //     break;
+    }
+
+    if(verified){
+        console.log('access verified')
+        runGlobalTrigger(scene, Triggers.ON_ACCESS_VERIFIED, {entity:info.entity, pointer:0, input:0})
+    }else{
+        console.log('access denied')
+        runGlobalTrigger(scene, Triggers.ON_ACCESS_DENIED, {entity:info.entity, pointer:0, input:0})
+    }
 }
 
 function handleBatchAction(scene:any, info:any, action:any){
@@ -1607,7 +1679,7 @@ function handleEquipWeapon(scene:any, info:any, action:any){
 }
 
 function handleUnequipWeapon(scene:any, info:any, action:any){
-    console.log('handle unequip item for player')
+    console.log('handle unequip item for player')//
     localPlayer.hasWeaponEquipped = false
     unequipUserWeapon(scene)
 }
@@ -1625,12 +1697,12 @@ function handleEnablePhysics(scene:any, info:any, action:any){
 
 function handleQuestStart(scene:any, info:any, action:any){
     console.log('handling start quest', action)
-    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_START, quest:{id:action.questId}})
+    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_START, quest:{id:action.text}, sceneId:scene.id})
 }
 
 function handleQuestAction(scene:any, info:any, action:any){
     console.log('handling quest action', action)
-    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_ACTION, quest:{id:action.questId, stepId:action.actionId}})
+    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_ACTION, quest:{id:action.text, stepId:action.actionId}, sceneId:scene.id})
 }
 
 function handleVehicleEntry(scene:any, info:any, action:any){

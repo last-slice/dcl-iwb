@@ -13,7 +13,7 @@ import { removePlayModSystem, addPlayModeSystem } from "../systems/PlayModeSyste
 import { displayHover } from "../ui/Objects/ContextMenu"
 import { clearShowTexts } from "../ui/Objects/ShowText"
 import { updateIWBTable } from "../ui/Reuse/IWBTable"
-import { getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
+import { getWorldBans, getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { addPlayTriggerSystem, removePlayTriggerSystem } from "./Triggers"
 import { stopAllIntervals } from "./Timer"
 import { displayLiveControl, displayLivePanel } from "../ui/Objects/LiveShowPanel"
@@ -135,6 +135,7 @@ export function setWorlds(config: any) {
             builds: world.builds,
             updated: world.updated,
             bps:world.bps,
+            bans:world.bans,
             init: true,
             backedUp:world.backedUp
         })
@@ -263,11 +264,28 @@ export function removeLocalWorldPermissionsUser(user:string){
     let world = worlds.find($=> $.ens === realm)
     if(world){
         let userIndex = world.bps.findIndex(($:any) => $ === user)
-        console.log('user index is', userIndex)
         if(userIndex >= 0){
             world.bps.splice(userIndex, 1)
         }
         updateIWBTable(getWorldPermissions())
+    }
+}
+export function addLocalWorldBanUser(user:string){
+    let world = worlds.find($=> $.ens === realm)
+    if(world){
+        world.bans.push(user)
+        updateIWBTable(getWorldBans())
+    }
+}
+
+export function removeLocalWorldBanUser(user:string){
+    let world = worlds.find($=> $.ens === realm)
+    if(world){
+        let userIndex = world.bans.findIndex(($:any) => $ === user)
+        if(userIndex >= 0){
+            world.bans.splice(userIndex, 1)
+        }
+        updateIWBTable(getWorldBans())
     }
 }
 

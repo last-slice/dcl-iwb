@@ -43,6 +43,7 @@ import { AddCameraForcePanel } from './ActionPanels/AddForceCameraPanel'
 import { AddPlayerEquipWeaponPanel } from './ActionPanels/AddPlayerEquipWeaponPanel'
 import { AddQuestStartPanel, updateQuestsList } from './ActionPanels/AddQuestStart'
 import { quests } from '../../../components/Quests'
+import { AddVerifyAccessPanel, resetVerify } from './ActionPanels/AddVerifyPanel'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -566,6 +567,8 @@ function getActionDataPanel(){
          case Actions.QUEST_START.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddQuestStartPanel/>
 
+        case Actions.VERIFY_ACCESS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddVerifyAccessPanel/>
         }
 }
 
@@ -768,10 +771,10 @@ const ActionDefaults:any = {
     },
     [Actions.PLAYER_EQUIP_WEAPON]:{
         game:""
+    },
+    [Actions.VERIFY_ACCESS]:{
+        fn:()=>{
+            resetVerify()
+        }
     }
 }
-
-
-
-
-//

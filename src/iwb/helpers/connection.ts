@@ -1,6 +1,7 @@
 import {Client} from "colyseus.js";
 import resources from '../helpers/resources'
 import {log} from "./functions";
+import { banPlayer } from "../components/Player";
 
 export let client:Client
 
@@ -13,8 +14,12 @@ export async function connect(roomName: string, userData: any, token: string, wo
     client = new Client(resources.DEBUG ? resources.endpoints.wsTest : resources.endpoints.wsProd)
     try {
         return await client.joinOrCreate(roomName, options);
-    } catch (e) {
+    } catch (e:any) {
         log('error connecting colyseus', e)
+        if(e.code === 400){
+            console.log('you are banned!')
+            banPlayer()
+        }
         throw e;
     }
 }

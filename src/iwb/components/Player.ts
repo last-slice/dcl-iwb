@@ -13,7 +13,7 @@ import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySyst
 import { FlyModeSystem } from "../systems/FlyModeSystem";
 import { createInputListeners } from "../systems/InputSystem";
 import { SelectedItemSystem } from "../systems/SelectedItemSystem";
-import { changeRealm } from "~system/RestrictedActions";
+import { changeRealm, movePlayerTo } from "~system/RestrictedActions";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { displayMainView, updateMainView } from "../ui/Objects/IWBView";
 import { showTutorials, updateInfoView } from "../ui/Objects/IWBViews/InfoView";
@@ -29,6 +29,7 @@ import { addTestVehicle } from "./Vehicle";
 // import VLM from "vlm-dcl";//
 import CANNON, { Vec3 } from "cannon"
 import { cannonMaterials } from "./Physics";
+import { showBannedScreen } from "../ui/Objects/BannedScreen";
 
 export let localUserId: string
 export let localPlayer:any
@@ -413,4 +414,30 @@ export function handleGlobalPlayerAttachitem(player:any){
 
 export function handlePlayerDetachItem(info:any){
 
+}
+
+export function banPlayer(){
+    showBannedScreen()
+
+    let parent = engine.addEntity()
+    let left = engine.addEntity()
+    let right = engine.addEntity()
+    let front = engine.addEntity()
+    let back = engine.addEntity()
+    let floor = engine.addEntity()
+
+    Transform.create(parent, {position: Vector3.create(16 * -21, 150,0)})
+    Transform.create(left, {parent:parent, position: Vector3.create(-5,0,0),scale: Vector3.create(30,30,1), rotation:Quaternion.fromEulerDegrees(0,90,0)})
+    Transform.create(right, {parent:parent, position: Vector3.create(5,0,0),scale: Vector3.create(30,30,1), rotation:Quaternion.fromEulerDegrees(0,90,0)})
+    Transform.create(front, {parent:parent, position: Vector3.create(0,0,5), scale: Vector3.create(30,30,1)})
+    Transform.create(back, {parent:parent, position: Vector3.create(0,0,-5), scale: Vector3.create(30,30,1)})
+    Transform.create(floor, {parent:parent, position: Vector3.create(0,0,0), scale: Vector3.create(30,30,1), rotation:Quaternion.fromEulerDegrees(90,0,0)})
+
+    MeshCollider.setPlane(left)
+    MeshCollider.setPlane(front)
+    MeshCollider.setPlane(right)
+    MeshCollider.setPlane(back)
+    MeshCollider.setPlane(floor)
+
+    movePlayerTo({newRelativePosition:{x:16 * -21, y:200, z:0}})
 }

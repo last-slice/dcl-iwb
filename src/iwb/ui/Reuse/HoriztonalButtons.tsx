@@ -12,6 +12,7 @@ export function HoriztonalButtons(data:any){
                     justifyContent: 'center',
                     width: data.width ? data.width : '100%',
                     height: data.height ? data.height : '10%',
+                    margin: data.margin ? data.margin : undefined
                 }}
                 // uiBackground={{ color: Color4 .Teal() }}
             >

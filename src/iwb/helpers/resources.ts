@@ -1,7 +1,7 @@
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { SOUND_TYPES } from "./types"
 
-export let colorsLabels:string[] = [//
+export let colorsLabels:string[] = [
     "Black",
     "Blue",
     "Gray",
@@ -67,7 +67,7 @@ export let audiusMoodEndpoints:any = {
 }
 
 export default {
-    DEBUG: true,
+    DEBUG: false,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",

@@ -24,13 +24,13 @@ export async function updateQuests(){
     if(updated){
         return
     }
-    // updated = true//
+    // updated = true
     await updateQuestActions()
     updateActionData({actionId: selectedQuestActions.sort((a:any, b:any)=> a.description.localeCompare(b.description))[selectedQuestIndex].id})
 
     if(selectedQuestActions.length > 0){
         displayQuestActions = true
-        updateActionData({actionId:selectedQuestActions.sort((a:any, b:any)=> a.description.localeCompare(b.description))[selectedQuestIndex].id, questId: {...quests[selectedQuestIndex]}.id})
+        updateActionData({actionId:selectedQuestActions.sort((a:any, b:any)=> a.description.localeCompare(b.description))[selectedQuestIndex].id, text: {...quests[selectedQuestIndex]}.aid})
     }
 }
 

@@ -175,9 +175,11 @@ function TableImage(info:any){
         onMouseDown={()=>{
             setUIClicked(true)
             if(rowConfig.onClick){
+                console.log("clicked table row image")
                 console.log(info.count)
                 rowConfig.onClick(rowConfig.onClickData && rowConfig.onClickData === "index" ? ((visibleIndex - 1)* 6 + info.count) : data)
             }
+            setUIClicked(false)
         }}
         onMouseUp={()=>{
             setUIClicked(false)

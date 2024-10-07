@@ -53,6 +53,8 @@ type xx = {
     [index: string]: string;
 }*/
 
+import { banPlayer } from "../iwb/components/Player"
+
 //looked good but does not work :(
 //https://www.npmjs.com/package/xmlhttprequest-ts
 //imports node types that conflict with dcl console???
@@ -133,11 +135,15 @@ export class XMLHttpRequest {
         , this.responseHeadersRaw)
       if (this.onload) this.onload()
     }).catch((reason: any) => {
+      console.log('catching reason', reason)
       //colysesus wanted this 'err.timeout = err.type == 'timeout';'
-      //20 == abort, 23 == timeout
+      //20 == abort, 23 == timeout//
       if (reason.code && (reason.code == 20 || reason.code == 23)) reason.type = 'timeout'
 
-      if (this.onerror) this.onerror(reason)
+      if (this.onerror){
+        this.onerror(reason)
+        console.log("on error reason", reason)
+      }
     })
   }
 

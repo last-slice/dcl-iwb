@@ -3,11 +3,12 @@ import { createQuestsClient, QuestInstance } from '@dcl/quests-client'
 import { createQuestHUD } from '@dcl/quests-client/dist/hud'
 import { localPlayer } from './Player'
 import { showNotification } from '../ui/Objects/NotificationPanel'
-import { NOTIFICATION_TYPES, PlayerQuest, PrerequisiteType, Quest, QUEST_PREREQUISITES, StepCompletionPrerequisite, Triggers } from '../helpers/types'
+import { COMPONENT_TYPES, NOTIFICATION_TYPES, PlayerQuest, PrerequisiteType, Quest, QUEST_PREREQUISITES, QuestStep, SERVER_MESSAGE_TYPES, StepCompletionPrerequisite, Triggers } from '../helpers/types'
 import { Player } from '~system/Players'
 import { updateQuestPanel } from '../ui/Objects/QuestPanel'
-import { colyseusRoom } from './Colyseus'
-import { runGlobalTrigger } from './Triggers'
+import { colyseusRoom, sendServerMessage } from './Colyseus'
+import { runGlobalTrigger, runSingleTrigger } from './Triggers'
+import { getEntity } from './IWB'
 
 // const serviceUrl = 'wss://quests-rpc.decentraland.zone'
 const serviceUrl = 'wss://quests-rpc.decentraland.org'
@@ -17,13 +18,59 @@ export let questClients:Map<string, any> = new Map()
 
 // const questHud = createQuestHUD({autoRender:true})
 
-export function setServerQuests(serverQuests:any[]){
+
+export function checkQuestComponent(scene:any, entityInfo:any, data?:any){
+  let itemInfo = scene[COMPONENT_TYPES.QUEST_COMPONENT].get(entityInfo.aid)
+  if(itemInfo){
+    console.log('quest component is', itemInfo)
+  }
+}
+
+export async function questListener(scene:any){
+  scene[COMPONENT_TYPES.QUEST_COMPONENT].onAdd(async (quest:any, aid:any)=>{
+      let info = getEntity(scene, aid)
+      if(!info){
+          return
+      }
+
+     await setServerQuests(scene.id, [{quest:quest, aid:aid}])
+     console.log('getting qeusts for player')
+     sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_PLAYER_DATA, {sceneId:scene.id, aid:aid})
+  })
+}
+
+export function setServerQuests(sceneId:string, serverQuests:any[]){
     console.log('server quests are ', serverQuests)
-    serverQuests.forEach((quest:any)=>{
+    serverQuests.forEach((info:any)=>{
+      let quest:any = {...info.quest}
+      quest.sceneId = sceneId
       quest.started = false
       quest.playerData = {}
+      quest.steps = []
+      quest.prerequisites = []
+      quest.aid = info.aid
       quests.push(quest)
+      sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_STEP_DATA, {sceneId:sceneId, aid:info.aid})
     })
+}
+
+export function setQuestSteps(aid:string, steps:QuestStep[]){
+  let quest = quests.find($=> $.aid === aid)
+  if(!quest){
+    return
+  }
+  quest.steps = steps
+  console.log('quest is updated with steps', quest)
+}
+
+export function setQuestPlayerData(aid:string, data:any){
+  console.log('local quests are', quests)
+  let quest = quests.find($=> $.aid === aid)
+  if(!quest){
+    console.log('did not find local quest to set player data')
+    return
+  }
+  quest.playerData = data
 }
 
 export function removeQuest(id:string){
@@ -57,16 +104,30 @@ export function startQuest(quest:any){
   if(!localQuest){
     return
   }
+  let scene = colyseusRoom.state.scenes.get(localQuest.sceneId)
+  if(!scene){
+    console.log('no scene for that quest to start from')
+    return
+  }
+  
+  let entityInfo = getEntity(scene, quest.id)
+  if(!entityInfo){
+    console.log('no entity for that quest')
+    return
+  }
+
   localQuest.started = true
   localQuest.playerData = quest
+
   showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"You started the " + localQuest.name + " Quest!", animate:{enabled:true, return:true, time:3}})
+  runSingleTrigger(entityInfo, Triggers.ON_QUEST_START, {input:0, pointer:0, quest:localQuest.aid})
 }
 
 export function updateQuestsDefinitions(updates:any[]){
   updates.forEach((questUpdate:any)=>{
     let quest = quests.find($ => $.id === questUpdate.id)
     if(quest){
-      quest.definition = questUpdate.definition
+      quest.definition = questUpdate.definition//
     }
   })
 }
@@ -187,9 +248,9 @@ export function prerequisitesMet(player: Player, prerequisites: QUEST_PREREQUISI
   return true;  // All prerequisites are met
 }
 
-export function handlePlayerQuestAction(quest:Quest){
-    console.log('handle player quest action', quest)
-    let localQuest = quests.find((q => q.id === quest.id))
+export function handlePlayerQuestAction(questId:string, quest:Quest){
+    console.log('handle player quest action', quest)//
+    let localQuest = quests.find((q => q.id === questId))
     if(!localQuest){
       return
     }
@@ -198,18 +259,23 @@ export function handlePlayerQuestAction(quest:Quest){
     updateQuestPanel(localQuest)
 }
 
-export function handlePlayerCompleteQuest(quest:Quest){
-  let localQuest = quests.find((q => q.id === quest.id))
+export function handlePlayerCompleteQuest(questId:string){
+  let localQuest = quests.find((q => q.aid === questId))
     if(!localQuest){
       return
     }
 
     console.log('local quest is', localQuest)
 
-  let scene = colyseusRoom.state.scenes.get(localQuest.scene)
+  let scene = colyseusRoom.state.scenes.get(localQuest.sceneId)
   if(!scene){
     console.log('no scene found')
     return
   }
-  runGlobalTrigger(scene, Triggers.ON_QUEST_COMPLETE, {input:0, pointer:0, quest:localQuest.id})
+  let entityInfo = getEntity(scene, questId)
+  if(!entityInfo){
+    console.log('no quest entity to run trigger')
+    return
+  }
+  runSingleTrigger(entityInfo, Triggers.ON_QUEST_COMPLETE, {input:0, pointer:0, quest:localQuest.aid})
 }

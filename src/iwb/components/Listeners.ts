@@ -4,7 +4,7 @@ import { Actions, COMPONENT_TYPES, EDIT_MODES, IWBScene, NOTIFICATION_TYPES, PLA
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { items, marketplaceItems, refreshMarketplaceItems, refreshSortedItems, setCatalog, setNewItems, setRealmAssets, updateItem, updateStyles } from "./Catalog";
 import { utils } from "../helpers/libraries";
-import { addLocalWorldPermissionsUser, addPlayerToHideArray, addTutorial, excludeHidingUsers, isGCScene, island, iwbConfig, playerMode, realm, removeLocalWorldPermissionsUser, removePlayerFromHideArray, removeTutorial, setConfig, setHidPlayersArea, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
+import { addLocalWorldBanUser, addLocalWorldPermissionsUser, addPlayerToHideArray, addTutorial, excludeHidingUsers, isGCScene, island, iwbConfig, playerMode, realm, removeLocalWorldBanUser, removeLocalWorldPermissionsUser, removePlayerFromHideArray, removeTutorial, setConfig, setHidPlayersArea, setPlayerMode, setWorlds, updateTutorialCID, worlds } from "./Config";
 import { playSound } from "@dcl-sdk/utils";
 import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUserPlaceditem, otherUserRemovedSeletedItem, selectedItem } from "../modes/Build";
 import { addScene, checkAllScenesLoaded, checkSceneCount, enablePrivateModeForScene, isPrivateScene, loadScene, loadSceneAsset, pendingSceneLoad, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
@@ -25,7 +25,7 @@ import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
 import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
 import { playAudiusTrack } from "./Sounds";
-import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setServerConditions, setServerQuests, startQuest, updateQuestsDefinitions } from "./Quests";
+import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setQuestPlayerData, setQuestSteps, setServerConditions, setServerQuests, startQuest, updateQuestsDefinitions } from "./Quests";
 import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 
@@ -123,8 +123,8 @@ export async function createColyseusListeners(room:Room){
 
         // setHidPlayersArea()//
 
-        await setServerConditions(info.prerequisites)//
-        await setServerQuests(info.quests)
+        // await setServerConditions(info.prerequisites)//
+        // await setServerQuests(info.quests)
         await setRealmAssets(info.realmAssets)
 
         await refreshSortedItems()
@@ -421,6 +421,29 @@ export async function createColyseusListeners(room:Room){
         removeLocalWorldPermissionsUser(info.user)
     })
 
+    room.onMessage(SERVER_MESSAGE_TYPES.WORLD_ADD_BAN, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.WORLD_ADD_BAN + ' received', info)
+        if(info.user === localUserId){
+            localPlayer.worldPermissions = false
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You were banned from this world!", animate:{enabled:true, return:true, time:5}})
+        }
+        else{
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You banned user " + info.user + " on this world", animate:{enabled:true, return:true, time:5}})
+        }
+        addLocalWorldBanUser(info.user)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.WORLD_DELETE_BAN, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.WORLD_DELETE_BAN + ' received', info)
+        if(info.user === localUserId){
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You were unbanned from this world!", animate:{enabled:true, return:true, time:5}})
+        }
+        else{
+            showNotification({type: NOTIFICATION_TYPES.MESSAGE, message: "You unbanned user " + info.user + " for this world", animate:{enabled:true, return:true, time:5}})
+        }
+        removeLocalWorldBanUser(info.user)
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_ADD_BP, (info:any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_ADD_BP + ' received', info)
         if(info.user === localUserId){
@@ -569,7 +592,7 @@ export async function createColyseusListeners(room:Room){
 
     room.onMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, (info:any) => {
         log(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS + ' received', info)
-        // updateQuestsDefinitions(info)
+        // updateQuestsDefinitions(info)//
         updateEditQuestInfo(info)
     })
 
@@ -593,12 +616,32 @@ export async function createColyseusListeners(room:Room){
         updateLeaderboardInfo(leaderboardInfo, info.data)
     })
 
+    room.onMessage(SERVER_MESSAGE_TYPES.QUEST_STEP_DATA, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.QUEST_STEP_DATA + ' received', info)
+        if(!info || !info.aid || !info.steps){
+            return
+        }
+        setQuestSteps(info.aid, info.steps)
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.QUEST_PLAYER_DATA, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.QUEST_PLAYER_DATA + ' received', info)
+        if(!info || !info.aid || !info.playerData){
+            return
+        }
+        setQuestPlayerData(info.aid, info.playerData)
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, (info:any) => {
         log(SERVER_MESSAGE_TYPES.QUEST_ACTION + ' received', info)
+        if(!info || !info.action){
+            return
+        }
+
         switch(info.action){
             case 'COMPLETE':
-                handlePlayerQuestAction(info.quest)
-                handlePlayerCompleteQuest(info.quest)
+                handlePlayerQuestAction(info.questId, info.quest)
+                handlePlayerCompleteQuest(info.questId)
                 break;
             case Actions.QUEST_START:
                 console.log('starting local quest for player')
@@ -606,17 +649,17 @@ export async function createColyseusListeners(room:Room){
             break;
 
             case Actions.QUEST_ACTION:
-                handlePlayerQuestAction(info.quest)
+                handlePlayerQuestAction(info.questId, info.quest)
                 break;
         }
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_CREATE_QUEST, (info:any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_CREATE_QUEST + ' received', info)
-        if(!info){
+        if(!info || !info.sceneId){
             return
         }
-        setServerQuests([info.quest])
+        setServerQuests(info.sceneId, [info.quest])
 
         if(info.creator === localUserId){
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your quest " + info.quest.name + " has been created!!", animate:{enabled:true, return:true, time:5}})

@@ -42,6 +42,7 @@ import { mutiplayerListener } from "./Multiplayer"
 import { leaderboardListener } from "./Leaderboard"
 import { vehicleListener } from "./Vehicle"
 import { physicsListener } from "./Physics"
+import { questListener } from "./Quests"
 
 export let realmActions: any[] = []
 
@@ -143,6 +144,7 @@ async function loadSceneComponents(scene:any){
     await leaderboardListener(scene)
     await vehicleListener(scene)
     await physicsListener(scene)
+    await questListener(scene)
     
     scene.loaded = true
     console.log('scene loaded', scene.id)

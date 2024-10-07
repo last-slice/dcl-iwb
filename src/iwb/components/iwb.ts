@@ -27,6 +27,7 @@ import { localUserId } from "./Player"
 import { disableGameAsset } from "./Game"
 import { checkAvatarShape } from "./AvatarShape"
 import { checkPathComponent } from "./Path"
+import { checkQuestComponent } from "./Quests"
 
 export function getEntity(scene:any, aid:string){
   return scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
@@ -106,6 +107,7 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
   await checkBillboardComponent(scene, iwbInfo)
   await checkAvatarShape(scene, iwbInfo)
   await checkPathComponent(scene, iwbInfo)
+  await checkQuestComponent(scene, iwbInfo)
 
   await disableGameAsset(scene, iwbInfo)
 

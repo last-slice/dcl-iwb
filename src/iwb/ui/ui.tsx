@@ -35,6 +35,7 @@ import { createMainLoadingScreen } from './Objects/LoadingScreen'
 import { createQuestPanel } from './Objects/QuestPanel'
 import { createUITests } from './tests'
 import { createQuestCreatorPanel } from './Objects/QuestCreatorPanel'
+import { createBannedScreen } from './Objects/BannedScreen'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -47,6 +48,7 @@ export function setUIClicked(value:boolean){
 }
 
 const uiComponent:any = () => [
+  createBannedScreen(),
   createCustomUIImageComponent(),
   createCustomUITextComponent(),
   createIWBMap(),

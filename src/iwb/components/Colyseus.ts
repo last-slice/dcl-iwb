@@ -9,6 +9,7 @@ import { engine } from "@dcl/sdk/ecs";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { isGCScene, island, localConfig } from "./Config";
 import { addLoadingScreen } from "../systems/LoadingSystem";
+import { banPlayer } from "./Player";
 
 export let data:any
 export let colyseusRoom:Room
@@ -28,6 +29,11 @@ export async function colyseusConnect(data:any, token:string, world?:any, island
             log('left room with code', code)
             connected = false
             displayPendingPanel(true, "disconnected")
+
+            if(code === 4010){
+                console.log('user was banned')
+                banPlayer()
+            }
         })
 
         engine.addSystem(createTimerSystem())
@@ -35,6 +41,7 @@ export async function colyseusConnect(data:any, token:string, world?:any, island
         
     }).catch((err) => {
         console.error('colyseus connection error', err)
+        console.log('wtf')
     });
 }
 
@@ -69,8 +76,8 @@ export async function joinWorld(world?: any, retries?:number) {
         }
         await colyseusConnect(playerData, "", world, island)
     }
-    catch(e){
-        console.log('error connecting to colyseus')
+    catch(e:any){
+        console.log('error connecting to colyseus', e)
     }
 }
 

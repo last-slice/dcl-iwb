@@ -2,21 +2,38 @@ import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import { sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
-import resources from '../../../../helpers/resources'
-import { quests } from '../../../../components/Quests'
+import resources, { colors } from '../../../../helpers/resources'
+import { colyseusRoom } from '../../../../components/Colyseus'
+import { selectedItem } from '../../../../modes/Build'
+import { COMPONENT_TYPES } from '../../../../helpers/types'
 
 let selectedQuestIndex:number = 0
 let updated = false
+let quests:any[] = []
 
 export function releaseQuestAction(){
     updated = false
     selectedQuestIndex = 0
+    quests.length = 0
 }
 
 export async function updateQuestsList(){
-    console.log('quest id is', selectedQuestIndex, quests[selectedQuestIndex].id)
-    updateActionData({questId:quests[selectedQuestIndex].id})
-    // newActionData.questId = quests[selectedQuestIndex].id
+    
+    // console.log('quest id is', selectedQuestIndex, quests[selectedQuestIndex].id)
+    // updateActionData({questId:quests[selectedQuestIndex].id})
+    // // newActionData.questId = quests[selectedQuestIndex].id
+
+    quests.length = 0
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return
+    }
+
+    scene[COMPONENT_TYPES.QUEST_COMPONENT].forEach((questComponent:any, aid:string)=>{
+        quests.push({aid:aid, name:questComponent.name})
+    })
+
+    updateActionData({text:quests[selectedQuestIndex].aid})
 }
 
 export function AddQuestStartPanel(){
@@ -56,6 +73,7 @@ export function AddQuestStartPanel(){
         }}
     >
         <Dropdown
+        // options={[...quests.map(($:any)=> $.name).sort((a:any, b:any)=> a.localeCompare(b))]}
         options={[...quests.map(($:any)=> $.name).sort((a:any, b:any)=> a.localeCompare(b))]}
         selectedIndex={0}
         onChange={(index:number)=>{

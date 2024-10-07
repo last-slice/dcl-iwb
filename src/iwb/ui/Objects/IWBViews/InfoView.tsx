@@ -18,9 +18,10 @@ import { displayPendingPanel } from '../PendingInfoPanel'
 import {  formatDollarAmount, formatSize, paginateArray } from '../../../helpers/functions'
 
 export let infoView = "Version"
+export let accessView = "Builders"
 
 let feedback = ""
-let worldAccessUserId:string = ""
+let worldAccessUserId:string = ""//
 
 export function updateInfoView(view:string){
     let button = horiztonalButtons.find($=> $.label === infoView)
@@ -39,6 +40,18 @@ export function updateInfoView(view:string){
     }
 }
 
+export function updateAccessView(view:string){
+    let button = horizontalAccessButtons.find($=> $.label === accessView)
+    if(button){
+        button.pressed = false
+    }
+
+    accessView = view
+    button = horizontalAccessButtons.find($=> $.label === view)
+    if(button){
+        button.pressed = true
+    }
+}
 export let horiztonalButtons:any[] = [
     {label:"Version", pressed:true, func:()=>{
         updateInfoView("Version")
@@ -78,6 +91,7 @@ export let horiztonalButtons:any[] = [
     },
     {label:"Access", pressed:false, func:()=>{
         updateInfoView("Access")
+        updateAccessView("Builders")
         playSound(SOUND_TYPES.SELECT_3)
         setTableConfig(worldAccessTableConfig)
         updateIWBTable(getWorldPermissions())
@@ -92,6 +106,39 @@ export let horiztonalButtons:any[] = [
         }
     },
 ]
+
+export let horizontalAccessButtons:any[] = [
+    {label:"Builders", pressed:true, func:()=>{
+        updateAccessView("Builders")
+        setTableConfig(worldAccessTableConfig)
+        updateIWBTable(getWorldPermissions())
+        // playSound(SOUND_TYPES.SELECT_3)
+        // showYourBuilds()
+        // updateExploreView("Current World")
+        },
+        height:4,
+        width:4,
+        fontBigScreen:20,
+        fontSmallScreen:15
+    },
+    {label:"Bans", pressed:false, func:()=>{
+        updateAccessView("Bans")
+
+        setTableConfig(worldAccessBanTableConfig)
+        updateIWBTable(getWorldBans())
+
+        // playSound(SOUND_TYPES.SELECT_3)
+        // showYourBuilds()
+        },
+        height:4,
+        width:4,
+        fontBigScreen:20,
+        fontSmallScreen:15
+    },
+]
+
+
+
 let buttons:any[] = [
     {label:"Tutorials", pressed:false, func:()=>{
         infoView = 'Tutorials'
@@ -926,14 +973,26 @@ function AccessView(){
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             width: '100%',
             height: '100%',
             display:infoView === "Access" ? 'flex' : 'none'
         }}
         >
 
-        <IWBTable />
+<HoriztonalButtons buttons={horizontalAccessButtons} margin={{top:'2%'}} slug={"access-info-view"} />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '90%',
+                display:accessView === "Builders" ? 'flex' : 'none'
+            }}
+        >
+            <IWBTable />
 
             <UiEntity
             uiTransform={{
@@ -943,30 +1002,58 @@ function AccessView(){
                 width: '100%',
                 height: '10%',
             }}
-        >
+            >
                     <UiEntity
-            uiTransform={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '50%',
-                height: '100%',
-            }}
-        >
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
 
-        <Input
-            onChange={(value) => {
-                worldAccessUserId = value.trim()
-            }}
-            fontSize={sizeFont(20,15)}
-            placeholder={'enter wallet address'}
-            placeholderColor={Color4.White()}
-            color={Color4.White()}
-            uiTransform={{
-                width: '100%',
-                height: '100',
-            }}
-            ></Input>
+                <Input
+                onChange={(value) => {
+                    worldAccessUserId = value.trim()
+                }}
+                fontSize={sizeFont(20,15)}
+                placeholder={'enter wallet address'}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100',
+                }}
+                ></Input>
+                </UiEntity>
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50%',
+                    height: '100%',
+                }}
+                >
+
+                {generateButtons({slug:"add-world-access", buttons:[
+                    {label:"Add Builder", pressed:false, width:12, height:8, func:()=>{
+                        if(worldAccessUserId !== ""){
+                            sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_ADD_BP, 
+                                {
+                                    user:worldAccessUserId,
+                                }
+                            )
+                        }
+                        },
+                    }
+                ]})}
+                </UiEntity>
+
+            </UiEntity>
+
             </UiEntity>
 
             <UiEntity
@@ -974,25 +1061,72 @@ function AccessView(){
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '50%',
-                height: '100%',
+                width: '100%',
+                height: '90%',
+                display:accessView === "Bans" ? 'flex' : 'none'
             }}
         >
+            <IWBTable />
 
-            {generateButtons({slug:"add-world-access", buttons:[
-                {label:"Add Builder", pressed:false, width:12, height:8, func:()=>{
-                    if(worldAccessUserId !== ""){
-                        sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_ADD_BP, 
-                            {
-                                user:worldAccessUserId,
-                            }
-                        )
+<UiEntity
+uiTransform={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '10%',
+}}
+>
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
+        height: '100%',
+    }}
+    >
+
+    <Input
+    onChange={(value) => {
+        worldAccessUserId = value.trim()
+    }}
+    fontSize={sizeFont(20,15)}
+    placeholder={'enter wallet address'}
+    placeholderColor={Color4.White()}
+    color={Color4.White()}
+    uiTransform={{
+        width: '100%',
+        height: '100',
+    }}
+    ></Input>
+    </UiEntity>
+
+    <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
+        height: '100%',
+    }}
+    >
+
+    {generateButtons({lug:"add-world-ban", buttons:[
+        {label:"Ban User", pressed:false, width:12, height:8, func:()=>{
+            if(worldAccessUserId !== ""){
+                sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_ADD_BAN, 
+                    {
+                        user:worldAccessUserId,
                     }
-                    },
-                }
-            ]})}
-            </UiEntity>
+                )
+            }
+            },
+        }
+    ]})}
+    </UiEntity>
 
+</UiEntity>
             </UiEntity>
 
         </UiEntity>
@@ -1231,8 +1365,75 @@ export let worldAssetsTableConfig:any = {
     ]
 }
 
+export let worldAccessBanTableConfig:any = {
+    height:'10%', width:'100%', rowCount:6,
+    headerData:[
+        {name:"Name", go:"Del"},
+    ],
+    // tableSortFn:(a:any, b:any)=>{
+    //     // Check if either of the names is "Realm Lobby"
+    //     if (a.name === "Realm Lobby" && b.name !== "Realm Lobby") {
+    //       return -1; // "Realm Lobby" comes first
+    //     } else if (a.name !== "Realm Lobby" && b.name === "Realm Lobby") {
+    //       return 1; // "Realm Lobby" comes first
+    //     } else {
+    //       // Both names are not "Realm Lobby", sort by parcel size (high to low)
+    //     //   return b.pcnt - a.pcnt;
+    //     return a.name.localeCompare(b.name)
+    //     }
+    // },
+
+    rowConfig:[
+    { 
+        key:"name",
+        overrideKey:true,
+        width:'90%',
+        height:'100%',
+        margin:{left:"1%"},
+        value:"",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-left',
+        color:Color4.White(),
+    },
+    {
+        key:"go",
+        width:'10%',
+        height:'80%',
+        margin:{left:"1%"},
+        value:"Go",
+        fontSize:sizeFont(25,15),
+        textAlign: 'middle-center',
+        color:Color4.White(),
+        image:{
+            size:3,
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas1.png',
+                uvs:()=>{getImageAtlasMapping(uiSizes.trashButtonTrans)}
+            },
+            uvs: {
+                atlasHeight: 1024,
+                atlasWidth: 1024,
+                sourceTop: 386,
+                sourceLeft: 896,
+                sourceWidth: 128,
+                sourceHeight: 128
+            }
+        },
+        onClick:(user:any)=>{
+            playSound(SOUND_TYPES.SELECT_3)
+            sendServerMessage(SERVER_MESSAGE_TYPES.WORLD_DELETE_BAN, {user:user})
+        }
+    },
+    ]
+}
+
 export function getWorldPermissions(){
     return worlds.find($=> $.ens === realm) !== undefined ? [...worlds.find($=> $.ens === realm).bps] : []
+}
+
+export function getWorldBans(){
+    return worlds.find($=> $.ens === realm) !== undefined ? [...worlds.find($=> $.ens === realm).bans] : []
 }
 
 function TutorialsList(){

@@ -9,6 +9,7 @@ import { teleportToScene } from '../../modes/Play'
 import { colyseusRoom } from '../../components/Colyseus'
 import { Color4 } from '@dcl/sdk/math'
 import { Quest } from '../../helpers/types'
+import { realm } from '../../components/Config'
 
 export let showQuestView = false
 let questView = "main"
@@ -121,7 +122,7 @@ function QuestExpandedView(){
                 height: '10%',
                 margin:{top:'2%'}
             }}
-            uiText={{textWrap:"nowrap", value:"IWB Quests", textAlign:'middle-center', fontSize:sizeFont(25,20)}}
+            uiText={{textWrap:"nowrap", value:"" + realm + " Quests", textAlign:'middle-center', fontSize:sizeFont(25,20)}}
             />
 
 
@@ -170,7 +171,7 @@ function getAvailableSteps(){
     availableSteps.length = 0
     console.log('quest info is', questInfo)
 
-    if(questInfo.started){
+    if(questInfo.playerData.started){
         questInfo.steps.forEach((step:any)=>{
             if(questInfo.playerData.completedSteps.includes(step.id)){
                 availableSteps.push({description:step.description, completed:true})
@@ -247,7 +248,7 @@ function QuestRow(data:any){
         width: '50%',
         height: '100%',
     }}
-    uiText={{textWrap:"nowrap", value:"Status: " + (data.quest.started ? data.quest.playerData.status : "Not Started"), textAlign:'middle-left', fontSize:sizeFont(20,12)}}
+    uiText={{textWrap:"nowrap", value:"Status: " + (data.quest.playerData.started ? data.quest.playerData.status : "Not Started"), textAlign:'middle-left', fontSize:sizeFont(20,12)}}
     />
 
 
@@ -354,7 +355,7 @@ function QuestRow(data:any){
     }}
     onMouseDown={() => {
         setUIClicked(true)
-        teleportToScene({id:data.quest.scene})
+        teleportToScene({id:data.quest.sceneId})
         displayQuestPanel(false)
         setUIClicked(false)
     }}
@@ -507,62 +508,18 @@ uiText={{value:"" + questInfo.description, textAlign:'top-left', fontSize:sizeFo
 
 <UiEntity
 uiTransform={{
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '7%',
-}}
-// uiBackground={{color:Color4.Green()}}//
->
-<UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '50%',
-    height: '100%',
-}}
->
-<UiEntity
-uiTransform={{
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
     width: '100%',
     height: '10%',
+    display: viewType === "info" && questInfo && questInfo.playerData && questInfo.playerData.started ? "flex" : "none"
 }}
-uiText={{textWrap:"nowrap", value:"Start Location: ", textAlign:'middle-left', fontSize:sizeFont(20, 15)}}
-/>
-
-</UiEntity>
-
-<UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '50%',
-    height: '100%',
-}}
->
-<UiEntity
-uiTransform={{
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: '100%',
-    height: '10%',
-    display: questInfo.started ? "flex" : "none"
-}}
-uiText={{textWrap:"nowrap", value:"Progress: " + (questInfo.started && questInfo.playerData ? Math.round(questInfo.playerData.completedSteps.length / questInfo.steps.length) : 0) + "%", textAlign:'middle-left', fontSize:sizeFont(20, 15)}}
+uiText={{textWrap:"nowrap", value:"Progress: " + (viewType === "info" && questInfo && questInfo.playerData && questInfo.playerData.started ? ("" + questInfo.playerData.completedSteps.length + "/" + questInfo.steps.length) : 0), textAlign:'middle-left', fontSize:sizeFont(20, 15)}}
 />  
-</UiEntity>
-
-</UiEntity>
 
 
-<UiEntity
+{/* <UiEntity
 uiTransform={{
     flexDirection: 'row',
     alignSelf:'flex-start',
@@ -651,21 +608,22 @@ uiTransform={{
       />
 </UiEntity>
 
-</UiEntity>
+</UiEntity> */}
 
 {
     viewType === "info" &&
-    questInfo.started && 
+    questInfo.playerData && 
+    questInfo.playerData.started && 
     selected === "tasks" &&
     generateSteps()
 }
 
-{
+{/* {
     viewType === "info" &&
     questInfo.started && 
     selected === "rewards" &&
     generateRewards()
-}
+} */}
 
     <UiEntity
 uiTransform={{
@@ -674,7 +632,7 @@ uiTransform={{
     justifyContent: 'flex-start',
     width: '100%',
     height: '10%',
-    display: !questInfo.started && selected === "tasks" ? "flex" : "none"
+    display: questInfo.playerData && !questInfo.playerData.started && selected === "tasks" ? "flex" : "none"
 }}
 uiText={{value:"Tasks will be visible after starting the quest.", textAlign:'middle-left', fontSize:sizeFont(20, 15)}}
 />

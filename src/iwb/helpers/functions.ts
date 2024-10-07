@@ -7,6 +7,9 @@ import { openExternalUrl } from "~system/RestrictedActions";
 import resources from "./resources";
 import { localPlayer, localUserId } from "../components/Player";
 import CANNON, { Vec3 } from "cannon"
+import { CHAIN_TYPE, NFT_TYPES } from "./types";
+import { createEthereumProvider } from '@dcl/sdk/ethereum-provider'
+import { abi1155, abi721 } from "../helpers/abis"
 
 
 export function paginateArray(array:any[], page:number, itemsPerPage:number){
@@ -244,4 +247,22 @@ export function getForwardDirectionFromRotation(yRot: number): CANNON.Vec3 {
     const forward = new CANNON.Vec3(Math.sin(yRot), 0, Math.cos(yRot));
     forward.normalize();
 	return forward
+}
+
+
+export async function createBlockchainContract(chain:CHAIN_TYPE, contractAddress:string, protocol:NFT_TYPES){
+  console.log('creating blockchain contract', chain, contractAddress, protocol)
+  const provider = await createEthereumProvider()
+  const requestManager = new eth.RequestManager(provider)
+
+  if(chain === CHAIN_TYPE.ETH){
+    console.log('chain is eth')
+    const factory = new eth.ContractFactory(requestManager, protocol === NFT_TYPES.ERC721 ? abi721 : abi1155)
+    return (await factory.at(contractAddress)) as any
+  }else{
+    console.log('chain is polygon')
+    const metaProvider: any = new eth.WebSocketProvider("wss://rpc-mainnet.matic.quiknode.pro");
+    const metaRequestManager: any = new eth.RequestManager(metaProvider);
+    return await new eth.ContractFactory(metaRequestManager, protocol === NFT_TYPES.ERC721 ? abi721 : abi1155).at(contractAddress);
+  }
 }

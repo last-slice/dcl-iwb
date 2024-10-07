@@ -16,6 +16,7 @@ import { newDecision } from './TriggerDecisionPanel'
 let entities:any[] = []
 let entityConditions:any[] = []
 let entityStates:any[] = []
+let entityQuests:any[] = []
 let currentConditions:any[] = []
 let operators:any[] = ["AND", "OR"]
 
@@ -27,7 +28,7 @@ let newCondition:any = {}
 
 export function updateTriggerConditionPanel(){
     entities.length = 0
-    entities = getAllAssetNames(selectedItem.sceneId)
+    entities = getAllAssetNames(selectedItem.sceneId, undefined, true)
 
     console.log('current conditions are ', newDecision.conditions)
 
@@ -67,6 +68,7 @@ export function resetTriggerConditionsPanel(){
     entities.length = 0
     entityConditions.length = 0
     entityStates.length = 0
+    entityQuests.length = 0 
     selectedEntityIndex = 0
     selectedConditionIndex = 0
     newCondition = {}
@@ -242,6 +244,37 @@ export function TriggerConditionsPanel(){
                 height: '100%',
             }}
             ></Input>
+
+        </UiEntity>
+
+    {/* condition quest complete value dropdown */}
+    <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: '100%',
+                height: '10%',
+                margin:{top:"1%"},
+                display: newCondition.condition && newCondition.condition.type === COMPONENT_TYPES.QUEST_COMPONENT ? "flex" : "none"
+            }}
+            >
+
+            <Dropdown
+                // options={[...["Select Entity"], ...getEntityList()]}//
+                options={[...["Select Quest"], ...entityQuests.map($ => $.name)]}
+                selectedIndex={0}
+                onChange={(index:number)=>{
+                    newCondition.value = entityQuests[index-1].id
+                }}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
 
             </UiEntity>
 
@@ -458,6 +491,12 @@ function updateEntityConditions(aid:string){
         entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_COUNTER_EQUALS)})
         entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_COUNTER_IS_LESS_THAN)})
         entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_COUNTER_IS_GREATER_THAN)})
+    }
+
+    let quests = scene[COMPONENT_TYPES.QUEST_COMPONENT].get(aid)
+    if(quests){
+        let conditions = [...Object.values(TriggerConditionType)]
+        entityConditions.push({type:COMPONENT_TYPES.QUEST_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_QUEST_COMPLETE_IS)})
     }
 }
 
