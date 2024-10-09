@@ -44,6 +44,7 @@ import { AddPlayerEquipWeaponPanel } from './ActionPanels/AddPlayerEquipWeaponPa
 import { AddQuestStartPanel, updateQuestsList } from './ActionPanels/AddQuestStart'
 import { quests } from '../../../components/Quests'
 import { AddVerifyAccessPanel, resetVerify } from './ActionPanels/AddVerifyPanel'
+import { AddSetText, resetAddSetText } from './ActionPanels/AddSetText'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -569,6 +570,9 @@ function getActionDataPanel(){
 
         case Actions.VERIFY_ACCESS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddVerifyAccessPanel/>
+
+        case Actions.SET_TEXT.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetText/>
         }
 }
 
@@ -775,6 +779,11 @@ const ActionDefaults:any = {
     [Actions.VERIFY_ACCESS]:{
         fn:()=>{
             resetVerify()
+        }
+    },
+    [Actions.SET_TEXT]:{
+        fn:()=>{
+            resetAddSetText()
         }
     }
 }

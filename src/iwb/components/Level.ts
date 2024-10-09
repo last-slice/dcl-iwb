@@ -186,7 +186,7 @@ export function attemptLoadLevel(scene:any, levelCounterAid:string, levelAid:str
         if(actionInfo.actions && actionInfo.actions.length > 0){
             let action = actionInfo.actions.find(($:any)=> $.type === Actions.LOAD_LEVEL)
             if(action){
-                console.log("found load level action for level")
+                console.log("found load level action for level")//
                 let counterActions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(levelCounterAid)
                 console.log('level counter actions are ', counterActions)
                 if(counterActions){

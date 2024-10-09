@@ -21,7 +21,7 @@ export function uiTextListener(scene:any){
             return
         }
 
-        // uiText.listen("text", (c:any, p:any)=>{
+        // uiText.listen("text", (c:any, p:any)=>{//
         // })//
     })
 }

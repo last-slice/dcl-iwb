@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, TextShape, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { ACCESS_TYPE, Actions, CHAIN_TYPE, COLLIDER_LAYERS, COMPONENT_TYPES, NFT_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
@@ -385,6 +385,10 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.EXIT_VEHICLE:
                 handleVehicleExit(scene, info, action)
+                break;
+
+            case Actions.SET_TEXT:
+                handleSetText(scene, info, action)
                 break;
         }
     })
@@ -1308,13 +1312,13 @@ export function runDialogAction(id:string){
             }
         }
     })
-}//
+}
 
 function handleEndLevel(scene:any, info:any, action:any){
     runGlobalTrigger(scene, Triggers.ON_LEVEL_END, {input:0, pointer:0, entity:0})
     // let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(info.aid)
     // if(!actionInfo){
-    //     console.log('no action object for that level, cant handle end level.....end game??')
+    //     console.log('no action object for that level, cant handle end level.....end game??')//
     //     return
     // }
 
@@ -1713,4 +1717,38 @@ function handleVehicleEntry(scene:any, info:any, action:any){
 function handleVehicleExit(scene:any, info:any, action:any){
     console.log('handling vehicle exit')
     attemptVehicleExit(scene, info)
+}
+
+function handleSetText(scene:any, info:any, action:any){
+    let textInfo = scene[COMPONENT_TYPES.TEXT_COMPONENT].get(info.aid)
+    if(textInfo && textInfo.isText){
+        let textShape = TextShape.getMutableOrNull(info.entity)
+        if(!textShape){
+            console.log('no text shape for that entity')
+            return
+        }
+        switch(action.ttype){
+            case 0:
+                textShape.text = action.text
+                break;
+
+            case 1:
+                let stateInfo = getStateComponentByAssetId(scene, action.label)
+                if(!stateInfo){
+                    console.log('no state for that entity to set text')
+                    return
+                }
+                textShape.text = "" + stateInfo.currentValue
+                break;
+
+            case 2:
+                let counterInfo = getCounterComponentByAssetId(scene, action.label, {})
+                if(!counterInfo){
+                    console.log('no counter for that entity to set text')
+                    return
+                }
+                textShape.text = "" + counterInfo.currentValue
+                break;
+        }
+    }
 }

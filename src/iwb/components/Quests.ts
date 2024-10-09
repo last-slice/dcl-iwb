@@ -10,7 +10,7 @@ import { colyseusRoom, sendServerMessage } from './Colyseus'
 import { runGlobalTrigger, runSingleTrigger } from './Triggers'
 import { getEntity } from './IWB'
 
-// const serviceUrl = 'wss://quests-rpc.decentraland.zone'
+// const serviceUrl = 'wss://quests-rpc.decentraland.zone'//
 const serviceUrl = 'wss://quests-rpc.decentraland.org'
 export let quests:any[] = []
 export let questConditions:any[] = []
@@ -36,7 +36,46 @@ export async function questListener(scene:any){
      await setServerQuests(scene.id, [{quest:quest, aid:aid}])
      console.log('getting qeusts for player')
      sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_PLAYER_DATA, {sceneId:scene.id, aid:aid})
+
+
+     quest.listen("name", (current:any, previous:any)=>{
+      updateQuestMetaData(scene.id, quest, aid)
+     })
+     quest.listen("description", (current:any, previous:any)=>{
+      updateQuestMetaData(scene.id, quest, aid)
+     })
+     quest.listen("enabled", (current:any, previous:any)=>{
+      updateQuestMetaData(scene.id, quest, aid)
+     })
   })
+
+  scene[COMPONENT_TYPES.QUEST_COMPONENT].onRemove(async (quest:any, aid:any)=>{
+    console.log('quest componenent removed', aid)
+    let info = getEntity(scene, aid)
+    if(!info){
+        return
+    }
+
+    let localQuestIndex = quests.findIndex($=> $.aid === aid)
+    console.log('quest index is', localQuestIndex)
+    if(localQuestIndex >=0){
+      quests.splice(localQuestIndex, 1)
+    }
+
+  })
+}
+
+export function updateQuestMetaData(sceneId:string, quest:any, aid:string){
+  let localQuest = quests.find($=> $.aid === aid)
+  if(!localQuest){
+    console.log('local quest to update not found')
+    return
+  }
+
+  localQuest.name = quest.name
+  localQuest.description = quest.description
+  localQuest.enabled = quest.enabled
+  sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_STEP_DATA, {sceneId:sceneId, aid:aid})
 }
 
 export function setServerQuests(sceneId:string, serverQuests:any[]){
@@ -91,7 +130,7 @@ export function removeCondition(id:string){
 }
 
 export function getQuest(questId: string): PlayerQuest | undefined {
-  let quest = quests.find((quest:any) => quest.id === questId)
+  let quest = quests.find((quest:any) => quest.id === questId)//
   if(!quest){
     return undefined
   }
@@ -100,8 +139,9 @@ export function getQuest(questId: string): PlayerQuest | undefined {
 
 
 export function startQuest(quest:any){
-  let localQuest = quests.find((q => q.id === quest.id))
+  let localQuest = quests.find((q => q.aid === quest.id))
   if(!localQuest){
+    console.log('no local quest found')
     return
   }
   let scene = colyseusRoom.state.scenes.get(localQuest.sceneId)

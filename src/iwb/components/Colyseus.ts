@@ -41,7 +41,6 @@ export async function colyseusConnect(data:any, token:string, world?:any, island
         
     }).catch((err) => {
         console.error('colyseus connection error', err)
-        console.log('wtf')
     });
 }
 

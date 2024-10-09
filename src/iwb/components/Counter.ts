@@ -75,7 +75,7 @@ export function getCounterValue(sceneId:string, aid:string, type:string, current
 //     })
 // }
 
-export function getCounterComponentByAssetId(scene:string, aid:string, counter:any){
+export function getCounterComponentByAssetId(scene:any, aid:string, counter:any){
     let entityInfo = getEntity(scene, aid)
     if(entityInfo){
         return Numbers.getMutableOrNull(entityInfo.entity)

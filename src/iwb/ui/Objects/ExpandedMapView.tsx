@@ -297,7 +297,7 @@ function MainLeftView(){
             width: '100%',
             height: '10%',
         }}
-    uiText={{value:"" + (selectedScene ? selectedScene.n : ""), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+    uiText={{value:"" + (selectedScene ? selectedScene.metadata.n : ""), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
     />
 
 <UiEntity

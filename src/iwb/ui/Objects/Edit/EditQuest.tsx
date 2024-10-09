@@ -137,7 +137,27 @@ function MainView(){
                 setUIClicked(false)
             }}
         />
-         <UiEntity
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{top:'1%', bottom:'1%'}
+            }}
+            uiBackground={{color: Color4.Black()}}
+            uiText={{value: "Analytics", fontSize: sizeFont(30, 20)}}
+            onMouseDown={() => {
+                setUIClicked(true)
+                questEditView = "Analytics"
+                setUIClicked(false)
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
+         {/* <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -156,7 +176,7 @@ function MainView(){
             onMouseUp={()=>{
                 setUIClicked(false)
             }}
-        />
+        /> */}
          <UiEntity
             uiTransform={{
                 flexDirection: 'column',

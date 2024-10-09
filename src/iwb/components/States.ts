@@ -51,7 +51,7 @@ export function getCurrentValue(states:any) {
 //     })
 // }//
 
-export function getStateComponentByAssetId(scene:string, aid:string){
+export function getStateComponentByAssetId(scene:any, aid:string){
     let entityInfo = getEntity(scene, aid)
     if(entityInfo){
         return States.getMutableOrNull(entityInfo.entity)

@@ -10,7 +10,7 @@ function addTextShape(scene:any, entityInfo:any, textShape:any){
             font: textShape.font,
             fontSize: textShape.fontSize,
             fontAutoSize: textShape.fontAutoSize,
-            // textAlign: textShape.textAlign,//
+            // textAlign: textShape.textAlign,
             paddingTop: textShape.paddingTop,
             paddingBottom: textShape.paddingBottom,
             paddingLeft: textShape.paddingLeft,
@@ -58,6 +58,12 @@ export function setTextShapeForPlayMode(scene:any, entityInfo:any){
     if(meshInfo && meshInfo.hasOwnProperty("onPlay")){
         if(!meshInfo.onPlay){
             TextShape.deleteFrom(entityInfo.entity)
+        }else{
+            let textShape = TextShape.getMutableOrNull(entityInfo.entity)
+            if(!textShape){
+                return
+            }
+            textShape.text = meshInfo.isText ? meshInfo.text : scene[COMPONENT_TYPES.NAMES_COMPONENT].get(entityInfo.aid).value
         }
     }
 }

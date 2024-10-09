@@ -51,7 +51,7 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
             if(index > 2){
                 let entityInfo = getEntity(scene, item.aid)
                 if(entityInfo && !scene[COMPONENT_TYPES.VEHICLE_COMPONENT].has(entityInfo.aid)){ 
-                    handleSceneEntityOnLeave(scene, entityInfo)
+                    handleSceneEntityOnLeave(scene, entityInfo)//
                 }
             }
         })
@@ -77,6 +77,7 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
         disableLivePanel(scene, entityInfo)
         resetAttachedEntity(scene, entityInfo)
         disableAudioPlayMode(scene, entityInfo)
+        disableCounterForPlayMode(scene, entityInfo)
     }
 
     checkGameplay(scene)
@@ -85,12 +86,14 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
     triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
 }
 
-export function handleSceneEntitiesOnEnter(sceneId:string){
+export async function handleSceneEntitiesOnEnter(sceneId:string){
     let scene = colyseusRoom.state.scenes.get(sceneId)
     console.log('scene check leave is', scene.checkLeave)
     if(scene && !scene.checkedEntered){
-        scene.checkedEntered = true
+        scene.checkedEntered = true//
         scene.checkedLeave = false
+
+        await loadRemovedItems(scene)
 
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
@@ -101,13 +104,15 @@ export function handleSceneEntitiesOnEnter(sceneId:string){
             }
         })
     }
-}//
+}
 
 export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
+    console.log('handle on scene enter', scene)
     setPointersPlayMode(scene, entityInfo)
     setAudioPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setLivePanel(scene, entityInfo)   
+    setTextShapeForPlayMode(scene, entityInfo)
     setTriggersForPlayMode(scene, entityInfo)
 
     checkMultiplayerSyncOnEnter(scene, entityInfo)
@@ -189,8 +194,6 @@ export async function handleSceneEntitiesOnLoad(sceneId:string){
 
         setUIClicked(false)
         abortGameTermination(scene)
-
-        await loadRemovedItems(scene)
 
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){

@@ -123,7 +123,7 @@ export function setConfig(version:any, updates:any, videos:any, tutorialCID:any)
 }
 
 export function setWorlds(config: any) {
-    // console.log('worlds are ', config)
+    console.log('worlds are ', config)
 
     for(let i = 0; i < config.length; i++){
         let world = config[i]

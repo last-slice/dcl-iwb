@@ -5,17 +5,26 @@ import { UI_VIEW_TYPES, uiSizes } from '../uiConfig'
 import resources from '../../helpers/resources'
 import { generateButtons, setUIClicked } from '../ui'
 
+let showOverride = false
 let show = false
 let props:any
 let variableText:any
 export let customFunction:()=> void | null
 export let customFunction2:()=> void | null
 
-export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any, f?: ()=> void, f2?: ()=> void){
+export function updateShowOverride(value:boolean){
+    showOverride = value
+}
+
+export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any, f?: ()=> void, f2?: ()=> void, overrideShow?:boolean){
     if(value){
         props = data
     }
-    show = value
+    
+    if(overrideShow || overrideShow !== undefined){
+        showOverride = true
+    }
+
     variableText = extra
     if(f){
         customFunction = f
@@ -24,7 +33,12 @@ export function displaySkinnyVerticalPanel(value:boolean, data?:any, extra?:any,
     if(f2){
         customFunction2 = f2
     }
-   
+
+
+    show = value
+    if(showOverride){
+        show = true
+    }
 }
 
 export function createSkinnyVerticalPanel(){

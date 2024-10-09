@@ -31,7 +31,8 @@ let buttons:any[] = [
         }
     },
     {label:"Create", pressed:false, func:()=>{
-        updateMainView("CreateView")
+        // updateMainView("CreateView")
+        updateMainView("Create")
         },
         displayCondition:()=>{
             return island === "world"

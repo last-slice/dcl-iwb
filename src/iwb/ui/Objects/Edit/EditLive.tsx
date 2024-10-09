@@ -22,14 +22,35 @@ let bouncePosition:any
 let bounceLook:any
 
 let bounceName:string = ""
+let adminName:string = ""
 
 let bounceLocations:any[] = []
 let bounceLocationEntities:Entity[] = []
+let admins:any[] = []
 
 export let liveView:string = "main"
 
+function updateAdmins(){
+    admins.length = 0
+
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return
+    }
+    
+    let live = scene[COMPONENT_TYPES.LIVE_COMPONENT].get(selectedItem.aid)
+    if(!live){
+        return
+    }
+    live.admins.forEach((admin:any)=>{
+        admins.push(admin)
+    })
+
+}
+
 export function updateLiveBouncerPositions(){
     bounceLocations.length = 0
+
     resetCurrentBouncerSpawns()
     liveView !== "main" ? addCurrentSpawns() : null
 
@@ -39,6 +60,10 @@ export function updateLiveBouncerPositions(){
     }
     
     let live = scene[COMPONENT_TYPES.LIVE_COMPONENT].get(selectedItem.aid)
+    if(!live){
+        return
+    }
+
     if(live && live.p.length > 0){
         live.p.forEach((position:any, i:number)=>{
             bounceLocations.push({name: live.n[i], position:position})
@@ -53,6 +78,10 @@ export function updateEditLiveView(view:string){
     if(liveView === "bouncer"){
         addCurrentSpawns()
     }
+
+    if(liveView === "admins"){
+        updateAdmins()//
+    }
 }
 
 export function resetLiveSpawnEntity(){
@@ -61,6 +90,7 @@ export function resetLiveSpawnEntity(){
     bounceLook = undefined
     bouncePosition = undefined
     bounceName = ""
+    adminName = ""
 }
 
 export function resetCurrentBouncerSpawns(){
@@ -166,6 +196,26 @@ export function EditLive() {
             }}
             uiText={{value:"Live Panel Options", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
             />
+
+<UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:'1%'}
+            }}
+            uiBackground={{color: Color4.Black()}}
+            uiText={{value: "Admins", fontSize: sizeFont(30, 20)}}
+            onMouseDown={() => {
+                setUIClicked(true)
+                updateEditLiveView("admins")
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
 
         <UiEntity
             uiTransform={{
@@ -459,6 +509,140 @@ export function EditLive() {
 
             </UiEntity>
 
+            <AdminView/>
+
+        </UiEntity>
+    )
+}
+
+function AdminView(){
+    return(
+        <UiEntity
+            key={resources.slug + "edit::live::panel::admin"}
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+                display: visibleComponent === COMPONENT_TYPES.LIVE_COMPONENT && liveView === "admins" ? 'flex' : 'none',
+            }}
+        >
+
+
+    <UiEntity
+    uiTransform={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+    uiText={{value:"Add Admin", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+    />
+
+<UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignContent: 'center',
+                width: '100%',
+                height: '10%',
+            }}
+            >
+                <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignContent: 'center',
+                width: '80%',
+                height: '100%',
+            }}
+            >
+            <Input
+                onSubmit={(value) => {
+                    adminName = value.trim()
+                }}
+                onChange={(value) => {
+                    adminName = value.trim()
+                }}
+                fontSize={sizeFont(20, 15)}
+                placeholder={'Enter wallet'}
+                placeholderColor={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+            />
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(4, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(4,getAspect(uiSizes.buttonPillBlue)).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            updateMetadata(COMPONENT_TYPES.LIVE_COMPONENT, "addadmin", adminName)
+            utils.timers.setTimeout(()=>{
+                updateAdmins()
+            }, 200)
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        uiText={{value: "Add", color:Color4.White(), fontSize:sizeFont(20,15)}}
+        />
+            </UiEntity>
+
+            </UiEntity>
+
+
+            <UiEntity
+    uiTransform={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+    uiText={{value:"Current Admins", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+    />
+
+    {
+        visibleComponent === COMPONENT_TYPES.LIVE_COMPONENT &&
+        liveView === "admins" &&
+        generateAdminRows()
+    }
+
+
         </UiEntity>
     )
 }
@@ -561,6 +745,89 @@ function Row(info:any){
                     updateMetadata(COMPONENT_TYPES.LIVE_COMPONENT, "deletebounce", info.rowCount)
                     utils.timers.setTimeout(()=>{
                         updateLiveBouncerPositions()
+                    }, 200)
+                }}
+            />
+                </UiEntity>
+
+            </UiEntity>
+    )
+}
+
+function generateAdminRows(){
+    let arr:any[] = []
+    let count = 0
+    admins.forEach((admin:any, i:number)=>{
+        arr.push(<AdminRow admin={admin} rowCount={count} />)
+        count++
+    })
+    return arr
+}
+
+function AdminRow(info:any){
+    return(
+        <UiEntity
+        key={resources.slug + "live-admin-row-"+ info.rowCount}
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '12%',
+                margin:{top:"1%", bottom:'1%', left:"2%", right:'2%'}
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.rowPillDark)}}
+                >
+
+            {/* action name column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '80%',
+                height: '100%',
+                margin:{left:'2%'}
+            }}
+            uiText={{value:"" + info.admin, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            />
+
+            {/* action edit buttons column */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20%',
+                height: '100%',
+            }}
+            >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                    margin:{left:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.trashButton)
+                }}
+                onMouseDown={() => {
+                    updateMetadata(COMPONENT_TYPES.LIVE_COMPONENT, "deleteadmin", info.admin)
+                    utils.timers.setTimeout(()=>{
+                        updateAdmins()
                     }, 200)
                 }}
             />

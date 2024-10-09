@@ -4,7 +4,7 @@ import { addLineBreak, calculateImageDimensions, calculateSquareImageDimensions,
 import { setUIClicked } from '../ui'
 import resources from '../../helpers/resources'
 import { uiSizes } from '../uiConfig'
-import { GAME_TYPES, SERVER_MESSAGE_TYPES, Triggers } from '../../helpers/types'
+import { GAME_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers } from '../../helpers/types'
 import { sendServerMessage } from '../../components/Colyseus'
 import { localPlayer } from '../../components/Player'
 
@@ -255,7 +255,7 @@ export function createEndGameButton(){
           alignItems:'center',
           positionType:'absolute',
           position:{top:0, right:0},
-          display: localPlayer && localPlayer.playingGame ? "flex" :"none"
+          display: localPlayer && localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING ? "flex" :"none"
         }}
       >
         <UiEntity
@@ -267,7 +267,7 @@ export function createEndGameButton(){
             height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
             margin:'1%',
             positionType:'absolute',
-            position:{left:'11%', top:'6%'}
+            position:{right:'5%', top:'3%'}
         }}
         uiBackground={{
             textureMode: 'stretch',

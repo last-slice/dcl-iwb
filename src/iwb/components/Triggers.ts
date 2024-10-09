@@ -95,7 +95,7 @@ export function updateTriggerArea(scene:any, entityInfo:any, transform:any){
     }])
   }
   catch(e){
-    console.log('error setting trigger area')
+    console.log('error setting trigger area', e)
   }
 
 }
@@ -175,7 +175,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
         return
       }
 
-      console.log('trigger found', triggerEvent, trigger.decisions)
+      // console.log('trigger found', triggerEvent, trigger.decisions)
 
       checkDecisionPaths(scene, trigger, entityInfo)
     })

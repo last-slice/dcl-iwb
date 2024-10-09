@@ -1,4 +1,4 @@
-import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VisibilityComponent} from "@dcl/sdk/ecs"
+import {engine, Entity, GltfContainer, Material, MeshCollider, MeshRenderer, Transform, VirtualCamera, VisibilityComponent} from "@dcl/sdk/ecs"
 import { getSceneInformation } from '~system/Runtime'
 import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES, SceneItem, SERVER_MESSAGE_TYPES, Triggers} from "../helpers/types"
 import {addBoundariesForParcel, deleteCreationEntities, deleteParcelEntities, SelectedFloor} from "../modes/Create"
@@ -84,7 +84,13 @@ export async function addScene(scene:any, loadPending?:boolean){
                 await removeEmptyParcels(scene.pcls)
                 refreshMap()
             }
-            await loadScene(scene)
+            try{
+                await loadScene(scene)
+            }
+            catch(e){
+                console.log('error highest level loading scene', e)
+            }
+            
             scenesLoadedCount++
             checkAllScenesLoaded()
         }
@@ -103,12 +109,17 @@ export function enablePrivateModeForScene(scene:any){
 }
 
 export async function loadScene(scene:any) {
-    await loadSceneBoundaries(scene)
-    loadSceneComponents(scene)
-
-    if (scene.bps.includes(localUserId)) {
-        console.log('local player can build')
-        localPlayer.canBuild = true
+    try{
+        await loadSceneBoundaries(scene)
+        loadSceneComponents(scene)
+    
+        if (scene.bps.includes(localUserId)) {
+            console.log('local player can build')
+            localPlayer.canBuild = true
+        }
+    }
+    catch(e){
+        console.log('error loading scene', e)
     }
 }
 
@@ -151,6 +162,11 @@ async function loadSceneComponents(scene:any){
 
     await handleSceneEntitiesOnLeave(scene.id)
     await handleSceneEntitiesOnUnload(scene.id)
+
+    if(isGCScene()){
+        console.log('handling genesis city loading')
+        await handleSceneEntitiesOnLoad(scene.id)
+    }
 }
 
 export function unloadScene(scene:any) {
@@ -182,7 +198,7 @@ async function loadSceneBoundaries(scene:any) {
         // rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
     })
 
-    console.log('scene.offsets is', scene.offsets)
+    // console.log('scene.offsets is', scene.offsets)
     // let xOffset = scene.offsets[0]
     // if(xOffset !== 0){
     //     console.log("scene has offset", scene.offsets)
@@ -395,14 +411,18 @@ export function updateSceneCount(count: number) {
 }
 
 export function checkAllScenesLoaded() {
+    console.log('chekck all scenes loaded', scenesLoadedCount, sceneCount, scenesLoaded)
     if (scenesLoadedCount >= sceneCount && !scenesLoaded) {
         scenesLoaded = true
-        loadBlankParcels()
-        
-        colyseusRoom.state.scenes.forEach(async (scene:any) => {
-            await addSceneLoadTrigger(scene)
-        });
 
+        console.log('all scenes loaded')
+        
+        if(!isGCScene()){
+            loadBlankParcels()
+            colyseusRoom.state.scenes.forEach(async (scene:any) => {
+                await addSceneLoadTrigger(scene)
+            });
+        }
         engine.addSystem(PlayerTrackingSystem)
     }
 }
@@ -490,3 +510,4 @@ export function updateSceneParentRotation(scene:any, degrees:number){
     transform.rotation = Quaternion.fromEulerDegrees(rotation.x, rotation.y, rotation.z)
 
 }
+

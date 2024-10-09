@@ -138,7 +138,7 @@ export async function createColyseusListeners(room:Room){
 
         await setSettings(info.settings)
         if(!isGCScene() && info.settings.firstTime){
-            displaySkinnyVerticalPanel(true, getView("Welcome_Screen"))
+            displaySkinnyVerticalPanel(true, getView("Welcome_Screen"), undefined, undefined, undefined, true)
         }
 
         room.state.players.onAdd(async(player:any, userId:any)=>{
@@ -621,7 +621,7 @@ export async function createColyseusListeners(room:Room){
         if(!info || !info.aid || !info.steps){
             return
         }
-        setQuestSteps(info.aid, info.steps)
+        setQuestSteps(info.aid, info.steps)//
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.QUEST_PLAYER_DATA, (info:any) => {
@@ -683,7 +683,9 @@ export async function createColyseusListeners(room:Room){
     })
 
     room.state.listen("sceneCount", (c:any, p:any)=>{
-        checkSceneCount(c)
+        if(!isGCScene()){
+            checkSceneCount(c)
+        }
     })
 
     room.state.temporaryParcels.onAdd(async(parcel:any, key:string)=>{

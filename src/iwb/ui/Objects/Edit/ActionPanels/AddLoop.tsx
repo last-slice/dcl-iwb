@@ -40,7 +40,7 @@ export function AddLoopPanel(){
             width: '100%',
             height: '100%',
         }}
-        uiBackground={{color:Color4.Green()}}
+        // uiBackground={{color:Color4.Green()}}
     >
 
 <UiEntity

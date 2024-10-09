@@ -567,7 +567,7 @@ function getBackButtonLogic(){
             }else if(liveView === "add-bounce-spawn"){
                 resetLiveSpawnEntity()
                 updateEditLiveView("bouncer")
-            }else if(liveView === "bouncer"){
+            }else if(liveView === "bouncer" || liveView === "admins"){
                 resetCurrentBouncerSpawns()
                 updateEditLiveView("main")
             }

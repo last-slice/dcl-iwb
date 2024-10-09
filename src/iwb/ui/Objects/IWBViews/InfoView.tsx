@@ -16,6 +16,7 @@ import { IWBTable, setTableConfig, updateIWBTable } from '../../Reuse/IWBTable'
 import { showNotification } from '../NotificationPanel'
 import { displayPendingPanel } from '../PendingInfoPanel'
 import {  formatDollarAmount, formatSize, paginateArray } from '../../../helpers/functions'
+import { openExternalUrl } from '~system/RestrictedActions'
 
 export let infoView = "Version"
 export let accessView = "Builders"
@@ -143,6 +144,10 @@ let buttons:any[] = [
     {label:"Tutorials", pressed:false, func:()=>{
         infoView = 'Tutorials'
         showTutorials()
+        }
+    },
+    {label:"Wiki", pressed:false, func:()=>{
+        openExternalUrl({url:"" + "https://in-world-builder.gitbook.io/in-world-builder-wiki"})
         }
     },
     {label:"Feedback", pressed:false, func:()=>{

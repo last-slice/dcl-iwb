@@ -4,9 +4,9 @@ import { localPlayer, worldTravel } from "../components/Player"
 import { SERVER_MESSAGE_TYPES } from "../helpers/types"
 import { deleteSelectedItem, selectedAssetId } from "../modes/Build"
 import { displayMainView, updateMainView } from "./Objects/IWBView"
-import { updateInfoView } from "./Objects/IWBViews/InfoView"
+import { showTutorials, updateInfoView } from "./Objects/IWBViews/InfoView"
 import { displaySceneDetailsPanel, scene } from "./Objects/SceneMainDetailPanel"
-import { customFunction, customFunction2, displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
+import { customFunction, customFunction2, displaySkinnyVerticalPanel, updateShowOverride } from "./Reuse/SkinnyVerticalPanel"
 import { UI_VIEW_TYPES } from "./uiConfig"
 
 export function getView(view:string){
@@ -40,14 +40,16 @@ export let uiViews:any[] = [
             buttons:[
                 {
                     label:"Start Building",
-                    func:()=>{
+                    func:async ()=>{
+                        await updateShowOverride(false)
                         displaySkinnyVerticalPanel(false)
                         sendServerMessage(SERVER_MESSAGE_TYPES.FIRST_TIME, {})
                     }
                 },
                 {
                     label:"Tutorials",
-                    func:()=>{
+                    func:async ()=>{
+                        await updateShowOverride(false)
                         displaySkinnyVerticalPanel(true, getView("Tutorials"))
                     }
                 }
@@ -365,13 +367,20 @@ export let uiViews:any[] = [
             buttons:[
                 {
                     label:"Tutorials",
-                    func:(aid:string)=>{
+                    func:()=>{
+                        updateShowOverride(false)
                         displaySkinnyVerticalPanel(false)
+                        displayMainView(true)
+                        updateMainView("Info")
+                        updateInfoView("Help")
+                        updateInfoView("Tutorials")
+                        showTutorials()
                     }
                 },
                 {
-                    label:"Start Building!",
+                    label:"Build!",
                     func:()=>{
+                        updateShowOverride(false)
                         displaySkinnyVerticalPanel(false)
                     }
                 }

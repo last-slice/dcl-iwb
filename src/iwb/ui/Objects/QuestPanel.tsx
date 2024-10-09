@@ -140,7 +140,7 @@ function QuestExpandedView(){
 function generateQuestRows(){
     let arr:any[] = []
     let count = 0
-    quests.forEach((quest:any)=>{
+    quests.filter($=> $.enabled).forEach((quest:any)=>{
         arr.push(<QuestRow count={count} quest={quest} />)
         count++
     })
