@@ -8,7 +8,7 @@ import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers"
 import { changeRealm, movePlayerTo, openExternalUrl, openNftDialog, teleportTo, triggerEmote } from "~system/RestrictedActions"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { eth, utils } from "../helpers/libraries"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { startInterval, startTimeout, stopInterval, stopTimeout } from "./Timer"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { UiTexts, uiDataUpdate } from "./UIText"
@@ -38,6 +38,8 @@ import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
 let lockbox:Entity
+
+export const KeepRotatingComponent = engine.defineComponent(resources.slug + "iwb::keep::rotating::component", {})
 
 export function getActionEvents(entity: Entity) {
     if (!actions.has(entity)) {
@@ -1071,7 +1073,12 @@ function handleStartTween(scene:any, info:any, action:any){
         }
       }
 
-      revertTween(info.entity, initialTween, tween)
+      if(action.ttype === TWEEN_TYPES.ROTATION && action.tloop === 3){
+        console.log('not reverting tween')
+      }
+      else{
+        revertTween(info.entity, initialTween, tween)
+      }
     }
   }
 
@@ -1186,25 +1193,30 @@ function handleStartTween(scene:any, info:any, action:any){
   function handleRotateItem(scene:any, info:any, action:any){
     const transform = Transform.get(info.entity)
     const { timer, ip, relative, x,y,z } = action
-    const end = Quaternion.fromEulerDegrees(x,y,z)
+    let tweenEnd = Quaternion.fromEulerDegrees(0,0,0)
+    let tweenSequenceEnd = Quaternion.fromEulerDegrees(0,0,0)
+
+    let end = Quaternion.fromEulerDegrees(x,y,z)
+
     const endRotation = relative
       ? Quaternion.multiply(transform.rotation, end)
       : end
 
-    let tween = Tween.createOrReplace(info.entity, {
-      mode: Tween.Mode.Rotate({
-        start: transform.rotation,
-        end: endRotation,
-      }),
-      duration: timer * 1000, // from secs to ms//
-      easingFunction: getEasingFunctionFromInterpolation(ip),
-    })
+    let tween:any
 
     switch(action.tloop){
         case 0://nothing
             break;
 
         case 1://restart
+            tween = Tween.createOrReplace(info.entity, {
+                mode: Tween.Mode.Rotate({
+                  start: transform.rotation,
+                  end: endRotation,
+                }),
+                duration: timer * 1000, // from secs to ms//
+                easingFunction: getEasingFunctionFromInterpolation(ip),
+              })
             TweenSequence.deleteFrom(info.entity)
             TweenSequence.createOrReplace(info.entity, {
                 loop: TweenLoop.TL_RESTART,
@@ -1222,10 +1234,97 @@ function handleStartTween(scene:any, info:any, action:any){
             break
 
         case 2://yoyo
+        tween = Tween.createOrReplace(info.entity, {
+            mode: Tween.Mode.Rotate({
+              start: transform.rotation,
+              end: endRotation,
+            }),
+            duration: timer * 1000, // from secs to ms//
+            easingFunction: getEasingFunctionFromInterpolation(ip),
+          })
             TweenSequence.deleteFrom(info.entity)
             TweenSequence.create(info.entity, { sequence: [], loop: TweenLoop.TL_YOYO })
         break;
+
+        case 3://keep rotating
+        console.log('keep rotating object')
+
+        KeepRotatingComponent.createOrReplace(info.entity)
+
+        // tween = Tween.create(info.entity, {
+        //     mode: Tween.Mode.Rotate({
+        //       start: Quaternion.fromEulerDegrees(0, 0, 0),
+        //       end: Quaternion.fromEulerDegrees(0, 180, 0)
+        //     }),
+        //     duration: 700,
+        //     easingFunction: EasingFunction.EF_LINEAR
+        //   })
+
+        // TweenSequence.createOrReplace(info.entity, {
+        //     loop: TweenLoop.TL_RESTART,
+        //     sequence: [
+        //       {
+        //         mode: Tween.Mode.Rotate({
+        //           start: Quaternion.fromEulerDegrees(0, 180, 0),
+        //           end: Quaternion.fromEulerDegrees(0, 360, 0)
+        //         }),
+        //         duration: 700,
+        //         easingFunction: EasingFunction.EF_LINEAR
+        //       }
+        //     ]
+        //   })
+
+        if(!action.value){
+            action.value = 0
+        }
+        switch(action.value){
+            case 1:
+                tweenEnd = Quaternion.fromEulerDegrees(180,0,0)
+                tweenSequenceEnd = Quaternion.fromEulerDegrees(360,0,0)
+                break;
+
+            case 0:
+            case 2:
+                tweenEnd = Quaternion.fromEulerDegrees(0,180,0)
+                tweenSequenceEnd = Quaternion.fromEulerDegrees(0,360,0)
+            break;
+
+            case 3:
+                tweenEnd = Quaternion.fromEulerDegrees(0,0,180)
+                tweenSequenceEnd = Quaternion.fromEulerDegrees(0,0,360)
+            break;
+        }
+        tween = Tween.createOrReplace(info.entity, {
+            mode: Tween.Mode.Rotate({
+                start: Quaternion.fromEulerDegrees(0, 0, 0),
+                end: tweenEnd
+              }),
+            duration: timer * 1000, // from secs to ms//
+            easingFunction: getEasingFunctionFromInterpolation(ip),
+          })
+
+          console.log(tweenEnd, tweenSequenceEnd)
+
+        TweenSequence.deleteFrom(info.entity)
+        TweenSequence.createOrReplace(info.entity, {
+            loop: TweenLoop.TL_RESTART,
+            sequence: [
+              {
+                mode: Tween.Mode.Rotate({
+                  start: tweenEnd,
+                  end: tweenSequenceEnd
+                }),
+                duration: timer * 1000, // from secs to ms//
+                easingFunction: getEasingFunctionFromInterpolation(ip),
+              }
+            ]
+          })
+        break;
     }
+
+    // console.log('tween sequence is', TweenSequence.get(info.entity))
+    // console.log(Quaternion.toEulerAngles(tweenEnd))
+    // console.log(Quaternion.toEulerAngles(tweenSequenceEnd))
 
     return tween
   }

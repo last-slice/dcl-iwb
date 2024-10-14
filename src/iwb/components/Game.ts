@@ -3,7 +3,7 @@ import { Actions, COMPONENT_TYPES, GAME_WEAPON_TYPES, NOTIFICATION_TYPES, PLAYER
 import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger } from "./Triggers"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { isGameAsset, disableLevelAssets, attemptLoadLevel } from "./Level"
 import { localPlayer, localUserId } from "./Player"
 import { utils } from "../helpers/libraries"

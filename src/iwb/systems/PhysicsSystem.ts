@@ -7,7 +7,7 @@ import { COMPONENT_TYPES, SCENE_MODES } from '../helpers/types';
 import { physicsObjects, testVehicles } from '../components/Vehicle';
 import { localPlayer } from '../components/Player';
 import { colyseusRoom, connected } from '../components/Colyseus';
-import { getEntity } from '../components/IWB';
+import { getEntity } from '../components/iwb';
 import { testEntities } from '../components/Physics';
 
 const fixedTimeStep: number = 1.0 / 60.0 // seconds

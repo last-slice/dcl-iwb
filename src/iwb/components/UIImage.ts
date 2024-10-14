@@ -1,5 +1,5 @@
 import { COMPONENT_TYPES } from "../helpers/types";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 import { UIImage } from "../ui/Objects/UIImage";
 
 export let UiImages:Map<string, UIImage> = new Map()

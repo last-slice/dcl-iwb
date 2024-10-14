@@ -1,6 +1,6 @@
 import { TextShape } from "@dcl/sdk/ecs";
 import { colyseusRoom } from "./Colyseus";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 // import { updateAudioTextLabel } from "./Sounds";
 import { playerMode } from "./Config";
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types";

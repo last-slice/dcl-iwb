@@ -8,7 +8,7 @@ import { Player } from '~system/Players'
 import { updateQuestPanel } from '../ui/Objects/QuestPanel'
 import { colyseusRoom, sendServerMessage } from './Colyseus'
 import { runGlobalTrigger, runSingleTrigger } from './Triggers'
-import { getEntity } from './IWB'
+import { getEntity } from './iwb'
 
 // const serviceUrl = 'wss://quests-rpc.decentraland.zone'//
 const serviceUrl = 'wss://quests-rpc.decentraland.org'

@@ -1,6 +1,6 @@
 import { MeshRenderer, MeshCollider, ColliderLayer, Material, PointerEvents, TextShape, Billboard, BillboardMode } from "@dcl/sdk/ecs"
 import { COMPONENT_TYPES } from "../helpers/types"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { Color4 } from "@dcl/sdk/math"
 
 

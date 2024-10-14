@@ -1,6 +1,6 @@
 import { AudioStream, Entity } from "@dcl/sdk/ecs";
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 import { updateAssetMaterialForPlaylist } from "./Materials";
 import { getRandomIntInclusive } from "../helpers/functions";
 import resources from "../helpers/resources";

@@ -209,7 +209,7 @@ export function AddTweenActionPanel(){
         }}
     >
          <Dropdown
-        options={[...["Select Loop Type"],...TWEEN_LOOP_SLUGS]}
+        options={getLoopOptions()}
         selectedIndex={tweenLoopIndex}
         onChange={(index:number)=>{
             tweenLoopIndex = index
@@ -232,7 +232,46 @@ export function AddTweenActionPanel(){
                 justifyContent: 'center',
                 width: '100%',
                 height: '15%',
-                margin:{top:'1%'}
+                margin:{top:'2%'},
+                display: tweenLoopIndex === 4 ? "flex" : "none"
+            }}
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+        }}
+    >
+         <Dropdown
+        options={["CHOOSE AXIS", "X AXIS", "Y AXIS", "Z AXIS"]}
+        selectedIndex={0}
+        onChange={(index:number)=>{
+            updateActionData({value:index})
+        }}
+        uiTransform={{
+            width: '100%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.Purple()}}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}
+    />
+        </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '15%',
+                margin:{top:'1%'},
+                display: tweenLoopIndex !== 4 ? "flex" : "none"
             }}
         >
 
@@ -346,7 +385,7 @@ export function AddTweenActionPanel(){
             width: '100%',
             height: '50%',
             margin:{top:"2%"},
-            display: tweenTypeIndex === EDIT_MODIFIERS.POSITION + 2 ? 'flex' : 'none'
+            display: tweenTypeIndex === EDIT_MODIFIERS.POSITION + 2 && tweenLoopIndex !== 4 ? 'flex' : 'none'
         }}
     >
          <UiEntity
@@ -433,4 +472,12 @@ export function AddTweenActionPanel(){
 
     </UiEntity>
     )
+}
+
+function getLoopOptions(){
+    if(tweenTypeIndex === EDIT_MODIFIERS.ROTATION + 1){
+        return [...["Select Loop Type"],...TWEEN_LOOP_SLUGS, "KEEP ROTATING"]
+    }else{
+        return[...["Select Loop Type"],...TWEEN_LOOP_SLUGS]
+    }
 }

@@ -1,5 +1,5 @@
 import { AvatarAttach, ColliderLayer, GltfContainer, PointerEvents, Transform } from "@dcl/sdk/ecs"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { LevelAssetGLTF } from "../helpers/Components"
 import { playerMode } from "./Config"
 import { COLLIDER_LAYERS, COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"

@@ -1,9 +1,9 @@
 import { Entity, InputAction, PointerEventType, PointerEvents, Transform, Tween, TweenState, TweenStateStatus, engine, pointerEventsSystem, tweenSystem } from "@dcl/sdk/ecs";
 import { COMPONENT_TYPES, COUNTER_VALUE, SERVER_MESSAGE_TYPES, TriggerConditionOperation, TriggerConditionType, Triggers } from "../helpers/types";
 import mitt, { Emitter } from "mitt";
-import { getActionEvents } from "./Actions";
+import { getActionEvents, KeepRotatingComponent } from "./Actions";
 import { getCounterComponentByAssetId } from "./Counter";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 import { States, getCurrentValue, getPreviousValue } from "./States";
 import { tickSet } from "./Timer";
 import { utils } from "../helpers/libraries";
@@ -580,6 +580,10 @@ export function runSingleTrigger(entityInfo:any, type:Triggers, data:any){
 
 // ON_TWEEN_END
 function handleOnTweenEnd(entity: Entity) {
+  if(KeepRotatingComponent.has(entity)){
+    return
+  }
+  
   if (
     Tween.getOrNull(entity) &&
     TweenState.getOrNull(entity)?.state === TweenStateStatus.TS_COMPLETED &&

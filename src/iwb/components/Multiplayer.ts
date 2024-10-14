@@ -1,7 +1,7 @@
 import { AvatarAttach, engine, Transform } from "@dcl/sdk/ecs"
 import { COMPONENT_TYPES } from "../helpers/types"
 import { localPlayer, localUserId } from "./Player"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { Quaternion } from "@dcl/sdk/math"
 import { actionQueue } from "./Triggers"
 

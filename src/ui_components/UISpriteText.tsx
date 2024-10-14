@@ -3,8 +3,8 @@ import { Color4 } from "@dcl/sdk/math"
 import resources from '../iwb/helpers/resources'
 import { sizeFont } from '../iwb/ui/helpers'
 import { getRandomString } from '../iwb/helpers/functions'
-import { getEntity } from '../iwb/components/IWB'
-import { States } from '../iwb/components/States'
+// import { getEntity } from '../iwb/components/IWB'
+// import { States } from '../iwb/components/States'
 
 type DigitSprite = {
     letter: string,

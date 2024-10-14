@@ -1,7 +1,7 @@
 import { Material, VideoPlayer } from "@dcl/sdk/ecs"
 // import { VideoLoadedComponent } from "../helpers/Components"
 import { selectedItem } from "../modes/Build"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { COMPONENT_TYPES } from "../helpers/types"
 
 export async function checkVideoComponent(scene:any, entityInfo:any, texture:string){

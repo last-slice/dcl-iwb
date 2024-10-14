@@ -12,7 +12,7 @@ import { generateButtons, setUIClicked, setupUI } from '../../ui'
 import { uiSizes } from '../../uiConfig'
 import { items } from '../../../components/Catalog'
 import { Animator, Entity } from '@dcl/sdk/ecs'
-import { getEntity } from '../../../components/IWB'
+import { getEntity } from '../../../components/iwb'
 
 let animations:any[] = []
 let animation:string = ""

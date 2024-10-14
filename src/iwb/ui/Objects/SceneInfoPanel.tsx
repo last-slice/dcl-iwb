@@ -14,7 +14,7 @@ import { showNotification } from './NotificationPanel'
 import resources from '../../helpers/resources'
 import { getView } from '../uiViews'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
-import { getEntity } from '../../components/IWB'
+import { getEntity } from '../../components/iwb'
 import { setUIClicked } from '../ui'
 import { displaySceneDetailsPanel } from './SceneMainDetailPanel'
 

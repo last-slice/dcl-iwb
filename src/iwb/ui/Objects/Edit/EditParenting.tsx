@@ -14,7 +14,7 @@ import { utils } from '../../../helpers/libraries'
 import { Transform, engine } from '@dcl/sdk/ecs'
 import { getWorldPosition, getWorldRotation } from '@dcl-sdk/utils'
 import { localPlayer } from '../../../components/Player'
-import { getEntity } from '../../../components/IWB'
+import { getEntity } from '../../../components/iwb'
 import { showNotification } from '../NotificationPanel'
 
 ///parenting

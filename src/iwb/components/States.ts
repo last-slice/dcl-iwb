@@ -1,6 +1,6 @@
 import { Schemas, engine } from "@dcl/sdk/ecs"
 import { colyseusRoom } from "./Colyseus"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import resources from "../helpers/resources"
 import { COMPONENT_TYPES } from "../helpers/types"
 

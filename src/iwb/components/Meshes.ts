@@ -1,5 +1,5 @@
 import { ColliderLayer, GltfContainer, MeshCollider, MeshRenderer, Transform } from "@dcl/sdk/ecs"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 // import {  MeshColliderLoadedComponent, MeshRenderLoadedComponent } from "../helpers/Components"
 import { COMPONENT_TYPES } from "../helpers/types"
 

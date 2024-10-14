@@ -1,5 +1,5 @@
 import { ColliderLayer, GltfContainer, MeshCollider, VisibilityComponent } from "@dcl/sdk/ecs"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 // import { VisibleLoadedComponent } from "../helpers/Components"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { playerMode } from "./Config"

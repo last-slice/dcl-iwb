@@ -1,5 +1,5 @@
 import { colyseusRoom } from "./Colyseus";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 import { playerMode } from "./Config";
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types";
 // import { BillboardLoadedComponent } from "../helpers/Components";

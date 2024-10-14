@@ -5,7 +5,7 @@ import resources from '../../../../helpers/resources'
 import { Billboard, BillboardMode, Entity, Material, MeshRenderer, TextShape, Transform, engine } from '@dcl/sdk/ecs'
 import { selectedItem } from '../../../../modes/Build'
 import { TransformInputModifiers } from '../EditTransform'
-import { getEntity } from '../../../../components/IWB'
+// import { getEntity } from '../../../../components/IWB'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { Vector3 } from '@dcl/sdk/math'
 

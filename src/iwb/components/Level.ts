@@ -1,6 +1,6 @@
 import { Entity, GltfContainerLoadingState, LoadingState, engine } from "@dcl/sdk/ecs"
 import { Actions, COMPONENT_TYPES, Triggers } from "../helpers/types"
-import { createAsset, getEntity } from "./IWB"
+import { createAsset, getEntity } from "./iwb"
 import { LevelAssetGLTF } from "../helpers/Components"
 import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger, updateTriggerEvents } from "./Triggers"
 import { utils } from "../helpers/libraries"

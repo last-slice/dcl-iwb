@@ -10,7 +10,7 @@ import { cancelSelectedItem, checkPlayerBuildRights, dropSelectedItem, otherUser
 import { addScene, checkAllScenesLoaded, checkSceneCount, enablePrivateModeForScene, isPrivateScene, loadScene, loadSceneAsset, pendingSceneLoad, removeEmptyParcels, unloadScene, updateSceneCount, updateSceneEdits } from "./Scene";
 import { engine } from "@dcl/sdk/ecs";
 import { selectParcel, deleteParcelEntities, saveNewScene, isParcelInScene, addBoundariesForParcel, deleteCreationEntities } from "../modes/Create";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 import { displayIWBMap, refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { getView } from "../ui/uiViews";
@@ -29,7 +29,7 @@ import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setQue
 import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 
-// import { addIWBCatalogComponent, addIWBComponent } from "./IWB";
+// import { addIWBCatalogComponent, addIWBComponent } from "./iwb";
 // import { addNameComponent } from "./Name";
 
 export async function createColyseusListeners(room:Room){

@@ -1,7 +1,7 @@
 import { InputAction, PBPointerEvents_Entry, PointerEventType, PointerEvents } from "@dcl/sdk/ecs"
 // import { PointersLoadedComponent } from "../helpers/Components"
 import { getEntitiesWithParent } from "@dcl-sdk/utils"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { playerMode } from "./Config"
 import { updateVehiclePointersPlayMode } from "./Vehicle"

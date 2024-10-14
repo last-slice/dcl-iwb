@@ -1,6 +1,6 @@
 import { engine, TextAlignMode, TextShape, Transform } from "@dcl/sdk/ecs";
 import { COMPONENT_TYPES } from "../helpers/types";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 import { Vector3 } from "@dcl/sdk/math";
 import { colyseusRoom } from "./Colyseus";
 

@@ -1,5 +1,5 @@
 import { ColliderLayer, GltfContainer, Material, MeshCollider, MeshRenderer, NftShape, Transform } from "@dcl/sdk/ecs"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { Color4 } from "@dcl/sdk/math"
 import { COMPONENT_TYPES } from "../helpers/types"
 

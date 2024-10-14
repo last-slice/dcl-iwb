@@ -3,7 +3,7 @@ import { getForwardDirectionFromRotation, getRandomString } from "../helpers/fun
 import {  AvatarShape, CameraMode, CameraModeArea, CameraType, ColliderLayer, EasingFunction, engine, Entity, GltfContainer, InputAction, Material, MeshCollider, MeshRenderer, PBMaterial_PbrMaterial, pointerEventsSystem, Transform, Tween } from "@dcl/sdk/ecs"
 import { movePlayerTo } from "~system/RestrictedActions"
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { createCannonBody } from "../physics"
 import { CANNON, utils } from "../helpers/libraries"
 import { localPlayer, localUserId } from "./Player"

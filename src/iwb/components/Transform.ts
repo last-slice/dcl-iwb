@@ -1,6 +1,6 @@
 import { Entity, Transform } from "@dcl/sdk/ecs"
 import { Quaternion } from "@dcl/sdk/math"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { findAssetParent } from "./Parenting"
 import { COMPONENT_TYPES } from "../helpers/types"
 import { updateTriggerArea } from "./Triggers"

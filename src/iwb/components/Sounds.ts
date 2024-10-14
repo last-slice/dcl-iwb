@@ -1,5 +1,5 @@
 import { AudioSource, AudioStream, AvatarAnchorPointType, AvatarAttach, ColliderLayer, Entity, Material, MeshCollider, MeshRenderer, PBTextShape, TextShape, Transform, VisibilityComponent, engine } from "@dcl/sdk/ecs"
-import { getEntity } from "./IWB"
+import { getEntity } from "./iwb"
 import { Color4 } from "@dcl/sdk/math"
 import { AUDIO_TYPES, CATALOG_IDS, COMPONENT_TYPES, SOUND_TYPES } from "../helpers/types"
 import { log, getRandomIntInclusive } from "../helpers/functions"

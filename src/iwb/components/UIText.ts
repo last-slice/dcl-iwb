@@ -1,5 +1,5 @@
 import { COMPONENT_TYPES } from "../helpers/types";
-import { getEntity } from "./IWB";
+import { getEntity } from "./iwb";
 import { CustomUIText } from "../../ui_components/UISpriteText";
 import { States } from "./States";
 import { Numbers } from "./Counter";
