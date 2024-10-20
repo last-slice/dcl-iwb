@@ -6,7 +6,7 @@ import resources, { colors } from "../helpers/resources";
 import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
 import { utils } from "../helpers/libraries";
-import { iwbConfig, realm, removePlayerFromHideArray, setPlayerMode, worlds } from "./Config";
+import { isGCScene, iwbConfig, realm, removePlayerFromHideArray, setPlayerMode, worlds } from "./Config";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
 import { BuildModeVisibiltyComponents } from "../systems/BuildModeVisibilitySystem";
@@ -107,7 +107,7 @@ export async function createPlayer(player:any){
     getAssetUploadToken()
 
 
-    if (localPlayer!.homeWorld || localPlayer.worldPermissions) {
+    if ((localPlayer!.homeWorld || localPlayer.worldPermissions) && !isGCScene()) {
         let config = localPlayer!.worlds.find((w:any) => w.ens === realm)
         if (config) {
             if (config.v < iwbConfig.v) {

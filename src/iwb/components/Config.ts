@@ -108,9 +108,15 @@ export async function setRealm(sceneJSON:any, url:any){
     //     realmData.realmInfo.realmName : 
     //     ""
 
+    if(getURLParameter(url, "realm") === ""){
+        island = "client"
+    }
+    else
     if(getURLParameter(url, "realm") === "main"){
         island = getURLParameter(url, "island")
     }
+
+    
 }
 
 export function setConfig(version:any, updates:any, videos:any, tutorialCID:any){
