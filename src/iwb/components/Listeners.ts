@@ -15,7 +15,7 @@ import { displayIWBMap, refreshMap } from "../ui/Objects/Map";
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel";
 import { getView } from "../ui/uiViews";
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel";
-import { scene, sceneInfoDetailView } from "../ui/Objects/SceneMainDetailPanel";
+import { sceneInfoDetailView } from "../ui/Objects/SceneMainDetailPanel";
 import { updateIWBTable } from "../ui/Reuse/IWBTable";
 import { colyseusRoom } from "./Colyseus";
 import { updateStoreView, updateStoreVisibleItems } from "../ui/Objects/StoreView";
@@ -28,6 +28,7 @@ import { playAudiusTrack } from "./Sounds";
 import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setQuestPlayerData, setQuestSteps, setServerConditions, setServerQuests, startQuest, updateQuestsDefinitions } from "./Quests";
 import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
+import { equipUserWeapon } from "./Weapon";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./iwb";
 // import { addNameComponent } from "./Name";
@@ -67,7 +68,7 @@ export async function createColyseusListeners(room:Room){
         switch(info.type){
             case 'live-action':
                 if(!scene || !info.aid || !info.actionId){
-                    console.log('invalid arguments, cannot run live action')
+                    console.log('invalid arguments, cannot run live action')//
                     return
                 }
 
@@ -172,6 +173,23 @@ export async function createColyseusListeners(room:Room){
 
             player.listen("selectedAsset", (current:any, previous:any)=>{
                 setPlayerSelectedAsset(player, current, previous)
+            })
+
+            player.listen("weapon", (current:any, previous:any)=>{
+                if(userId !== localUserId){
+                    return
+                }
+                
+                console.log('current weapon is', current)
+                if(current && (current !== undefined || current !== null)){
+                    room.state.scenes.forEach((scene:any, aid:string)=>{
+                        if(scene[COMPONENT_TYPES.WEAPON_COMPONENT].has(current.aid)){
+                            console.log('need to create a weapon', current)
+                            equipUserWeapon(scene, current)
+                            return
+                        }
+                    })
+                }
             })
         })
     
@@ -587,7 +605,7 @@ export async function createColyseusListeners(room:Room){
 
         playGameShoot(info)
 
-        runGlobalTrigger(scene, Triggers.ON_WEAPON_SHOOT, info)
+        // runGlobalTrigger(scene, Triggers.ON_WEAPON_SHOOT, info)
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.GET_QUEST_DEFINITIONS, (info:any) => {

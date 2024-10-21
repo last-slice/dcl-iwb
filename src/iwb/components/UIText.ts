@@ -89,7 +89,7 @@ export function setUiTextPlayMode(scene:any, entityInfo:any){
 }
 
 export function uiDataUpdate(scene:any, entityInfo:any, all?:boolean){
-    // console.log('ui update', entityInfo.aid, entityInfo, all)
+    console.log('ui update', entityInfo.aid, entityInfo, all)
     // setUiTextPlayMode(scene, entityInfo)
     scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((sceneEntity:any)=>{
         if(!["0", "1","2"].includes(entityInfo.aid)){
@@ -117,7 +117,7 @@ export function uiDataUpdate(scene:any, entityInfo:any, all?:boolean){
                             case 1://state
                                 if(States.has(entityInfo.entity)){
                                     let state = States.get(entityInfo.entity)
-                                textData += "" + state.currentValue
+                                    textData += "" + state.currentValue
                                 }
                                 
                                 break;

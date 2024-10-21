@@ -9,6 +9,7 @@ import { colyseusRoom } from "../components/Colyseus"
 import { excludeHidingUsers } from "../components/Config"
 import { attemptFireWeapon } from "../components/Weapon"
 import { localVehicleEntities } from "../components/Vehicle"
+import { addAutoFiringSystem, addGunRecoilSystem, removeAutoFiringSystem, removeGunRecoilSystem } from "./GunSystem"
 
 export let added = false
 
@@ -34,9 +35,9 @@ export function PlayModeInputSystem(dt: number) {
     //POINTER//
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)) {
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_ENTER)
-        if(localPlayer && localPlayer.hasWeaponEquipped){
-            attemptFireWeapon(dt)
-        }
+        // if(localPlayer && localPlayer.hasWeaponEquipped){
+        //     attemptFireWeapon(dt)
+        // }
 
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
@@ -68,9 +69,16 @@ export function PlayModeInputSystem(dt: number) {
         //     advanceDialog()
         // }
 
-        if(player.hasWeaponEquipped){
+        if(player.weapon){
             if(!player.inCooldown && player.weaponType === GAME_WEAPON_TYPES.GUN){
-                createBeam(dt)
+
+                if(player.weapon.fireAuto){
+                    console.log('start automatic weapon system')
+                    removeGunRecoilSystem()
+                    addAutoFiringSystem()
+                    return
+                }
+                createBeam(localPlayer.activeScene)
                 startAttackCooldown(localUserId)
             }
         }
@@ -97,9 +105,25 @@ export function PlayModeInputSystem(dt: number) {
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_UP)) {
         setButtonState(InputAction.IA_POINTER, PointerEventType.PET_UP)
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_UP)
-        if (result && !uiInput) {
-            if (result.hit && result.hit.entityId) {
-                handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_UP)
+
+        let player = colyseusRoom.state.players.get(localUserId)
+        if(!player){
+            return
+        }
+
+        // if(showingDialogPanel){
+        //     advanceDialog()
+        // }
+
+        if(player.weapon && player.weapon.fireAuto){
+            removeAutoFiringSystem()
+            addGunRecoilSystem()
+        }
+        else{
+            if (result && !uiInput) {
+                if (result.hit && result.hit.entityId) {
+                    handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_UP)
+                }
             }
         }
     }

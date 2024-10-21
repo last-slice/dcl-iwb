@@ -266,3 +266,19 @@ export async function createBlockchainContract(chain:CHAIN_TYPE, contractAddress
     return await new eth.ContractFactory(metaRequestManager, protocol === NFT_TYPES.ERC721 ? abi721 : abi1155).at(contractAddress);
   }
 }
+
+export function calculateTimeToTarget(startPos: {x: number, y: number, z: number}, 
+                               endPos: {x: number, y: number, z: number}, 
+                               velocity: number): number {
+    // Calculate distance between start and end positions
+    const distance = Math.sqrt(
+        Math.pow(endPos.x - startPos.x, 2) +
+        Math.pow(endPos.y - startPos.y, 2) +
+        Math.pow(endPos.z - startPos.z, 2)
+    );
+
+    // Time to reach target is distance divided by velocity (m/s)
+    const timeToTarget = distance / velocity;
+
+    return timeToTarget;
+}

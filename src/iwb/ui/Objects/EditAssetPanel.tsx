@@ -56,6 +56,7 @@ import { clearAssetPhysicsData, EditPhysics, getAssetPhysicsData, physicsView, u
 import { clearEditVehicleData, EditVehicle, getVehicleData, removeEditVehicleObjects, upateEditVehicleView, vehicleView } from './Edit/EditVehicle'
 import { displayQuestCreatorPanel } from './QuestCreatorPanel'
 import { EditQuest, getQuestDefinition, questEditView, updateQuestEditView } from './Edit/EditQuest'
+import { EditWeapon, getWeaponData, removeEditWeapon, updateEditWeaponView, weaponView } from './Edit/EditWeapon'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -164,12 +165,16 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
             getVehicleData()
             break;
 
+        case COMPONENT_TYPES.WEAPON_COMPONENT:
+            getWeaponData()
+            break;
+
         // case COMPONENT_TYPES.NPC_COMPONENT:
         //     updateNPCView('main')
-        //     break;//
+        //     break;
 
         // case COMPONENT_TYPES.TRIGGER_AREA_COMPONENT:
-        //     updateTriggerAreaActionView("main")//
+        //     updateTriggerAreaActionView("main")
         //     break;
 
         // case COMPONENT_TYPES.TRIGGER_COMPONENT:
@@ -475,6 +480,22 @@ function EditObjectDetails() {
 
 function getBackButtonLogic(){
     switch(visibleComponent){
+        case COMPONENT_TYPES.WEAPON_COMPONENT:
+            switch(weaponView){
+                case 'fpv':
+                case '3pv':
+                case 'attributes':
+                case 'audio':
+                    removeEditWeapon()
+                    updateEditWeaponView('main')
+                    break;
+
+                default:
+                    openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
+                    break;
+            }
+            break;
+
         case COMPONENT_TYPES.QUEST_COMPONENT:
             switch(questEditView){
                 case 'add-step':
@@ -986,6 +1007,7 @@ function EditObjectData(){
                 <EditPhysics/>
                 <EditVehicle/>
                 <EditQuest/>
+                <EditWeapon/>
 
             </UiEntity>
 
@@ -1127,7 +1149,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.LEADERBOARD_COMPONENT,
         COMPONENT_TYPES.VEHICLE_COMPONENT,
         COMPONENT_TYPES.PHYSICS_COMPONENT,
-        COMPONENT_TYPES.QUEST_COMPONENT
+        COMPONENT_TYPES.QUEST_COMPONENT,
+        COMPONENT_TYPES.WEAPON_COMPONENT
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1167,7 +1190,7 @@ function getAdvancedComponents(){
     assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)//
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-25).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-26).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1226,7 +1249,7 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.AUDIO_COMPONENT,
             COMPONENT_TYPES.VLM_COMPONENT,
             COMPONENT_TYPES.LEADERBOARD_COMPONENT,
-            COMPONENT_TYPES.QUEST_COMPONENT
+            COMPONENT_TYPES.QUEST_COMPONENT,
         ]
 
         let components:any[] = []
@@ -1236,7 +1259,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-25).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-26).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.push(COMPONENT_TYPES.BILLBOARD_COMPONENT)
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null

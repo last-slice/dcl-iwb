@@ -26,6 +26,7 @@ import { stopAllPlaylists } from "./Playlist"
 import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload, removeForceCamera } from "../modes/Play"
 import { disableLevelAssets } from "./Level"
 import { displayQuestPanel } from "../ui/Objects/QuestPanel"
+import { removeLocaPlayerWeapons, unequipUserWeapon } from "./Weapon"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -202,6 +203,9 @@ export async function setPlayerMode(mode:SCENE_MODES){
         displaySkinnyVerticalPanel(false)
         displayQuestPanel(false)
         removeForceCamera()
+        removeLocaPlayerWeapons()
+
+        localPlayer.hasWeaponEquipped = false
         
         
         if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){

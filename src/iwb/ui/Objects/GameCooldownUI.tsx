@@ -10,7 +10,6 @@ export function displayCooldown(value:boolean){
     show = value
 }
 
-
 export function createCooldownUI(){
   return (
     <UiEntity key={resources.slug + "game::cooldown::ui"}

@@ -5,7 +5,7 @@ import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, ge
 import { log } from '../../../helpers/functions'
 import resources, { colors, colorsLabels } from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, EDIT_MODES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
 import { generateButtons, setUIClicked, setupUI } from '../../ui'
@@ -32,6 +32,20 @@ function getAssetStates(){
         count++
     })
     return arr
+}
+
+function getSync(){
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return false
+    }
+    
+    let sync = scene[COMPONENT_TYPES.MULTIPLAYER_COMPONENT].get(selectedItem.aid)
+    if(!sync || !sync.syncedComponents.has(selectedItem.aid)){
+        return false
+    }
+
+    return sync.syncedComponents.get(selectedItem.aid).state
 }
 
 export function EditState() {

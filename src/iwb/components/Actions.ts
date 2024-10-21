@@ -29,7 +29,7 @@ import { playImagePlaylist, seekAudiusPlaylist, stopAudiusPlaylist } from "./Pla
 import { addForceCamera, entitiesWithPathingEnabled, removeForceCamera } from "../modes/Play"
 import { walkPath } from "./Path"
 import { checkTransformComponent } from "./Transform"
-import { equipUserWeapon, unequipUserWeapon } from "./Weapon"
+import { unequipUserWeapon } from "./Weapon"
 import { checPhysicskBody, pendingBodies } from "./Physics"
 import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
 import resources from "../helpers/resources"
@@ -491,6 +491,8 @@ function handleSetState(scene:any, info:any, action:any){
         runGlobalTrigger(scene, Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
         // const triggerEvents = getTriggerEvents(info.entity)
         // triggerEvents.emit(Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
+
+        //
     }
 }
 
@@ -1775,10 +1777,22 @@ function handleRemoveForceCamera(action:any){
 
 function handleEquipWeapon(scene:any, info:any, action:any){
     console.log('handle equip item for player')
-    if(!localPlayer.hasWeaponEquipped){
-        localPlayer.hasWeaponEquipped = true
-        equipUserWeapon(scene, info, action)
+
+    if(!localPlayer.weapon){
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {
+            type:action.type,
+            aid:info.aid,
+            sceneId:scene.id,
+            actionId:action.id,
+            forceScene:true,
+            action:action
+          })
     }
+
+//     if(!localPlayer.hasWeaponEquipped){
+//         localPlayer.hasWeaponEquipped = true
+//         equipUserWeapon(scene, info, action)
+//     }//
 }
 
 function handleUnequipWeapon(scene:any, info:any, action:any){

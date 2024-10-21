@@ -4,12 +4,13 @@ import {calculateImageDimensions, calculateSquareImageDimensions, getAspect, get
 import resources, { colors } from '../../../helpers/resources'
 import { COMPONENT_TYPES, EDIT_MODES, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { visibleComponent } from '../EditAssetPanel'
-import { UiTexts } from '../../../components/UIText'
+import { uiDataUpdate, UiTexts } from '../../../components/UIText'
 import { selectedItem } from '../../../modes/Build'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
 import { showNotification } from '../NotificationPanel'
+import { utils } from '../../../helpers/libraries'
 
 let dataEntities:any[] = []
 let selectedEntityIndex:number = 0
@@ -702,7 +703,7 @@ function TextDataRow(){
         }}
     >
         <Dropdown
-            options={["None", "State", "Counter", "Start Countdown"]}
+            options={["None", "State", "Counter"]}
             selectedIndex={
                 selectedItem && 
                 selectedItem.enabled && 
@@ -845,6 +846,7 @@ function selectUiType(index:number){
 
 function getEntities(){
     dataEntities.length = 0
+    selectedEntityIndex = 0
 
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(!scene){
@@ -1015,5 +1017,9 @@ function updateUi(){
                 data: data
             }
         )
+
+        utils.timers.setTimeout(()=>{
+            uiDataUpdate(scene, selectedItem)
+        }, 200)
     }
 }

@@ -22,6 +22,7 @@ export enum SERVER_MESSAGE_TYPES {
     SUBMIT_FEEDBACK = 'submit_feedback',
     PLAYER_SETTINGS = 'player_settings',
     FIRST_TIME = 'first_time',
+    REMOVE_WEAPONS_BUILD_MODE = 'remove_weapons_build_mode',
 
     // Catalog and Assets
     CATALOG_UPDATED = 'catalog_updated',
@@ -356,7 +357,8 @@ export enum COMPONENT_TYPES {
     LEADERBOARD_COMPONENT = 'Leaderboard',
     VEHICLE_COMPONENT = 'Vehicle',
     PHYSICS_COMPONENT = 'Physics',
-     QUEST_COMPONENT = 'Quest'
+     QUEST_COMPONENT = 'Quest',
+      WEAPON_COMPONENT = 'Weapon'
 }
 
 export enum BLOCKCHAINS {

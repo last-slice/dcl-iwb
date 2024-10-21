@@ -26,6 +26,7 @@ export function enableTriggerEdit(value:boolean){
 
 export function resetTriggerPanels(){
     resetTriggerConditionsPanel()
+    resetTriggerActionsPanel()
 }
 
 export function updateTriggerView(value:string, triggerId?:string){
@@ -34,8 +35,7 @@ export function updateTriggerView(value:string, triggerId?:string){
     if(value === "info"){
         triggerInfoView = "main"
 
-        resetTriggerConditionsPanel()
-        resetTriggerActionsPanel()
+        resetTriggerPanels()
         selectTriggerDetails(triggerId)
     }
 }

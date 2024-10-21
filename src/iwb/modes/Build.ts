@@ -59,6 +59,7 @@ import { resetActionAttachEntity } from "../ui/Objects/Edit/ActionPanels/AddAtta
 import { resetLeadboardInfo } from "../ui/Objects/Edit/EditLeaderboard"
 import { clearAssetPhysicsData } from "../ui/Objects/Edit/EditPhysics"
 import { clearEditVehicleData } from "../ui/Objects/Edit/EditVehicle"
+import { removeEditWeapon } from "../ui/Objects/Edit/EditWeapon"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -736,6 +737,7 @@ export function resetAdditionalAssetFeatures(){
     resetLeadboardInfo()
     clearAssetPhysicsData()
     clearEditVehicleData()
+    removeEditWeapon()
 }
 
 export function dropGrabbedItems(){

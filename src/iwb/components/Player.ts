@@ -1,7 +1,7 @@
 import {getPlayer} from "@dcl/sdk/players";
 import {NOTIFICATION_TYPES, Player, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES} from "../helpers/types";
 // import {iwbEvents, sendServerMessage} from "../messaging";
-import {AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
+import {AvatarAnchorPointType, AvatarAttach, CameraModeArea, ColliderLayer, engine, Entity, InputAction, Material, MeshCollider, MeshRenderer, pointerEventsSystem, Transform, VideoPlayer} from "@dcl/sdk/ecs";
 import resources, { colors } from "../helpers/resources";
 import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
@@ -449,4 +449,4 @@ export function banPlayer(){
     MeshCollider.setPlane(floor)
 
     movePlayerTo({newRelativePosition:{x:16 * -21, y:200, z:0}})
-}
+} 

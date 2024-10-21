@@ -36,6 +36,7 @@ import { createQuestPanel } from './Objects/QuestPanel'
 import { createUITests } from './tests'
 import { createQuestCreatorPanel } from './Objects/QuestCreatorPanel'
 import { createBannedScreen } from './Objects/BannedScreen'
+import { createCooldownUI } from './Objects/GameCooldownUI'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -78,6 +79,7 @@ const uiComponent:any = () => [
   createMainLoadingScreen(),
   createQuestPanel(),
   createQuestCreatorPanel(),
+  createCooldownUI(),
   // createAdvancedEditPanel(),
 
 

@@ -61,8 +61,8 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
 export function addForceCamera(mode:number){
     if(cameraForce || cameraForce === -500){
         cameraForce = engine.addEntity()
-        CameraModeArea.create(cameraForce, {mode:mode, area: Vector3.create(3,3,3)})
-        AvatarAttach.create(cameraForce, {anchorPointId:AvatarAnchorPointType.AAPT_HIP})
+        CameraModeArea.createOrReplace(cameraForce, {mode:mode, area: Vector3.create(3,3,3)})
+        AvatarAttach.createOrReplace(cameraForce, {anchorPointId:AvatarAnchorPointType.AAPT_HIP})
     }
 }
 

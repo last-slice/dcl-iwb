@@ -30,6 +30,7 @@ export const GunDataComponent = engine.defineComponent("iwb::GunDataComponent", 
     range:Schemas.Number,
     fireRate:Schemas.Number,
     projectile:Schemas.String,
-    sceneId:Schemas.String
+    sceneId:Schemas.String,
+    muzzlePosition:Schemas.Vector3
 })
   

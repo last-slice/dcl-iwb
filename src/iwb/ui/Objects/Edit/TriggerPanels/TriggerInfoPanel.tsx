@@ -366,7 +366,12 @@ export function TriggerDecisionRow(info:any){
                     uvs: getImageAtlasMapping(uiSizes.pencilEditIcon)
                 }}
                 onMouseDown={() => {
+                    setUIClicked(true)
                     updateTriggerInfoView("decisions", decision)
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
                 }}
             />
 

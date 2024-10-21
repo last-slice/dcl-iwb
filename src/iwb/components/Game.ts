@@ -9,7 +9,7 @@ import { localPlayer, localUserId } from "./Player"
 import { utils } from "../helpers/libraries"
 import { displayGameLobby, updateLobbyPanel } from "../ui/Objects/GameLobby"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
-import { getDistance, getRandomPointInArea, getRandomString, roundQuaternion, turn } from "../helpers/functions"
+import { calculateTimeToTarget, getDistance, getRandomPointInArea, getRandomString, roundQuaternion, turn } from "../helpers/functions"
 import { movePlayerTo } from "~system/RestrictedActions"
 import { disableUiTextPlayMode, uiDataUpdate } from "./UIText"
 import { GunDataComponent } from "../helpers/Components"
@@ -25,6 +25,7 @@ import { disableMeshColliderPlayMode } from "./Meshes"
 import { setGLTFPlayMode } from "./Gltf"
 import { resetEntitiesForBuildMode } from "../modes/Build"
 import { displayLoadingScreen } from "../ui/Objects/GameStartUI"
+import { getWorldPosition } from "@dcl-sdk/utils"
 //
 
 export let gameEndingtimer:any
@@ -273,7 +274,7 @@ export function checkGameplay(scene:any){
 function prepGame(scene:any, aid:string, info:any, gameComponent:any){
     runGlobalTrigger(scene, Triggers.ON_GAME_START_COUNTDOWN, {input:0, pointer:0, entity:info.entity})
 
-    addWeapons(gameComponent)
+    // addWeapons(gameComponent)
     addHitBoxes(gameComponent)
 }
 
@@ -507,7 +508,7 @@ export function removeGamePlayer(playerInfo:any){
     console.log('removing player info from multiplayer')
     engine.removeEntityWithChildren(player.parent)
 
-    removeWeapon(player)
+    // removeWeapon(player)
 }
 
 function removeWeapon(player:any){
@@ -531,7 +532,7 @@ export function startAttackCooldown(user:string){
   
     displayCooldown(true)
   
-    cooldownStart = 3
+    cooldownStart = player.weapon.fireRate
   
     let cooldownInt = utils.timers.setInterval(()=>{
       cooldownStart -= .1
@@ -550,22 +551,50 @@ export function startAttackCooldown(user:string){
     }, 1000 * cooldownStart)
 }
 
-export function createBeam(dt:number){
+export function createBeam(scene:any){
     let distance:any
-    let speed:any
     let hitpoint:any
     
     let player = colyseusRoom.state.players.get(localUserId)
-    let weapon = player.weapon
+    let weapon = player.weapon.weaponFPVEntity
   
-    if(isProcessingGunRay || !weapon || !GunDataComponent.has(weapon)){
+    if(isProcessingGunRay){
+        console.log('is procesing array')
+        return
+     }
+     
+     if(!player.weapon){
+        console.log('player weapon error')
+        return
+    }
+    
+    if(!GunDataComponent.has(weapon)){
+        console.log('gun data error')
       return
     }
   
     processGunArray()
+
+    if(player.weapon.audioActionAid){
+        console.log('need to play audio action')
+        let actionInfo = scene[COMPONENT_TYPES.ACTION_COMPONENT].get(player.weapon.audioActionAid)
+        console.log('action info is', actionInfo)
+        if(actionInfo){
+            let entityInfo = getEntity(scene, player.weapon.audioActionAid)
+            console.log('entity info is', entityInfo, entityInfo.entity)
+
+            let action = actionInfo.actions.find(($:any)=> $.id === player.weapon.audioActionId)
+            if(action){
+                console.log('running entity action', action)
+                actionQueue.push({aid:entityInfo.aid, action:action, entity:entityInfo.entity, force:true})
+            }
+        }
+    }
   
     GunDataComponent.getMutable(weapon).active = true
     GunDataComponent.getMutable(weapon).recoilFactor = 0
+
+    console.log('gun data is', GunDataComponent.get(weapon))
   
     raycastSystem.registerGlobalDirectionRaycast(
       {
@@ -576,37 +605,37 @@ export function createBeam(dt:number){
             Vector3.Forward(),
             Transform.get(engine.CameraEntity).rotation,
           ),
-          maxDistance:500
+          maxDistance: player.weapon.range
         },
       },
       function (raycastResult) {
         console.log("RAYCAST RESULT - ", raycastResult)
   
-        const playerPos = Transform.get(engine.PlayerEntity).position
-        const CameraPos = Transform.get(engine.CameraEntity).position
+        // const playerPos = Transform.get(engine.PlayerEntity).position
+        // const CameraPos = Transform.get(engine.CameraEntity).position
         const CameraRot = Transform.get(engine.CameraEntity).rotation
     
         // const forwardVec = Vector3.create(1,-1,1)
         // Vector3.scale(forwardVec, .1)
         // Vector3.rotate(forwardVec, CameraRot)
-    
-        const startPosition = Vector3.add(playerPos, Vector3.rotate(Vector3.create(0.35, 0.4,0.1),Transform.get(engine.CameraEntity).rotation))
-    
-  
+
+        console.log('weapon is', player.weapon)
+
+        const startPosition = getWorldPosition(player.weapon.weaponMuzzleEntity)
+
         if(raycastResult.hits.length === 0){
-          distance = 30
-          speed = 1
+        console.log('nothing hit, faking distance')
+          distance = player.weapon.range
           let fake = Vector3.Forward()
           fake = Vector3.scale(fake, distance)
           fake = Vector3.rotate(fake, CameraRot)
-          hitpoint = Vector3.add(CameraPos, fake)
+          hitpoint = Vector3.add(startPosition, fake)
         }
         else{
 
           checkEnemyHit(raycastResult.hits[0].entityId as Entity)
   
-          distance = getDistance(CameraPos, raycastResult.hits[0].position)
-          speed = 1
+          distance = getDistance(startPosition, raycastResult.hits[0].position)
           hitpoint = raycastResult.hits[0].position
   
         //   if(raycastResult.hits[0].meshName && raycastResult.hits[0].meshName === "flyBot_collider"){
@@ -615,21 +644,35 @@ export function createBeam(dt:number){
         //     }
         //   }
         }
+
+        console.log('hitpoint is', hitpoint)
+        console.log('distance is', distance)
   
         let newPos = hitpoint
-        shootBeam({start:startPosition, target:newPos, speed:speed, distance:distance, player:localUserId})
-        sendServerMessage(SERVER_MESSAGE_TYPES.SHOOT, {start:startPosition, target:newPos, speed:speed, distance:distance, player:localUserId})
+        shootBeam({sceneId:scene.id, projectileAid:player.weapon.projectile, start:startPosition, target:newPos, speed:player.weapon.velocity, distance:distance, player:localUserId})
+
+        if(player.weapon.synced){
+            sendServerMessage(SERVER_MESSAGE_TYPES.SHOOT, {sceneId:scene.id, projectileAid:player.weapon.projectile, start:startPosition, target:newPos, speed:player.weapon.velocity, distance:distance, player:localUserId})
+        }
       }
     )
 }
 
 export function shootBeam(info:any){
     console.log('shooting beam', info)
+    let scene = colyseusRoom.state.scenes.get(info.sceneId)
+    if(!scene){
+        return
+    }
+
+    let projectile = scene[COMPONENT_TYPES.IWB_COMPONENT].get(info.projectileAid)
+    if(!projectile){
+        return
+    }
+
     let start = Vector3.create(info.start.x, info.start.y, info.start.z)
     let target = Vector3.create(info.target.x, info.target.y, info.target.z)
     let laser = engine.addEntity()
-
-    let projectile:string = "assets/4b5ea2e7-991a-47b1-9159-6c6b2ba210d2.glb"
   
     // let b:any
     //   if(weapon){
@@ -652,7 +695,7 @@ export function shootBeam(info:any){
     //       }
     //     }
   
-      GltfContainer.create(laser, {src:projectile})
+      GltfContainer.create(laser, {src:'assets/' + projectile.id + ".glb"})
       Transform.create(laser)
   
     //   try{
@@ -686,13 +729,13 @@ export function shootBeam(info:any){
         start: start,
         end: target,
       }),
-      duration: info.distance / 150 * 1000,
-      easingFunction: EasingFunction.EF_LINEAR,
+      duration: calculateTimeToTarget(start, target, info.speed) * 1000,
+      easingFunction: EasingFunction.EF_LINEAR,//
     })
   
     utils.timers.setTimeout(()=>{
       engine.removeEntity(laser)
-    }, info.distance / 150 * 1000)
+    }, calculateTimeToTarget(start, target, info.speed) * 1000)
 }
 
 export function playGameShoot(info:any){
@@ -731,6 +774,10 @@ export function checkEnemyHit(hitEntity:Entity){
     console.log("checking entity hit", hitEntity)
     let scene = localPlayer.activeScene
     if(!scene){
+        return
+    }
+
+    if(localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){
         return
     }
 
