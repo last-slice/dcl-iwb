@@ -29,6 +29,7 @@ import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setQue
 import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 import { equipUserWeapon } from "./Weapon";
+import { Numbers } from "./Counter";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./iwb";
 // import { addNameComponent } from "./Name";

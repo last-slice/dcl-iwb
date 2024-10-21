@@ -20,9 +20,14 @@ interface IntervalAction {
 }
 
 export const tickSet = new Set<Entity>()
+export let utcTime:number = 0
 
 const queueDelay = new Map<Entity, Array<DelayAction>>()
 const queueInterval = new Map<Entity, Array<IntervalAction>>()
+
+export function updateUTCTime(time:number){
+  utcTime = time
+}
 
 export function createTimerSystem() {
   return function timerSystem(dt: number) {

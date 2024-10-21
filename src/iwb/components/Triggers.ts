@@ -5,7 +5,7 @@ import { getActionEvents, KeepRotatingComponent } from "./Actions";
 import { getCounterComponentByAssetId } from "./Counter";
 import { getEntity } from "./iwb";
 import { States, getCurrentValue, getPreviousValue } from "./States";
-import { tickSet } from "./Timer";
+import { tickSet, utcTime } from "./Timer";
 import { utils } from "../helpers/libraries";
 import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
 import { Color3, Vector3 } from "@dcl/sdk/math";
@@ -398,6 +398,30 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
           //     }
           //     break
           //   }
+
+          case TriggerConditionType.WHEN_TIME_EQUALS: {
+            const numeric = Number(condition.counter)
+            if (!isNaN(numeric)) {
+              return utcTime === numeric
+            }
+            break
+          }
+
+          case TriggerConditionType.WHEN_TIME_IS_GREATER_THAN: {
+            const numeric = Number(condition.counter)
+            if (!isNaN(numeric)) {
+              return utcTime > numeric
+            }
+            break
+          }
+          case TriggerConditionType.WHEN_TIME_IS_LESS_THAN: {
+            const numeric = Number(condition.counter)
+            if (!isNaN(numeric)) {
+              return utcTime < numeric
+            }
+            break
+          }
+
           }
         }
       } catch (error) {

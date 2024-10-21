@@ -10,6 +10,7 @@ import { excludeHidingUsers } from "../components/Config"
 import { attemptFireWeapon } from "../components/Weapon"
 import { localVehicleEntities } from "../components/Vehicle"
 import { addAutoFiringSystem, addGunRecoilSystem, removeAutoFiringSystem, removeGunRecoilSystem } from "./GunSystem"
+import { updateUTCTime } from "../components/Timer"
 
 export let added = false
 
@@ -18,7 +19,7 @@ export function addPlayModeSystem(){
         added = true
         engine.addSystem(PlayModeInputSystem)
         engine.addSystem(PlayModeSceneTick)
-        console.log('adding playmode input system')//
+        console.log('adding playmode input system')
     }
 }
 
@@ -290,6 +291,8 @@ export function PlayModeInputSystem(dt: number) {
 }
 
 export function PlayModeSceneTick(_dt: number) {
+    updateUTCTime(Date.now()/ 1000)
+
     colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
       runGlobalTrigger(scene, Triggers.ON_CLOCK_TICK, {input:0, pointer:0})
     })

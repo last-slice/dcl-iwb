@@ -36,6 +36,7 @@ import { disableAvatarShapePlayMode } from "../components/AvatarShape"
 import { disablePathingForEntity } from "../components/Path"
 import { Vector3 } from "@dcl/sdk/math"
 import { checkMultiplayerSyncOnEnter } from "../components/Multiplayer"
+import { removeLocaPlayerWeapons } from "../components/Weapon"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity

@@ -26,6 +26,7 @@ import { setGLTFPlayMode } from "./Gltf"
 import { resetEntitiesForBuildMode } from "../modes/Build"
 import { displayLoadingScreen } from "../ui/Objects/GameStartUI"
 import { getWorldPosition } from "@dcl-sdk/utils"
+import { removeLocaPlayerWeapons } from "./Weapon"
 //
 
 export let gameEndingtimer:any
@@ -268,6 +269,8 @@ export function checkGameplay(scene:any){
             killAllGameplay()
         }, 1000 * 5)
         showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Your Game will auto end in 5 seconds", animate:{enabled:true, return: false, time:5}})
+    }else{
+        removeLocaPlayerWeapons()
     }
 }
 

@@ -467,6 +467,13 @@ function getConditionValue(condition:any){
             return "Prev State = "
         case TriggerConditionType.WHEN_PREVIOUS_STATE_IS_NOT:
             return "Prev State != "
+        case TriggerConditionType.WHEN_TIME_EQUALS:
+            return "UTC Time = "
+        case TriggerConditionType.WHEN_TIME_IS_GREATER_THAN:
+            return "UTC Time > "
+        case TriggerConditionType.WHEN_TIME_IS_LESS_THAN:
+             return "UTC Time < "
+            break;
     }
 }
 

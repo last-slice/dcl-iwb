@@ -555,7 +555,10 @@ export enum TriggerConditionType {
     WHEN_PREVIOUS_STATE_IS = 'when_previous_state_is',
     WHEN_PREVIOUS_STATE_IS_NOT = 'when_previous_state_is_not',
     WHEN_POSITION_X_IS = 'when_position_x_is',
-    WHEN_QUEST_COMPLETE_IS ='when_quest_complete_is'
+    WHEN_QUEST_COMPLETE_IS ='when_quest_complete_is',
+    WHEN_TIME_EQUALS = 'when_utc_time_equals',
+    WHEN_TIME_IS_GREATER_THAN = 'when_utc_time_is_greater_than',
+    WHEN_TIME_IS_LESS_THAN = 'when_utc_time_is_less_than',
   }
 
 export enum TriggerConditionOperation {
