@@ -455,4 +455,55 @@ export let uiViews:any[] = [
             ]
         }
     },
+    {
+        view:"Confirm_World_Export",
+        props:{
+            label:"Confirm Export",
+            text:"Are you sure you want to export this world to this DCL Name?",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Export",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction2()
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Word_Export_Ready",
+        props:{
+            label:"Deployment Ready",
+            text:"Your deployment is ready! Please click the button to sign your deployment.",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Sign",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                    }
+                }
+            ]
+        }
+    },
 ]

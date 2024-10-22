@@ -1,5 +1,5 @@
 import { getRealm } from "~system/Runtime"
-import { colyseusRoom, sendServerMessage } from "./Colyseus"
+import { colyseusRoom, connected, sendServerMessage } from "./Colyseus"
 import { localPlayer, localUserId, settings } from "./Player"
 import { COMPONENT_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES } from "../helpers/types"
 import { AvatarModifierArea, AvatarModifierType, Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
@@ -316,7 +316,7 @@ function getURLParameter(url: string, urlKey:string) {
 }
 
 export function isGCScene(){
-    return island !== "world"
+    return colyseusRoom && connected && colyseusRoom.state.gcWorld
 }
 
 export function addSceneRoofs(){
