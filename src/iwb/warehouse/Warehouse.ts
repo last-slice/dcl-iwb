@@ -1,6 +1,6 @@
 import { createAudioRoom } from "./Audio";
 
-export let inWarehouse = true
+export let inWarehouse = false
 export let warehouseHoverFn:any
 export let warehouseHoverExitFn:any
 export let warehouseClickFn:any

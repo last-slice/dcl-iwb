@@ -417,7 +417,7 @@ export function checkAllScenesLoaded() {
         scenesLoaded = true
 
         console.log('all scenes loaded')
-        createWarehouse()
+        // createWarehouse()
         
         if(!isGCScene()){
             loadBlankParcels()

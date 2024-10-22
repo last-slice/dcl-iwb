@@ -41,6 +41,7 @@ export enum SERVER_MESSAGE_TYPES {
     DELETE_UGC_ASSET = 'delete_ugc_asset',
     ADD_WORLD_ASSETS = 'add_world_assets',
     DELETE_WORLD_ASSETS = 'delete_world_assets',
+    CHUNK_SEND_ASSETS ='chunk_send_assets',
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",
