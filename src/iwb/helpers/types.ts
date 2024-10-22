@@ -86,6 +86,7 @@ export enum SERVER_MESSAGE_TYPES {
     START_GAME = 'start_game',
     END_GAME = 'end_game',
     FORCE_BACKUP = 'force_backup',
+    EXPORT_WORLD = 'export_world',
 
     CUSTOM = "custom",//
     IWB_VERSION_UPDATE ='iwb_version_update',

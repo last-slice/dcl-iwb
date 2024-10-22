@@ -4,19 +4,21 @@ import { iwbConfig, realm, worlds } from '../../../components/Config'
 import resources from '../../../helpers/resources'
 import { HoriztonalButtons } from '../../Reuse/HoriztonalButtons'
 import { generateButtons, setUIClicked } from '../../ui'
-import { displayMainView, mainView } from '../IWBView'
-import { sendServerMessage } from '../../../components/Colyseus'
+import { displayMainView, mainView, updateMainView } from '../IWBView'
+import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { localUserId, localPlayer, createTutorialVideo, settings } from '../../../components/Player'
-import { SOUND_TYPES, SERVER_MESSAGE_TYPES, NOTIFICATION_TYPES } from '../../../helpers/types'
+import { SOUND_TYPES, SERVER_MESSAGE_TYPES, NOTIFICATION_TYPES, COMPONENT_TYPES } from '../../../helpers/types'
 import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping, calculateSquareImageDimensions, addLineBreak } from '../../helpers'
 import { uiSizes } from '../../uiConfig'
 import { playSound } from '../../../components/Sounds'
-import { confirmDeleteAsset, newItems, playerItemsOriginal } from '../../../components/Catalog'
+import { confirmDeleteAsset, items, newItems, playerItemsOriginal } from '../../../components/Catalog'
 import { IWBTable, setTableConfig, updateIWBTable } from '../../Reuse/IWBTable'
 import { showNotification } from '../NotificationPanel'
 import { displayPendingPanel } from '../PendingInfoPanel'
 import {  formatDollarAmount, formatSize, paginateArray } from '../../../helpers/functions'
 import { openExternalUrl } from '~system/RestrictedActions'
+import { displaySkinnyVerticalPanel } from '../../Reuse/SkinnyVerticalPanel'
+import { getView } from '../../uiViews'
 
 export let infoView = "Version"
 export let accessView = "Builders"
@@ -106,6 +108,22 @@ export let horiztonalButtons:any[] = [
             return localPlayer && localPlayer.homeWorld
         }
     },
+    {label:"Export", pressed:false, func:()=>{
+        updateInfoView("Export")
+        playSound(SOUND_TYPES.SELECT_3)
+
+        dclNamesVisibleIndex = 1
+        refreshVisibleDCLNames()
+        calculateWorldExportRequirements()
+        },
+        height:6,
+        width:6,
+        fontBigScreen:30,
+        fontSmallScreen:15,
+        displayCondition:()=>{
+            return localPlayer && localPlayer.homeWorld
+        }
+    },
 ]
 
 export let horizontalAccessButtons:any[] = [
@@ -180,6 +198,7 @@ export function InfoView(){
         <FeedbackSentView/>
         <AccessView/>
         <TutorialsView/>
+        <ExportView/>
 
             </UiEntity>
     )
@@ -487,8 +506,8 @@ function AssetsView(){
 
         </UiEntity>
 
-                    {/* File count size container */}
-                    <UiEntity
+            {/* File count size container */}
+                <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'flex-start',
@@ -1138,6 +1157,213 @@ uiTransform={{
     )
 }
 
+function ExportView(){
+    return(
+        <UiEntity
+        key={resources.slug + "-info-view-export"}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '100%',
+            display:infoView === "Export" ? 'flex' : 'none'
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+    uiText={{value:"World Size: " + formatSize(worldSize) + " / " + formatDollarAmount(allocatedSize) + " MB", fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-left'}}
+    />
+
+        {/* File count size container */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '10%',
+                margin:{bottom:"2%"}
+            }}
+            uiBackground={{color:Color4.Gray()}}
+            >
+
+            {/* File count size container */}
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: `${Math.min(parseFloat(formatSize(worldSize)), 100)}%`,
+                height: '100%',
+            }}
+            uiBackground={{color: parseFloat(formatSize(worldSize)) / 100 > 0.95 ? Color4.Red() : Color4.Green()}}
+            />
+
+            </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlue)).width,
+                    height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+                    margin:{top:"1%", bottom:'1%'},
+                    display: localPlayer && (localPlayer.homeWorld || localPlayer.worldPermissions) ? "flex" : "none"
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+                }}
+                onMouseDown={() => {
+                    playSound(SOUND_TYPES.SELECT_3)
+                    if(parseFloat(formatSize(worldSize)) < allocatedSize){
+                        playSound(SOUND_TYPES.SELECT_3)
+                        displayMainView(false)
+                        displaySkinnyVerticalPanel(true, 
+                            getView("Confirm_World_Export"), 
+                            realm,
+                            ()=>{
+                                displayPendingPanel(true, "deployment")
+                                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World deployment is pending. Please wait for a confirmation popup.", animate:{enabled:true, return:true, time:5}})
+                                sendServerMessage(SERVER_MESSAGE_TYPES.EXPORT_WORLD, {name:realm})
+                            },
+                            ()=>{
+                                displayMainView(true)
+                                updateMainView("Info")
+                                updateInfoView("Export")
+    
+                                dclNamesVisibleIndex = 1
+                                refreshVisibleDCLNames()
+                                calculateWorldExportRequirements()
+                            },
+                        )
+                    }
+                }}
+                uiText={{textWrap:'nowrap', value:"Export World", color:Color4.White(), fontSize:sizeFont(25,15)}}
+            />
+
+    {/* <UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignContent:'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+        margin:{top:"1%", bottom:'1%'},
+    }}
+    >
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        alignContent:'center',
+        justifyContent: 'center',
+        width: '80%',
+        height: '100%',
+    }}
+    uiText={{value:"Publish to DCL Name", fontSize:sizeFont(25,20), color:Color4.White(), textAlign:'middle-left'}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignContent:'center',
+        justifyContent: 'center',
+        width: '20%',
+        height: '100%',
+    }}
+    >
+        <UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(5).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{right:"1%"}
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.blackArrowLeft)
+        }}
+        onMouseDown={()=>{
+            playSound(SOUND_TYPES.SELECT_3)
+            if(dclNamesVisibleIndex - 1 >= 1 ){
+                dclNamesVisibleIndex--
+                refreshVisibleDCLNames()
+            }
+        }}
+        />
+
+<UiEntity
+        uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(5).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{left:"1%"}
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.blackArrowRight)
+        }}
+        onMouseDown={()=>{
+            playSound(SOUND_TYPES.SELECT_3)
+            dclNamesVisibleIndex++
+            refreshVisibleDCLNames()
+        }}
+        />
+    </UiEntity>
+
+    </UiEntity> */}
+
+
+
+{/* <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        alignContent:'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '60%',
+        margin:{top:"1%", bottom:'1%'},
+    }}
+    >
+        {
+            infoView === "Export" &&
+            dclNamesRows()
+        }
+    </UiEntity> */}
+
+            </UiEntity>
+    )
+}
+
 function generateUpdateRows(){
     let arr:any[] = []
     if(iwbConfig && iwbConfig.updates){
@@ -1516,7 +1742,6 @@ function generateRowItems(count:number){
         }}
         // uiText={{value:"" + (visibleItems[count + rowcount] &&  visibleItems[count + rowcount].name.substring(0,20) + "..."), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
         uiText={{value:"" + (visibleTutorials[(count * 3) + rowcount] && addLineBreak(visibleTutorials[(count * 3) + rowcount].name, undefined, 25)), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'middle-center'}}
-
         />
 
         </UiEntity>
@@ -1536,4 +1761,128 @@ function updateWorldAssets(){
     })
     setTableConfig(worldAssetsTableConfig)
     updateIWBTable(playerItemsOriginal)
+}
+
+let worldSize = 0
+let allocatedSize = 0
+
+let dclNamesVisibleIndex:number = 1
+let visibleDCLNames:any[] = []
+
+export function refreshVisibleDCLNames(){
+    visibleDCLNames.length = 0
+    visibleDCLNames = paginateArray([...localPlayer.worlds.map(($:any)=> $.name).sort((a:any,b:any) => a.localeCompare(b))], dclNamesVisibleIndex, 8)
+}
+
+function calculateWorldExportRequirements(){
+    worldSize = 0
+    allocatedSize = 0
+
+    allocatedSize = localPlayer.worlds.length * 100
+
+    let countedAssets:any[] = []
+    colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
+        scene[COMPONENT_TYPES.IWB_COMPONENT].forEach((iwb:any, iAid:string)=>{
+            if(!countedAssets.includes(iwb.id)){
+                let item = items.get(iwb.id)
+                if(item){
+                    worldSize += item.si
+                    countedAssets.push(iwb.id)
+                }
+            }
+        })
+    })
+}
+
+function dclNamesRows(){
+    let arr:any[] = []
+    let count = 0
+
+    for(let i =0; i < 2; i++){
+        arr.push(
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '45%',
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            >
+            {generateDCLNamesRow(count)}
+        </UiEntity>
+        )
+        count++
+    }
+    return arr
+}
+
+
+function generateDCLNamesRow(count:number){
+    let arr:any[] = []
+    let rowcount = 0
+
+    for(let j = 0; j < 4; j++){
+        arr.push(
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+                margin:{right:"1%", left:'1%'},
+                display:visibleDCLNames[(count * 4) + j] ? "flex" : "none"
+            }}
+            >
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '88%',
+                height: '90%',
+                margin:{top:"1%", bottom:'1%'},
+            }}
+            uiBackground={{color:Color4.Black()}}
+            uiText={{value:"" + visibleDCLNames && visibleDCLNames[(count * 4) + j] ? visibleDCLNames[(count * 4) + j] : ""}}
+            onMouseDown={()=>{
+                setUIClicked(true)
+                console.log(count, j)
+                if(parseFloat(formatSize(worldSize)) < allocatedSize){
+                    playSound(SOUND_TYPES.SELECT_3)
+                    displayMainView(false)
+                    displaySkinnyVerticalPanel(true, 
+                        getView("Confirm_World_Export"), 
+                        visibleDCLNames[(count * 4) + j],
+                        ()=>{
+                            displayPendingPanel(true, "deployment")
+                            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World deployment is pending. Please wait for a confirmation popup.", animate:{enabled:true, return:true, time:5}})
+                            sendServerMessage(SERVER_MESSAGE_TYPES.EXPORT_WORLD, {name: visibleDCLNames[(count * 4) + j]})
+                        },
+                        ()=>{
+                            displayMainView(true)
+                            updateMainView("Info")
+                            updateInfoView("Export")
+
+                            dclNamesVisibleIndex = 1
+                            refreshVisibleDCLNames()
+                            calculateWorldExportRequirements()
+                        },
+                    )
+                }
+                setUIClicked(false)
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+            />
+
+            </UiEntity>
+            )
+        rowcount++
+    }
+    return arr
 }
