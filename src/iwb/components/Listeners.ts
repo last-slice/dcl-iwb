@@ -120,15 +120,22 @@ export async function createColyseusListeners(room:Room){
         updateStoreView("main")
     })
 
+    room.onMessage(SERVER_MESSAGE_TYPES.CHUNK_SEND_ASSETS, async (info: any) => {
+        log(SERVER_MESSAGE_TYPES.CHUNK_SEND_ASSETS + ' received', info)
+        setRealmAssets(info)
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
-        // log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
+        log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
         // setHidPlayersArea()//
 
-        // await setServerConditions(info.prerequisites)//
+        // await setServerConditions(info.prerequisites)
         // await setServerQuests(info.quests)
-        await setRealmAssets(info.realmAssets)
+        // console.log(info.realmAssets)
+        // await setRealmAssets(info.realmAssets)
 
+        // console.log(items)
         await refreshSortedItems()
 
         await updateStyles(info.styles)

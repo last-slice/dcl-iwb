@@ -47,12 +47,15 @@ export function setCatalog(catalog:any){
 }
 
 export function setRealmAssets(assets:any){
+    // assets.forEach((item:any)=>{
+    //     updateItem(item.id, item)
+    // })
     for (const key in assets) {
         if (assets.hasOwnProperty(key)) {
             const value = assets[key];
             updateItem(key, value)
         }
-    }
+    }//
 }
 
 export function confirmDeleteAsset(item:any, index?:number){

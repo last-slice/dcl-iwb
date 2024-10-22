@@ -15,6 +15,7 @@ import { displaySkinnyVerticalPanel } from "./Reuse/SkinnyVerticalPanel"
 import { getView } from "./uiViews"
 import { openExternalUrl } from "~system/RestrictedActions"
 import { displaySceneDetailsPanel, showSceneDetailPanel } from "./Objects/SceneMainDetailPanel"
+import { items } from "../components/Catalog"
 
 export let uiModes: any = {
     0://playmode
@@ -116,6 +117,8 @@ export let topTools: any[] = [
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message: "Please enable this scene before adding assets.", animate:{enabled:true, return:true, time:5}})
                 return
             }
+
+            console.log(items)
 
             if (showCatalogPanel) {
                 displayCatalogPanel(false)
