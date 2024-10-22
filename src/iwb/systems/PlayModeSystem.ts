@@ -11,6 +11,7 @@ import { attemptFireWeapon } from "../components/Weapon"
 import { localVehicleEntities } from "../components/Vehicle"
 import { addAutoFiringSystem, addGunRecoilSystem, removeAutoFiringSystem, removeGunRecoilSystem } from "./GunSystem"
 import { updateUTCTime } from "../components/Timer"
+import { inWarehouse, warehouseClickFn, warehouseHoverExitFn, warehouseHoverFn } from "../warehouse/Warehouse"
 
 export let added = false
 
@@ -40,6 +41,11 @@ export function PlayModeInputSystem(dt: number) {
         //     attemptFireWeapon(dt)
         // }
 
+        if(inWarehouse){
+            warehouseHoverFn(result)
+            return
+        }
+
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
                 handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_HOVER_ENTER)
@@ -49,6 +55,12 @@ export function PlayModeInputSystem(dt: number) {
 
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)) {
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_HOVER_LEAVE)
+
+        if(inWarehouse){
+            warehouseHoverExitFn(result)
+            return
+        }
+
         if (result && !uiInput) {
             if (result.hit && result.hit.entityId) {
                 handleInputTriggerForEntity(result.hit.entityId as Entity, InputAction.IA_POINTER,  PointerEventType.PET_HOVER_LEAVE)
@@ -59,7 +71,6 @@ export function PlayModeInputSystem(dt: number) {
     if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN)) {
         setButtonState(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
         const result = inputSystem.getInputCommand(InputAction.IA_POINTER, PointerEventType.PET_DOWN)
-        console.log('ui input', uiInput)
 
         let player = colyseusRoom.state.players.get(localUserId)
         if(!player){
@@ -87,8 +98,13 @@ export function PlayModeInputSystem(dt: number) {
             // if(showingTutorial && !uiInput){
             //     stopTutorialVideo()
             //     return
-            // }
+            // }//
             if (result && !uiInput) {
+                if(inWarehouse){
+                    warehouseClickFn(result)
+                    return
+                }
+
                 if (result.hit && result.hit.entityId) {
                     //check vehicle
                     let vehicleEntity = localVehicleEntities.get(result.hit.entityId as Entity)

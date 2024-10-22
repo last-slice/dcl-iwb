@@ -302,7 +302,7 @@ export function removePlayer(userId:string, player:any) {
 }
 
 export function setPlayMode(userId:string, mode:SCENE_MODES) {
-    console.log('setging player mode to', mode)
+    console.log('setging player mode to', userId, mode)
     let player = colyseusRoom.state.players.get(userId)
     if (player) {
         player.mode = mode

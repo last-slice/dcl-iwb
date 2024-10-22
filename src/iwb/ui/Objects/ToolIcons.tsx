@@ -12,6 +12,7 @@ import { settingsIconData, topTools, uiModes, uiSizes } from "../uiConfig"
 import { setUIClicked } from "../ui"
 import { showStore } from "./StoreView"
 import { displayQuestPanel, showQuestView } from "./QuestPanel"
+import { inWarehouse } from "../../warehouse/Warehouse"
 
 export let showToolsPanel = false
 
@@ -73,7 +74,7 @@ export function createToolsPanel() {
             }}
             onMouseDown={()=>{
                 setUIClicked(true)
-                if(selectedItem && selectedItem.enabled || showStore){
+                if(selectedItem && selectedItem.enabled || showStore || inWarehouse){
                     return
                 }
                 
@@ -84,6 +85,7 @@ export function createToolsPanel() {
                     setPlayMode(localUserId, SCENE_MODES.PLAYMODE)
                    }
                 }
+                setUIClicked(false)
             }}
             onMouseUp={()=>{
                 setUIClicked(false)

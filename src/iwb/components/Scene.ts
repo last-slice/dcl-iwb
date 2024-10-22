@@ -43,6 +43,7 @@ import { leaderboardListener } from "./Leaderboard"
 import { vehicleListener } from "./Vehicle"
 import { physicsListener } from "./Physics"
 import { questListener } from "./Quests"
+import { createWarehouse } from "../warehouse/Warehouse"
 
 export let realmActions: any[] = []
 
@@ -416,6 +417,7 @@ export function checkAllScenesLoaded() {
         scenesLoaded = true
 
         console.log('all scenes loaded')
+        createWarehouse()
         
         if(!isGCScene()){
             loadBlankParcels()
@@ -423,7 +425,7 @@ export function checkAllScenesLoaded() {
                 await addSceneLoadTrigger(scene)
             });
         }
-        engine.addSystem(PlayerTrackingSystem)
+        engine.addSystem(PlayerTrackingSystem)//
     }
 }
 

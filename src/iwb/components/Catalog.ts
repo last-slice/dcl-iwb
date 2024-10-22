@@ -126,7 +126,7 @@ function sortByType(items: SceneItem[], type?: string) {
     // console.log('type is', type)
     // console.log('items are ',items)
 
-    console.log(items.filter(($:any) => !$.n))
+    // console.log(items.filter(($:any) => !$.n))
     if(type){
         if(type === "New"){
             return items.filter((item:any)=> item.time && item. time >= (Date.now() / 1000) - (5 * 24 * 60 * 60))

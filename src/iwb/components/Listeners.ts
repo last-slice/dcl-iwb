@@ -30,6 +30,7 @@ import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 import { equipUserWeapon } from "./Weapon";
 import { Numbers } from "./Counter";
+import { createWarehouse } from "../warehouse/Warehouse";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./iwb";
 // import { addNameComponent } from "./Name";
@@ -125,10 +126,10 @@ export async function createColyseusListeners(room:Room){
 
         // setHidPlayersArea()//
 
-        // await setServerConditions(info.prerequisites)//
+        // await setServerConditions(info.prerequisites)
         // await setServerQuests(info.quests)
+        console.log(info.realmAssets)
         await setRealmAssets(info.realmAssets)
-
         await refreshSortedItems()
 
         await updateStyles(info.styles)
