@@ -119,8 +119,7 @@ export function refreshMarketplaceItems() {
 }
 
 export function updateItem(id: string, update: any) {
-    console.log('updating item', id, update)
-
+    // console.log('updating item', id, update)
     if(update.anim){
         update.tag ? update.tag.push("animations") : update.tag['animations']
     }

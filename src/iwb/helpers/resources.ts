@@ -87,7 +87,7 @@ export default {
         validateTest: "http://localhost:2751",
 
         assetSign: "/scene/sign",
-        dclNamesGraph:"https://api.thegraph.com/subgraphs/name/decentraland/marketplace",
+        dclNamesGraph:"https://subgraph.decentraland.org/marketplace",
         dclLandGraph:"https://subgraph.decentraland.org/land-manager",
         dclApi: "https://api.decentraland.org/v1/"
     },
