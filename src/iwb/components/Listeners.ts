@@ -127,7 +127,7 @@ export async function createColyseusListeners(room:Room){
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
-        log(SERVER_MESSAGE_TYPES.INIT + ' received', info)//
+        log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
         // setHidPlayersArea()//
 
@@ -136,7 +136,7 @@ export async function createColyseusListeners(room:Room){
         // console.log(info.realmAssets)
         // await setRealmAssets(info.realmAssets)
 
-        console.log(items)
+        // console.log(items)
         await refreshSortedItems()
 
         await updateStyles(info.styles)
