@@ -2200,12 +2200,17 @@
     "ALLOW_TO_TRIGGER_AVATAR_EMOTE",
     "ALLOW_MEDIA_HOSTNAMES"
   ],
-  "featureToggles": {},
+  "featureToggles": {
+    "voiceChat": "enabled",
+    "portableExperiences": "enabled"
+  },
   "worldConfiguration": {
     "name": "Lastraum.dcl.eth"
   },
-  "iwb":{
-    "name":"Lastraum.dcl.eth"
+  "iwb": {
+    "name": "Lastraum.dcl.eth"
   },
-  "vlm": { "sceneId": "923d3ff7-6996-44c7-8ecf-a203f0aba318" }
+  "vlm": {
+    "sceneId": "923d3ff7-6996-44c7-8ecf-a203f0aba318"
+  }
 }
