@@ -116,6 +116,347 @@ export function AddInputModifierActionPanel(){
 
     </UiEntity>
 
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '100%',
+        }}
+        uiText={{value:"Disable Emote", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+        />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(4).width,
+                    height: calculateSquareImageDimensions(4).height,
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: modifiers.disableEmote ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    if(inputModifiers.includes('disableEmote')){
+                        inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableEmote"),1)
+                    }else{
+                        inputModifiers.push("disableEmote")
+                    }
+                    updateActionData({actions:[...inputModifiers]})
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />
+            </UiEntity>
+
+    </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%'}
+        }}
+        >
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '100%',
+        }}
+        uiText={{value:"Disable Walk", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+        />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(4).width,
+                    height: calculateSquareImageDimensions(4).height,
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: modifiers.disableWalk ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    if(inputModifiers.includes('disableWalk')){
+                        inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableWalk"),1)
+                    }else{
+                        inputModifiers.push("disableWalk")
+                    }
+                    updateActionData({actions:[...inputModifiers]})
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />
+            </UiEntity>
+
+    </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '100%',
+        }}
+        uiText={{value:"Disable Run", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+        />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(4).width,
+                    height: calculateSquareImageDimensions(4).height,
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: modifiers.disableRun ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    if(inputModifiers.includes('disableRun')){
+                        inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableRun"),1)
+                    }else{
+                        inputModifiers.push("disableRun")
+                    }
+                    updateActionData({actions:[...inputModifiers]})
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />
+            </UiEntity>
+
+    </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%'}
+        }}
+        >
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '100%',
+        }}
+        uiText={{value:"Disable Jog", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+        />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(4).width,
+                    height: calculateSquareImageDimensions(4).height,
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: modifiers.disableJog ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    if(inputModifiers.includes('disableJog')){
+                        inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableJog"),1)
+                    }else{
+                        inputModifiers.push("disableJog")
+                    }
+                    updateActionData({actions:[...inputModifiers]})
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />
+            </UiEntity>
+
+    </UiEntity>
+
+    <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            height: '100%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70%',
+            height: '100%',
+        }}
+        uiText={{value:"Disable Jump", fontSize:sizeFont(20,15), textAlign:'middle-left', textWrap:'nowrap'}}
+        />
+
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '30%',
+                height: '100%',
+            }}
+            >
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateSquareImageDimensions(4).width,
+                    height: calculateSquareImageDimensions(4).height,
+                    margin:{top:"1%", bottom:'1%'},
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: modifiers.disableJump ? getImageAtlasMapping(uiSizes.toggleOnTrans) : getImageAtlasMapping(uiSizes.toggleOffTrans)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    if(inputModifiers.includes('disableJump')){
+                        inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableJump"),1)
+                    }else{
+                        inputModifiers.push("disableJump")
+                    }
+                    updateActionData({actions:[...inputModifiers]})
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />
+            </UiEntity>
+
+    </UiEntity>
+
         </UiEntity>
 
 
