@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, TextShape, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, InputModifier, MainCamera, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, TextShape, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { ACCESS_TYPE, Actions, CHAIN_TYPE, COLLIDER_LAYERS, COMPONENT_TYPES, NFT_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
@@ -18,7 +18,7 @@ import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStar
 import { attemptLoadLevel, disableLevelAssets, loadLevelAssets, startLevelCountdown } from "./Level"
 import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
-import { island } from "./Config"
+import { isClient, island } from "./Config"
 import { createBlockchainContract, getRandomIntInclusive } from "../helpers/functions"
 import { removedEntities, sceneAttachedParents } from "./Scene"
 import { showDialogPanel } from "../ui/Objects/DialogPanel"
@@ -392,6 +392,18 @@ export function updateActions(scene:any, info:any, action:any){
             case Actions.SET_TEXT:
                 handleSetText(scene, info, action)
                 break;
+
+            case Actions.SET_VIRTUAL_CAMERA:
+                handleVirtualCameraSet(scene, info, action)
+                break;
+
+            case Actions.FREEZE_PLAYER:
+                handleFreezePlayer(scene, info, action)
+                break;
+
+            case Actions.UNFREEZE_PLAYER:
+                handleunfreezePlayer(scene, info, action)
+                break;
         }
     })
 }
@@ -403,7 +415,7 @@ export function handlePlayAnimation(scene:any, entityInfo:any, action:any){
     clip.playing = true
     clip.loop = action.loop ? true : false
     clip.speed = action.speed ? action.speed : 1
-    clip.shouldReset = true//
+    clip.shouldReset = true
 }
 
 export function handleStopAnimation(scene:any, entityInfo:any, action:any){
@@ -559,6 +571,7 @@ function handlePlaySound(scene:any, info:any, action:any){
         if(audio){
             audio.loop = action.loop
             audio.volume = itemInfo.volume
+            audio.global = itemInfo.attach
             audio.playing = true
         }else{
             console.log('no audio file')
@@ -573,6 +586,7 @@ function handlePlaySound(scene:any, info:any, action:any){
             // audio.loop = action.loop
             audio.volume = itemInfo.volume
             audio.playing = true
+            audio.global = itemInfo.attach
         }else{
             console.log('no audio file')
         }
@@ -1864,4 +1878,43 @@ function handleSetText(scene:any, info:any, action:any){
                 break;
         }
     }
+}
+
+export function handleVirtualCameraSet(scene:any, entityInfo:any, action:any){
+    if(!isClient){
+        return
+    }
+    MainCamera.createOrReplace(engine.CameraEntity, {virtualCameraEntity: entityInfo.entity})
+}
+
+export function handleFreezePlayer(scene:any, entityInfo:any, action:any){
+    if(!isClient){
+        return
+    }
+
+    let modifiers:any = {
+        disableAll:false,
+        disableWalk:false,
+        disableRun:false,
+        disableJog:false,
+        disableJump:false,
+        disableEmote:false
+    }
+
+    action.actions.forEach((modifier:any)=>{
+        modifiers[modifier] = true
+    })
+    InputModifier.createOrReplace(engine.PlayerEntity, {
+        mode: {
+            $case: 'standard',
+            standard: modifiers,
+        },
+    })
+}
+
+export function handleunfreezePlayer(scene:any, entityInfo:any, action:any){
+    if(!isClient){
+        return
+    }
+    InputModifier.deleteFrom(engine.PlayerEntity)
 }

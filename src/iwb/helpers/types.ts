@@ -360,7 +360,8 @@ export enum COMPONENT_TYPES {
     VEHICLE_COMPONENT = 'Vehicle',
     PHYSICS_COMPONENT = 'Physics',
      QUEST_COMPONENT = 'Quest',
-      WEAPON_COMPONENT = 'Weapon'
+      WEAPON_COMPONENT = 'Weapon',
+      VIRTUAL_CAMERA = 'Camera'
 }
 
 export enum BLOCKCHAINS {
@@ -486,7 +487,10 @@ export enum Actions {
     ENABLE_PHYSICS = 'physics_enable',
     DISABLE_PHYSICS = 'physics_disable',
     ENTER_VEHICLE = 'vehicle_enter',
-    EXIT_VEHICLE = 'vehicle_exit'
+    EXIT_VEHICLE = 'vehicle_exit',
+    SET_VIRTUAL_CAMERA = 'virtual_camera_set',
+    FREEZE_PLAYER = 'player_freeze',
+    UNFREEZE_PLAYER = 'player_unfreeze',
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 

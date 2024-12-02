@@ -46,6 +46,7 @@ export let playerMode:SCENE_MODES = SCENE_MODES.PLAYMODE
 export let playerViewMode:VIEW_MODES = VIEW_MODES.AVATAR
 
 export let scenesLoaded: boolean = false
+export let isClient:boolean = false
 export let sceneCount: number = 0
 export let scenesLoadedCount: number = 0
 export let emptyParcels:any[] = []
@@ -111,13 +112,13 @@ export async function setRealm(sceneJSON:any, url:any){
 
     if(getURLParameter(url, "realm") === ""){
         island = "client"
+        isClient = true
     }
-    else
-    if(getURLParameter(url, "realm") === "main"){
-        island = getURLParameter(url, "island")
+    else{
+        if(getURLParameter(url, "realm") === "main"){
+            island = getURLParameter(url, "island")
+        }
     }
-
-    
 }
 
 export function setConfig(version:any, updates:any, videos:any, tutorialCID:any){

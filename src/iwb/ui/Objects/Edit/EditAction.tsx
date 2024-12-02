@@ -45,6 +45,7 @@ import { AddQuestStartPanel, updateQuestsList } from './ActionPanels/AddQuestSta
 import { quests } from '../../../components/Quests'
 import { AddVerifyAccessPanel, resetVerify } from './ActionPanels/AddVerifyPanel'
 import { AddSetText, resetAddSetText } from './ActionPanels/AddSetText'
+import { AddInputModifierActionPanel, resetInputModifierActionPanel } from './ActionPanels/AddInputFreezePanel'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -573,6 +574,9 @@ function getActionDataPanel(){
 
         case Actions.SET_TEXT.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddSetText/>
+
+        case Actions.FREEZE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddInputModifierActionPanel/>
         }
 }
 
@@ -784,6 +788,11 @@ const ActionDefaults:any = {
     [Actions.SET_TEXT]:{
         fn:()=>{
             resetAddSetText()
+        }
+    },
+    [Actions.FREEZE_PLAYER]:{
+        fn:()=>{
+            resetInputModifierActionPanel()
         }
     }
 }

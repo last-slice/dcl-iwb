@@ -28,6 +28,7 @@ import { disableGameAsset } from "./Game"
 import { checkAvatarShape } from "./AvatarShape"
 import { checkPathComponent } from "./Path"
 import { checkQuestComponent } from "./Quests"
+import { checkVirtualCameraComponent } from "./VirtualCamera"
 
 export function getEntity(scene:any, aid:string){
   return scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
@@ -108,6 +109,7 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
   await checkAvatarShape(scene, iwbInfo)
   await checkPathComponent(scene, iwbInfo)
   await checkQuestComponent(scene, iwbInfo)
+  await checkVirtualCameraComponent(scene, iwbInfo)
 
   await disableGameAsset(scene, iwbInfo)
 

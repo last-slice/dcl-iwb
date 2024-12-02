@@ -13,10 +13,18 @@ export function initIWB() {
     setupUI()
 
     getPreview().then(()=>{
-        getExplorerConfiguration({}).then((data) => {
-            console.log('hardware data is', data)
-            checkPlayer(data)
-        })
+        let data:any
+        try{
+            getExplorerConfiguration({}).then((hardware:any) => {
+                data = hardware
+                console.log('hardware data is', data)
+
+                checkPlayer(data)
+            })
+        }
+        catch(e){
+            console.log('cannot run deprecated function get explorer configuration', e)
+        }
     })
 }
 
@@ -55,3 +63,5 @@ function createPlayer(hardwareData:any, player:any){
         })
     }
 }
+
+//npm run start -- --explorer-alpha   
