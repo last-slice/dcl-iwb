@@ -2205,10 +2205,10 @@
     "portableExperiences": "enabled"
   },
   "worldConfiguration": {
-    "name": "Lastraum.dcl.eth"
+    "name": "BuilderWorld.dcl.eth"
   },
   "iwb": {
-    "name": "Lastraum.dcl.eth"
+    "name": "BuilderWorld.dcl.eth"
   },
   "vlm": {
     "sceneId": "923d3ff7-6996-44c7-8ecf-a203f0aba318"
