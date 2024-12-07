@@ -42,6 +42,10 @@ export enum SERVER_MESSAGE_TYPES {
     ADD_WORLD_ASSETS = 'add_world_assets',
     DELETE_WORLD_ASSETS = 'delete_world_assets',
     CHUNK_SEND_ASSETS ='chunk_send_assets',
+    CHUNK_WAREHOUSE_ASSETS ='chunk_warehouse_assets',
+    SAVE_WAREHOUSE = 'save_warehouse',
+    WAREHOUSE_ITEM_TRANSFORM = 'warehouse_item_tranform',
+    WAREHOUSE_ADD_TRIGGER = 'warehouse_add_trigger',
 
     // Scene
     SCENE_SAVE_NEW = "scene_save_new",

@@ -12,8 +12,9 @@ import { playSound } from '@dcl-sdk/utils'
 import { currentPage, filterByStyle, filterCatalog, filtered, initCatalog, itemsPerPage, itemsToShow, refreshView, totalPages, updateCatalogSizing, updateCurrentPage, updatePublicAssetToggle, updateSearchFilter, updateStyleToggle } from './CatalogPanel'
 import { showNotification } from './NotificationPanel'
 import { displayPendingPanel } from './PendingInfoPanel'
-import { localPlayer } from '../../components/Player'
+import { localPlayer, localUserId } from '../../components/Player'
 import { updateMainView } from './IWBView'
+import { openExternalUrl } from '~system/RestrictedActions'
 
 export let showStore = false
 export let storeView = "main"
@@ -961,6 +962,32 @@ function ItemView(){
         justifyContent: 'center',
         width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
         height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+        margin:{bottom:"1%"}
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+    }}
+    onMouseDown={() => {
+        setUIClicked(true)
+        openExternalUrl({url: (resources.DEBUG ? resources.endpoints.validateTest : resources.endpoints.toolsetProd) + "/warehouse/asset/" + localUserId + "/" + selectedItem.id + ".glb"})
+    }}
+    onMouseUp={() => {
+        setUIClicked(false)
+    }}
+    uiText={{value:"Download", fontSize: sizeFont(30, 15)}}
+/>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
     }}
     uiBackground={{
         textureMode: 'stretch',
@@ -979,6 +1006,7 @@ function ItemView(){
     }}
     uiText={{value:"Back", fontSize: sizeFont(30, 15)}}
 />
+
 </UiEntity>
 
         </UiEntity>

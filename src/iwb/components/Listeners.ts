@@ -30,7 +30,8 @@ import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 import { equipUserWeapon } from "./Weapon";
 import { Numbers } from "./Counter";
-import { createWarehouse } from "../warehouse/Warehouse";
+import { createWarehouse, updateUnplacedWarehouseItems } from "../warehouse/Warehouse";
+import { setGlobalEmitter } from "../modes/Play";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./iwb";
 // import { addNameComponent } from "./Name";
@@ -122,9 +123,15 @@ export async function createColyseusListeners(room:Room){
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.CHUNK_SEND_ASSETS, async (info: any) => {
-        log(SERVER_MESSAGE_TYPES.CHUNK_SEND_ASSETS + ' received', info)
+        // log(SERVER_MESSAGE_TYPES.CHUNK_SEND_ASSETS + ' received', info)
         setRealmAssets(info)
     })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.CHUNK_WAREHOUSE_ASSETS, async (info: any) => {
+        // log(SERVER_MESSAGE_TYPES.CHUNK_WAREHOUSE_ASSETS + ' received', info)
+        updateUnplacedWarehouseItems(info)//
+    })
+
 
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
@@ -200,6 +207,8 @@ export async function createColyseusListeners(room:Room){
                     })
                 }
             })
+
+            setGlobalEmitter()
         })
     
         room.state.players.onRemove(async(player:any, userId:any)=>{

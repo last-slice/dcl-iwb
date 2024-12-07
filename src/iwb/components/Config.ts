@@ -64,7 +64,7 @@ export function setHidPlayersArea(){
     addPlayerToHideArray(localUserId)
 
     engine.removeEntity(hideOthersEntity)
-    // hideOthersEntity = engine.addEntity()
+    // hideOthersEntity = engine.addEntity()//
 
     // AvatarModifierArea.create(hideOthersEntity, {
     //     area: Vector3.create(800,100,800),

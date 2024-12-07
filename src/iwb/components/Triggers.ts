@@ -168,7 +168,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
-      // console.log('trigger event', triggerInfo, triggerEvent)
+      console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent, triggerInfo.type)
       if(!trigger){
         console.log('cant find trigger')

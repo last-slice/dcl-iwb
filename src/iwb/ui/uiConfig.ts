@@ -1809,6 +1809,14 @@ export let uiSizes: any = {
         sourceWidth: 30,
         sourceHeight: 30
     },
+    rightCarrotWhite: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 150,
+        sourceLeft: 964,
+        sourceWidth: 30,
+        sourceHeight: 30
+    },
     leftArrow3Trans: {
         atlasHeight: 1024,
         atlasWidth: 1024,

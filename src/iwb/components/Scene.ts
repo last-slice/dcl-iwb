@@ -43,7 +43,7 @@ import { leaderboardListener } from "./Leaderboard"
 import { vehicleListener } from "./Vehicle"
 import { physicsListener } from "./Physics"
 import { questListener } from "./Quests"
-import { createWarehouse } from "../warehouse/Warehouse"
+import { createWarehouse, processPendingWarehouseAssets } from "../warehouse/Warehouse"
 
 export let realmActions: any[] = []
 
@@ -425,7 +425,8 @@ export function checkAllScenesLoaded() {
                 await addSceneLoadTrigger(scene)
             });
         }
-        engine.addSystem(PlayerTrackingSystem)//
+        engine.addSystem(PlayerTrackingSystem)
+        processPendingWarehouseAssets()
     }
 }
 

@@ -38,7 +38,7 @@ export function createEntity(item:any){
   let ent = engine.addEntity()
   item.entity = ent
 
-  console.log('creating entity', ent)
+  // console.log('creating entity', ent)
   RealmEntityComponent.create(ent)
 
   if (playerMode === SCENE_MODES.BUILD_MODE) {
