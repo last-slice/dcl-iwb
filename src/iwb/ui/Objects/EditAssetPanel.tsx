@@ -427,10 +427,21 @@ function EditObjectDetails() {
                         display: 'flex',//
                         flexDirection: 'column',
                         width: '100%',
-                        height: '100%',
+                        height: '90%',
                         justifyContent:'center',
                     }}
                     uiText={{ value: "" + (selectedItem && selectedItem.enabled ? getAssetName() : ""), fontSize: sizeFont(30, 25), textAlign:'middle-left'}}
+                     />
+
+<UiEntity
+                    uiTransform={{
+                        display: 'flex',//
+                        flexDirection: 'column',
+                        width: '100%',
+                        height: '10%',
+                        justifyContent:'center',
+                    }}
+                    uiText={{ value: "" + (selectedItem && selectedItem.enabled ? "Entity:" + selectedItem.entity : ""), fontSize: sizeFont(20, 15), textAlign:'middle-left'}}
                      />
                      
                      

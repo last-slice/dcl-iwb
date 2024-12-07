@@ -322,17 +322,7 @@ export function createCatalogInfoPanel() {
                 // uiBackground={{color:Color4.Blue()}}
             >
 
-                {/* item name */}
-                <UiEntity
-                    uiTransform={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        width: '100%',
-                        height: '30%',
-                        margin: {bottom: "5%"}
-                    }}
-                    uiText={{value: `${selectedItem?.n}`, fontSize: sizeFont(40, 30), textAlign: 'middle-left'}}
-                />
+               
 
 
                 {/* item catalog */}

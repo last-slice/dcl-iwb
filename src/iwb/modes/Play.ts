@@ -37,9 +37,16 @@ import { disablePathingForEntity } from "../components/Path"
 import { Vector3 } from "@dcl/sdk/math"
 import { checkMultiplayerSyncOnEnter } from "../components/Multiplayer"
 import { removeLocaPlayerWeapons } from "../components/Weapon"
+import mitt from "mitt"
+import { isGCScene } from "../components/Config"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity
+export let globalEmitter:any
+
+export function setGlobalEmitter(){
+    globalEmitter = mitt()
+}
 
 export async function handleSceneEntitiesOnLeave(sceneId:string){
     let scene = colyseusRoom.state.scenes.get(sceneId)
@@ -56,6 +63,7 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
                 }
             }
         })
+        globalEmitter.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0,sceneId:scene.id})
     }
 }
 
@@ -84,7 +92,7 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
     checkGameplay(scene)
 
     let triggerEvents = getTriggerEvents(entityInfo.entity)
-    triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+    triggerEvents.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0, entity:entityInfo.entity,sceneId:scene.id})
 }
 
 export async function handleSceneEntitiesOnEnter(sceneId:string){
@@ -104,6 +112,7 @@ export async function handleSceneEntitiesOnEnter(sceneId:string){
                 }
             }
         })
+        globalEmitter.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, sceneId:scene.id})
     }
 }
 
@@ -119,7 +128,7 @@ export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     checkMultiplayerSyncOnEnter(scene, entityInfo)
 
     let triggerEvents = getTriggerEvents(entityInfo.entity)
-    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity,sceneId:scene.id})
 }
 
 export async function handleSceneEntitiesOnUnload(sceneId:string){
@@ -145,6 +154,8 @@ export async function handleSceneEntitiesOnUnload(sceneId:string){
                     }
                 }
             })
+            globalEmitter.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:0,sceneId:scene.id})
+
             disableDelayedActionTimers()
             disablePlayUI()
         }
@@ -182,7 +193,7 @@ export async function handleSceneEntityOnUnload(scene:any, entityInfo:any){
         await disableGameAsset(scene, itemInfo)
 
         let triggerEvents = getTriggerEvents(entityInfo.entity)
-        triggerEvents.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+        triggerEvents.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity,sceneId:scene.id})
     }
 }
 
@@ -204,6 +215,7 @@ export async function handleSceneEntitiesOnLoad(sceneId:string){
                 }
             }
         })
+        globalEmitter.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, sceneId:scene.id})
     }
 }
 
@@ -223,7 +235,7 @@ export function handleSceneEntityOnLoad(scene:any, entityInfo:any){
     setTriggersForPlayMode(scene, entityInfo)
     
     let triggerEvents = getTriggerEvents(entityInfo.entity)
-    triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity})
+    triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity, sceneId:scene.id})
 }
 
 function disableDelayedActionTimers(){
@@ -263,18 +275,33 @@ export function teleportToScene(info:any){
     
         let [sx,sy,sz] = scene.sp[rand].split(",")
         let [cx,cy,cz] = scene.cp[rand].split(",")
-    
-        position.x = parent.x + parseInt(sx)
-        position.y = parent.y + parseInt(sy)
-        position.z = parent.z + parseInt(sz)
-    
-        camera.x = parent.x + parseInt(cx)
-        camera.y = parent.y + parseInt(cy)
-        camera.z = parent.z + parseInt(cz)
+
+        if(isGCScene()){
+            position.x = parseInt(sx)
+            position.y = parseInt(sy)
+            position.z = parseInt(sz)
+        
+            camera.x = parseInt(cx)
+            camera.y = parseInt(cy)
+            camera.z = parseInt(cz)
+        }
+        else{
+            position.x = parent.x + parseInt(sx)
+            position.y = parent.y + parseInt(sy)
+            position.z = parent.z + parseInt(sz)
+        
+            camera.x = parent.x + parseInt(cx)
+            camera.y = parent.y + parseInt(cy)
+            camera.z = parent.z + parseInt(cz)
+        }
     
         displayMainView(false)
     
         movePlayerTo({newRelativePosition:position, cameraTarget:camera})
+        console.log('random number is', rand)
+        console.log('spawn point is', scene.sp[rand])
+        console.log('parent position', parent)
+        console.log('moving player to', position, camera)
     }
 }
 

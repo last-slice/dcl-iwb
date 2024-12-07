@@ -73,15 +73,17 @@ export function addLevelSpawnEntity(){
 export function updateLevelSpawnEntity(direction:string, factor:number, manual?:boolean){
     let transform:any = Transform.getMutable(levelSpawnEntity).position
     transform[direction] = manual ? factor : transform[direction] + (factor * selectedItem.pFactor)
-    let position = getWorldPosition(levelSpawnEntity)
-    bouncePosition = {...position}
+    // let position = getWorldPosition(levelSpawnEntity)
+    // bouncePosition = {...position}
+    bouncePosition = {...transform}
 }
 
 export function updateLevelSpawnLookEntity(direction:string, factor:number, manual?:boolean){
     let transform:any = Transform.getMutable(levelSpawnArrowEntity).position
     transform[direction] = manual ? factor : transform[direction] + (factor * selectedItem.pFactor)
-    let position = getWorldPosition(levelSpawnArrowEntity)
-    bounceLook = {...position}
+    // let position = getWorldPosition(levelSpawnArrowEntity)
+    // bounceLook = {...position}
+    bounceLook = {...transform}
 }
 
 export function createAddSpawnPointPanel() {

@@ -13,7 +13,7 @@ export const States = engine.defineComponent(resources.slug + "state::component"
   })
 
 export function isValidState(states:any, value: string | undefined) {
-    return !!value && states.values.includes(value)
+    return !!value// && states.values.includes(value)
 }
 
 export function getCurrentValue(states:any) {
