@@ -28,6 +28,7 @@ export function resetActionAttachEntity(){
 export function addActionAttachEntity(){
     setPositionParent = engine.addEntity()
     setPositionEntity = engine.addEntity()
+    setCameraEntity = engine.addEntity()
 
     if(GltfContainer.has(selectedItem.entity)){
         let gltf = GltfContainer.get(selectedItem.entity)

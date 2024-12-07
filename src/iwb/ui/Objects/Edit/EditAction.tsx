@@ -400,7 +400,7 @@ export function ActionRow(info:any){
                 height: '100%',
                 margin:{left:'2%'}
             }}
-            uiText={{value:"" + data.name, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+            uiText={{value:"" + data.name + " - " + data.id, textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 {/* 
              <UiEntity
