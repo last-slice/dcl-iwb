@@ -13,7 +13,12 @@ import { colyseusRoom } from "../components/Colyseus";
 import { showWarehouseUI } from "../ui/Objects/WarehouseUI";
 
 export let admins:any[]= [
-    "0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6"
+    "0x3edfae1ce7aeb54ed6e171c4b13e343ba81669b6",
+    "0x87b895f37a93e76cf1c27ed68b38d77fee0f7867",
+    "0x56d947fa1ae6d6293b307b489540c156af628f0f",
+    "0x6d873a14a470dd969d7c76a2e088169ab2a1d7ae",
+    "0x54e93609eb454a1f152edefdf022480794ce2130",
+    "0xa23aA5fcE659a828Ab52d62a708E29e3347B9Eb7"
 ]
 
 export let warehouseScene:string = "MzCw-"
@@ -67,7 +72,7 @@ export function processPendingWarehouseAssets(){
 
         if(admins.includes(localUserId)){
             enableBuilderHUD(true)
-            let indicator = engine.addEntity()
+            let indicator = engine.addEntity()//
             MeshRenderer.setPlane(indicator)
             Transform.create(indicator, {parent: parent, rotation: Quaternion.fromEulerDegrees(90,0,0), scale: Vector3.create(1,1,1)})
         }

@@ -240,7 +240,7 @@ export function createBuilderHUDPanel(label:string) {
                     />
 
 
-<UiEntity
+{/* <UiEntity
                     uiTransform={{
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -267,7 +267,7 @@ export function createBuilderHUDPanel(label:string) {
                     onMouseDown={()=>{
                         loadGLB()
                     }}
-                    />
+                    /> */}
 
 <UiEntity
                     uiTransform={{
@@ -292,7 +292,7 @@ export function createBuilderHUDPanel(label:string) {
                             sourceHeight: 74
                         })
                     }}
-                    uiText={{value: "Load @ User", fontSize:sizeFont(25,10)}}
+                    uiText={{value: "Load GLB", fontSize:sizeFont(25,10)}}
                     onMouseDown={()=>{
                         loadGLB(true)
                     }}

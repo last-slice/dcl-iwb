@@ -84,16 +84,17 @@ export function selectTrigger(index:number){
 }
 
 export function selectAsset(index:number){
+  let asset = [...builderHUDEntities.filter(e => !e.placed)][index]
   if(index > 0){
     selectedItem = {
       modifier:EDIT_MODIFIERS.POSITION,
       factor:1,
-      entity: builderHUDEntities[index].entity,
+      entity: asset.entity,
       enabled:true,
       index:index,
-      label:builderHUDEntities[index].label,
-      id: builderHUDEntities[index].id,
-      style: builderHUDEntities[index].style,
+      label:asset.label,
+      id: asset.id,
+      style: asset.style,
     }
 
     GltfContainer.createOrReplace(selectionPointer, {
@@ -103,7 +104,7 @@ export function selectAsset(index:number){
   Billboard.createOrReplace(selectionPointer, {billboardMode: BillboardMode.BM_Y})
 
   Transform.createOrReplace(selectionPointer, {
-      position: Vector3.create(0, Transform.get(builderHUDEntities[index].entity).position.y + 1, 0),
+      position: Vector3.create(0, Transform.get(asset.entity).position.y + 1, 0),
       parent: selectedItem.entity
   })
   }else{
@@ -253,9 +254,9 @@ export function transformObject(axis:string, direction:number){
 export function saveWarehousePositions(){
   if(selectedItem.category){}
   else{
-    let e = builderHUDEntities[selectedItem.index]
+    let e =  [...builderHUDEntities.filter(e => !e.placed)][selectedItem.index]
     e.placed = true
-    // builderHUDEntities.splice(selectedItem.index,1)//
+    builderHUDEntities.splice(selectedItem.index,1)
 
     let item = warehouseItems.get(selectedItem.id)
     if(item){
@@ -269,11 +270,18 @@ export function saveWarehousePositions(){
     }
   }
   sendServerMessage(SERVER_MESSAGE_TYPES.SAVE_WAREHOUSE, {category: selectedItem.category, style:selectedItem.style, id:selectedItem.id, trigger:selectedItem.trigger})
+  selectedItem.category = true
 }
 
 export function loadGLB(atPlayer?:boolean){
   console.log('loading asset ', selectedItem.id)  
   let category = warehouseItems.get(selectedItem.style)
+  console.log('category is', category)
+  console.log('loading glb for item', selectedItem)
+
+  if(!category){
+    return
+  }
 
   if(atPlayer){
     let playerPosition = getWorldPosition(engine.PlayerEntity)
@@ -292,10 +300,10 @@ export function loadGLB(atPlayer?:boolean){
           category:selectedItem.category,
           trigger:selectedItem.trigger
       }
-  )
+    )
   }
   else{
-    Transform.createOrReplace(category.parent, {position: category.parent, rotation: Quaternion.fromEulerDegrees(category.r.x, category.r.y, category.r.z), scale: category.s})
+    Transform.createOrReplace(selectedItem.entity, {parent:category.parent, position:Transform.get(category.parent).position, rotation: Quaternion.fromEulerDegrees(category.r.x, category.r.y, category.r.z), scale: category.s})
   }
   GltfContainer.createOrReplace(selectedItem.entity, {src: "assets/" + selectedItem.id + ".glb", visibleMeshesCollisionMask:ColliderLayer.CL_NONE, invisibleMeshesCollisionMask:ColliderLayer.CL_NONE})  
 }
