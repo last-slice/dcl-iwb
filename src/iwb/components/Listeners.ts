@@ -30,6 +30,9 @@ import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 import { equipUserWeapon } from "./Weapon";
 import { Numbers } from "./Counter";
+import { setGlobalEmitter } from "../modes/Play";
+import { displayMainLoadingScreen } from "../ui/Objects/LoadingScreen";
+import { removeLoadingScreen } from "../systems/LoadingSystem";
 
 // import { addIWBCatalogComponent, addIWBComponent } from "./iwb";
 // import { addNameComponent } from "./Name";
@@ -128,6 +131,8 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.INIT, async (info: any) => {
         log(SERVER_MESSAGE_TYPES.INIT + ' received', info)
 
+
+
         // setHidPlayersArea()//
 
         // await setServerConditions(info.prerequisites)
@@ -154,15 +159,16 @@ export async function createColyseusListeners(room:Room){
             if(userId === localUserId){
                 await setWorlds(info.worlds)
                 await createPlayer(player)
-                setSceneListeners(room)
 
                 if(!isGCScene()){
-                    // displayIWBMap(true)//
                     localPlayer.canMap = true
                     utils.timers.setTimeout(()=>{
                         refreshMap()
                     }, 1000 * 10)
+                }else{
+                    removeLoadingScreen()
                 }
+                setSceneListeners(room)
             }
     
             if(player.playingGame){
@@ -209,6 +215,7 @@ export async function createColyseusListeners(room:Room){
         utils.timers.setTimeout(()=>{
             checkAllScenesLoaded()
         }, 1000 * 5)
+        setGlobalEmitter()
     })
 
     room.onMessage(SERVER_MESSAGE_TYPES.IWB_VERSION_UPDATE, (info: any) => {
@@ -274,7 +281,11 @@ export async function createColyseusListeners(room:Room){
         if(info.valid){
             if(info.dest === "gc"){
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene " + info.name + " deployed to Genesis City!", animate:{enabled:true, return:true, time:10}})
-            }else{
+            }
+            else if(info.dest === "angzaar"){
+                showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene " + info.name + " deployed to Angzaar Plaza!", animate:{enabled:true, return:true, time:10}})
+            }
+            else{
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
             }
         }

@@ -51,7 +51,7 @@ function createPlayer(hardwareData:any, player:any){
             if (!sceneInfo) return
 
             const sceneJson = JSON.parse(sceneInfo.metadataJson)
-            console.log("scene json is", sceneJson)
+            // console.log("scene json is", sceneJson)
 
             if(!sceneJson.iwb) return
             await setRealm(sceneJson, hardwareData.clientUri)

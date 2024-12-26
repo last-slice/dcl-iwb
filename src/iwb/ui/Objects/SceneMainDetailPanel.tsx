@@ -15,7 +15,7 @@ import { showNotification } from './NotificationPanel'
 import { displaySkinnyVerticalPanel } from '../Reuse/SkinnyVerticalPanel'
 import { getView } from '../uiViews'
 import { displayAddSpawnPointPanel } from './AddSpawnPointPanel'
-import { localPlayer } from '../../components/Player'
+import { localPlayer, localUserId } from '../../components/Player'
 import { utils } from '../../helpers/libraries'
 import { displayExpandedMap } from './ExpandedMapView'
 import { displayMainView } from './IWBView'
@@ -23,6 +23,8 @@ import { displayPendingPanel } from './PendingInfoPanel'
 
 export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
+export let exportAngzaarStatus:string = "loading"
+export let angzaarReservation:any
 
 export let showSceneDetailPanel = false
 let visibleIndex = 1
@@ -381,6 +383,7 @@ function MainRightView(){
             <EditBuildersPanel/>
             <ExportPanel/>
             <ExportGenesisCityPanel/>
+            <ExportAngzaarPanel/>
 
         </UiEntity>
   
@@ -1102,9 +1105,66 @@ export function ExportPanel(){
                 }}
                 />
 
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+        height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+        margin:{top:"1%"}
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }}
+    uiText={{value: "Angzaar Plaza", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+    onMouseDown={()=>{
+        setUIClicked(true)
+        playSound(SOUND_TYPES.SELECT_3)
+        angzaarReservation = undefined
+        exportAngzaarStatus = "loading"
+        sceneInfoDetailView = "Export-Angzaar"
+        getAngzaarPlazaReservation()
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+    />
+
             </UiEntity>
     )
 }
+
+{/* <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                    height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                    margin:{top:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+                }}
+                uiText={{value: "Genesis City", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+                onMouseDown={()=>{
+                    setUIClicked(true)
+                    playSound(SOUND_TYPES.SELECT_3)
+                    sceneInfoDetailView = "Export-Genesis"
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                /> */}
 
 export function ExportGenesisCityPanel(){
     return (
@@ -1203,6 +1263,92 @@ export function ExportGenesisCityPanel(){
                 >
                     {sceneInfoDetailView === "Export-Genesis" && generateRows()}
                 </UiEntity>
+
+            </UiEntity>
+    )
+}
+
+export function ExportAngzaarPanel(){
+    return (
+        <UiEntity
+            key={resources.slug + "scene::export::angzaar::panel"}
+            uiTransform={{
+                display: sceneInfoDetailView === "Export-Angzaar" ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+
+<UiEntity
+    uiTransform={{
+        display: exportAngzaarStatus && exportAngzaarStatus !== "none" ? "flex" : "none",
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+    }}
+>
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40%',
+        height: '10%',
+    }}
+    // uiBackground={{color:Color4.Gray()}}
+    uiText={{value:"Required Parcels: " + (angzaarReservation && angzaarReservation.size), color:Color4.White(), fontSize:sizeFont(20,15)}}
+    />
+
+<UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+                    height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+                    margin:{top:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas2.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+                }}
+                uiText={{value: "Export", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+                onMouseDown={()=>{
+                    setUIClicked(true)
+                    playSound(SOUND_TYPES.SELECT_3)
+                    
+                    sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY,{
+                        sceneId:scene?.id,
+                        parcels: [...selectedGenesisParcels],
+                        locationId:angzaarReservation.locationId,
+                        reservationId:angzaarReservation.id,
+                        dest:'angzaar'
+                    })
+
+                    exportAngzaarStatus = "loading"
+                    angzaarReservation = undefined
+                    updateIWBTable([])
+                    displayMainView(false)
+                    
+                    displaySceneDetailsPanel(false)
+                    updateSceneDetailsView("Info")
+                    displayPendingPanel(true, "deployment")
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />
+
+
+    </UiEntity>
 
             </UiEntity>
     )
@@ -1474,5 +1620,26 @@ function toggleSelectItem(item:any){
         }
     }else{
         selectedGenesisParcels.push(item)
+    }
+}
+
+async function getAngzaarPlazaReservation(){
+    try{
+        let res = await fetch((resources.DEBUG ? resources.endpoints.angzaarPlazaTest : resources.endpoints.angzaarPlazaProd) + "/api/plaza/user-reservation/" + localUserId)
+        let json = await res.json()
+        console.log('angzaar plaza reservation is', json)
+        if(json.valid && json.reservation){
+            exportAngzaarStatus = "finished"
+            angzaarReservation = json.reservation
+        }else{
+            console.log('error with reservation', json.message)
+            exportAngzaarStatus = "finished"
+            angzaarReservation = "none"
+        }
+    }
+    catch(e:any){
+        console.log('error getting angzaar reservation', e.message)
+        exportAngzaarStatus = "finished"
+        angzaarReservation = "error"
     }
 }

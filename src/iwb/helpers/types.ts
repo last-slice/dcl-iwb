@@ -69,6 +69,7 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_DELETE_GRABBED_ITEM = 'scene_delete_grabbed_item',
     SCENE_CREATE_QUEST = 'scene_create_quest',
     SCENE_DELETE_QUEST = 'scene_delete_quest',
+    SCENE_DEPLOY_ANGZAAR = 'scene_deploy_angzaar',
     
     //World
     INIT_WORLD = "init_world",

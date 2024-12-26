@@ -56,7 +56,8 @@ export let hideOthersEntity:Entity
 export let localConfig:any = {
     parcels:[],
     base:"",
-    id:""
+    id:"",
+    gcScene:false
 }
 
 export function setHidPlayersArea(){
@@ -71,7 +72,7 @@ export function setHidPlayersArea(){
     //     modifiers: [AvatarModifierType.AMT_HIDE_AVATARS],
     //     excludeIds: excludeHidingUsers.sort()
     // })
-    // Transform.create(hideOthersEntity, {position:Vector3.create(0,0,0)})
+    // Transform.create(hideOthersEntity, {position:Vector3.create(0,0,0)})//
 }
 
 export function setExcludePlayersToSoloGame(excluded:string[]){
@@ -101,6 +102,7 @@ export async function setRealm(sceneJSON:any, url:any){
     localConfig.base = sceneJSON.scene.base
     localConfig.parcels = sceneJSON.scene.parcels
     localConfig.id = sceneJSON.iwb.scene
+    localConfig.gcScene = sceneJSON.iwb.hasOwnProperty("gcScene") ? true : false
 
     let realmData = await getRealm({})
     console.log('realm data is', realmData)
@@ -119,6 +121,12 @@ export async function setRealm(sceneJSON:any, url:any){
             island = getURLParameter(url, "island")
         }
     }
+
+    if(localConfig.gcScene){
+        island = "gc"
+    }
+
+    console.log('gc scene is', localConfig.gcScene)
 }
 
 export function setConfig(version:any, updates:any, videos:any, tutorialCID:any){
@@ -317,7 +325,7 @@ function getURLParameter(url: string, urlKey:string) {
 }
 
 export function isGCScene(){
-    return colyseusRoom && connected && colyseusRoom.state.gcWorld
+    return localConfig.gcScene
 }
 
 export function addSceneRoofs(){

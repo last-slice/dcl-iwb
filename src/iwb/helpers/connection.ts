@@ -10,6 +10,8 @@ export async function connect(roomName: string, userData: any, token: string, wo
     options.world = world ? world : "iwb"
     options.island = island ? island : "world"
     options.localConfig = localConfig
+    options.gcScene = localConfig ? localConfig.gcScene : undefined
+
 
     client = new Client(resources.DEBUG ? resources.endpoints.wsTest : resources.endpoints.wsProd)
     try {
