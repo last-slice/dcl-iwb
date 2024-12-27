@@ -63,11 +63,11 @@ export let audiusMoodEndpoints:any = {
     "v1/full/playlists/top?limit=20&mood=yearning&type=playlist&with_users=true",
     "v1/full/playlists/top?limit=20&mood=sensual&type=playlist&with_users=true",
     "v1/full/playlists/top?limit=20&mood=tender&type=playlist&with_users=true",
-    ],
+    ],//
 }
 
 export default {
-    DEBUG: true,
+    DEBUG: false,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",

@@ -410,6 +410,7 @@ export enum Actions {
     ATTACH_PLAYER = "player_attach",//
     DETACH_PLAYER = "player_detach",
     PLAY_VIDEO = 'video_play',
+    RESET_VIDEO_PLAYBACK = 'video_reset_playback',
     // TOGGLE_VIDEO = 'video_toggle',
     PLAY_VIDEO_STREAM = 'video_stream_play',
     STOP_VIDEO = 'video_stop',

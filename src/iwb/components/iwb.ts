@@ -90,7 +90,7 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
 
   await checkTransformComponent(scene, iwbInfo)  
   await checkGLTFComponent(scene, iwbInfo,isLevelAsset)
-  // await checkVideoComponent(scene, iwbInfo)
+  await checkVideoComponent(scene, iwbInfo)
   await checkTextureComponent(scene, iwbInfo)
   await checkPointerComponent(scene, iwbInfo)
   await checkMeshRenderComponent(scene, iwbInfo)

@@ -748,6 +748,7 @@ export function EditMaterial() {
         justifyContent: 'center',
         width: '100%',
         height: '50%',
+        display: emissiveTextureIndex !== 2 ? 'flex' : 'none'
     }}
 >
 <Input
