@@ -265,7 +265,7 @@ export function saveWarehousePositions(){
       if(item.ty === "3D"){
         let gltf = GltfContainer.getMutable(selectedItem.entity)
         gltf.invisibleMeshesCollisionMask = ColliderLayer.CL_PHYSICS
-        gltf.visibleMeshesCollisionMask = ColliderLayer.CL_POINTER
+        gltf.visibleMeshesCollisionMask = ColliderLayer.CL_POINTER//
       }
     }
   }
@@ -397,20 +397,20 @@ export function getBuilderEntities(){
 }
 
 export function addTrigger(){
-  let count = 1
-  let triggerCount = warehouseTriggerCount.get(warehouseCategories[warehouseIndex].label)
+  let triggerCount = warehouseTriggerCount[warehouseCategories[warehouseIndex].label]
+  console.log('warehouse trigger count', triggerCount)
   if(triggerCount){
-    count += triggerCount
+    triggerCount += 1
   }
-  sendServerMessage(SERVER_MESSAGE_TYPES.WAREHOUSE_ADD_TRIGGER, {style:warehouseCategories[warehouseIndex].label, count:count })
+  sendServerMessage(SERVER_MESSAGE_TYPES.WAREHOUSE_ADD_TRIGGER, {style:warehouseCategories[warehouseIndex].label, count:triggerCount })
 
   let category = warehouseItems.get(warehouseCategories[warehouseIndex].label)
   if(!category){
     return
   }
-  addLocalTrigger(category, count,
+  addLocalTrigger(category, triggerCount,
     {
-    "id": count,
+    "id": triggerCount,
     "p": {
       "x": 0,
       "y": 0,
@@ -422,4 +422,21 @@ export function addTrigger(){
       "z": 1
     }
   }, category.parent)
+}
+
+export function updateCategoryTriggers(style:string){
+  let triggerItems = [...warehouseTriggers.values()].filter((item:any)=> item.sty === style)
+  console.log('trigger items are ', triggerItems)
+
+  categoryTriggers = triggerItems.map(item => {
+    return{
+      entity: item.entity,
+      label: item.label,
+      style: style,
+      id: item.id,
+      trigger:true
+    }
+  })
+  categoryTriggers.unshift({label:"Select Trigger",style:style, trigger:true, id:0, entity:-1, placed:false})
+
 }

@@ -2208,6 +2208,8 @@
     "name": "BuilderWorld.dcl.eth"
   },
   "iwb": {
-    "name": "BuilderWorld.dcl.eth"
+    "name": "BuilderWorld.dcl.eth",
+    "gcScene":false,
+    "online":true
   }
 }

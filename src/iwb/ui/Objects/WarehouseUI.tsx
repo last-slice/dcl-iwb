@@ -2,6 +2,7 @@ import ReactEcs, {UiEntity} from '@dcl/sdk/react-ecs'
 import resources from '../../helpers/resources'
 import { calculateImageDimensions, calculateSquareImageDimensions, getAspect, getImageAtlasMapping, sizeFont } from '../helpers'
 import { enteredArea, hideWarehouseDetailsPanel, selectedWarehouseItem, warehouseDetailsPanelPosition } from '../../warehouse/Warehouse'
+import { uiSizes } from '../uiConfig'
 let show:boolean = false
 
 export function showWarehouseUI(value:boolean){
@@ -28,12 +29,19 @@ export function createWarehouseUI() {
         uiTransform={{
             display: 'flex',
             flexDirection: 'column',
-            width: '100%',
-            height: '10%',
+            width: '15%',
+            height: '7%',
             positionType:'absolute',
-            position:{left:'15%', top:'0%'}
+            position:{left:'15%', top:'1%'}
         }}
-        uiText={{value: "Location: " + (enteredArea ? enteredArea : ""), fontSize: sizeFont(20, 20), textAlign: 'middle-left'}}
+        uiBackground={{
+              texture:{
+                  src: resources.textures.atlas2
+              },
+              textureMode: 'stretch',
+              uvs:getImageAtlasMapping(uiSizes.largeHorizontalPill)
+            }}
+        uiText={{value: "Location: " + (enteredArea ? enteredArea : ""), fontSize: sizeFont(35, 20), textAlign: 'middle-center'}}
     />
 
             </UiEntity>

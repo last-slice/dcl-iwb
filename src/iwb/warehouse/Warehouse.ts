@@ -2,7 +2,7 @@ import { Animator, AvatarAnchorPointType, AvatarAttach, ColliderLayer, engine, E
 import { createAudioRoom } from "./Audio";
 import { utils } from "../helpers/libraries";
 import { Quaternion, Vector2, Vector3 } from "@dcl/sdk/math";
-import { addBuilderHUDAsset, addBuilderHUDAssetCategory, addPlacedAsset, builderHUDEntities } from "../../dcl-builder-hud";
+import { addBuilderHUDAsset, addBuilderHUDAssetCategory, addPlacedAsset, builderHUDEntities, categoryTriggers, updateCategoryTriggers } from "../../dcl-builder-hud";
 import { localPlayer, localUserId } from "../components/Player";
 import { enableBuilderHUD } from "../../dcl-builder-hud/ui/builderpanel";
 import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
@@ -32,7 +32,7 @@ export let warehouseClickFn:any
 
 export let warehouseItems:Map<string, any> = new Map()
 export let warehouseTriggers:Map<string, any> = new Map()
-export let warehouseTriggerCount:Map<string, any> = new Map()
+export let warehouseTriggerCount:any = {}
 export let enteredArea:string = "Lobby"
 export let previousArea:any
 export let selectedWarehouseItem:SceneItem
@@ -58,14 +58,10 @@ export function processPendingWarehouseAssets(){
         addBuilderHUDAssetCategory(parent, category.style)
 
         if(category.triggers){
+            let count = 0
             category.triggers.forEach((config:any, index:number)=>{
-                if(warehouseTriggerCount.has(category.style)){
-                    let count = warehouseTriggerCount.get(category.style)
-                    count += 1
-                }else{
-                    warehouseTriggerCount.set(category.style, 1)
-                }
-
+                warehouseTriggerCount[category.style] = count
+                count++
                 addLocalTrigger(category, index, config, parent)
             })
         }
@@ -223,10 +219,12 @@ export function buildLocation(location:string){
 
 
 export function addLocalTrigger(category:any, index:number, config:any, parent:Entity){
+    console.log('triger count is', index)
     let trigger = engine.addEntity()
     warehouseTriggers.set(category.style + index, {entity:trigger, label:category.style + "-" + config.id, sty:category.style, id:config.id})
     Transform.create(trigger, {position: config.p, parent:parent, scale:config.s})
 
+    updateCategoryTriggers(category.style)
 
 //     let scene = localPlayer.activeScene
 //     let assetActions = scene[COMPONENT_TYPES.ACTION_COMPONENT].get("ayWkQ5")
