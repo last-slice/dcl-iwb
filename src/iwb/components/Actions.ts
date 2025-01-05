@@ -34,7 +34,7 @@ import { checPhysicskBody, pendingBodies } from "./Physics"
 import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
 import resources from "../helpers/resources"
 import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
-import { playingVideo, setPlayingVideo } from "./Videos"
+import { removePlayingVideo, setPlayingVideo } from "./Videos"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -574,7 +574,7 @@ function handlePlaySound(scene:any, info:any, action:any){
     if(itemInfo && itemInfo.type === 0){
         audio = AudioSource.getMutableOrNull(info.entity)
         if(audio){
-            audio.loop = action.loop
+            // audio.loop = action.loop
             audio.volume = itemInfo.volume
             audio.global = itemInfo.attach
             audio.playing = true
@@ -603,7 +603,7 @@ function handleStopSound(info:any){
     // let audio = AudioSource.getMutableOrNull(info.entity)
     // if(audio){
     //     audio.playing = false
-    // }
+    // }//
     let audio = AudioStream.getMutableOrNull(info.entity)
     if(audio){
         audio.playing = false
@@ -676,12 +676,6 @@ function handlePlayVideo(scene:any, info:any, action:any){
         return
     }
 
-    if(playingVideo || playingVideo !== undefined){
-        let video = VideoPlayer.getMutableOrNull(playingVideo)
-        if(video){
-            video.playing = false
-        }
-    }
     video.playing = true
     setPlayingVideo(info.entity)
 }
@@ -692,7 +686,7 @@ function handleStopVideo(scene:any, info:any, action:any){
         return
     }
     video.playing = false
-    setPlayingVideo(-500 as Entity)
+    removePlayingVideo(info.entity)
 }
 
 function handleSetVisibility(info:any, action:any){

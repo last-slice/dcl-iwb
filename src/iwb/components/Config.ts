@@ -1,6 +1,6 @@
 import { getRealm } from "~system/Runtime"
-import { colyseusRoom, connected, sendServerMessage } from "./Colyseus"
-import { localPlayer, localUserId, settings } from "./Player"
+import { colyseusRoom, connected, sendServerMessage, setLocalColyseus } from "./Colyseus"
+import { localPlayer, localUserId, setPlayMode, settings } from "./Player"
 import { COMPONENT_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES } from "../helpers/types"
 import { AvatarModifierArea, AvatarModifierType, Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
@@ -15,7 +15,7 @@ import { clearShowTexts } from "../ui/Objects/ShowText"
 import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldBans, getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { addPlayTriggerSystem, removePlayTriggerSystem } from "./Triggers"
-import { stopAllIntervals } from "./Timer"
+import { createTimerSystem, stopAllIntervals } from "./Timer"
 import { displayLiveControl, displayLivePanel } from "../ui/Objects/LiveShowPanel"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
@@ -23,10 +23,11 @@ import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./G
 import { handleUnlockPlayer } from "./Actions"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { stopAllPlaylists } from "./Playlist"
-import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload, removeForceCamera } from "../modes/Play"
+import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload, removeForceCamera, setGlobalEmitter } from "../modes/Play"
 import { disableLevelAssets } from "./Level"
 import { displayQuestPanel } from "../ui/Objects/QuestPanel"
 import { removeLocaPlayerWeapons, unequipUserWeapon } from "./Weapon"
+import { removeLoadingScreen } from "../systems/LoadingSystem"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -58,6 +59,15 @@ export let localConfig:any = {
     base:"",
     id:"",
     gcScene:false
+}
+
+export function initOfflineScene(){
+    console.log('running offline scene')
+    setLocalColyseus()
+    engine.addSystem(createTimerSystem())
+    setPlayerMode(SCENE_MODES.PLAYMODE)
+    removeLoadingScreen()
+    setGlobalEmitter()
 }
 
 export function setHidPlayersArea(){
@@ -102,7 +112,11 @@ export async function setRealm(sceneJSON:any, url:any){
     localConfig.base = sceneJSON.scene.base
     localConfig.parcels = sceneJSON.scene.parcels
     localConfig.id = sceneJSON.iwb.scene
-    localConfig.gcScene = sceneJSON.iwb.hasOwnProperty("gcScene") ? true : false
+    localConfig.gcScene = sceneJSON.iwb.hasOwnProperty("gcScene") ? sceneJSON.iwb.gcScene : false
+    localConfig.online = sceneJSON.iwb.hasOwnProperty("online") ? sceneJSON.iwb.online : false
+    localConfig.scene = sceneJSON.iwb.scene
+    localConfig.scenePool = sceneJSON.iwb.scenePool
+    localConfig.sceneId = sceneJSON.iwb.sceneId
 
     let realmData = await getRealm({})
     console.log('realm data is', realmData)
@@ -124,6 +138,10 @@ export async function setRealm(sceneJSON:any, url:any){
 
     if(localConfig.gcScene){
         island = "gc"
+    }
+
+    if(localConfig.scenePool){
+        island = localConfig.sceneId + "-" + localConfig.base
     }
 
     console.log('gc scene is', localConfig.gcScene)
@@ -216,7 +234,6 @@ export async function setPlayerMode(mode:SCENE_MODES){
 
         localPlayer.hasWeaponEquipped = false
         
-        
         if(localPlayer.gameStatus === PLAYER_GAME_STATUSES.PLAYING){
             sendServerMessage(SERVER_MESSAGE_TYPES.END_GAME, {})
             // attemptGameEnd({sceneId: localPlayer.activeScene.id})
@@ -240,7 +257,16 @@ export async function setPlayerMode(mode:SCENE_MODES){
         removeInputSystem()
         handleUnlockPlayer(null, null, null)
 
-        colyseusRoom.state.scenes.forEach(async (scene:any)=>{
+        let scenes:any
+
+        if(localConfig.online){
+            scenes = colyseusRoom.state.scenes
+        }else{
+            scenes = [localConfig.scene]
+            colyseusRoom.state.scenes[localConfig.scene.id] = localConfig.scene
+        }
+
+        scenes.forEach(async (scene:any)=>{
             scene.checkedLeave = false
             scene.checkedUnloaded = false
 

@@ -32,17 +32,11 @@ export function updateEditGameItemView(view:string){
     if(gameView === "levels"){
         levels.length = 0
         visibleItems.length = 0
-        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-        if(!scene){
-            return
-        }
-        scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((levelComponent:any, aid:string)=>{
-            let nameInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
-            levels.push({name:nameInfo.value, aid:aid, number:levelComponent.number})
-        })
         visibleItems = paginateArray([...levels], visibleIndex, 7)
         console.log('level visible items are a', visibleItems)
     }
+
+    console.log('levels are ', levels)
 }
 
 export function updateGameItemInfo(reset?:boolean){
@@ -52,6 +46,15 @@ export function updateGameItemInfo(reset?:boolean){
     }
     gamingInfo = {...localPlayer.activeScene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].get(selectedItem.aid)}
     console.log('gaming info', gamingInfo)
+
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene){
+        return
+    }
+    scene[COMPONENT_TYPES.LEVEL_COMPONENT].forEach((levelComponent:any, aid:string)=>{
+        let nameInfo = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
+        levels.push({name:nameInfo.value, aid:aid, number:levelComponent.number})
+    })
 }
 
 export function EditGameItem(){
@@ -105,8 +108,65 @@ function MainView(){
         height: '10%',
         display: gamingInfo && gamingInfo.type ? "flex" : "none"
     }}
-        uiText={{value:"Type: " + (getItemType()), textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
+        uiText={{value:"Type: " + (getItemType()), textAlign:'middle-left', fontSize:sizeFont(25,20), color:Color4.White()}}
     />
+
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '100%',
+        height: '10%',
+        display: gamingInfo && gamingInfo.type ? "flex" : "none"
+    }}
+    >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '50%',
+        height: '100%',
+    }}
+    uiText={{value:"Level: " + gamingInfo.level, textAlign:'middle-left', fontSize:sizeFont(25,20), color:Color4.White()}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent:'center',
+        width: '50%',
+        height: '100%',
+    }}
+    >
+        <Dropdown
+        options={["Select Level",...levels.map((lvl:any)=> { return lvl.name + ": " + lvl.number})]}
+        selectedIndex={0}
+        onChange={(index:number)=>{
+            if(index >0){
+                gamingInfo.level = levels[index-1].number
+                update("edit", "level", index)
+                utils.timers.setTimeout(()=>{
+                    updateEditGameItemView("main")
+                }, 200)
+            }
+        }}
+        uiTransform={{
+            width: '80%',
+            height: '100%',
+        }}
+        color={Color4.White()}
+        fontSize={sizeFont(20, 15)}//
+            />
+    </UiEntity>
+    </UiEntity>
 
 <UiEntity
     uiTransform={{
@@ -124,7 +184,7 @@ function MainView(){
         selectedIndex={0}
         onChange={(index:number)=>{
             if(index >0){
-                gamingInfo.type = gameItemTypes[index]
+                gamingInfo.type = gameItemTypes[index-1]
                 update("edit", "type", index-1)
                 utils.timers.setTimeout(()=>{
                     updateEditGameItemView("main")
@@ -363,8 +423,3 @@ function getItemType(){
             return ""
     }
 }
-
-
-
-
-//

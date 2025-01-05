@@ -96,7 +96,7 @@ export async function updateMaterial(scene:any, material:any, entityInfo:any, fr
                     break;
 
                 case 'TEXTURE':
-                    Material.setPbrMaterial(entityInfo.entity, {//
+                    Material.setPbrMaterial(entityInfo.entity, {
                         texture: Material.Texture.Common({
                             src: material.texture ? material.texture : ""
                         }),

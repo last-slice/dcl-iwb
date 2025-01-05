@@ -4,7 +4,7 @@ import { actionQueue, getTriggerEvents, runGlobalTrigger, runSingleTrigger } fro
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { hideNotification, showNotification } from "../ui/Objects/NotificationPanel"
 import { getEntity } from "./iwb"
-import { isGameAsset, disableLevelAssets, attemptLoadLevel } from "./Level"
+import { isGameAsset, disableLevelAssets, attemptLoadLevel, isLevelAsset } from "./Level"
 import { localPlayer, localUserId } from "./Player"
 import { utils } from "../helpers/libraries"
 import { displayGameLobby, updateLobbyPanel } from "../ui/Objects/GameLobby"
@@ -135,12 +135,14 @@ export async function disableGameAsset(scene:any, iwbInfo:any){
     //     disableLevelPlayMode(scene, iwbInfo)
     // }
 
-    if(scene[COMPONENT_TYPES.LEVEL_COMPONENT].get(iwbInfo.aid)){
+    if(isLevelAsset(scene, iwbInfo.aid)){
         console.log('we have game level to hide')
         disableLevelPlayMode(scene, iwbInfo)
     }
 
     if(isGameAsset(scene, iwbInfo.aid)){
+        console.log('we have game item to hide')
+        disableLevelPlayMode(scene, iwbInfo)
         updateAssetBuildVisibility(scene, false, iwbInfo)
     }
 }
@@ -847,7 +849,6 @@ function showScenesAfterGame(sceneId:string){
         }
     })
 }
-
 
 function loadSavedPlayerInfo(scene:any, gameInfo:any, data:any){
     let gameVariables = gameInfo.pvariables

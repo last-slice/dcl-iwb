@@ -6,13 +6,17 @@ import { updateMaterial } from "./Materials"
 import { colyseusRoom } from "./Colyseus"
 
 export let pendingVideoScreens:any[] = []
-export let playingVideo:Entity | undefined
+export let playingVideos:Entity[] = []
 
 export function setPlayingVideo(entity:Entity){
-    if(entity === -500){
-        playingVideo = undefined
+    playingVideos.push(entity)
+}
+
+export async function removePlayingVideo(entity:Entity){
+    let entityIndex = playingVideos.findIndex((e:any)=> e === entity)
+    if(entityIndex >=0){
+        playingVideos.splice(entityIndex, 1)
     }
-    playingVideo = entity
 }
 
 export async function checkVideoComponent(scene:any, entityInfo:any){
@@ -117,7 +121,7 @@ export function stopVideoComponent(entityInfo:any){
     }
 }
 
-export function disableVideoPlayMode(scene:any, entityInfo:any){
+export async function disableVideoPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
     if(!itemInfo){
         return
@@ -130,6 +134,7 @@ export function disableVideoPlayMode(scene:any, entityInfo:any){
         return
     }
     videoPlayer.playing = false
+    await removePlayingVideo(entityInfo.entity)
 }
 
 export function playVideoFile(){

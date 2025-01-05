@@ -3,7 +3,7 @@ import resources from '../../helpers/resources'
 import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions } from '../helpers'
 import { uiSizes } from '../uiConfig'
 import { generateButtons, setUIClicked } from '../ui'
-import { IWBScene, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
+import { COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
 import { Color4 } from '@dcl/sdk/math'
 import { formatDollarAmount, formatSize, paginateArray } from '../../helpers/functions'
 import { IWBTable, setTableConfig, updateIWBTable } from '../Reuse/IWBTable'
@@ -24,6 +24,7 @@ import { displayPendingPanel } from './PendingInfoPanel'
 export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
 export let exportAngzaarStatus:string = "loading"
+export let exportScenePoolStatus:string = "loading"
 export let angzaarReservation:any
 
 export let showSceneDetailPanel = false
@@ -384,6 +385,7 @@ function MainRightView(){
             <ExportPanel/>
             <ExportGenesisCityPanel/>
             <ExportAngzaarPanel/>
+            <ExportScenePoolPanel/>
 
         </UiEntity>
   
@@ -1135,6 +1137,35 @@ export function ExportPanel(){
     }}
     />
 
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+        height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+        margin:{top:"1%"}
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }}
+    uiText={{value: "Scene Pool", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+    onMouseDown={()=>{
+        setUIClicked(true)
+        playSound(SOUND_TYPES.SELECT_3)
+        exportScenePoolStatus = "loading"
+        sceneInfoDetailView = "Export-Pool"
+        checkValidScenePool(localPlayer.activeScene)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+    />
+
             </UiEntity>
     )
 }
@@ -1284,7 +1315,43 @@ export function ExportAngzaarPanel(){
 
 <UiEntity
     uiTransform={{
-        display: exportAngzaarStatus && exportAngzaarStatus !== "none" ? "flex" : "none",
+        display: exportAngzaarStatus === "loading" ? "flex" : "none",
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+    }}
+    uiText={{value:"Loading...", fontSize:sizeFont(30,20)}}
+>
+    </UiEntity>
+
+    <UiEntity
+    uiTransform={{
+        display: exportAngzaarStatus === "finished" ? "flex" : "none",
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+    }}
+>
+<UiEntity
+    uiTransform={{
+        display: angzaarReservation === "none" ? "flex" : "none",
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+    }}
+    uiText={{value:"No Angzaar Reservation found", fontSize:sizeFont(30,20)}}
+/>
+
+
+<UiEntity
+    uiTransform={{
+        display:angzaarReservation !== "error" && angzaarReservation !== "none" ? "flex" : "none",
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-start',
@@ -1346,6 +1413,106 @@ export function ExportAngzaarPanel(){
                     setUIClicked(false)
                 }}
                 />
+
+
+    </UiEntity>
+
+
+    </UiEntity>
+
+
+            </UiEntity>
+    )
+}
+
+export function ExportScenePoolPanel(){
+    return (
+        <UiEntity
+            key={resources.slug + "scene::export::scene::pool::panel"}
+            uiTransform={{
+                display: sceneInfoDetailView === "Export-Pool" ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+
+<UiEntity
+    uiTransform={{
+        display: exportScenePoolStatus && exportScenePoolStatus !== "none" ? "flex" : "none",
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        height: '100%',
+    }}
+>
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '30%',
+    }}
+    // uiBackground={{color:Color4.Gray()}}
+    uiText={{value:"Scenes exported to the Pool will be available by anyone to use, redistribute, modify, change, and save. These scenes cannot contain UGC content at this time, and they must be fully built using items from the IWB Catalog only.", textAlign:'top-left', color:Color4.White(), fontSize:sizeFont(25,20)}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '15%',
+        display: exportScenePoolStatus === "contains-ugc" ? "flex" : 'none'
+    }}
+    // uiBackground={{color:Color4.Gray()}}
+    uiText={{value:"Your scene currently has UGC content. Please remove before exporting to the Scene Pool.", textAlign:'top-left', color:Color4.White(), fontSize:sizeFont(35,25)}}
+    />
+
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+        height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+        margin:{top:"1%"},
+        display: exportScenePoolStatus === "valid" ? "flex" : "none"
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }}
+    uiText={{value: "Export", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+    onMouseDown={()=>{
+        setUIClicked(true)
+        playSound(SOUND_TYPES.SELECT_3)
+        
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_ADD_SCENE,{
+            sceneId:scene?.id
+        })
+
+        exportAngzaarStatus = "loading"
+        angzaarReservation = undefined
+        updateIWBTable([])
+        displayMainView(false)
+        
+        displaySceneDetailsPanel(false)
+        updateSceneDetailsView("Info")
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+    />
 
 
     </UiEntity>
@@ -1641,5 +1808,21 @@ async function getAngzaarPlazaReservation(){
         console.log('error getting angzaar reservation', e.message)
         exportAngzaarStatus = "finished"
         angzaarReservation = "error"
+    }
+}
+
+
+function checkValidScenePool(scene:any){
+    let valid = true
+    scene[COMPONENT_TYPES.IWB_COMPONENT].forEach((iwbComponent:any, aid:string)=>{
+        if(iwbComponent.ugc){
+            valid = false
+        }
+    })
+
+    if(valid){
+        exportScenePoolStatus = "valid"
+    }else{
+        exportScenePoolStatus = 'contains-ugc'
     }
 }

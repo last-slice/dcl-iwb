@@ -39,6 +39,7 @@ import { checkMultiplayerSyncOnEnter } from "../components/Multiplayer"
 import { removeLocaPlayerWeapons } from "../components/Weapon"
 import mitt from "mitt"
 import { isGCScene } from "../components/Config"
+import { isGameAsset, isLevelAsset } from "../components/Level"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity
@@ -87,6 +88,7 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
         resetAttachedEntity(scene, entityInfo)
         disableAudioPlayMode(scene, entityInfo)
         disableCounterForPlayMode(scene, entityInfo)
+        disableVideoPlayMode(scene, entityInfo)
     }
 
     checkGameplay(scene)
@@ -120,6 +122,7 @@ export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     console.log('handle on scene enter', scene)
     setPointersPlayMode(scene, entityInfo)
     setAudioPlayMode(scene, entityInfo)
+    setVideoPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setLivePanel(scene, entityInfo)   
     setTextShapeForPlayMode(scene, entityInfo)
@@ -226,7 +229,6 @@ export function handleSceneEntityOnLoad(scene:any, entityInfo:any){
     setMeshRenderPlayMode(scene, entityInfo)
     setVisibilityPlayMode(scene, entityInfo)
     
-    
     checkTransformComponent(scene, entityInfo)
     setTextShapeForPlayMode(scene, entityInfo)
 
@@ -236,12 +238,16 @@ export function handleSceneEntityOnLoad(scene:any, entityInfo:any){
     
     let triggerEvents = getTriggerEvents(entityInfo.entity)
     triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity, sceneId:scene.id})
+
+    if(isLevelAsset(scene, entityInfo.aid) || isGameAsset(scene, entityInfo.aid)){
+        disableGameAsset(scene, entityInfo)
+    }
 }
 
 function disableDelayedActionTimers(){
     // delayedActionTimers.forEach((timer)=>{
     //     utils.timers.clearTimeout(timer)
-    // })
+    // })//
 }
 
 function disablePlayUI(){

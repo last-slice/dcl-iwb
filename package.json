@@ -32,6 +32,7 @@
     "colyseus.js": "^0.15.10",
     "core-js": "^3.31.0",
     "dcl-crypto-toolkit": "^1.0.0-20231102170834.commit-63c4be6",
+    "decentraland-transactions": "^2.18.0",
     "eth-connect": "^6.2.1",
     "mitt": "^3.0.1",
     "vlm-dcl": "^1.0.0-alpha.50"

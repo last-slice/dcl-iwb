@@ -737,7 +737,7 @@ export function EditMaterial() {
                 width: '100%',
                 height: '20%',
                 margin:{top:'1%'},
-                display:emissiveTextureIndex === 1 || emissiveTextureIndex === 2 ? 'flex' : 'none'//
+                display:emissiveTextureIndex !== 2 ? 'flex' : 'none'
             }}
             >
 
@@ -748,7 +748,6 @@ export function EditMaterial() {
         justifyContent: 'center',
         width: '100%',
         height: '50%',
-        display: emissiveTextureIndex !== 2 ? 'flex' : 'none'
     }}
 >
 <Input
@@ -782,6 +781,7 @@ export function EditMaterial() {
                         justifyContent: 'center',
                         width: '100%',
                         height: '10%',
+                        display:emissiveTextureIndex !== 2 ? 'flex' : 'none'
                     }}
                 uiText={{value:"Emissive Color", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
                 />

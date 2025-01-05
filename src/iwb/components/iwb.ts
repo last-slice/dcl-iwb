@@ -29,6 +29,7 @@ import { checkAvatarShape } from "./AvatarShape"
 import { checkPathComponent } from "./Path"
 import { checkQuestComponent } from "./Quests"
 import { checkVirtualCameraComponent } from "./VirtualCamera"
+import { checkRaycastComponent } from "./Raycast"
 
 export function getEntity(scene:any, aid:string){
   return scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
@@ -110,7 +111,7 @@ export async function createAsset(scene:any, iwbInfo:any, isLevelAsset?:boolean)
   await checkPathComponent(scene, iwbInfo)
   await checkQuestComponent(scene, iwbInfo)
   await checkVirtualCameraComponent(scene, iwbInfo)
-
+  await checkRaycastComponent(scene, iwbInfo)
   await disableGameAsset(scene, iwbInfo)
 
   if(playerMode === SCENE_MODES.BUILD_MODE){

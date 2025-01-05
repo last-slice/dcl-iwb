@@ -23,7 +23,7 @@ import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers";
 import { addGamePlayer, attemptGameEnd, attemptGameStart, playGameShoot, removeGamePlayer } from "./Game";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
 import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
-import { movePlayerTo, openExternalUrl } from "~system/RestrictedActions";
+import { movePlayerTo, openExternalUrl, teleportTo } from "~system/RestrictedActions";
 import { playAudiusTrack } from "./Sounds";
 import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setQuestPlayerData, setQuestSteps, setServerConditions, setServerQuests, startQuest, updateQuestsDefinitions } from "./Quests";
 import { updateLeaderboardInfo } from "./Leaderboard";
@@ -281,9 +281,15 @@ export async function createColyseusListeners(room:Room){
         if(info.valid){
             if(info.dest === "gc"){
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene " + info.name + " deployed to Genesis City!", animate:{enabled:true, return:true, time:10}})
+                displaySkinnyVerticalPanel(true, getView("Deployment_Ready_Teleport"), info.base, ()=>{
+                    teleportTo({worldCoordinates:info.base})//
+                })
             }
             else if(info.dest === "angzaar"){
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene " + info.name + " deployed to Angzaar Plaza!", animate:{enabled:true, return:true, time:10}})
+                displaySkinnyVerticalPanel(true, getView("Deployment_Ready_Teleport"), info.base, ()=>{
+                    teleportTo({worldCoordinates:info.base})
+                })
             }
             else{
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
@@ -367,17 +373,19 @@ export async function createColyseusListeners(room:Room){
         }
     })
 
-    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
-    //     log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
-    //     displayDownloadPendingPanel(true, info.link)
-    // })
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD + ' received', info)
+        displaySkinnyVerticalPanel(true, getView("Scene_Download_Ready"), undefined, ()=>{
+            openExternalUrl({url:info.link})
+        })
+    })
 
     room.onMessage(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS, (info: any) => {
         log(SERVER_MESSAGE_TYPES.PLAYER_SETTINGS + ' received', info)
         switch(info.action){
             case 'load':
                 console.log('load player settings')
-                // setSettings(info.value)
+                // setSettings(info.value)//
 
                 // if(!info.value.firstTime){
                 //     // displayWelcomeScreen(true)
@@ -715,7 +723,33 @@ export async function createColyseusListeners(room:Room){
         if(info.creator === localUserId){
             showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Quest deleted!", animate:{enabled:true, return:true, time:5}})
         }else{
-            // showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"A new quest is available at " + info.world + "!", animate:{enabled:true, return:true, time:5}})
+            // showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"A new quest is available at " + info.world + "!", animate:{enabled:true, return:true, time:5}})//
+        }
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_ADD_SCENE, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_POOL_ADD_SCENE + ' received', info)
+        if(!info){
+            return
+        }
+
+        if(info.user === localUserId){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene was addedd to the Scene Pool successfully!", animate:{enabled:true, return:true, time:5}})
+        }else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + info.name + " added a new scene to the Scene Pool! - " + info.sceneName, animate:{enabled:true, return:true, time:5}})
+        }
+    })
+
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_UPDATED_SCENE, (info:any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_POOL_UPDATED_SCENE + ' received', info)
+        if(!info){
+            return
+        }
+
+        if(info.user === localUserId){
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene in the Scene Pool was updated!", animate:{enabled:true, return:true, time:5}})
+        }else{
+            showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"" + info.name + " updated their scene the Scene Pool! - " + info.sceneName, animate:{enabled:true, return:true, time:5}})
         }
     })
 

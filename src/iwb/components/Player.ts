@@ -5,7 +5,7 @@ import {AvatarAnchorPointType, AvatarAttach, CameraModeArea, ColliderLayer, engi
 import resources, { colors } from "../helpers/resources";
 import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
-import { utils } from "../helpers/libraries";
+import { eth, utils } from "../helpers/libraries";
 import { isGCScene, iwbConfig, realm, removePlayerFromHideArray, setPlayerMode, worlds } from "./Config";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
@@ -449,4 +449,4 @@ export function banPlayer(){
     MeshCollider.setPlane(floor)
 
     movePlayerTo({newRelativePosition:{x:16 * -21, y:200, z:0}})
-} 
+}
