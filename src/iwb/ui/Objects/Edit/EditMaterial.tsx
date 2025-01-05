@@ -25,7 +25,7 @@ export let type:any[] = [
     "BASIC"
 ]
 
-let textureTypes:any[] = [//
+let textureTypes:any[] = [
     'NONE',
     'TEXTURE',
     'VIDEO',
