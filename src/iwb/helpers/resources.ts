@@ -1,6 +1,8 @@
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { SOUND_TYPES } from "./types"
 
+//npm run deploy -- --target-content https://worlds.dcl-iwb.co
+
 export let colorsLabels:string[] = [
     "Black",
     "Blue",
@@ -67,7 +69,7 @@ export let audiusMoodEndpoints:any = {
 }
 
 export default {
-    DEBUG: false,
+    DEBUG: true,//
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
@@ -77,6 +79,9 @@ export default {
     endpoints:{
         wsTest: "ws://localhost:2751",
         wsProd: "wss://dcl-iwb.co/toolset/qa",
+
+        angzaarPlazaTest: "http://localhost:5353",
+        angzaarPlazaProd: "https://angzaar-plaza.dcl-iwb.co/ws",
 
         deploymentTest: "http://localhost:3525",
         deploymentProd: "https://deployment.dcl-iwb.co",//

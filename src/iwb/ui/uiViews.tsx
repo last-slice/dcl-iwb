@@ -232,6 +232,32 @@ export let uiViews:any[] = [
         }
     },
     {
+        view:"Deployment_Ready_Teleport",
+        props:{
+            label:"Deployment Finished!",
+            text:"Your deployment is live! Would you like to teleport now?",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Go",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction2()
+                    }
+                }
+            ]
+        }
+    },
+    {
         view:"Init_World",
         props:{
             label:"Initialize World",
@@ -476,6 +502,31 @@ export let uiViews:any[] = [
                     func:()=>{
                         displaySkinnyVerticalPanel(false)
                         customFunction2()
+                    }
+                }
+            ]
+        }
+    },
+    {
+        view:"Scene_Download_Ready",
+        props:{
+            label:"Download Ready",
+            text:"Your download is ready! Please click the button to download your scene zip file.",
+            // slug:"welcome-view",//
+            // view:"welcome",
+            display:UI_VIEW_TYPES.SKINNY_VERTICAL_PANEL,
+            buttons:[
+                {
+                    label:"Download",
+                    func:(data:any)=>{
+                        displaySkinnyVerticalPanel(false)
+                        customFunction()
+                    }
+                },
+                {
+                    label:"Cancel",
+                    func:()=>{
+                        displaySkinnyVerticalPanel(false)
                     }
                 }
             ]

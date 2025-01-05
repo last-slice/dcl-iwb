@@ -15,6 +15,6 @@ export {
     // NPC, 
     eth, 
     // hud
-    CANNON
+    CANNON,
 }
 

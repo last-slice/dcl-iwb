@@ -73,6 +73,9 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_DELETE_GRABBED_ITEM = 'scene_delete_grabbed_item',
     SCENE_CREATE_QUEST = 'scene_create_quest',
     SCENE_DELETE_QUEST = 'scene_delete_quest',
+    SCENE_DEPLOY_ANGZAAR = 'scene_deploy_angzaar',
+    SCENE_POOL_ADD_SCENE = 'scene_pool_add_scene',
+    SCENE_POOL_UPDATED_SCENE = 'scene_pool_updated',
     
     //World
     INIT_WORLD = "init_world",
@@ -363,9 +366,10 @@ export enum COMPONENT_TYPES {
     LEADERBOARD_COMPONENT = 'Leaderboard',
     VEHICLE_COMPONENT = 'Vehicle',
     PHYSICS_COMPONENT = 'Physics',
-     QUEST_COMPONENT = 'Quest',
-      WEAPON_COMPONENT = 'Weapon',
-      VIRTUAL_CAMERA = 'Camera'
+    QUEST_COMPONENT = 'Quest',
+    WEAPON_COMPONENT = 'Weapon',
+    VIRTUAL_CAMERA = 'Camera',
+    RAYCAST_COMPONENT = 'Raycast'
 }
 
 export enum BLOCKCHAINS {
@@ -413,6 +417,7 @@ export enum Actions {
     ATTACH_PLAYER = "player_attach",//
     DETACH_PLAYER = "player_detach",
     PLAY_VIDEO = 'video_play',
+    RESET_VIDEO_PLAYBACK = 'video_reset_playback',
     // TOGGLE_VIDEO = 'video_toggle',
     PLAY_VIDEO_STREAM = 'video_stream_play',
     STOP_VIDEO = 'video_stop',
@@ -497,8 +502,6 @@ export enum Actions {
     UNFREEZE_PLAYER = 'player_unfreeze',
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
-
-InputAction.IA_ACTION_3
 
 export enum Triggers {
     // ON_CLICK = "on_click",

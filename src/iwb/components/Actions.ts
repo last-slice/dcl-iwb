@@ -34,6 +34,7 @@ import { checPhysicskBody, pendingBodies } from "./Physics"
 import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
 import resources from "../helpers/resources"
 import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
+import { removePlayingVideo, setPlayingVideo } from "./Videos"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -152,6 +153,10 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.STOP_VIDEO:
                 handleStopVideo(scene, info, action)
+                break;
+
+             case Actions.RESET_VIDEO_PLAYBACK:
+                handleResetVideoPlayback(scene, info, action)
                 break;
 
             case Actions.SHOW_NOTIFICATION:
@@ -569,7 +574,7 @@ function handlePlaySound(scene:any, info:any, action:any){
     if(itemInfo && itemInfo.type === 0){
         audio = AudioSource.getMutableOrNull(info.entity)
         if(audio){
-            audio.loop = action.loop
+            // audio.loop = action.loop
             audio.volume = itemInfo.volume
             audio.global = itemInfo.attach
             audio.playing = true
@@ -598,7 +603,7 @@ function handleStopSound(info:any){
     // let audio = AudioSource.getMutableOrNull(info.entity)
     // if(audio){
     //     audio.playing = false
-    // }
+    // }//
     let audio = AudioStream.getMutableOrNull(info.entity)
     if(audio){
         audio.playing = false
@@ -655,18 +660,33 @@ function handleStopAudiusTrack(info:any){
     }
 }
 
+function handleResetVideoPlayback(scene:any, info:any, action:any){
+    let video = VideoPlayer.getMutableOrNull(info.entity)
+    if(!video){
+        console.log('doesnt have video player to player')
+        return
+    }
+    video.position = 0
+}
+
 function handlePlayVideo(scene:any, info:any, action:any){
     let video = VideoPlayer.getMutableOrNull(info.entity)
-    if(video){
-        video.playing = true
+    if(!video){
+        console.log('doesnt have video player to player')
+        return
     }
+
+    video.playing = true
+    setPlayingVideo(info.entity)
 }
 
 function handleStopVideo(scene:any, info:any, action:any){
     let video = VideoPlayer.getMutableOrNull(info.entity)
-    if(video){
-        video.playing = false
+    if(!video){
+        return
     }
+    video.playing = false
+    removePlayingVideo(info.entity)
 }
 
 function handleSetVisibility(info:any, action:any){

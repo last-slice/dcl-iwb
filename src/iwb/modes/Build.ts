@@ -18,7 +18,7 @@ import { isSnapEnabled } from "../systems/SelectedItemSystem"
 import { showNotification } from "../ui/Objects/NotificationPanel"
 import { displayCatalogInfoPanel } from "../ui/Objects/CatalogInfoPanel"
 import { setGLTFCollisionBuildMode } from "../components/Gltf"
-import { getEntity } from "../components/iwb"
+import { createAsset, getEntity } from "../components/iwb"
 import { setVisibilityBuildMode } from "../components/Visibility"
 import { setVideoBuildMode } from "../components/Videos"
 import { hideAllPanels, setUIClicked } from "../ui/ui"
@@ -60,6 +60,8 @@ import { resetLeadboardInfo } from "../ui/Objects/Edit/EditLeaderboard"
 import { clearAssetPhysicsData } from "../ui/Objects/Edit/EditPhysics"
 import { clearEditVehicleData } from "../ui/Objects/Edit/EditVehicle"
 import { removeEditWeapon } from "../ui/Objects/Edit/EditWeapon"
+import { isGameAsset, isLevelAsset } from "../components/Level"
+import { disableRaycast } from "../components/Raycast"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -1609,6 +1611,8 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         disablePlaylistForBuildMode(scene, entityInfo)
         setAvatarShapeBuildMode(scene, entityInfo)
         disablePathingForEntity(scene, entityInfo)
+        disableRaycast(scene,entityInfo)
+        
     }
     //         resetTweenPositions(entity, sceneItem, scene)//
 }

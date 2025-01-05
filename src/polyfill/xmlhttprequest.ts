@@ -82,7 +82,7 @@ export class XMLHttpRequest {
   method?: string
   constructor() {
     const METHOD_NAME = "constructor"
-    console.log(CLASSNAME, METHOD_NAME, "ENTRY")
+    // console.log(CLASSNAME, METHOD_NAME, "ENTRY")
   }
 
   getAllResponseHeaders() {
@@ -91,13 +91,13 @@ export class XMLHttpRequest {
 
   setRequestHeader(key: string, val: any) {
     const METHOD_NAME = "setRequestHeader"
-    console.log(CLASSNAME, METHOD_NAME, "ENTRY", key, val)
+    // console.log(CLASSNAME, METHOD_NAME, "ENTRY", key, val)
     this.requestHeaders[key] = val
   }
 
   open(method: string, url: string) {
     const METHOD_NAME = "open"
-    console.log(CLASSNAME, METHOD_NAME, "ENTRY", method, url)
+    // console.log(CLASSNAME, METHOD_NAME, "ENTRY", method, url)
     //prepares open
     this.method = method
     this.url = url
@@ -105,7 +105,7 @@ export class XMLHttpRequest {
 
   send(data: any) {
     const METHOD_NAME = "send"
-    console.log(CLASSNAME, METHOD_NAME, "ENTRY", data)
+    // console.log(CLASSNAME, METHOD_NAME, "ENTRY", data)
     if (!this.url) {
       throw new Error("url is required")
     }
@@ -119,7 +119,7 @@ export class XMLHttpRequest {
       body: data,
       timeout: this.timeout
     }).then(async (val: Response) => {
-      console.log(CLASSNAME, METHOD_NAME, "PROMISE.ENTRY", val)
+      // console.log(CLASSNAME, METHOD_NAME, "PROMISE.ENTRY", val)
 
       this.status = val.status
       this.statusText = val.statusText
@@ -130,9 +130,9 @@ export class XMLHttpRequest {
       val.headers.forEach((value: string, key: string) => {
         this.responseHeadersRaw += key + ": " + value + "\r\n"
       })
-      console.log(CLASSNAME, METHOD_NAME, "PROMISE.RESULT", "this.status", this.status
-        , "this.responseHeadersRaw"
-        , this.responseHeadersRaw)
+      // console.log(CLASSNAME, METHOD_NAME, "PROMISE.RESULT", "this.status", this.status
+        // , "this.responseHeadersRaw"
+        // , this.responseHeadersRaw)
       if (this.onload) this.onload()
     }).catch((reason: any) => {
       console.log('catching reason', reason)

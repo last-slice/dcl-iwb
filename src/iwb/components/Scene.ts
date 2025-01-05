@@ -18,7 +18,7 @@ import { nameListener } from "./Name"
 import { textShapeListener } from "./TextShape"
 import { visibilityListener } from "./Visibility"
 import { nftShapeListener } from "./NftShape"
-import { videoListener } from "./Videos"
+import { loadPendingVideoScreens, videoListener } from "./Videos"
 import { textureListener } from "./Textures"
 import { counterListener } from "./Counter"
 import { actionListener } from "./Actions"
@@ -112,7 +112,7 @@ export function enablePrivateModeForScene(scene:any){
 export async function loadScene(scene:any) {
     try{
         await loadSceneBoundaries(scene)
-        loadSceneComponents(scene)
+        await loadSceneComponents(scene)
     
         if (scene.bps.includes(localUserId)) {
             console.log('local player can build')
@@ -416,8 +416,9 @@ export function checkAllScenesLoaded() {
     if (scenesLoadedCount >= sceneCount && !scenesLoaded) {
         scenesLoaded = true
 
-        console.log('all scenes loaded')
         // createWarehouse()
+        console.log('all scenes loaded, check video textures')
+        loadPendingVideoScreens()
         
         if(!isGCScene()){
             loadBlankParcels()

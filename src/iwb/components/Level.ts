@@ -90,13 +90,25 @@ export function loadLevelAssets(scene:any, info:any, action:any){
         levelToLoad = info.entity
         levelAssetsToLoad = levelParent.children.length
 
-        
+        scene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].forEach((gameItem:any, aid:string)=>{
+            if(gameItem.level === levelInfo.number){
+                levelAssetsToLoad++
+            }
+        })
+
+        scene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].forEach((gameItem:any, aid:string)=>{
+            if(gameItem.level === levelInfo.number){
+                let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
+                enableLevelAsset(scene, itemInfo)
+                levelAssetsLoaded++
+            }
+        })
 
         levelParent.children.forEach(async (aid:string, i:number)=>{
             let itemInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
             enableLevelAsset(scene, itemInfo)
 
-            // await createAsset(scene, itemInfo, true)
+            // await createAsset(scene, itemInfo, true)//
             // PointersLoadedComponent.createOrReplace(itemInfo.entity, {init:false})
             // enableEntityForPlayMode(scene, itemInfo)
 

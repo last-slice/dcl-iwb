@@ -12,13 +12,22 @@ import { addLoadingScreen } from "../systems/LoadingSystem";
 import { banPlayer } from "./Player";
 
 export let data:any
-export let colyseusRoom:Room
+export let colyseusRoom:any
 
 export let connected:boolean = false
 export let sessionId:any
 export const iwbEvents = mitt()
 
+export function setLocalColyseus(){
+    colyseusRoom = {
+        state:{
+            scenes:{}
+        }
+    }
+}
+
 export async function colyseusConnect(data:any, token:string, world?:any, island?:any) {
+    console.log('connecting to colyseus')
     connect('iwb-world', data, token, world, island, island !== "world" ? localConfig : undefined).then((room: Room) => {
         log("Connected!");
         colyseusRoom = room

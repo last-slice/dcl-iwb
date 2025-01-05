@@ -18,7 +18,7 @@ import { EditName } from './Edit/EditName'
 import { EditText } from './Edit/EditText'
 import { EditNftShape } from './Edit/EditNftShape'
 import { EditGltf } from './Edit/EditGltf'
-import { EditVideo } from './Edit/EditVideo'
+import { EditVideo, updateEditVideoPanel } from './Edit/EditVideo'
 import { EditMeshCollider } from './Edit/EditMeshCollider'
 import { EditMeshRender } from './Edit/EditMeshRender'
 import { EditMaterial, materialView, updateMaterialComponent } from './Edit/EditMaterial'
@@ -73,6 +73,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
 
     switch(value){
+        case COMPONENT_TYPES.VIDEO_COMPONENT:
+            updateEditVideoPanel()
+            break;
+
         case COMPONENT_TYPES.QUEST_COMPONENT:
             getQuestDefinition()
             break;

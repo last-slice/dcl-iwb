@@ -1,26 +1,48 @@
-import { Material, VideoPlayer } from "@dcl/sdk/ecs"
-// import { VideoLoadedComponent } from "../helpers/Components"
+import { Entity, Material, VideoPlayer } from "@dcl/sdk/ecs"
 import { selectedItem } from "../modes/Build"
 import { getEntity } from "./iwb"
 import { COMPONENT_TYPES } from "../helpers/types"
+import { updateMaterial } from "./Materials"
+import { colyseusRoom } from "./Colyseus"
 
-export async function checkVideoComponent(scene:any, entityInfo:any, texture:string){
+export let pendingVideoScreens:any[] = []
+export let playingVideos:Entity[] = []
+
+export function setPlayingVideo(entity:Entity){
+    playingVideos.push(entity)
+}
+
+export async function removePlayingVideo(entity:Entity){
+    let entityIndex = playingVideos.findIndex((e:any)=> e === entity)
+    if(entityIndex >=0){
+        playingVideos.splice(entityIndex, 1)
+    }
+}
+
+export async function checkVideoComponent(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
-    if(itemInfo){
-        console.log('entity info', entityInfo.entity)
+    if(!itemInfo){
+        return
+    }
+
+    if(itemInfo.type === 1){
+        console.log('we have pending  video screen, add until all players are loaded')
+        pendingVideoScreens.push({sceneId:scene.id, entityInfo})
+        console.log('pending video items', pendingVideoScreens)
+    }else{
         let videoPlayer = VideoPlayer.getMutableOrNull(entityInfo.entity)
         if(videoPlayer){
             videoPlayer.playing = false
         }
-
+    
         VideoPlayer.createOrReplace(entityInfo.entity, {
-            src: "" + texture,
+            src: "" + itemInfo.texture,
             playing: false,
-            volume: itemInfo.volume > 1 ? 1 : itemInfo.volume,//
+            volume: itemInfo.volume > 1 ? 1 : itemInfo.volume,
             loop: itemInfo.loop
         })
-        console.log('video player is', VideoPlayer.get(entityInfo.entity))
-        // VideoLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
+        itemInfo.videoTexture = Material.Texture.Video({ videoPlayerEntity: entityInfo.entity })
+        console.log('created video player')
     }
 }
 
@@ -31,17 +53,20 @@ export function videoListener(scene:any){
             return
         }
 
-        video.listen("url", (c:any, p:any)=>{
-            let videoInfo = VideoPlayer.getMutable(entityInfo.entity)
-            if(videoInfo){
-                let restart = false
-                if(videoInfo.playing){
-                    restart = true
-                    videoInfo.playing = false
-                }
-                videoInfo.src = c
-                videoInfo.playing = restart
+        video.listen("link", (c:any, p:any)=>{
+            console.log('updating video link', c)
+            let videoInfo = VideoPlayer.getMutableOrNull(entityInfo.entity)
+            if(!videoInfo){
+                return
             }
+
+            let restart = false
+            if(videoInfo.playing){
+                restart = true
+                videoInfo.playing = false
+            }
+            videoInfo.src = c
+            videoInfo.playing = restart
         })
 
         video.listen("loop", (c:any, p:any)=>{
@@ -96,17 +121,23 @@ export function stopVideoComponent(entityInfo:any){
     }
 }
 
-export function disableVideoPlayMode(scene:any, entityInfo:any){
+export async function disableVideoPlayMode(scene:any, entityInfo:any){
     let itemInfo = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(entityInfo.aid)
-    if(itemInfo){
-        VideoPlayer.getMutable(entityInfo.entity).playing = false
+    if(!itemInfo){
+        return
     }
+    if(itemInfo.type !== 0){
+        return
+    }
+    let videoPlayer = VideoPlayer.getMutableOrNull(entityInfo.entity)
+    if(!videoPlayer){
+        return
+    }
+    videoPlayer.playing = false
+    await removePlayingVideo(entityInfo.entity)
 }
 
 export function playVideoFile(){
-    console.log(selectedItem)
-    console.log(VideoPlayer.get(selectedItem.entity))
-    console.log(Material.get(selectedItem.entity))
     if(VideoPlayer.has(selectedItem.entity)){
         VideoPlayer.getMutable(selectedItem.entity).playing = true
     }
@@ -116,4 +147,17 @@ export function stopVideoFile(){
     if(VideoPlayer.has(selectedItem.entity)){
         VideoPlayer.getMutable(selectedItem.entity).playing = false
     }
+}
+
+export function loadPendingVideoScreens(){
+    console.log('loading pending video screens', pendingVideoScreens.length)
+    pendingVideoScreens.forEach((videoScreen:any)=>{
+        let scene = colyseusRoom.state.scenes.get(videoScreen.sceneId)
+        let material = scene[COMPONENT_TYPES.MATERIAL_COMPONENT].get(videoScreen.entityInfo.aid)
+        console.log('material is', material)
+        if(scene){
+            updateMaterial(scene, material, videoScreen.entityInfo)
+        }
+    })
+    pendingVideoScreens.length = 0
 }

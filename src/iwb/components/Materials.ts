@@ -2,7 +2,6 @@ import { ColliderLayer, GltfContainer, Material, MeshCollider, MeshRenderer, Tra
 import { getEntity } from "./iwb"
 import { Color4 } from "@dcl/sdk/math"
 import { COMPONENT_TYPES } from "../helpers/types"
-import { checkVideoComponent } from "./Videos"
 
 export function checkMaterialComponent(scene:any, entityInfo:any){
     let material = scene[COMPONENT_TYPES.MATERIAL_COMPONENT].get(entityInfo.aid)
@@ -16,7 +15,7 @@ export function materialListener(scene:any){
         // let iwbInfo = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find(($:any)=> $.aid === aid)
         // if(!iwbInfo.components.includes(COMPONENT_TYPES.MATERIAL_COMPONENT)){
         //   iwbInfo.components.push(COMPONENT_TYPES.MATERIAL_COMPONENT)//
-        // }//
+        // }
         let info = getEntity(scene, aid)
         if(!info){
             return
@@ -32,6 +31,11 @@ export function materialListener(scene:any){
             checkMaterialComponent(scene, info)
         })
         material.type === 0 && material.albedoColor && material.albedoColor.listen("a", (c:any, p:any)=>{
+            checkMaterialComponent(scene, info)
+        })
+
+        material.listen("textureType", (c:any, p:any)=>{
+            console.log('texture type changed', p, c)
             checkMaterialComponent(scene, info)
         })
 
@@ -66,21 +70,33 @@ export async function updateMaterial(scene:any, material:any, entityInfo:any, fr
                     break;
 
                 case 'VIDEO':
-                    await checkVideoComponent(scene, entityInfo, material.texture)
-                        const videoTexture = Material.Texture.Video({ videoPlayerEntity: entityInfo.entity })
-                        Material.setPbrMaterial(entityInfo.entity, {
-                            texture: videoTexture,
-                            roughness: material.roughness,
-                            specularIntensity: material.intensity,
-                            metallic: material.metallic,
-                            emissiveColor: material.emissiveType === "COLOR" ? material.emissiveColor : undefined,
-                            emissiveIntensity: material.emissiveIntensity ? material.emissiveIntensity : undefined,
-                            emissiveTexture: material.emissiveType === "TEXTURE" ? videoTexture : undefined
-                        })
+                    console.log('updating video material')
+                    let videoPlayer = scene[COMPONENT_TYPES.VIDEO_COMPONENT].get(material.texture)
+                    if(!videoPlayer){
+                        console.log('didnt find video player')
+                        return
+                    }
+
+                    if(!videoPlayer.videoTexture){
+                        console.log('video player does not have video texture')
+                        return
+                    }
+
+                    Material.setPbrMaterial(entityInfo.entity, {
+                        texture: videoPlayer.videoTexture,
+                        roughness: material.roughness,
+                        specularIntensity: material.intensity,
+                        metallic: material.metallic,
+                        emissiveColor:Color4.White(),
+                        emissiveIntensity: material.emissiveIntensity ? material.emissiveIntensity : undefined,
+                        emissiveTexture: material.textureType === "VIDEO" ? videoPlayer.videoTexture : material.emissiveType === "TEXTURE" ? material.emissveTexture : undefined
+                    })
+
+                    console.log('video material is', Material.get(entityInfo.entity))
                     break;
 
                 case 'TEXTURE':
-                    Material.setPbrMaterial(entityInfo.entity, {//
+                    Material.setPbrMaterial(entityInfo.entity, {
                         texture: Material.Texture.Common({
                             src: material.texture ? material.texture : ""
                         }),

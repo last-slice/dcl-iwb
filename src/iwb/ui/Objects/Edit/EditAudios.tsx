@@ -160,7 +160,7 @@ export function EditAudioComponent() {
                             justifyContent: 'center',
                             width: '33%',
                             height: '100%',
-                            display: audioComponent && audioComponent.type && audioComponent.type === 0 ? "flex" : "none"
+                            // display: audioComponent && audioComponent.type && audioComponent.type === 0 ? "flex" : "none"
                         }}
                     >
                                 <UiEntity
@@ -209,7 +209,7 @@ export function EditAudioComponent() {
                         sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET, {
                             component: visibleComponent,
                             aid: selectedItem.aid, sceneId: selectedItem.sceneId,
-                            attach: !audioComponent.attach
+                            loop: !audioComponent.loop
                         })
                     }}
                     />

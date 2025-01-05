@@ -2211,5 +2211,8 @@
     "name": "BuilderWorld.dcl.eth",
     "gcScene":false,
     "online":true
+  },
+  "vlm": {
+    "sceneId": "923d3ff7-6996-44c7-8ecf-a203f0aba318"
   }
 }

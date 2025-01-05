@@ -2,7 +2,7 @@ import {getPlayer} from "@dcl/sdk/players";
 import { executeTask} from "@dcl/sdk/ecs";
 import { getSceneInformation } from '~system/Runtime'
 import { joinWorld } from "./components/Colyseus";
-import { realm, setRealm } from "./components/Config";
+import { initOfflineScene, realm, setRealm } from "./components/Config";
 import { setupUI } from "./ui/ui";
 import { getPreview } from "./helpers/functions";
 import { setLocalUserId } from "./components/Player";
@@ -51,12 +51,16 @@ function createPlayer(hardwareData:any, player:any){
             if (!sceneInfo) return
 
             const sceneJson = JSON.parse(sceneInfo.metadataJson)
-            console.log("scene json is", sceneJson)
+            // console.log("scene json is", sceneJson)
 
             if(!sceneJson.iwb) return
             await setRealm(sceneJson, hardwareData.clientUri)
 
-            joinWorld(realm)
+            if(sceneJson.iwb.online){
+                joinWorld(realm)
+            }else{
+                initOfflineScene()
+            }
 
             // await createPhysics()
             // addTestVehicle()////

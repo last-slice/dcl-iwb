@@ -25,9 +25,9 @@ export function checkMeshRenderComponent(scene:any, entityInfo:any){
 
 export function checkMeshColliderComponent(scene:any, entityInfo:any){
     let mesh = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
-    console.log('checking mesh collider component', entityInfo.aid, mesh)
+    // console.log('checking mesh collider component', entityInfo.aid, mesh)
     if(mesh && entityInfo.entity){
-        console.log('setting mesh collider', mesh)
+        // console.log('setting mesh collider', mesh)
         switch(mesh.shape){
             case 0:
                 MeshCollider.setPlane(entityInfo.entity, mesh.layer)
@@ -53,7 +53,7 @@ export function meshListener(scene:any){
         }
 
         mesh.listen("layer", (c:any, p:any)=>{
-            console.log('mesh collision changed', p, c)
+            // console.log('mesh collision changed', p, c)
             if(p !== undefined){
                 switch(mesh.shape){
                     case 0:
@@ -82,6 +82,25 @@ export function meshListener(scene:any){
         if(!entityInfo){
             return
         }
+
+        mesh.listen("shape", (c:any, p:any)=>{
+            console.log('mesh renderer shape changed', p, c)
+            if(p !== undefined){
+                switch(mesh.shape){
+                    case 0:
+                        MeshRenderer.setPlane(entityInfo.entity)
+                        break;
+
+                    case 1:
+                        MeshRenderer.setBox(entityInfo.entity)
+                        break;
+
+                    case 2:
+                        MeshRenderer.setSphere(entityInfo.entity)
+                        break;
+                }
+            }
+        })
     })
 }
 
@@ -110,7 +129,7 @@ export function setMeshColliderBuildMode(scene:any, entityInfo:any){
 
 export function setMeshColliderPlayMode(scene:any, entityInfo:any){
     let meshInfo = scene[COMPONENT_TYPES.MESH_COLLIDER_COMPONENT].get(entityInfo.aid)
-    console.log('setting mesh collider play mode', entityInfo.aid, meshInfo)
+    // console.log('setting mesh collider play mode', entityInfo.aid, meshInfo)
     if(meshInfo && entityInfo.entity){
         if(meshInfo.layer === 0 || !meshInfo.onPlay){
             MeshCollider.deleteFrom(entityInfo.entity)
