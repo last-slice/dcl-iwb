@@ -15,6 +15,7 @@ import { addStreamEntity, MusicView, streamEntity, updateMusicView } from './IWB
 import { engine } from '@dcl/sdk/ecs'
 import { displayCatalogPanel } from './CatalogPanel'
 import { displayQuestCreatorPanel } from './QuestCreatorPanel'
+import { CreateScenePoolView, updateCreatorPoolView } from './IWBViews/CreateScenePool'
 
 export let mainIWBPanelShow = false
 
@@ -31,8 +32,8 @@ let buttons:any[] = [
         }
     },
     {label:"Create", pressed:false, func:()=>{
-        // updateMainView("CreateView")
-        updateMainView("Create")
+        updateMainView("CreateView")
+        // updateMainView("Create")
         },
         displayCondition:()=>{
             return island === "world"
@@ -89,7 +90,6 @@ export function displayMainView(value:boolean, toggle?:boolean){
         updateIWBTable([])
     }
    
-
     setTableConfig(currentWorldTableConfig)
     updateMainView("Worlds")
     updateWorldView("Current World")
@@ -122,8 +122,6 @@ export function updateMainView(view:string){
         button.pressed = true
     }
 }
-
-
 
 export function createMainView() {
     return (
@@ -233,6 +231,7 @@ function MainRightView(){
             <CreateSceneView/>
             <MusicView/>
             <CreateMainView />
+            <CreateScenePoolView/>
 
         </UiEntity>
   
@@ -279,12 +278,14 @@ function CreateMainView(){
             {
                 slug:"create-new-panel", 
                 buttons:[
-                     {label:"Scenes", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                     {label:"Blank Scene", pressed:false, width:10, bigScreen:20, smallScreen:15, height:5, func:()=>{
                         updateMainView("Create")
                      }},
-                     {label:"Quests", pressed:false, width:7, bigScreen:20, smallScreen:15, height:5, func:()=>{
-                        displayMainView(false)
-                        displayQuestCreatorPanel(true)
+                     {label:"Templates", pressed:false, width:10, bigScreen:20, smallScreen:15, height:5, func:()=>{
+                        // displayMainView(false)
+                        // displayQuestCreatorPanel(true)
+                        updateMainView("CreatePool")
+                        updateCreatorPoolView("loading")
                      }}
                     ]
                 }

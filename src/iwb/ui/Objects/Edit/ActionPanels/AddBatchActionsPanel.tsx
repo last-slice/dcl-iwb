@@ -150,7 +150,7 @@ export function AddBatchActionPanel(){
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{
-                value: "Add Action",
+                value: "Add Batch Action",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
                 textAlign: 'middle-center'

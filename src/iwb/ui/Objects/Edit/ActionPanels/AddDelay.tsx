@@ -176,7 +176,7 @@ export function AddDelayActionPanel(){
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
             uiText={{
-                value: "Add Action",
+                value: "Add Delay Action",
                 fontSize: sizeFont(25, 15),
                 color: Color4.White(),
                 textAlign: 'middle-center'

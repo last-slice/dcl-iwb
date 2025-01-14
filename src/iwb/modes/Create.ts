@@ -4,11 +4,12 @@ import { sendServerMessage, colyseusRoom } from "../components/Colyseus"
 import { localUserId, localPlayer, setPlayMode } from "../components/Player"
 import { SCENE_MODES, SERVER_MESSAGE_TYPES } from "../helpers/types"
 import { playerMode } from "../components/Config"
-import { displayExpandedMap, editCurrentSceneParcels } from "../ui/Objects/ExpandedMapView"
+import { currentScenePoolParcels, displayExpandedMap, editCurrentSceneParcels } from "../ui/Objects/ExpandedMapView"
 import { scene } from "../ui/Objects/SceneMainDetailPanel"
 import { addBlankParcels } from "../components/Scene"
 
 export let tempScene:any ={}
+export let tempPoolSceneParcelCount:number = 0
 export let tempParcels:Map<string, any> = new Map()
 export let otherTempParcels:Map<string, any> = new Map()
 export let greenBeam = "assets/53726fe8-1d24-4fd8-8cee-0ac10fcd8644.glb"
@@ -45,6 +46,13 @@ export function editCurrentParcels(id:string){
     })
 }
 
+export function createTempScenePool(scene:any){
+    tempScene.id = scene.id
+    tempPoolSceneParcelCount = scene.pcnt
+    tempParcels.clear()
+    setPlayMode(localUserId, SCENE_MODES.CREATE_SCENE_MODE)
+}
+
 export function createTempScene(name:string, desc:string, image:string, enabled:boolean, priv:boolean, category:string, rating:any, dPx:boolean, dv:boolean){
     tempScene.name = name
     tempScene.description = desc
@@ -55,7 +63,7 @@ export function createTempScene(name:string, desc:string, image:string, enabled:
     tempScene.rating = rating
     tempScene.dPx = dPx
     tempScene.dv = dv
-    tempParcels.clear()//
+    tempParcels.clear()
     setPlayMode(localUserId, SCENE_MODES.CREATE_SCENE_MODE)
 }
 
@@ -191,6 +199,7 @@ export function deleteOtherParcelEntities(parcel: any) {
 
 export function cancelParcelEdits(){
     addBlankParcels([...colyseusRoom.state.temporaryParcels])
+    addBlankParcels(currentScenePoolParcels)
           
     deleteCreationEntities(localUserId)
     validateScene()
@@ -201,19 +210,23 @@ export function deleteCreationEntities(player: string) {
     tempParcels.forEach((entities, key)=>{
         deleteParcelEntities(key)
     })
+    
+    
 
     otherTempParcels.forEach((entities, key)=>{
         deleteOtherParcelEntities(key)
     })
+
+    currentScenePoolParcels.length = 0
 }
 
 export function saveNewScene(userId:string) {
     if(userId !== localUserId) return
 
     // displaySceneSavedPanel(true)
-    // displayCreateScenePanel(false)//
+    // displayCreateScenePanel(false)
 }
 
 export function getParcels() {
-    return editCurrentSceneParcels ? colyseusRoom.state.scenes.get(scene!.id).pcls.length : tempParcels.size
+    return editCurrentSceneParcels  ? colyseusRoom.state.scenes.get(scene!.id).pcls.length : tempPoolSceneParcelCount > 0 ? tempParcels.size : tempParcels.size
 }

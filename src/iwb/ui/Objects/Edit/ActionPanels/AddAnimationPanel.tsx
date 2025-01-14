@@ -196,7 +196,7 @@ export function AddAnimationActionPanel(){
                 updateActionData({speed:isNaN(speed) ? 1 : speed})
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'Enter Action Name'}
+            placeholder={'Enter Speed (number > 0)'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
