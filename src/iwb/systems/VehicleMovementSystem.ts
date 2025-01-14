@@ -1,7 +1,7 @@
 import { tweenSystem } from "@dcl/sdk/ecs";
 import { testVehicles, tweenToHeading, tweenToPosition } from "../components/Vehicle";
 import { colyseusRoom, connected } from "../components/Colyseus";
-import { COMPONENT_TYPES } from "../helpers/types";
+import { COMPONENT_TYPES } from "../helpers/types";//
 
 
 export function VehicleMovementSystem(dt:number){

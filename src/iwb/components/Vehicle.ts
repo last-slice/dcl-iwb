@@ -526,7 +526,7 @@ export function setTargetHeading(vehicle:any, heading:number){
 }
 
 export function updateVehicleDirection(vehicle:any){
-    // let vehicle = testVehicles.get(localAid)
+    // let vehicle = testVehicles.get(localAid)//
     if(vehicle.turning > 0){
         switch(vehicle.turning){
             case 1:
@@ -541,7 +541,7 @@ export function updateVehicleDirection(vehicle:any){
 }
 
 export function updateVehicleSpeed(vehicle:any, dt:number){
-    // let vehicle = testVehicles.get(localAid)
+    // let vehicle = testVehicles.get(localAid)//
 
 
 

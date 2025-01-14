@@ -221,7 +221,7 @@ export function buildLocation(location:string){
 export function addLocalTrigger(category:any, index:number, config:any, parent:Entity){
     console.log('triger count is', index)
     let trigger = engine.addEntity()
-    warehouseTriggers.set(category.style + index, {entity:trigger, label:category.style + "-" + config.id, sty:category.style, id:config.id})
+    warehouseTriggers.set(category.style + index, {parent, entity:trigger, label:category.style + "-" + config.id, sty:category.style, id:config.id})
     Transform.create(trigger, {position: config.p, parent:parent, scale:config.s})
 
     updateCategoryTriggers(category.style)
@@ -261,10 +261,13 @@ export function addLocalTrigger(category:any, index:number, config:any, parent:E
             // let entityInfo = getEntity(localPlayer.activeScene, "ayWkQ5")
             // if(!entityInfo){
             //     return
-            // }
+            // }//
 
             // actionQueue.push({aid:entityInfo.aid, action:{id:randomId, state:enteredArea, type:Actions.SET_STATE}, entity:entityInfo.entity, force:true})            
         
+        },
+        ()=>{
+            enteredArea = "Lobby"
         }
     )
 }

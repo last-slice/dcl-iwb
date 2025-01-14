@@ -2205,10 +2205,10 @@
     "portableExperiences": "enabled"
   },
   "worldConfiguration": {
-    "name": "BuilderWorld.dcl.eth"
+    "name": "Lastraum.dcl.eth"
   },
   "iwb": {
-    "name": "BuilderWorld.dcl.eth",
+    "name": "Lastraum.dcl.eth",
     "gcScene":false,
     "online":true
   },
