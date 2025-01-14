@@ -72,6 +72,8 @@ export enum SERVER_MESSAGE_TYPES {
     SCENE_DEPLOY_ANGZAAR = 'scene_deploy_angzaar',
     SCENE_POOL_ADD_SCENE = 'scene_pool_add_scene',
     SCENE_POOL_UPDATED_SCENE = 'scene_pool_updated',
+    SCENE_POOL_GET = 'scene_pool_get',
+    SCENE_POOL_PLACE = 'scene_pool_place',
     
     //World
     INIT_WORLD = "init_world",

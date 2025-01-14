@@ -29,15 +29,16 @@ import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setQue
 import { updateLeaderboardInfo } from "./Leaderboard";
 import { updateEditQuestInfo } from "../ui/Objects/Edit/EditQuest";
 import { equipUserWeapon } from "./Weapon";
-import { Numbers } from "./Counter";
 import { setGlobalEmitter } from "../modes/Play";
-import { displayMainLoadingScreen } from "../ui/Objects/LoadingScreen";
 import { removeLoadingScreen } from "../systems/LoadingSystem";
-
-// import { addIWBCatalogComponent, addIWBComponent } from "./iwb";
-// import { addNameComponent } from "./Name";
+import { updateScenePool } from "../ui/Objects/IWBViews/CreateScenePool";
 
 export async function createColyseusListeners(room:Room){
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_GET, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_POOL_GET + ' received', info)
+        updateScenePool(info)
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.PLAY_AUDIUS_TRACK, (info:any)=>{
         console.log(SERVER_MESSAGE_TYPES.PLAY_AUDIUS_TRACK + ' received', info)
         if(!info){

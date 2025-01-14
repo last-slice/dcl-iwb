@@ -6,7 +6,7 @@ import { setUIClicked } from '../ui'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { colyseusRoom, sendServerMessage } from '../../components/Colyseus'
 import { EDIT_MODIFIERS, IWBScene, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
-import { addBoundariesForParcel, cancelParcelEdits, deleteCreationEntities, deleteParcelEntities, getParcels, greenBeam, otherTempParcels, redBeam, tempParcels, validateScene } from '../../modes/Create'
+import { addBoundariesForParcel, cancelParcelEdits, deleteCreationEntities, deleteParcelEntities, getParcels, greenBeam, otherTempParcels, redBeam, tempParcels, tempPoolSceneParcelCount, tempScene, validateScene } from '../../modes/Create'
 import { localUserId, localPlayer } from '../../components/Player'
 import { formatDollarAmount } from '../../helpers/functions'
 import { addBlankParcels, removeEmptyParcels, updateSceneParentRotation } from '../../components/Scene'
@@ -19,6 +19,7 @@ import { TransformInputModifiers } from './Edit/EditTransform'
 
 export let expandedMapshow = false
 let navigation = false
+let scenePool = false
 export let editCurrentSceneParcels = false
 export let editRotation = false
 
@@ -30,19 +31,26 @@ let sceneFactor = 1
 
 let mapTiles:any[] = []
 let currentSceneParcels:any[] = []
+export let currentScenePoolParcels:any[] = []
 let entities:any[] = []
 
 let selectedScene:any
 
 export let mainView = ""
 
-export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean){
+export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean, pool?:boolean){
     expandedMapshow = value
 
     if(nav){
         navigation = true
     }else{
         navigation = false
+    }
+
+    if(pool){
+        scenePool = true
+    }else{
+        scenePool = false
     }
 
     if(current){
@@ -138,8 +146,6 @@ function removeCurrentSceneBoundaries(){
 
 function createMapTiles(){
     mapTiles.length = 0
-
-    console.log('x tiles are ', xMax - xMin + 1)
 
     let mapParcels:any[] = []
     for(let y = yMax; y >= yMin; y--){
@@ -346,10 +352,23 @@ function MainLeftView(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '10%',//
+            height: '10%',
         }}
-    uiText={{value:"" + editCurrentSceneParcels ? "Edit Parcels" : "Create New Scene", fontSize:sizeFont(30, 20), color:Color4.White(), textAlign:'middle-center'}}
+    uiText={{value:"" + (scenePool ? "Select Location" : editCurrentSceneParcels ? "Edit Parcels"  : "Create New Scene"), fontSize:sizeFont(30, 20), color:Color4.White(), textAlign:'middle-center'}}
     />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            display: scenePool ? "flex" : "none"
+        }}
+    uiText={{value:"Required Parcels: " + tempPoolSceneParcelCount, fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-center'}}
+    />
+
 
 <UiEntity
         uiTransform={{
@@ -371,6 +390,7 @@ function MainLeftView(){
             justifyContent: 'center',
             width: '100%',
             height: '10%',
+            display: !scenePool ? "flex" : "none"
         }}
     uiText={{value:"Poly Limit: " + (formatDollarAmount(getParcels() * 10000)), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-center'}}
     />
@@ -382,6 +402,7 @@ function MainLeftView(){
             justifyContent: 'center',
             width: '100%',
             height: '10%',
+            display: !scenePool ? "flex" : "none"
         }}
     uiText={{value:"File Limit: " + (getParcels() >= 20 ? "300" : getParcels() * 15) + " MB", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-center'}}
     />
@@ -414,6 +435,67 @@ function MainLeftView(){
         uiText={{value:"" + (!editRotation ? "Edit Rotation" : "Edit Parcels"), color:Color4.White(), fontSize:sizeFont(25,15)}}
         />
 
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{top:"2%"},
+            display:scenePool && currentScenePoolParcels.length === tempPoolSceneParcelCount ? "flex" : "none"
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            playSound(SOUND_TYPES.SELECT_3)
+            sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_PLACE, {sceneId:tempScene.id, parcels:[...currentScenePoolParcels]})
+            displayExpandedMap(false)
+            deleteCreationEntities("")
+            removeCurrentSceneBoundaries()
+        }}
+        uiText={{value: "Place Template", color:Color4.White(), fontSize:sizeFont(25,15)}}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        />
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
+            height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
+            margin:{top:"2%"},
+             display: !scenePool ? "none" : "flex"
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+        }}
+        onMouseDown={() => {
+            setUIClicked(true)
+            playSound(SOUND_TYPES.SELECT_3)
+            cancelParcelEdits()
+            removeCurrentSceneBoundaries()
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        uiText={{value:"Cancel", color:Color4.White(), fontSize:sizeFont(25,15)}}
+        />
+
         {/* create button */}
         <UiEntity
         uiTransform={{
@@ -423,6 +505,7 @@ function MainLeftView(){
             width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
             height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{top:"2%"},
+            display: scenePool ? "none" : "flex"
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -445,7 +528,7 @@ function MainLeftView(){
         }}
         />
 
-        {/* create button */}
+        {/* close button */}
         <UiEntity
         uiTransform={{
             flexDirection: 'column',
@@ -454,6 +537,7 @@ function MainLeftView(){
             width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
             height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{top:"2%"},
+             display: scenePool ? "none" : "flex"
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -510,7 +594,7 @@ function MainLeftView(){
 
     </UiEntity>
    )
-}
+}//
 
 function MainRightView(){
     return(
@@ -845,7 +929,21 @@ function generateMapRow(data:any){
                 onMouseDown={()=>{
                     setUIClicked(true)
                     playSound(SOUND_TYPES.SELECT_3)
-                    if(navigation){
+                    if(scenePool){
+                        if(currentScenePoolParcels.includes(mapColumn.coords)){
+                            deleteParcelEntities(mapColumn.coords)
+                            addBlankParcels([mapColumn.coords])
+                            let index = currentScenePoolParcels.findIndex((i:any)=> i === mapColumn.coords)
+                            if(index >=0){
+                                currentScenePoolParcels.splice(index,1)
+                            }
+                        }else{
+                            removeEmptyParcels([mapColumn.coords])
+                            addBoundariesForParcel(mapColumn.coords, true, false)
+                            currentScenePoolParcels.push(mapColumn.coords)
+                        }
+                    }
+                    else if(navigation){
                         selectScene(mapColumn.coords)
                     }
                     else{
