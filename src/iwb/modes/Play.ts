@@ -89,6 +89,8 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
         disableAudioPlayMode(scene, entityInfo)
         disableCounterForPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
+        disableMeshColliderPlayMode(scene, entityInfo)
+        PointerEvents.deleteFrom(entityInfo.entity)
     }
 
     checkGameplay(scene)
@@ -121,6 +123,7 @@ export async function handleSceneEntitiesOnEnter(sceneId:string){
 export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     console.log('handle on scene enter', scene)
     setPointersPlayMode(scene, entityInfo)
+    setMeshColliderPlayMode(scene, entityInfo)
     setAudioPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
@@ -171,7 +174,7 @@ export async function handleSceneEntityOnUnload(scene:any, entityInfo:any){
         disableAudioPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
         disableAnimationPlayMode(scene, entityInfo)
-        disableMeshColliderPlayMode(scene, entityInfo)
+        
         disableMeshRenderPlayMode(scene, entityInfo)
         disableTextShapePlayMode(scene, entityInfo)
         disableSmartItemsPlayMode(scene, entityInfo)
@@ -189,9 +192,6 @@ export async function handleSceneEntityOnUnload(scene:any, entityInfo:any){
         //to do
         // - reset states
         // - disabe smart items?
-
-
-        PointerEvents.deleteFrom(entityInfo.entity)
 
         await disableGameAsset(scene, itemInfo)
 
@@ -225,7 +225,7 @@ export async function handleSceneEntitiesOnLoad(sceneId:string){
 export function handleSceneEntityOnLoad(scene:any, entityInfo:any){
     setGLTFPlayMode(scene, entityInfo)
                     
-    setMeshColliderPlayMode(scene, entityInfo)
+    
     setMeshRenderPlayMode(scene, entityInfo)
     setVisibilityPlayMode(scene, entityInfo)
     
