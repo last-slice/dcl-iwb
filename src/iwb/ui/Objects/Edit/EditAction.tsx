@@ -209,7 +209,7 @@ export function EditAction(){
 
                 <Dropdown
                     options={getActionList()}
-                    selectedIndex={0}
+                    // selectedIndex={0}    x//
                     onChange={selectNewActionIndex}
                     uiTransform={{
                         width: '100%',
