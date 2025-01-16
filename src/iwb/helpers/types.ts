@@ -499,6 +499,7 @@ export enum Actions {
     REMOVE_VIRTUAL_CAMERA = 'virtual_camera_remove',
     FREEZE_PLAYER = 'player_freeze',
     UNFREEZE_PLAYER = 'player_unfreeze',
+    SET_GRAVITY = 'phyics_gravity_set'
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 

@@ -9,6 +9,7 @@ import { localPlayer } from '../components/Player';
 import { colyseusRoom, connected } from '../components/Colyseus';
 import { getEntity } from '../components/iwb';
 import { testEntities } from '../components/Physics';
+import { movePlayerTo } from '~system/RestrictedActions';
 
 const fixedTimeStep: number = 1.0 / 60.0 // seconds
 const maxSubSteps: number = 10
@@ -25,11 +26,21 @@ export function PhysicsUpdateSystem(dt: number): void {
     }
     world.step(fixedTimeStep, dt, maxSubSteps)
 
-    let playerTransform = Transform.get(engine.PlayerEntity).position
-    localPlayer.cannonBody.position.set(playerTransform.x, playerTransform.y + 0.5, playerTransform.z);
-
     colyseusRoom.state.scenes.forEach((scene:any)=>{
       scene[COMPONENT_TYPES.PHYSICS_COMPONENT].forEach((physicsItem:any, aid:string)=>{
+        if(physicsItem.type === 0){
+            if(localPlayer.activeScene && scene.id === localPlayer.activeScene.id){
+                if(physicsItem.playerReactGravity){
+                    // console.log('need to float player')
+                    // movePlayerTo({newRelativePosition:{x:localPlayer.cannonBody.x, y:localPlayer.cannonBody.y, z:localPlayer.cannonBody.z}})
+                    // Transform.getMutable(engine.PlayerEntity).position = localPlayer.cannonBody.position
+                }else{
+                    let playerTransform = Transform.get(engine.PlayerEntity).position
+                    localPlayer.cannonBody.position.set(playerTransform.x, playerTransform.y + 0.5, playerTransform.z);
+                }
+            }
+        }
+
         if(physicsItem.cannonBody){
             let entityInfo = getEntity(scene, aid)
             let objectTransform = Transform.getMutableOrNull(entityInfo.entity)
@@ -49,7 +60,7 @@ export function PhysicsUpdateSystem(dt: number): void {
                 let position =  Vector3.subtract(physicsItem.cannonBody.position, sceneTransform.position)
    
 
-                if(physicsItem.offset !== undefined){
+                // if(physicsItem.offset !== undefined){
                     switch(physicsItem.shape){
                         case 0:
                             // position = Vector3.add(position, Vector3.create(0,physicsItem.offset.y / 2,0))//
@@ -62,12 +73,12 @@ export function PhysicsUpdateSystem(dt: number): void {
                             break;
     
                     }
-                    position = Vector3.subtract(
-                        position,
-                        Vector3.create(physicsItem.offset.x, physicsItem.offset.y, physicsItem.offset.z),
-                    )
+                    // position = Vector3.subtract(
+                    //     position,
+                    //     Vector3.create(physicsItem.offset.x, physicsItem.offset.y, physicsItem.offset.z),
+                    // )
                     // position = Vector3.subtract(position, Vector3.create(0,1-physicsItem.offset.y, 0))
-                }
+                // }
 
                 // console.log("p",position)
                 // console.log("o", objectTransform.position)

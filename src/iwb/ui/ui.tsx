@@ -77,13 +77,13 @@ const uiComponent:any = () => [
   createDialogPanel(),
   createTutorialVideoButton(),
   createMainLoadingScreen(),
-  createQuestPanel(),
-  createQuestCreatorPanel(),
+  // createQuestPanel(),
+  // createQuestCreatorPanel(),
   createCooldownUI(),
   // createAdvancedEditPanel(),
 
 
-  // createUITests(),//
+  // createUITests(),
 ]
 
 export function generateButtons(data:any){

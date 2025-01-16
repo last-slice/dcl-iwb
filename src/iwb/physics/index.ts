@@ -11,7 +11,7 @@ export let world:CANNON.World
 
 export async function createPhysics(){
     world = new CANNON.World()
-    world.gravity.set(0, -9.82, 0) // m/s²
+    world.gravity.set(0, -9.82, 0) // m/s²//
 
     await loadPhysicsWorld(world)
 
@@ -45,7 +45,7 @@ export function createCannonBody(data:any, rotation:boolean, cGroup:number){
   cannonBody.addEventListener("collide", collideEventListener)
   world.addBody(cannonBody)
 
-  console.log('creating cannon body')
+  console.log('creating cannon body for player')
 
   return cannonBody
 }
@@ -67,7 +67,7 @@ export function createCannonShape(physicsData:any, transform:any){
 }
 
 
-function onCollideWithBody(event: CANNON.ICollisionEvent){
+export function onCollideWithBody(event: CANNON.ICollisionEvent){
   // console.log('event is', event)
   // if(event.body.collisionFilterGroup === 2){
   //     // console.log('bumped a car')

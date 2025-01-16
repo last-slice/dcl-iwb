@@ -40,6 +40,7 @@ import { removeLocaPlayerWeapons } from "../components/Weapon"
 import mitt from "mitt"
 import { isGCScene } from "../components/Config"
 import { isGameAsset, isLevelAsset } from "../components/Level"
+import { disablePhysicsPlayMode, setPhysicsPlayMode } from "../components/Physics"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity
@@ -55,6 +56,9 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
         console.log('handleSceneEntitiesOnLeave for', sceneId)
         scene.checkedLeave = true
         scene.checkedEntered = false
+
+        localPlayer.cannonBody.mass = 0
+        localPlayer.cannonBody.updateMassProperties()
 
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
@@ -90,6 +94,7 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
         disableCounterForPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
         disableMeshColliderPlayMode(scene, entityInfo)
+        disablePhysicsPlayMode(scene, entityInfo)
         PointerEvents.deleteFrom(entityInfo.entity)
     }
 
@@ -105,6 +110,9 @@ export async function handleSceneEntitiesOnEnter(sceneId:string){
     if(scene && !scene.checkedEntered){
         scene.checkedEntered = true//
         scene.checkedLeave = false
+
+        localPlayer.cannonBody.mass = 60
+        localPlayer.cannonBody.updateMassProperties()
 
         await loadRemovedItems(scene)
 
@@ -130,6 +138,7 @@ export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     setLivePanel(scene, entityInfo)   
     setTextShapeForPlayMode(scene, entityInfo)
     setTriggersForPlayMode(scene, entityInfo)
+    setPhysicsPlayMode(scene, entityInfo)
 
     checkMultiplayerSyncOnEnter(scene, entityInfo)
 

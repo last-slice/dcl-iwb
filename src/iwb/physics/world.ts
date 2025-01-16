@@ -20,59 +20,11 @@ export async function loadPhysicsWorld(world: CANNON.World) {
   vehicleMaterial.friction    = 1
   vehicleMaterial.restitution = 0
 
-//    // Ball-Ground contact (bouncy)
-//    const playerBallContactMaterial = new CANNON.ContactMaterial(playerMaterial, ballMaterial, {
-//     friction: 0.3,    // Friction when ball touches ground
-//     restitution: 0.5  // High bounciness for the ball
-//   }
-// );
-
-//     // Ball-Ground contact (bouncy)
-//     let ground = 
-//   const ballGroundContactMaterial = new CANNON.ContactMaterial(ballMaterial, cannonMaterials.get("ground"), {
-//       friction: 0.4,    // Friction when ball touches ground
-//       restitution: 0.8  // High bounciness for the ball
-//     }
-//   );
-
-//   const groundPhysicsContactMaterial = new CANNON.ContactMaterial(groundPhysicsMaterial, groundPhysicsMaterial, {
-//     friction: 0.5,
-//     restitution: 0.1
-//   })
-
-//   const playerWallContactMaterial = new CANNON.ContactMaterial(
-//     playerMaterial,   // Player material
-//     wallPhysicsMaterial,     // Wall material//
-//     {
-//       friction: 1,     // Friction to simulate pushing force
-//       restitution: 0   // Little bounce (optional)
-//     }
-//   );
-
-//   const playerVehicleContactMaterial = new CANNON.ContactMaterial(
-//     playerMaterial,   // Player material
-//     vehiclePhysicsMaterial,     // Wall material
-//     {
-//       friction: 1,     // Friction to simulate pushing force
-//       restitution: 1   // Little bounce (optional)
-//     }
-//   );
-
   // Set restitution to 0 to avoid bouncing
   const carGroundContactMaterial = new CANNON.ContactMaterial(vehicleMaterial, groundMaterial, {
     friction: 0.8,    // Adjust friction as needed for grip
     restitution: 0.0  // No bounce
   });
-
-  // world.addContactMaterial(playerBallContactMaterial)
-  // // Add the contact material to the world
   world.addContactMaterial(carGroundContactMaterial);
-
-  // world.addContactMaterial(playerVehicleContactMaterial)
-  // world.addContactMaterial(playerWallContactMaterial)
-  // world.addContactMaterial(groundPhysicsContactMaterial)
-  // world.addContactMaterial(ballGroundContactMaterial)
-
-
   world.addBody(groundBody)
 }

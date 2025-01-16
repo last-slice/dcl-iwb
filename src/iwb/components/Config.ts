@@ -115,7 +115,7 @@ export async function setRealm(sceneJSON:any, url:any){
     localConfig.gcScene = sceneJSON.iwb.hasOwnProperty("gcScene") ? sceneJSON.iwb.gcScene : false
     localConfig.online = sceneJSON.iwb.hasOwnProperty("online") ? sceneJSON.iwb.online : false
     localConfig.scene = sceneJSON.iwb.scene
-    localConfig.scenePool = sceneJSON.iwb.scenePool
+    localConfig.scenePool =  sceneJSON.iwb.hasOwnProperty("scenePool") ? true : false
     localConfig.sceneId = sceneJSON.iwb.sceneId
 
     let realmData = await getRealm({})

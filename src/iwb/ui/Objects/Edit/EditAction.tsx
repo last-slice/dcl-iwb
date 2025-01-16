@@ -46,6 +46,7 @@ import { quests } from '../../../components/Quests'
 import { AddVerifyAccessPanel, resetVerify } from './ActionPanels/AddVerifyPanel'
 import { AddSetText, resetAddSetText } from './ActionPanels/AddSetText'
 import { AddInputModifierActionPanel, resetInputModifierActionPanel } from './ActionPanels/AddInputFreezePanel'
+import { AddSetGravityPanel } from './ActionPanels/AddSetGravityPanel'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -577,6 +578,9 @@ function getActionDataPanel(){
 
         case Actions.FREEZE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddInputModifierActionPanel/>
+
+        case Actions.SET_GRAVITY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetGravityPanel/>
     }
 }
 

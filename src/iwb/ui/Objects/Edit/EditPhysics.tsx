@@ -776,11 +776,33 @@ uiText={{value:"Please create an entity with a Physics Configuration and add Mat
     }}
 />
 
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+        margin:{top:'1%', bottom:'1%'}
+    }}
+    uiBackground={{color: Color4.Black()}}
+    uiText={{value: "Scene Gravity", fontSize: sizeFont(30, 20)}}
+    onMouseDown={() => {
+        setUIClicked(true)
+        physicsView = "gravity"
+        setUIClicked(false)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+/>
+
 </UiEntity>
 
 <Materials/>
 <ContactMaterials/>
 <Sizes/>
+<Gravity/>
 
         </UiEntity>
     )
@@ -891,6 +913,186 @@ uiText={{value:"Physics Sizes && Offset", fontSize:sizeFont(25, 15), color:Color
             setUIClicked(false)
         }}
     />
+        </UiEntity>
+
+</UiEntity>
+    )
+}
+
+function Gravity(){
+    return(
+        <UiEntity
+        key={resources.slug + "edit::physics::gravity"}
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        alignContent:'center',
+        width: '100%',
+        height: '90%',
+        display: physicsView === "gravity" ? "flex" : "none"
+    }}
+>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+        margin:{bottom:"1%"},
+    }}
+uiText={{value:"Scene Gravity: " + (physicsInfo.gravity), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+    >
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '80%',
+        height: '100%',
+    }}
+    >
+
+    <Input
+        onChange={(value) => {
+            if(isNaN(parseFloat(value.trim()))){
+                return
+            }
+            physicsInfo.gravity = parseFloat(value.trim())
+        }}
+        onSubmit={(value) => {
+            if(isNaN(parseFloat(value.trim()))){
+                return
+            }
+            physicsInfo.gravity = parseFloat(value.trim())
+        }}
+        fontSize={sizeFont(20,15)}
+        placeholder={'Enter new number (m/s2)'}
+        placeholderColor={Color4.White()}
+        color={Color4.White()}
+        uiTransform={{
+            width: '95%',
+            height: '100%',
+        }}
+        />
+
+    </UiEntity>
+
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '20%',
+        height: '100%',
+    }}
+    >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{value: "Update", fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            setUIClicked(true)
+            update("edit", "gravity", physicsInfo.gravity)
+            utils.timers.setTimeout(()=>{
+                getAssetPhysicsData()
+            }, 200)
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+    />
+        </UiEntity>
+
+    </UiEntity>
+
+ <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '20%',
+                margin:{top:"5%"}
+            }}
+        >
+
+                    {/* url label */}
+        <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '15%',
+                height: '100%',
+            }}
+        uiText={{textWrap:'nowrap', value:"Gravity Effects Player", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+        />
+
+            <UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '85%',
+                height: '100%',
+            }}
+        >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(4).width,
+            height: calculateSquareImageDimensions(4).height,
+            margin:{top:"1%", bottom:'1%'},
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: physicsInfo && physicsInfo.type === 0 && physicsInfo.playerReactGravity ? 
+            getImageAtlasMapping(uiSizes.toggleOnTrans) : 
+            getImageAtlasMapping(uiSizes.toggleOffTrans)
+        }}
+        onMouseDown={() => {
+            update("edit", "playerReactGravity", !physicsInfo.playerReactGravity)
+            utils.timers.setTimeout(()=>{
+                getAssetPhysicsData()
+            }, 200)
+        }}
+        />
+
+
+        </UiEntity>
+
+
         </UiEntity>
 
 </UiEntity>

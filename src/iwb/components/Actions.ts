@@ -35,6 +35,7 @@ import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAu
 import resources from "../helpers/resources"
 import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
 import { removePlayingVideo, setPlayingVideo } from "./Videos"
+import { world } from "../physics"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -416,6 +417,10 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.REMOVE_VIRTUAL_CAMERA:
                 handleRemoveVirtualCamera(scene, info, action)
+                break;
+
+            case Actions.SET_GRAVITY:
+                handleSetGravity(scene, info, action)
                 break;
         }
     })
@@ -1957,4 +1962,8 @@ export function handleRemoveVirtualCamera(scene:any, entityInfo:any, action:any)
     const mainCamera = MainCamera.createOrReplace(engine.CameraEntity, {
 		virtualCameraEntity: undefined
 	})
+}
+
+export function handleSetGravity(scene:any, entityInfo:any, action:any){
+    world.gravity.set(0,action.value,0)
 }

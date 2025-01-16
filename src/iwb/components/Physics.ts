@@ -1,11 +1,13 @@
 import { engine, MeshRenderer, Transform, TransformType } from "@dcl/sdk/ecs"
 import { CANNON } from "../helpers/libraries"
 import { COMPONENT_TYPES } from "../helpers/types"
-import { createCannonBody, world } from "../physics"
+import { world } from "../physics"
 import { getEntity } from "./iwb"
 import { Vector3 } from "@dcl/sdk/math"
 import { getWorldPosition } from "@dcl-sdk/utils"
 import { colyseusRoom, connected } from "./Colyseus"
+import { Quaternion } from "cannon"
+import { localPlayer } from "./Player"
 
 export let pendingBodies:any[] = []
 export let cannonMaterials:Map<string,CANNON.Material> = new Map()
@@ -20,7 +22,7 @@ const pendingContactMaterials: Array<{ from: string, to: string, contactData: an
 //     friction: 0.3,    // Friction when ball touches ground
 //     restitution: 0.5  // High bounciness for the ball
 //   }
-// );
+// );//
 
 export let testEntities:Map<string, any> = new Map()
 
@@ -230,13 +232,34 @@ export function ProcessPendingPhysicsBodies(dt:number){
                             let shape = await createCannonShape(transform, physicsData)
                             let position = await getCannonPosition(physicsData, worldPosition)
 
-                            physicsData.cannonBody = createCannonBody({
+                            physicsData.cannonBody = new CANNON.Body({
                                 mass:physicsData.mass,
                                 material: cannonMaterials.get(physicsData.material),
                                 shape: shape,
                                 position: position,
                                 quaternion: new CANNON.Quaternion(),
-                            }, physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false, 4)
+                                fixedRotation:physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false
+                            })
+
+                            //   let cannonBody = 
+                            //   cannonBody.fixedRotation = rotation
+                            //   cannonBody.collisionFilterGroup = 1
+                            //   cannonBody.collisionFilterMask = 1
+                            
+                              physicsData.cannonBody.addEventListener("collide", (event: CANNON.ICollisionEvent)=>{
+                                // console.log('collided with entity', body.aid, body.entity)
+                              })
+                              world.addBody(physicsData.cannonBody)
+                            
+                            //   console.log('creating cannon body')
+
+                            // physicsData.cannonBody = createCannonBody({
+                            //     mass:physicsData.mass,
+                            //     material: cannonMaterials.get(physicsData.material),
+                            //     shape: shape,
+                            //     position: position,
+                            //     quaternion: new CANNON.Quaternion(),
+                            // }, physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false, 4)
 
                             console.log('physics body created', physicsData.cannonBody.position, physicsData.cannonBody.shape)
 
@@ -342,4 +365,51 @@ function createContactMaterial(physicsData:any, id:string, contactData: any) {
           }
     }
   }
-  
+
+export function resetPhysicsBuildMode(scene:any, entityInfo:any){
+    let itemInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!itemInfo || itemInfo.type === 0){
+        return
+    }
+
+    localPlayer.cannonBody.mass = 0
+    localPlayer.cannonBody.updateMassProperties()
+
+    resetCannonBody(itemInfo, entityInfo)
+}
+
+export function setPhysicsPlayMode(scene:any, entityInfo:any){
+    let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsData){
+        return
+    }
+
+    if(physicsData.type === 0){
+        world.gravity.set(0, physicsData.gravity, 0)
+    }else{
+        resetCannonBody(physicsData, entityInfo)
+    }
+}
+
+export function disablePhysicsPlayMode(scene:any, entityInfo:any){
+    let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsData){
+        return
+    }
+
+    if(physicsData.type === 1){
+        resetCannonBody(physicsData, entityInfo)
+    }
+}
+
+export async function resetCannonBody(physicsData:any, entityInfo:any){
+     // Stop all motion
+     if(!physicsData.cannonBody){
+        return
+     }
+     physicsData.cannonBody.velocity.set(0, 0, 0)
+     physicsData.cannonBody.angularVelocity.set(0, 0, 0)
+
+     physicsData.cannonBody.position = await getCannonPosition(physicsData, getWorldPosition(entityInfo.entity))
+     physicsData.cannonBody.rotation = new Quaternion()
+}
