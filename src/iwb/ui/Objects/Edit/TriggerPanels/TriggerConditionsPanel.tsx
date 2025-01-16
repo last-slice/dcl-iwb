@@ -28,7 +28,7 @@ let newCondition:any = {}
 
 export function updateTriggerConditionPanel(){
     entities.length = 0
-    entities = getAllAssetNames(selectedItem.sceneId, undefined, true)
+    entities = getAllAssetNames(selectedItem.sceneId, undefined, true, true)
 
     console.log('current conditions are ', newDecision.conditions)
 
@@ -143,7 +143,7 @@ export function TriggerConditionsPanel(){
 
             <Dropdown
                 options={[...["Select Entity"], ...entities.map($=> $.name)]}
-                selectedIndex={selectedEntityIndex}
+                selectedIndex={0}
                 onChange={selectConditionEntityIndex}
                 uiTransform={{
                     width: '100%',
@@ -172,7 +172,7 @@ export function TriggerConditionsPanel(){
             <Dropdown
                 // options={[...["Select Entity"], ...getEntityList()]}
                 options={[...["Select Condition"], ...entityConditions.length > 0 ? entityConditions.map($=> $.condition.replace(/_/g, " ")) : []]}
-                selectedIndex={selectedConditionIndex}
+                selectedIndex={0}
                 onChange={selectConditionIndex}
                 uiTransform={{
                     width: '100%',
@@ -500,6 +500,12 @@ function updateEntityConditions(aid:string){
         entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_COUNTER_IS_GREATER_THAN)})
     }
 
+    let physics = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(aid)
+    if(physics && physics.type === 1){
+        let conditions = [...Object.values(TriggerConditionType)]
+        entityConditions.push({type:COMPONENT_TYPES.PHYSICS_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_IS)})
+    }
+
     let quests = scene[COMPONENT_TYPES.QUEST_COMPONENT].get(aid)
     if(quests){
         let conditions = [...Object.values(TriggerConditionType)]
@@ -527,7 +533,7 @@ function selectConditionEntityIndex(index:number){
     selectedEntityIndex = index
     if(index !== 0){
         updateEntityConditions(entities[index-1].aid)
-        updateEntityStates(entities[index-1].aid)
+        updateEntityStates(entities[index-1].aid)//
     }
 }
 
@@ -541,6 +547,11 @@ function selectConditionIndex(index:number){
     if(index !== 0){
         newCondition.condition = entityConditions[index-1]
         console.log('new condition is', newCondition)
+        console.log('entity conditions are' ,entityConditions)
+
+        if(entityConditions[index-1].type === COMPONENT_TYPES.PHYSICS_COMPONENT){
+            newCondition.value = entities[selectedEntityIndex-1].aid
+        }
     }
 }
 

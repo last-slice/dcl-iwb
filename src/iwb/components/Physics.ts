@@ -1,6 +1,6 @@
 import { engine, MeshRenderer, Transform, TransformType } from "@dcl/sdk/ecs"
 import { CANNON } from "../helpers/libraries"
-import { COMPONENT_TYPES } from "../helpers/types"
+import { COMPONENT_TYPES, Triggers } from "../helpers/types"
 import { world } from "../physics"
 import { getEntity } from "./iwb"
 import { Vector3 } from "@dcl/sdk/math"
@@ -8,6 +8,8 @@ import { getWorldPosition } from "@dcl-sdk/utils"
 import { colyseusRoom, connected } from "./Colyseus"
 import { Quaternion } from "cannon"
 import { localPlayer } from "./Player"
+import { runSingleTrigger } from "./Triggers"
+import { getAssetIdByEntity } from "./Parenting"
 
 export let pendingBodies:any[] = []
 export let cannonMaterials:Map<string,CANNON.Material> = new Map()
@@ -240,14 +242,24 @@ export function ProcessPendingPhysicsBodies(dt:number){
                                 quaternion: new CANNON.Quaternion(),
                                 fixedRotation:physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false
                             })
+                            physicsData.cannonBody.entity = body.entity
+                            physicsData.cannonBody.aid = body.aid
 
                             //   let cannonBody = 
                             //   cannonBody.fixedRotation = rotation
                             //   cannonBody.collisionFilterGroup = 1
-                            //   cannonBody.collisionFilterMask = 1
+                            //   cannonBody.collisionFilterMask = 1//
                             
-                              physicsData.cannonBody.addEventListener("collide", (event: CANNON.ICollisionEvent)=>{
-                                // console.log('collided with entity', body.aid, body.entity)
+                              physicsData.cannonBody.addEventListener("collide", (event: any)=>{// CANNON.ICollisionEvent)=>{
+                                let scene = colyseusRoom.state.scenes.get(body.sceneId)
+                                if(scene){
+                                    let entityInfo = getEntity(scene, body.aid)
+                                    let collisionBodyInfo = getEntity(scene, event.body.aid)
+                                    if(!collisionBodyInfo){
+                                        return
+                                    }
+                                    runSingleTrigger(entityInfo, Triggers.ON_PHYSICS_COLLIDE, {input:0, pointer:0, data:event.body.entity, aid:event.body.aid})
+                                }
                               })
                               world.addBody(physicsData.cannonBody)
                             
