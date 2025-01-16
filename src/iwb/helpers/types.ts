@@ -496,6 +496,7 @@ export enum Actions {
     ENTER_VEHICLE = 'vehicle_enter',
     EXIT_VEHICLE = 'vehicle_exit',
     SET_VIRTUAL_CAMERA = 'virtual_camera_set',
+    REMOVE_VIRTUAL_CAMERA = 'virtual_camera_remove',
     FREEZE_PLAYER = 'player_freeze',
     UNFREEZE_PLAYER = 'player_unfreeze',
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'

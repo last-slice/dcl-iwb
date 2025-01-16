@@ -57,6 +57,7 @@ import { clearEditVehicleData, EditVehicle, getVehicleData, removeEditVehicleObj
 import { displayQuestCreatorPanel } from './QuestCreatorPanel'
 import { EditQuest, getQuestDefinition, questEditView, updateQuestEditView } from './Edit/EditQuest'
 import { EditWeapon, getWeaponData, removeEditWeapon, updateEditWeaponView, weaponView } from './Edit/EditWeapon'
+import { EditVirtualCamera, getVirrtualCameraData } from './Edit/EditVirtualCamera'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -171,6 +172,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.WEAPON_COMPONENT:
             getWeaponData()
+            break;
+
+        case COMPONENT_TYPES.VIRTUAL_CAMERA:
+            getVirrtualCameraData()
             break;
 
         // case COMPONENT_TYPES.NPC_COMPONENT:
@@ -1023,6 +1028,7 @@ function EditObjectData(){
                 <EditVehicle/>
                 <EditQuest/>
                 <EditWeapon/>
+                <EditVirtualCamera/>
 
             </UiEntity>
 
@@ -1165,7 +1171,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.VEHICLE_COMPONENT,
         COMPONENT_TYPES.PHYSICS_COMPONENT,
         COMPONENT_TYPES.QUEST_COMPONENT,
-        COMPONENT_TYPES.WEAPON_COMPONENT
+        COMPONENT_TYPES.WEAPON_COMPONENT,
+        COMPONENT_TYPES.VIRTUAL_CAMERA
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1265,6 +1272,7 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.VLM_COMPONENT,
             COMPONENT_TYPES.LEADERBOARD_COMPONENT,
             COMPONENT_TYPES.QUEST_COMPONENT,
+            COMPONENT_TYPES.VIRTUAL_CAMERA
         ]
 
         let components:any[] = []

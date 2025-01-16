@@ -409,6 +409,14 @@ export function updateActions(scene:any, info:any, action:any){
             case Actions.UNFREEZE_PLAYER:
                 handleunfreezePlayer(scene, info, action)
                 break;
+
+            case Actions.SET_VIRTUAL_CAMERA:
+                handleSetVirtualCamera(scene, info, action)
+                break;
+
+            case Actions.REMOVE_VIRTUAL_CAMERA:
+                handleRemoveVirtualCamera(scene, info, action)
+                break;
         }
     })
 }
@@ -1583,7 +1591,7 @@ export function handleStopPlaylist(scene:any, info:any, action:any){
     //         channel:action.channel,
     //         reset:true
     //     }
-    // )
+    // )//
 }
 
 async function handleAdvanceLevel(scene:any, info:any, action:any){
@@ -1937,4 +1945,16 @@ export function handleunfreezePlayer(scene:any, entityInfo:any, action:any){
         return
     }
     InputModifier.deleteFrom(engine.PlayerEntity)
+}
+
+export function handleSetVirtualCamera(scene:any, entityInfo:any, action:any){
+    const mainCamera = MainCamera.createOrReplace(engine.CameraEntity, {
+		virtualCameraEntity: entityInfo.entity,
+	})
+}
+
+export function handleRemoveVirtualCamera(scene:any, entityInfo:any, action:any){
+    const mainCamera = MainCamera.createOrReplace(engine.CameraEntity, {
+		virtualCameraEntity: undefined
+	})
 }

@@ -577,7 +577,7 @@ function getActionDataPanel(){
 
         case Actions.FREEZE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddInputModifierActionPanel/>
-        }
+    }
 }
 
 async function update(action:string, actionData:any){
@@ -794,5 +794,5 @@ const ActionDefaults:any = {
         fn:()=>{
             resetInputModifierActionPanel()
         }
-    }
+    },
 }
