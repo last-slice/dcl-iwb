@@ -547,7 +547,8 @@ export enum Triggers {
     ON_QUEST_STEP = 'on_quest_step',
     ON_QUEST_COMPLETE = 'on_quest_complete',
     ON_VEHICLE_ACCELERATE = 'on_vehicle_accelerate',
-    ON_VEHICLE_DECELERATE = 'on_vehicle_decelerate'//
+    ON_VEHICLE_DECELERATE = 'on_vehicle_decelerate',
+    ON_PHYSICS_COLLIDE = 'on_physics_collide'
 }
 
 export enum Pointers {
@@ -572,6 +573,7 @@ export enum TriggerConditionType {
     WHEN_TIME_EQUALS = 'when_utc_time_equals',
     WHEN_TIME_IS_GREATER_THAN = 'when_utc_time_is_greater_than',
     WHEN_TIME_IS_LESS_THAN = 'when_utc_time_is_less_than',
+    WHEN_ENTITY_IS = 'when_entity_is'
   }
 
 export enum TriggerConditionOperation {

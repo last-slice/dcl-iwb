@@ -1052,7 +1052,8 @@ function SceneAssetRow(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{
-            value: curItem ? (name.split(" ")[0].length > 10 ? name.split(" ")[0].substring(0,10) : name.split(" ")[0] + " - " + aid) : "Name not found", // name.length > 20 ?  name.substring(0,20) + "..." : name : "Name not found",
+            // value: curItem ? (name.split(" ")[0].length > 10 ? name.split(" ")[0].substring(0,10) : name.split(" ")[0] + " - " + aid) : "Name not found", // name.length > 20 ?  name.substring(0,20) + "..." : name : "Name not found",
+            value: curItem ?  name.length > 20 ?  name.substring(0,20) + "..." : name : "Name not found",
             fontSize: sizeFont(20, 15),
             textAlign: 'middle-left',
             color: Color4.White(),

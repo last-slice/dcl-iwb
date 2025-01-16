@@ -168,23 +168,23 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
-      // console.log('trigger event', triggerInfo, triggerEvent)
+      console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent, triggerInfo.type)
       if(!trigger){
         console.log('cant find trigger')
         return
       }
 
-      // console.log('trigger found', triggerEvent, trigger.decisions)
+      console.log('trigger found', triggerEvent, trigger.decisions)
 
-      checkDecisionPaths(scene, trigger, entityInfo)
+      checkDecisionPaths(scene, trigger, entityInfo, triggerEvent)
     })
 }
 
-function checkDecisionPaths(scene:any, trigger:any, entityInfo:any){
+function checkDecisionPaths(scene:any, trigger:any, entityInfo:any, triggerEvent:any){
   trigger.decisions.forEach(async (decision:any, i:number)=>{
     console.log('decisin is', decision)
-    decisionQueue.push({sceneId:scene.id, triggerId:trigger.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision})
+    decisionQueue.push({sceneId:scene.id, triggerId:trigger.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision, triggerEvent})
   })
 }
 
@@ -208,13 +208,13 @@ function isValidAction(action: string /*TriggerAction*/) {
 }
 
 async function evaluateDecision(decisionItem:any){
-  let {sceneId, aid, entity, decision, triggerId} = decisionItem
+  let {sceneId, aid, entity, decision, triggerId, triggerEvent} = decisionItem
   let scene = colyseusRoom.state.scenes.get(sceneId)
   if(!scene){
     return
   }
 
-  if(await checkConditions(scene, decision, aid, entity)){
+  if(await checkConditions(scene, decision, aid, entity, triggerEvent)){
     // console.log('passed check conditions')
       for(const triggerAction of decision.actions){
         // console.log('trigger actions area', triggerAction)
@@ -267,7 +267,7 @@ async function evaluateDecision(decisionItem:any){
   }
 }
 
-async function checkConditions(scene:any, decision:any, aid:string, entity:Entity) {
+async function checkConditions(scene:any, decision:any, aid:string, entity:Entity, triggerEvent:any) {
   if(decision.conditions && decision.conditions.length > 0){
     let triggerConditions:any[] = []
     decision.conditions.forEach(async (condition:any, i:number)=>{
@@ -280,7 +280,7 @@ async function checkConditions(scene:any, decision:any, aid:string, entity:Entit
           counter:condition.counter
         })
     })
-    const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition))
+    const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition, triggerEvent))
     console.log('condition evaluations', conditions)
     const isTrue = (result?: boolean) => !!result
     const operation = decision.operator || TriggerConditionOperation.AND
@@ -297,14 +297,19 @@ async function checkConditions(scene:any, decision:any, aid:string, entity:Entit
   return true
 }
 
-function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:any) {
+function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:any, triggerEvent:any) {
       try {
         // console.log('checking condition', condition)
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
           console.log('checking condition', condition)
+          console.log('checking trigger event', triggerEvent)
           switch (condition.condition) {
+            case TriggerConditionType.WHEN_ENTITY_IS: {
+              return triggerEvent.aid === condition.aid
+            }
+
             case TriggerConditionType.WHEN_STATE_IS: {
               const states = States.getOrNull(entity)
               if (states !== null) {
