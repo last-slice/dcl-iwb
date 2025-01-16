@@ -12,7 +12,6 @@ export async function connect(roomName: string, userData: any, token: string, wo
     options.island = island ? island : "world"
     options.localConfig = localConfig
     options.gcScene = localConfig ? localConfig.gcScene : undefined
-    options.scenePool = localConfig && localConfig.hasOwnProperty('scenePool') ? true : false
 
     console.log('did we make it')
 

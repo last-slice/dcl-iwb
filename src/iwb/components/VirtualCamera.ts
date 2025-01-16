@@ -9,7 +9,14 @@ export function checkVirtualCameraComponent(scene:any, entityInfo:any){
         if(!isClient){
             return
         }
-        VirtualCamera.create(entityInfo.entity)
+        VirtualCamera.create(entityInfo.entit, {
+            lookAtEntity: cameraInfo.lookAt ? cameraInfo.lookAt : undefined,
+            defaultTransition: cameraInfo.transitiontype < 0 ? undefined : {
+                transitionMode: cameraInfo.transitiontype === 0 ? 
+                VirtualCamera.Transition.Time(cameraInfo.transitionAmount) :
+                VirtualCamera.Transition.Speed(cameraInfo.transitionAmount)
+            }
+        })
     }
 }
 

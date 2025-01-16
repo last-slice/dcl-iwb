@@ -191,7 +191,7 @@ function setPlayerDefaults(player:any){
     player.hasWeaponEquipped = false
     player.inVehicle = false
     player.cannonBody = createCannonBody({
-        mass:60,
+        mass:80,
         material: cannonMaterials.get("player") || new CANNON.Material("player"),
         shape: new CANNON.Sphere(1),  //new CANNON.Box(new CANNON.Vec3(0.35, 0.95, 0.35)),
         position: new CANNON.Vec3(0,0,0),

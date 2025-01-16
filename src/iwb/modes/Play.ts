@@ -40,6 +40,7 @@ import { removeLocaPlayerWeapons } from "../components/Weapon"
 import mitt from "mitt"
 import { isGCScene } from "../components/Config"
 import { isGameAsset, isLevelAsset } from "../components/Level"
+import { disablePhysicsPlayMode, setPhysicsPlayMode } from "../components/Physics"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity
@@ -55,6 +56,9 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
         console.log('handleSceneEntitiesOnLeave for', sceneId)
         scene.checkedLeave = true
         scene.checkedEntered = false
+
+        localPlayer.cannonBody.mass = 0
+        localPlayer.cannonBody.updateMassProperties()
 
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
@@ -89,6 +93,9 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
         disableAudioPlayMode(scene, entityInfo)
         disableCounterForPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
+        disableMeshColliderPlayMode(scene, entityInfo)
+        disablePhysicsPlayMode(scene, entityInfo)
+        PointerEvents.deleteFrom(entityInfo.entity)
     }
 
     checkGameplay(scene)
@@ -103,6 +110,9 @@ export async function handleSceneEntitiesOnEnter(sceneId:string){
     if(scene && !scene.checkedEntered){
         scene.checkedEntered = true//
         scene.checkedLeave = false
+
+        localPlayer.cannonBody.mass = 60
+        localPlayer.cannonBody.updateMassProperties()
 
         await loadRemovedItems(scene)
 
@@ -121,12 +131,14 @@ export async function handleSceneEntitiesOnEnter(sceneId:string){
 export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     console.log('handle on scene enter', scene)
     setPointersPlayMode(scene, entityInfo)
+    setMeshColliderPlayMode(scene, entityInfo)
     setAudioPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setLivePanel(scene, entityInfo)   
     setTextShapeForPlayMode(scene, entityInfo)
     setTriggersForPlayMode(scene, entityInfo)
+    setPhysicsPlayMode(scene, entityInfo)
 
     checkMultiplayerSyncOnEnter(scene, entityInfo)
 
@@ -171,7 +183,7 @@ export async function handleSceneEntityOnUnload(scene:any, entityInfo:any){
         disableAudioPlayMode(scene, entityInfo)
         disableVideoPlayMode(scene, entityInfo)
         disableAnimationPlayMode(scene, entityInfo)
-        disableMeshColliderPlayMode(scene, entityInfo)
+        
         disableMeshRenderPlayMode(scene, entityInfo)
         disableTextShapePlayMode(scene, entityInfo)
         disableSmartItemsPlayMode(scene, entityInfo)
@@ -189,9 +201,6 @@ export async function handleSceneEntityOnUnload(scene:any, entityInfo:any){
         //to do
         // - reset states
         // - disabe smart items?
-
-
-        PointerEvents.deleteFrom(entityInfo.entity)
 
         await disableGameAsset(scene, itemInfo)
 
@@ -225,7 +234,7 @@ export async function handleSceneEntitiesOnLoad(sceneId:string){
 export function handleSceneEntityOnLoad(scene:any, entityInfo:any){
     setGLTFPlayMode(scene, entityInfo)
                     
-    setMeshColliderPlayMode(scene, entityInfo)
+    
     setMeshRenderPlayMode(scene, entityInfo)
     setVisibilityPlayMode(scene, entityInfo)
     

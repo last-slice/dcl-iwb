@@ -57,6 +57,7 @@ import { clearEditVehicleData, EditVehicle, getVehicleData, removeEditVehicleObj
 import { displayQuestCreatorPanel } from './QuestCreatorPanel'
 import { EditQuest, getQuestDefinition, questEditView, updateQuestEditView } from './Edit/EditQuest'
 import { EditWeapon, getWeaponData, removeEditWeapon, updateEditWeaponView, weaponView } from './Edit/EditWeapon'
+import { EditVirtualCamera, getVirrtualCameraData } from './Edit/EditVirtualCamera'
 
 export let visibleComponent: string = ""
 let componentViewType:string = "basic"
@@ -171,6 +172,10 @@ export function openEditComponent(value: string, resetToBasic?:boolean) {
 
         case COMPONENT_TYPES.WEAPON_COMPONENT:
             getWeaponData()
+            break;
+
+        case COMPONENT_TYPES.VIRTUAL_CAMERA:
+            getVirrtualCameraData()
             break;
 
         // case COMPONENT_TYPES.NPC_COMPONENT:
@@ -1023,6 +1028,7 @@ function EditObjectData(){
                 <EditVehicle/>
                 <EditQuest/>
                 <EditWeapon/>
+                <EditVirtualCamera/>
 
             </UiEntity>
 
@@ -1165,7 +1171,8 @@ function getBasicComponents(){
         COMPONENT_TYPES.VEHICLE_COMPONENT,
         COMPONENT_TYPES.PHYSICS_COMPONENT,
         COMPONENT_TYPES.QUEST_COMPONENT,
-        COMPONENT_TYPES.WEAPON_COMPONENT
+        COMPONENT_TYPES.WEAPON_COMPONENT,
+        COMPONENT_TYPES.VIRTUAL_CAMERA
     ]
     Object.values(COMPONENT_TYPES).forEach((component:any)=>{
         if(sceneEdit && sceneEdit[component] && sceneEdit[component][aid] && !omittedComponents.includes(component)){
@@ -1202,10 +1209,10 @@ function getAdvancedComponents(){
         }
     })
 
-    assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)//
+    assetComponents.push(COMPONENT_TYPES.PARENTING_COMPONENT)
 
     let advancedComponents:any[] = []
-    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-27).filter(item => assetComponents.includes(item))
+    advancedComponents = [...Object.values(COMPONENT_TYPES)].splice(-28).filter(item => assetComponents.includes(item))
     advancedComponents = advancedComponents.filter(item => !headers.includes(item))
     return advancedComponents
 }
@@ -1265,6 +1272,8 @@ function getComponents(noUnderscore?:boolean){
             COMPONENT_TYPES.VLM_COMPONENT,
             COMPONENT_TYPES.LEADERBOARD_COMPONENT,
             COMPONENT_TYPES.QUEST_COMPONENT,
+            COMPONENT_TYPES.VIRTUAL_CAMERA,
+            COMPONENT_TYPES.PHYSICS_COMPONENT,
         ]
 
         let components:any[] = []
@@ -1274,7 +1283,7 @@ function getComponents(noUnderscore?:boolean){
             }
         })
 
-        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-27).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
+        let array:any = [...Object.values(COMPONENT_TYPES)].splice(-28).filter(item => !components.includes(item) && !omittedAdvancedComponents.includes(item))
         array.push(COMPONENT_TYPES.BILLBOARD_COMPONENT)
         array.sort((a:any, b:any)=> a.localeCompare(b))
         noUnderscore ? array = array.map((str:any)=> str.replace(/_/g, " ")) :null

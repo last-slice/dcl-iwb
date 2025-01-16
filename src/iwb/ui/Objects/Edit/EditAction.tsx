@@ -46,6 +46,7 @@ import { quests } from '../../../components/Quests'
 import { AddVerifyAccessPanel, resetVerify } from './ActionPanels/AddVerifyPanel'
 import { AddSetText, resetAddSetText } from './ActionPanels/AddSetText'
 import { AddInputModifierActionPanel, resetInputModifierActionPanel } from './ActionPanels/AddInputFreezePanel'
+import { AddSetGravityPanel } from './ActionPanels/AddSetGravityPanel'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -209,7 +210,7 @@ export function EditAction(){
 
                 <Dropdown
                     options={getActionList()}
-                    selectedIndex={0}
+                    // selectedIndex={0}    x//
                     onChange={selectNewActionIndex}
                     uiTransform={{
                         width: '100%',
@@ -577,7 +578,10 @@ function getActionDataPanel(){
 
         case Actions.FREEZE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddInputModifierActionPanel/>
-        }
+
+        case Actions.SET_GRAVITY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetGravityPanel/>
+    }
 }
 
 async function update(action:string, actionData:any){
@@ -794,5 +798,5 @@ const ActionDefaults:any = {
         fn:()=>{
             resetInputModifierActionPanel()
         }
-    }
+    },
 }

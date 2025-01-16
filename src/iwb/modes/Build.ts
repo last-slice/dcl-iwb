@@ -62,6 +62,7 @@ import { clearEditVehicleData } from "../ui/Objects/Edit/EditVehicle"
 import { removeEditWeapon } from "../ui/Objects/Edit/EditWeapon"
 import { isGameAsset, isLevelAsset } from "../components/Level"
 import { disableRaycast } from "../components/Raycast"
+import { resetPhysicsBuildMode } from "../components/Physics"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -1612,7 +1613,7 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         setAvatarShapeBuildMode(scene, entityInfo)
         disablePathingForEntity(scene, entityInfo)
         disableRaycast(scene,entityInfo)
-        
+        resetPhysicsBuildMode(scene, entityInfo)
     }
     //         resetTweenPositions(entity, sceneItem, scene)//
 }

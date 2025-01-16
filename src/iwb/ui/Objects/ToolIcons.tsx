@@ -92,7 +92,7 @@ export function createToolsPanel() {
             }}
             />  
 
-<UiEntity
+{/* <UiEntity
             uiTransform={{
                 display: localPlayer && (playerMode === SCENE_MODES.PLAYMODE) ? "flex" : "none",
                 width: calculateSquareImageDimensions(4).width,
@@ -115,7 +115,7 @@ export function createToolsPanel() {
             onMouseUp={()=>{
                 setUIClicked(false)
             }}
-            />  
+            />   */}
 
             {createTopToolIcons(topTools)}
         </UiEntity>

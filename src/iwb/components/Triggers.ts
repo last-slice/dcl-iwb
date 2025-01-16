@@ -13,7 +13,7 @@ import { getAssetIdByEntity } from "./Parenting";
 import { colyseusRoom, connected, sendServerMessage } from "./Colyseus";
 
 export const actionQueue:any[] = []
-export const decisionQueue:any[] = []
+export let decisionQueue:any[] = []
 
 // const triggers = new Map<Entity, Emitter<Record<Triggers, any>>>()
 const triggers = new Map<Entity, any>()
@@ -184,7 +184,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
 function checkDecisionPaths(scene:any, trigger:any, entityInfo:any){
   trigger.decisions.forEach(async (decision:any, i:number)=>{
     console.log('decisin is', decision)
-    decisionQueue.push({sceneId:scene.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision})
+    decisionQueue.push({sceneId:scene.id, triggerId:trigger.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision})
   })
 }
 
@@ -208,7 +208,7 @@ function isValidAction(action: string /*TriggerAction*/) {
 }
 
 async function evaluateDecision(decisionItem:any){
-  let {sceneId, aid, entity, decision} = decisionItem
+  let {sceneId, aid, entity, decision, triggerId} = decisionItem
   let scene = colyseusRoom.state.scenes.get(sceneId)
   if(!scene){
     return
@@ -258,6 +258,7 @@ async function evaluateDecision(decisionItem:any){
               }
           }
       }
+      decisionQueue = decisionQueue.filter((decisions:any)=> {decisions.triggerId !== triggerId})
       runningDecision = false
       // decisionQueue.push({id:decision.id, actions:decisionActions}) 
   }else{

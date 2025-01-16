@@ -291,15 +291,15 @@ export async function createColyseusListeners(room:Room){
         if(info.valid){
             if(info.dest === "gc"){
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene " + info.name + " deployed to Genesis City!", animate:{enabled:true, return:true, time:10}})
-                displaySkinnyVerticalPanel(true, getView("Deployment_Ready_Teleport"), info.base, ()=>{
-                    teleportTo({worldCoordinates:info.base})//
-                })
+                // displaySkinnyVerticalPanel(true, getView("Deployment_Ready_Teleport"), info.base, ()=>{
+                //     teleportTo({worldCoordinates:info.base})//
+                // })
             }
             else if(info.dest === "angzaar"){
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your scene " + info.name + " deployed to Angzaar Plaza!", animate:{enabled:true, return:true, time:10}})
-                displaySkinnyVerticalPanel(true, getView("Deployment_Ready_Teleport"), info.base, ()=>{
-                    teleportTo({worldCoordinates:info.base})
-                })
+                // displaySkinnyVerticalPanel(true, getView("Deployment_Ready_Teleport"), info.base, ()=>{
+                //     teleportTo({worldCoordinates:info.base})
+                // })
             }
             else{
                 showNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Your DCL World Deployed!", animate:{enabled:true, return:true, time:10}})
@@ -568,9 +568,9 @@ export async function createColyseusListeners(room:Room){
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY, (info:any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY + ' received', info)
         if(info && info.link){
-            displaySkinnyVerticalPanel(true, getView("Deployment_Ready"), undefined, ()=>{
-                openExternalUrl({url:info.link.replace(" ", "%20")})
-            })
+            // displaySkinnyVerticalPanel(true, getView("Deployment_Ready"), undefined, ()=>{
+            //     openExternalUrl({url:info.link.replace(" ", "%20")})
+            // })
         }
     })
 

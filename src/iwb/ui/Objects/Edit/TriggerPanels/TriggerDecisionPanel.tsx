@@ -22,19 +22,21 @@ let newAction:any = {}
 
 export let newDecision:any = {}
 
-export function updateTriggerDecisionPanel(data?:any){
+export function updateTriggerDecisionPanel(data?:any, newDecisions?:boolean){
     console.log('decision data now is', data)
     if(data){
         newDecision = {...data}
         return
     }
     
-    newDecision.id = getRandomString(6)
-    newDecision.conditions = []
-    newDecision.actions = []
-    newDecision.name = newDecision.id
-
-    console.log('new decision is', newDecision)
+    if(newDecisions){
+        newDecision.id = getRandomString(6)
+        newDecision.conditions = []
+        newDecision.actions = []
+        newDecision.name = newDecision.id
+    
+        console.log('new decision is', newDecision)
+    }
 }
 
 export function updateEntityActions(aid:string){

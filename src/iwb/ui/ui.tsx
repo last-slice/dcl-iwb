@@ -80,8 +80,8 @@ const uiComponent:any = () => [
   createDialogPanel(),
   createTutorialVideoButton(),
   createMainLoadingScreen(),
-  createQuestPanel(),
-  createQuestCreatorPanel(),
+  // createQuestPanel(),
+  // createQuestCreatorPanel(),
   createCooldownUI(),
   createBuilderHUDPanel("iwb::admin::"),
   createWarehouseItemDetailsPanel(),
@@ -89,7 +89,7 @@ const uiComponent:any = () => [
   // createAdvancedEditPanel(),
 
 
-  // createUITests(),//
+  // createUITests(),
 ]
 
 export function generateButtons(data:any){

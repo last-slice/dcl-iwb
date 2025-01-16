@@ -49,7 +49,7 @@ export function updateTriggerInfoView(value:string, data?:any){
             break;
 
         case 'decisions':
-            updateTriggerDecisionPanel(data)
+            updateTriggerDecisionPanel(data, true)
             break;
 
         case 'actions':
@@ -62,7 +62,7 @@ export function updateTriggerInfoView(value:string, data?:any){
     }
 }
 
-// function selectTriggerButton(index:number){
+// function selectTriggerButton(index:number){//
 //     newTriggerData.input = index
 //     update('edit', {id:newTriggerData.id, data:{input:index}})
 // }
