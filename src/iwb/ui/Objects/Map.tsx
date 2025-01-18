@@ -283,7 +283,7 @@ function MapParcel(data:any){
         height: '100%',
         margin:{left:'0.5%', right:"0.5%"}
     }}
-    uiBackground={{color: parcel.cur ? Color4.create(0,1,0,.2) : parcel.scene ? Color4.create(.4,.5,.6,1) :  Color4.create(0,0,0,.2)}}
+    uiBackground={{color: parcel.cur ? Color4.create(0,1,0,.2) : parcel.scene ? parcel.color :  Color4.create(0,0,0,.2)}}
     >
       </UiEntity>
   )
@@ -297,10 +297,11 @@ export function refreshMap(){
     let xCount = 0
     let yCount = 0
   
-    let sceneParcels:string[] = []
-    colyseusRoom.state.scenes.forEach((scene:IWBScene)=>{
+    let sceneParcels:any[] = []
+    colyseusRoom.state.scenes.forEach((scene:any)=>{
       scene.pcls.forEach((parcel:string)=>{
-        sceneParcels.push(parcel)
+        // sceneParcels.push(parcel)
+        sceneParcels.push({parcel:parcel, color:scene.color})
       })
     })
   
@@ -319,8 +320,15 @@ export function refreshMap(){
   
     mapParcels.forEach(subArray => {
       subArray.forEach((obj:any) => {
-          if (sceneParcels.includes(obj.coords)) {
-              obj.scene = true;
+          // if (sceneParcels.includes(obj.coords)) {
+          //     obj.scene = true;
+          // }else{
+          //   obj.scene = false
+          // }'
+          let parcel = sceneParcels.find((parcel:any)=> parcel.parcel === obj.coords)
+          if(parcel){
+            obj.scene = true
+            obj.color = parcel.color
           }else{
             obj.scene = false
           }

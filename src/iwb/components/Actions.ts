@@ -30,12 +30,12 @@ import { addForceCamera, entitiesWithPathingEnabled, removeForceCamera } from ".
 import { walkPath } from "./Path"
 import { checkTransformComponent } from "./Transform"
 import { unequipUserWeapon } from "./Weapon"
-import { checPhysicskBody, pendingBodies } from "./Physics"
 import { APP_NAME, chooseServer, getServers, initAudiusServers, server, updateAudiusInit } from "../ui/Objects/IWBViews/MusicView"
 import resources from "../helpers/resources"
 import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
 import { removePlayingVideo, setPlayingVideo } from "./Videos"
 import { world } from "../physics"
+import { checkPhysicsBody, removePhysicsBody, resetCannonBody } from "./Physics"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -422,6 +422,10 @@ export function updateActions(scene:any, info:any, action:any){
             case Actions.SET_GRAVITY:
                 handleSetGravity(scene, info, action)
                 break;
+
+            case Actions.RESET_PHYSICS_POSITION:
+                handleSetGravity(scene, info, action)
+                break;
         }
     })
 }
@@ -452,6 +456,12 @@ export function handleRemoveEntity(scene:any, entityInfo:any, action:any){
     let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
     removed.push(iwbInfo)
     console.log('removed items are ', removed)
+
+    let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsInfo || physicsInfo.type !== 1){
+        return
+    }
+    removePhysicsBody(physicsInfo)
 }
 
 export function handleShowText(scene:any, entityInfo:any, action:any, forceDelay?:number){
@@ -1856,7 +1866,7 @@ function handleEnablePhysics(scene:any, info:any, action:any){
     if(!physicsData){
         return
     }
-    checPhysicskBody(scene.id, info.aid, info.entity, physicsData)
+    checkPhysicsBody(scene.id, info.aid, info.entity, physicsData)
 }
 
 function handleQuestStart(scene:any, info:any, action:any){
@@ -1966,4 +1976,15 @@ export function handleRemoveVirtualCamera(scene:any, entityInfo:any, action:any)
 
 export function handleSetGravity(scene:any, entityInfo:any, action:any){
     world.gravity.set(0,action.value,0)
+}
+
+export function handleResetPhysicsPosition(scene:any, entityInfo:any, action:any){
+    let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsData){
+        return
+    }
+
+    if(physicsData.type === 1){
+        resetCannonBody(scene, physicsData, entityInfo)
+    }
 }

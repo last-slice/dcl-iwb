@@ -6,10 +6,10 @@ import { getEntity } from "./iwb"
 import { Vector3 } from "@dcl/sdk/math"
 import { getWorldPosition } from "@dcl-sdk/utils"
 import { colyseusRoom, connected } from "./Colyseus"
-import { Quaternion } from "cannon"
 import { localPlayer } from "./Player"
 import { runSingleTrigger } from "./Triggers"
 import { getAssetIdByEntity } from "./Parenting"
+import { scene } from "../ui/Objects/SceneMainDetailPanel"
 
 export let pendingBodies:any[] = []
 export let cannonMaterials:Map<string,CANNON.Material> = new Map()
@@ -66,7 +66,7 @@ export function physicsListener(scene:any){
                 physicsData.listen("type", (current:any, previous:any)=>{
                     console.log('physics type changed', previous, current)
                     if(current === 1){
-                        checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                        checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                     }
                 })
 
@@ -89,44 +89,45 @@ export function physicsListener(scene:any){
                         cm.friction = 0;
                         cm.restitution = 0;
                         physicsData.cannonContactMaterials.delete(id)
+                        //remove world contact material
                     }
                 });
 
                 physicsData.listen("material", (current:any, previous:any)=>{
                     console.log('physics material changed', previous, current)
-                    checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                    checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                 })
 
                 physicsData.listen("mass", (current:any, previous:any)=>{
                     console.log('physics mass changed', previous, current)
-                    checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                    checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                 })
             
                 physicsData.listen("linearDamping", (current:any, previous:any)=>{
                     console.log('physics linearDamping changed', previous, current)
-                    checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                    checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                 })
 
                 physicsData.offset && physicsData.offset.onChange((current:any, previous:any)=>{
                     // console.log('physics fixedRotation changed', previous, current)
-                    checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                    checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                 })
 
                 physicsData.size && physicsData.size.onChange((current:any, previous:any)=>{
                     // console.log('physics fixedRotation changed', previous, current)
-                    checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                    checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                 })
 
 
 
                 // physicsData.offset && physicsData.offset.listen("x", (current:any, previous:any)=>{
                 //     console.log('physics fixedRotation changed', previous, current)
-                //     checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                //     checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                 // })
 
                 physicsData.listen("fixedRotation", (current:any, previous:any)=>{
                     console.log('physics fixedRotation changed', previous, current)
-                    checPhysicskBody(scene.id, aid, entityInfo.entity, physicsData)
+                    checkPhysicsBody(scene.id, aid, entityInfo.entity, physicsData)
                 })
                 // break;
         // }
@@ -151,12 +152,13 @@ export function physicsListener(scene:any){
 //     console.log('not all physics properties set to be added to world')
 // }//
 
-export function checPhysicskBody(sceneId:string, aid:string, entity:any, physicsData:any){
+export function checkPhysicsBody(sceneId:string, aid:string, entity:any, physicsData:any){
     let pendingBody = pendingBodies.find(($:any)=> $.aid === aid)
     if(pendingBody){
         console.log('already found pending body, just need to update')
         pendingBody.data = {...physicsData}
     }else{
+        console.log('adding cannon body to pending updates')
         pendingBodies.push({data:physicsData, retries:0, aid:aid, entity:entity, sceneId:sceneId})
     }
 }
@@ -168,7 +170,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
     }
     else{
         timer = 1
-        console.log('chekcing pending bodies', cannonMaterials.size, pendingBodies.length)
+        // console.log('checking pending bodies', cannonMaterials.size, pendingBodies.length)
         pendingBodies.forEach(async (body:any)=>{
             console.log('pending body is', body)
             if(checkPhysicsRequirements(body.data)){
@@ -182,25 +184,53 @@ export function ProcessPendingPhysicsBodies(dt:number){
                 if(scene){
                     let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(body.aid)
                     let transform = Transform.get(body.entity)
-                    // let worldPosition = getWorldPosition(body.entity)
+                    let worldPosition = getWorldPosition(body.entity)
+
                     if(physicsData){
                         console.log('body has all requirements, add to engine')
                         if(world.bodies.includes(physicsData.cannonBody)){
                             console.log('world already has physics body, need to clear collision masks')
-                            // physicsData.cannonBody.mass = physicsData.mass
-                            // physicsData.cannonBody.material = cannonMaterials.get(physicsData.material)
-                            // physicsData.cannonBody.linearDamping = physicsData.linearDamping
-                            // physicsData.cannonBody.angularDamping = physicsData.angularDamping
-                            // physicsData.cannonBody.shape = createCannonShape(transform, physicsData)
-                            // physicsData.cannonBody.position = getCannonPosition(physicsData, worldPosition)
+                            physicsData.cannonBody.mass = physicsData.mass
+                            physicsData.cannonBody.material = cannonMaterials.get(physicsData.material)
+                            physicsData.cannonBody.linearDamping = physicsData.linearDamping
+                            physicsData.cannonBody.angularDamping = physicsData.angularDamping
 
-                            // if(physicsData.mass > 0){
-                            //     physicsData.cannonBody.type = CANNON.Body.DYNAMIC
-                            // }
+                            while (physicsData.cannonBody.shapes.length > 0) {
+                                physicsData.cannonBody.removeShape(physicsData.cannonBody.shapes[0])
+                            }
 
-                            // physicsData.cannonBody.updateMassProperties()
-                            // console.log('body mass is', physicsData.cannonBody.mass)
-                            physicsData.cannonBody.collisionFilterMask = 0
+                            let shape = await createCannonShape(transform, physicsData)
+                            let position = await getCannonPosition(physicsData, worldPosition)
+
+                            physicsData.cannonBody.addShape(shape)
+                            physicsData.cannonBody.position.copy(position)
+                            physicsData.cannonBody.quaternion.copy(transform.rotation)
+
+                            if(physicsData.mass > 0){
+                                physicsData.cannonBody.type = CANNON.Body.DYNAMIC
+                            }else{
+                                physicsData.cannonBody.type = CANNON.Body.STATIC
+                            }
+
+                            physicsData.cannonBody.updateMassProperties()
+                            // physicsData.cannonBody.collisionFilterMask = 0
+
+                            console.log('new physics body position', physicsData.cannonBody.position)
+                            console.log('new physics body shape', physicsData.cannonBody.shapes.length)
+                            for (const shape of physicsData.cannonBody.shapes) {
+                                // Check if the shape is a Box
+                                if (shape.type === CANNON.Shape.types.BOX) {
+                                  const box = shape as CANNON.Box
+                            
+                                  // box.halfExtents is a CANNON.Vec3 of half-sizes
+                                  const width  = box.halfExtents.x * 2
+                                  const height = box.halfExtents.y * 2
+                                  const depth  = box.halfExtents.z * 2
+                            
+                                  console.log(`Box shape size: width=${width}, height=${height}, depth=${depth}`)
+                                }
+                              }
+
                         }else{
                             // let worldPosition = getWorldPosition(body.entity)
                             // console.log('creating physics body')
@@ -227,10 +257,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
                             //         break;
                             // }
 
-                        }
-
-                        let worldPosition = getWorldPosition(body.entity)
-                            console.log('creating physics body')
+                            console.log('creating new physics body')
                             let shape = await createCannonShape(transform, physicsData)
                             let position = await getCannonPosition(physicsData, worldPosition)
 
@@ -239,7 +266,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
                                 material: cannonMaterials.get(physicsData.material),
                                 shape: shape,
                                 position: position,
-                                quaternion: new CANNON.Quaternion(),
+                                quaternion: new CANNON.Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w),
                                 fixedRotation:physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false
                             })
                             physicsData.cannonBody.entity = body.entity
@@ -262,19 +289,10 @@ export function ProcessPendingPhysicsBodies(dt:number){
                                 }
                               })
                               world.addBody(physicsData.cannonBody)
-                            
-                            //   console.log('creating cannon body')
+                              console.log('physics body created', physicsData.cannonBody.position, physicsData.cannonBody.shape)
 
-                            // physicsData.cannonBody = createCannonBody({
-                            //     mass:physicsData.mass,
-                            //     material: cannonMaterials.get(physicsData.material),
-                            //     shape: shape,
-                            //     position: position,
-                            //     quaternion: new CANNON.Quaternion(),
-                            // }, physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false, 4)
 
-                            console.log('physics body created', physicsData.cannonBody.position, physicsData.cannonBody.shape)
-
+                        }
                     }
                 }
             }
@@ -289,7 +307,7 @@ function createCannonShape(transform:TransformType, physicsData:any){
     switch(physicsData.shape){
         case 0:
             if(physicsData.offset === undefined){
-                return new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5))
+                return new CANNON.Box(new CANNON.Vec3(transform.scale.x/2, transform.scale.y/2, transform.scale.z/2))
             }
             console.log('cannon shape is', new CANNON.Box(new CANNON.Vec3(physicsData.size.x * 2, physicsData.size.y / 2, physicsData.size.z / 2)))
             return new CANNON.Box(new CANNON.Vec3(physicsData.size.x * 2, physicsData.size.y * 2, physicsData.size.z * 2));
@@ -324,6 +342,10 @@ export function addCannonMaterial(material:string){
     cannonMaterials.set(material, cannonMaterial)
     retryPendingContactMaterials();
     return cannonMaterial
+}
+
+function addCannonBody(){
+    
 }
 
 // Retry pending contact materials whenever a new material is added
@@ -387,7 +409,7 @@ export function resetPhysicsBuildMode(scene:any, entityInfo:any){
     localPlayer.cannonBody.mass = 0
     localPlayer.cannonBody.updateMassProperties()
 
-    resetCannonBody(itemInfo, entityInfo)
+    resetCannonBody(scene, itemInfo, entityInfo)
 }
 
 export function setPhysicsPlayMode(scene:any, entityInfo:any){
@@ -399,7 +421,7 @@ export function setPhysicsPlayMode(scene:any, entityInfo:any){
     if(physicsData.type === 0){
         world.gravity.set(0, physicsData.gravity, 0)
     }else{
-        resetCannonBody(physicsData, entityInfo)
+        resetCannonBody(scene, physicsData, entityInfo)
     }
 }
 
@@ -410,11 +432,11 @@ export function disablePhysicsPlayMode(scene:any, entityInfo:any){
     }
 
     if(physicsData.type === 1){
-        resetCannonBody(physicsData, entityInfo)
+        resetCannonBody(scene, physicsData, entityInfo)
     }
 }
 
-export async function resetCannonBody(physicsData:any, entityInfo:any){
+export async function resetCannonBody(scene:any, physicsData:any, entityInfo:any){
      // Stop all motion
      if(!physicsData.cannonBody){
         return
@@ -423,5 +445,23 @@ export async function resetCannonBody(physicsData:any, entityInfo:any){
      physicsData.cannonBody.angularVelocity.set(0, 0, 0)
 
      physicsData.cannonBody.position = await getCannonPosition(physicsData, getWorldPosition(entityInfo.entity))
-     physicsData.cannonBody.rotation = new Quaternion()
+
+     let transform:any = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
+     if(transform){
+        physicsData.cannonBody.rotation =new CANNON.Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w)
+     }
+}
+
+
+export function removePhysicsBody(physicsInfo:any){
+    try{
+        world.removeBody(physicsInfo.cannonBody)
+    }
+    catch(e:any){
+        console.log('error removing cannon body from world', e)
+    }
+}
+
+export function addPhysicsBody(iwbInfo:any, physicsInfo:any){
+
 }

@@ -4,6 +4,7 @@ import { getEntity } from "./iwb"
 import { findAssetParent } from "./Parenting"
 import { COMPONENT_TYPES } from "../helpers/types"
 import { updateTriggerArea } from "./Triggers"
+import { checkPhysicsBody } from "./Physics"
 
 export function checkTransformComponent(scene:any, entityInfo:any){
     console.log('checking transform component', scene.parentEntity)
@@ -109,5 +110,11 @@ export function updateTransform(scene:any, aid:string, transform:any){
             console.log('entity has trigger component, need to update')
             updateTriggerArea(scene, info, transform)
         }
+
+        let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(info.aid)
+        if(!physicsInfo || physicsInfo.type !== 1){
+            return
+        }
+        checkPhysicsBody(scene.id, info.aid, info.entity, physicsInfo)
     }
 }
