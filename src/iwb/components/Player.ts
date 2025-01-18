@@ -5,7 +5,7 @@ import {AvatarAnchorPointType, AvatarAttach, CameraModeArea, ColliderLayer, engi
 import resources, { colors } from "../helpers/resources";
 import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math";
 import { colyseusRoom, sendServerMessage } from "./Colyseus";
-import { eth, utils } from "../helpers/libraries";
+import { CANNON, eth, utils } from "../helpers/libraries";
 import { isGCScene, iwbConfig, realm, removePlayerFromHideArray, setPlayerMode, worlds } from "./Config";
 import { getAssetUploadToken, log } from "../helpers/functions";
 import { otherUserRemovedSeletedItem, otherUserSelectedItem } from "../modes/Build";
@@ -27,7 +27,6 @@ import { LAYER_1, LAYER_8, NO_LAYERS } from "@dcl-sdk/utils";
 import { initQuestClients } from "./Quests";
 import { addTestVehicle } from "./Vehicle";
 // import VLM from "vlm-dcl";//
-import CANNON, { Vec3 } from "cannon"
 import { cannonMaterials } from "./Physics";
 import { showBannedScreen } from "../ui/Objects/BannedScreen";
 

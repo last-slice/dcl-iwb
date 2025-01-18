@@ -4,7 +4,7 @@ import {CATALOG_IDS, COMPONENT_TYPES, IWBScene, NOTIFICATION_TYPES, SCENE_MODES,
 import {addBoundariesForParcel, deleteCreationEntities, deleteParcelEntities, SelectedFloor} from "../modes/Create"
 import {Color3, Color4, Quaternion, Vector3} from "@dcl/sdk/math"
 import { RealmEntityComponent } from "../helpers/Components"
-import { getDistance, log } from "../helpers/functions"
+import { getDistance, getRandomColor, log } from "../helpers/functions"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
 import { gltfListener } from "./Gltf"
 import { parentingListener } from "./Parenting"
@@ -72,6 +72,7 @@ export async function addScene(scene:any, loadPending?:boolean){
     scene.checkedLoaded = false
     scene.checkedUnloaded = false
     scene.loaded = false
+    scene.color = getRandomColor()
     
     if(scene.e){
         if(isPrivateScene(scene) && loadPending === undefined){

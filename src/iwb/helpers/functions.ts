@@ -1,12 +1,11 @@
 import { getRealm } from "~system/Runtime";
 import {Animator, engine, Entity, Transform} from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
-import { DEG2RAD, Quaternion, Vector3 } from "@dcl/sdk/math";
-import { eth, utils } from "./libraries";
+import { Color4, DEG2RAD, Quaternion, Vector3 } from "@dcl/sdk/math";
+import { CANNON, eth, utils } from "./libraries";
 import { openExternalUrl } from "~system/RestrictedActions";
 import resources from "./resources";
 import { localPlayer, localUserId } from "../components/Player";
-import CANNON, { Vec3 } from "cannon"
 import { CHAIN_TYPE, NFT_TYPES } from "./types";
 import { createEthereumProvider } from '@dcl/sdk/ethereum-provider'
 import { abi1155, abi721 } from "../helpers/abis"
@@ -236,6 +235,10 @@ export function getRandomPointInArea(boxPosition:Vector3, boxWidth: number, boxH
   const z = boxPosition.z + Math.random() * boxDepth;
   
   return { x, y, z };
+}
+
+export function getRandomColor(alpha?:number){
+  return Color4.create(Math.random(), Math.random(), Math.random(), alpha?  alpha : 1)
 }
 
 

@@ -1,5 +1,5 @@
-import * as CANNON from 'cannon/build/cannon'
 import { addCannonMaterial, cannonMaterials } from '../components/Physics';
+import { CANNON } from '../helpers/libraries';
 
 export async function loadPhysicsWorld(world: CANNON.World) {
   let groundMaterial = addCannonMaterial("ground")

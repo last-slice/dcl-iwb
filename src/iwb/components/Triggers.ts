@@ -11,6 +11,7 @@ import { LAYER_1, NO_LAYERS } from "@dcl-sdk/utils";
 import { Color3, Vector3 } from "@dcl/sdk/math";
 import { getAssetIdByEntity } from "./Parenting";
 import { colyseusRoom, connected, sendServerMessage } from "./Colyseus";
+import { items } from "./Catalog";
 
 export const actionQueue:any[] = []
 export let decisionQueue:any[] = []
@@ -52,21 +53,34 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
             break;
         
       }
-    })
+    })//
 
     if(hasEnter || hasLeave){
       let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
       if(transform){
-        console.log('trigger area scale', transform)
+        
+        let bb:any
+        if(hasEnter === Triggers.ON_PICKUP){
+          let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
+          if(iwbInfo){
+            let item = items.get(iwbInfo.id)
+            if(item){
+              console.log('item id found for trigger on pickup', item)//
+              bb = item.bb
+            }
+          }
+        }
+
         itemInfo.trigger = utils.triggers.addTrigger(entityInfo.entity, NO_LAYERS, LAYER_1,
           [{type:'box',
+            // radius:1
             // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
-            scale: itemInfo.isArea ? transform.r.y === 90 || transform.r.y === 180 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+            scale: getTriggerScale(itemInfo, transform, bb)//
           }],
           ()=>{
             if(hasEnter){
               const triggerEvents = getTriggerEvents(entityInfo.entity)
-              triggerEvents.emit(Triggers.ON_ENTER, {input:0, pointer:0, entity:entityInfo.entity})
+              triggerEvents.emit(hasEnter === Triggers.ON_PICKUP ? Triggers.ON_PICKUP : Triggers.ON_ENTER, {input:0, pointer:0, entity:entityInfo.entity})
             }
           },
           ()=>{
@@ -82,16 +96,60 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
   }
 }
 
+function getTriggerScale(itemInfo:any, transform:any, bb:any){
+  let scale:any 
+  if(itemInfo.isArea){
+    if(transform.r.y === 90 || transform.r.y === 180){
+      scale = Vector3.create(transform.s.z, transform.s.y, transform.s.x)
+    }else{
+      scale = transform.s
+    }
+  }else{
+    if(bb){
+      scale = Vector3.create(bb.x, bb.y, bb.z)
+    }else{
+      scale =  Vector3.create(bb.x, bb.y, bb.z)
+    }
+  }
+    console.log('trigger scale is', scale)
+    return scale
+}
+
 export function updateTriggerArea(scene:any, entityInfo:any, transform:any){
-  console.log('updating trigger area')
+  // console.log('updating trigger area')
   let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
   if(!triggerInfo){
     return
   }
   try{
+
+    let isPickup:any
+    triggerInfo.triggers.forEach((trigger:any)=>{
+      switch(trigger.type){
+          case Triggers.ON_PICKUP:
+            isPickup = Triggers.ON_PICKUP
+            break;
+        
+      }
+    })
+
+    let bb:any
+    let transform:any
+    if(isPickup){
+      transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
+      let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
+      if(iwbInfo){
+        let item = items.get(iwbInfo.id)
+        if(item){
+          bb = item.bb
+        }
+      }
+    }
+
     utils.triggers.setAreas(entityInfo.entity, [{type:'box',
       // position: Vector3.add(Transform.get(scene.parentEntity).position, transform.p),
-      scale: triggerInfo.isArea ? transform.r.y === 90 || transform.r.y === 270 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+      // scale: triggerInfo.isArea ? transform.r.y === 90 || transform.r.y === 270 ? Vector3.create(transform.s.z, transform.s.y, transform.s.x) : transform.s : Vector3.add(transform.s, Vector3.create(0.5,0.5,0.5))
+      scale: getTriggerScale(triggerInfo,transform, bb)
     }])
   }
   catch(e){
@@ -124,7 +182,7 @@ export function triggerListener(scene:any){
     
     assetTrigger.triggers.onAdd((trigger:any, index:any)=>{
       trigger.listen("tick", (c:any, p:any)=>{
-          console.log('trigger is', trigger, info.entity)
+          // console.log('trigger is', trigger, info.entity)
           updateTriggerEvents(scene, info, trigger)
 
           if(trigger.type === Triggers.ON_PICKUP && !info.trigger){
@@ -147,7 +205,7 @@ export function triggerListener(scene:any){
     })
 
     assetTrigger.triggers.onRemove((trigger:any, index:any)=>{
-      console.log("trigger removed")
+      // console.log("trigger removed")
       if(trigger.type === Triggers.ON_PICKUP){
         utils.triggers.removeTrigger(info.entity)
         const triggerEvents = getTriggerEvents(info.entity)
@@ -163,19 +221,19 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   const triggerEvents = getTriggerEvents(entityInfo.entity)
 
   if(triggerEvents.isListening(triggerInfo.type)){
-    console.log('alreadly listening for input trigger on entity', entityInfo.entity)
+    // console.log('alreadly listening for input trigger on entity', entityInfo.entity)
     return
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
-      console.log('trigger event', triggerInfo, triggerEvent)
+      // console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent, triggerInfo.type)
       if(!trigger){
-        console.log('cant find trigger')
+        // console.log('cant find trigger')
         return
       }
 
-      console.log('trigger found', triggerEvent, trigger.decisions)
+      // console.log('trigger found', triggerEvent, trigger.decisions)
 
       checkDecisionPaths(scene, trigger, entityInfo, triggerEvent)
     })
@@ -183,7 +241,7 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
 
 function checkDecisionPaths(scene:any, trigger:any, entityInfo:any, triggerEvent:any){
   trigger.decisions.forEach(async (decision:any, i:number)=>{
-    console.log('decisin is', decision)
+    // console.log('decisin is', decision)
     decisionQueue.push({sceneId:scene.id, triggerId:trigger.id, aid:entityInfo.aid, entity:entityInfo.entity, decision:decision, triggerEvent})
   })
 }
@@ -214,6 +272,8 @@ async function evaluateDecision(decisionItem:any){
     return
   }
 
+  console.log('decision is', decisionItem)
+
   if(await checkConditions(scene, decision, aid, entity, triggerEvent)){
     // console.log('passed check conditions')
       for(const triggerAction of decision.actions){
@@ -229,12 +289,12 @@ async function evaluateDecision(decisionItem:any){
                 const actionEvents = getActionEvents(entity)
                 switch(action.channel){
                   case 0:
-                    console.log('running individual channel action')
+                    // console.log('running individual channel action')
                     actionEvents.emit(action.id, action)
                     break;
 
                   case 1:
-                    console.log('running global channel action')
+                    // console.log('running global channel action')
                     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {
                       // type:action.type,//
                       type:'scene-action',
@@ -247,18 +307,22 @@ async function evaluateDecision(decisionItem:any){
                     break;
 
                   case 2:
-                    console.log('running team channel action')
+                    // console.log('running team channel action')
                     break;
 
                   default:
-                    console.log('no channel specified, run locally')
+                    // console.log('no channel specified, run locally')
                     actionEvents.emit(action.id, action)
                     break;
                 }
               }
           }
       }
-      decisionQueue = decisionQueue.filter((decisions:any)=> {decisions.triggerId !== triggerId})
+      // console.log('decision queue is', decisionQueue)
+      decisionQueue = decisionQueue.filter((decision: any) => {
+        return decision.triggerId !== triggerId
+      })
+      // console.log('decision queue is now', decisionQueue)
       runningDecision = false
       // decisionQueue.push({id:decision.id, actions:decisionActions}) 
   }else{
@@ -281,7 +345,7 @@ async function checkConditions(scene:any, decision:any, aid:string, entity:Entit
         })
     })
     const conditions = triggerConditions.map((condition:any) => checkCondition(scene, aid, entity, condition, triggerEvent))
-    console.log('condition evaluations', conditions)
+    // console.log('condition evaluations', conditions)
     const isTrue = (result?: boolean) => !!result
     const operation = decision.operator || TriggerConditionOperation.AND
     switch (operation) {
@@ -303,8 +367,8 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
-          console.log('checking condition', condition)
-          console.log('checking trigger event', triggerEvent)
+          // console.log('checking condition', condition)
+          // console.log('checking trigger event', triggerEvent)
           switch (condition.condition) {
             case TriggerConditionType.WHEN_ENTITY_IS: {
               return triggerEvent.aid === condition.aid
@@ -453,7 +517,7 @@ function getActionsByActionId(scene:any, actionId:string) {
 }
 
 export function handleInputTriggerForEntity(entity:Entity, input:InputAction, pointer:PointerEventType){
-    console.log('handle input trigger for entity', entity, input, pointer)
+    // console.log('handle input trigger for entity', entity, input, pointer)
     const triggerEvents = getTriggerEvents(entity)
     triggerEvents.emit(Triggers.ON_INPUT_ACTION, {input:input, pointer:pointer, entity:entity})
 }
@@ -519,7 +583,7 @@ export function PlayTriggerSystem(dt:number){
 
 let runningDecision = false
 export function checkDecisionActions(decisionId:string){
-  console.log('checking decision actions', decisionId)
+  // console.log('checking decision actions', decisionId)
   if(!decisionId){
     runningDecision = false
     return
@@ -547,7 +611,7 @@ export function PlayTriggerDecisionSystem(dt:number){
 
 function initOnTick(entity:Entity){
   tickSet.add(entity)
-  console.log('adding tick')
+  // console.log('adding tick')
 }
 
 export function disableTriggers(scene:any, entityInfo:any){
@@ -605,7 +669,7 @@ export function runSingleTrigger(entityInfo:any, type:Triggers, data:any){
   let triggerEvents = getTriggerEvents(entityInfo.entity)
   data.entity = entityInfo.entity
   triggerEvents.emit(type, data)
-  console.log('running single trigger', type, data)
+  // console.log('running single trigger', type, data)
 }
 
 // ON_TWEEN_END
@@ -639,7 +703,7 @@ class MittExtender {
      }
 
      this.emitter.on(type, callback)
-     console.log('received event', type)
+    //  console.log('received event', type)
   }
   remove(){
     this.emitter.all.clear()

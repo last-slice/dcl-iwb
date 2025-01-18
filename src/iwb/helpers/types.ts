@@ -503,7 +503,8 @@ export enum Actions {
     REMOVE_VIRTUAL_CAMERA = 'virtual_camera_remove',
     FREEZE_PLAYER = 'player_freeze',
     UNFREEZE_PLAYER = 'player_unfreeze',
-    SET_GRAVITY = 'phyics_gravity_set'
+    SET_GRAVITY = 'phyics_gravity_set',
+    RESET_PHYSICS_POSITION = 'physics_position_reset'
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 
@@ -559,7 +560,7 @@ export enum Pointers {
     POINTER_UP = "on_up",
     POINTER_DOWN = "on_down",
     HOVER_ENTER = "on_enter",
-    HOVER_LEAVE = "on_leave",
+    HOVER_LEAVE = "on_leave",//
 }
 
 export enum TriggerConditionType {

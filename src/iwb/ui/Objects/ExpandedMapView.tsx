@@ -156,10 +156,11 @@ function createMapTiles(){
         mapParcels.push(columns)
     }
 
-    let sceneParcels:string[] = []
-    colyseusRoom.state.scenes.forEach((scene:IWBScene)=>{
+    let sceneParcels:any[] = []
+    colyseusRoom.state.scenes.forEach((scene:any)=>{
       scene.pcls.forEach((parcel:string)=>{
-        sceneParcels.push(parcel)
+        // sceneParcels.push(parcel)
+        sceneParcels.push({parcel:parcel, color:scene.color})
       })
     })
 
@@ -169,8 +170,10 @@ function createMapTiles(){
                 if(selectedScene && selectedScene.pcls.includes(obj.coords)){
                     obj.selected = true
                 }else{
-                    if (sceneParcels.includes(obj.coords)) {
+                    let parcel = sceneParcels.find((parcel:any)=> parcel.parcel === obj.coords)
+                    if (parcel) {
                         obj.scene = true;
+                        obj.color = parcel.color
                     }else{
                       obj.scene = false
                     }
@@ -988,14 +991,14 @@ function getBackground(mapColumn:any){
         if(mapColumn.selected){
             return Color4.Green()
         }else if(mapColumn.scene){
-            return Color4.create(.4,.5,.6,1)
+            return mapColumn.color
         }else{
             return Color4.create(0,0,0,.2)
         }
     }
     else{
         if(mapColumn.scene){
-            return Color4.create(.4,.5,.6,1)
+            return mapColumn.color
         }else if(editCurrentSceneParcels){
             if(tempParcels.has(mapColumn.coords)){
                 return Color4.Green()

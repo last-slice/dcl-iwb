@@ -25,7 +25,7 @@ let selectedItems:any[] = []//
 export let showCatalogPanel = false
 
 let buttons:any[] = [
-    {label:"Save", pressed:false, func:()=>{
+    {label:"Add", pressed:false, func:()=>{
         displayStoreView(false)
         saveNewAssets()
         },

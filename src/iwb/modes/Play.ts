@@ -349,6 +349,11 @@ async function loadRemovedItems(scene:any){
                     updateActions(scene, iwbInfo, action)
                 })
             }
+
+            let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(iwbInfo.aid)
+            if(physicsInfo || physicsInfo.type === 1){
+                // addPhysicsBody(iwbInfo, physicsInfo)
+            }
         }
         removedEntities.delete(scene.id)
     }

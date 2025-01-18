@@ -1,11 +1,11 @@
 
 import { Animator, AudioSource, Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from '@dcl/sdk/ecs';
-import * as CANNON from 'cannon/build/cannon'
 import { loadPhysicsWorld } from './world';
 import { PhysicsUpdateSystem } from '../systems/PhysicsSystem';
 import { VehicleInputSystem } from '../systems/VehicleInputSystem';
 import { VehicleMovementSystem } from '../systems/VehicleMovementSystem';
 import { ProcessPendingPhysicsBodies } from '../components/Physics';
+import { CANNON } from '../helpers/libraries';
 
 export let world:CANNON.World 
 
@@ -38,7 +38,7 @@ export function createCannonBody(data:any, rotation:boolean, cGroup:number){
   cannonBody.collisionFilterGroup = 1
   cannonBody.collisionFilterMask = 1
 
-  const collideEventListener = (event: CANNON.ICollisionEvent) => {
+  const collideEventListener = (event:any) => {
       onCollideWithBody(event)
   };
 
@@ -67,7 +67,7 @@ export function createCannonShape(physicsData:any, transform:any){
 }
 
 
-export function onCollideWithBody(event: CANNON.ICollisionEvent){
+export function onCollideWithBody(event:any){
   // console.log('event is', event)
   // if(event.body.collisionFilterGroup === 2){
   //     // console.log('bumped a car')
