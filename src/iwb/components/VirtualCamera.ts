@@ -6,10 +6,10 @@ import { isClient } from "./Config"
 export function checkVirtualCameraComponent(scene:any, entityInfo:any){
     let cameraInfo = scene[COMPONENT_TYPES.VIRTUAL_CAMERA].get(entityInfo.aid)
     if(cameraInfo){
-        if(!isClient){
-            return
-        }
-        VirtualCamera.create(entityInfo.entit, {
+        // if(!isClient){
+        //     return
+        // }
+        VirtualCamera.createOrReplace(entityInfo.entity, {
             lookAtEntity: cameraInfo.lookAt ? cameraInfo.lookAt : undefined,
             defaultTransition: cameraInfo.transitiontype < 0 ? undefined : {
                 transitionMode: cameraInfo.transitiontype === 0 ? 

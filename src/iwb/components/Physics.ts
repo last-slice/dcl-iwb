@@ -10,6 +10,7 @@ import { localPlayer } from "./Player"
 import { runSingleTrigger } from "./Triggers"
 import { getAssetIdByEntity } from "./Parenting"
 import { scene } from "../ui/Objects/SceneMainDetailPanel"
+import { updateTransform } from "./Transform"
 
 export let pendingBodies:any[] = []
 export let cannonMaterials:Map<string,CANNON.Material> = new Map()
@@ -409,7 +410,7 @@ export function resetPhysicsBuildMode(scene:any, entityInfo:any){
     localPlayer.cannonBody.mass = 0
     localPlayer.cannonBody.updateMassProperties()
 
-    resetCannonBody(scene, itemInfo, entityInfo)
+    resetCannonBody(scene, itemInfo, entityInfo.aid)
 }
 
 export function setPhysicsPlayMode(scene:any, entityInfo:any){
@@ -436,32 +437,41 @@ export function disablePhysicsPlayMode(scene:any, entityInfo:any){
     }
 }
 
-export async function resetCannonBody(scene:any, physicsData:any, entityInfo:any){
-     // Stop all motion
-     if(!physicsData.cannonBody){
-        return
-     }
-     physicsData.cannonBody.velocity.set(0, 0, 0)
-     physicsData.cannonBody.angularVelocity.set(0, 0, 0)
-
-     physicsData.cannonBody.position = await getCannonPosition(physicsData, getWorldPosition(entityInfo.entity))
-
-     let transform:any = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
-     if(transform){
-        physicsData.cannonBody.rotation =new CANNON.Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w)
-     }
+export async function resetCannonBody(scene:any, physicsData:any, aid:string, action?:boolean){
+    if(!physicsData.cannonBody){
+       return
+    }
+    if(action){
+       removePhysicsBody(physicsData)
+    
+       let transform:any = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(aid)
+       console.log('transform is', transform)
+       await updateTransform(scene, aid, transform)
+    }else{
+       let entityInfo = getEntity(scene, aid)
+       physicsData.cannonBody.velocity.set(0, 0, 0)
+       physicsData.cannonBody.angularVelocity.set(0, 0, 0)
+  
+       physicsData.cannonBody.position = await getCannonPosition(physicsData, getWorldPosition(entityInfo.entity))
+  
+       let transform:any = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
+       if(transform){
+          physicsData.cannonBody.rotation =new CANNON.Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w)
+       }
+    }
 }
 
-
 export function removePhysicsBody(physicsInfo:any){
-    try{
+    try{    
         world.removeBody(physicsInfo.cannonBody)
+        physicsInfo.cannonBody = undefined
+        console.log('removed physics body')
     }
     catch(e:any){
         console.log('error removing cannon body from world', e)
     }
 }
 
-export function addPhysicsBody(iwbInfo:any, physicsInfo:any){
-
+export function removePendingBody(aid:string){
+    pendingBodies = pendingBodies.filter((bodies:any)=> bodies.aid !== aid)
 }

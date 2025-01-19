@@ -92,7 +92,7 @@ export function transformListener(scene:any){
     })
 }
 
-export function updateTransform(scene:any, aid:string, transform:any){
+export function updateTransform(scene:any, aid:string, transform:any, reset?:boolean){
     console.log('updating transform', aid)
     let info = getEntity(scene, aid)
     if(info){
@@ -111,10 +111,13 @@ export function updateTransform(scene:any, aid:string, transform:any){
             updateTriggerArea(scene, info, transform)
         }
 
-        let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(info.aid)
-        if(!physicsInfo || physicsInfo.type !== 1){
-            return
+        if(reset){}
+        else{
+            let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(info.aid)
+            if(!physicsInfo || physicsInfo.type !== 1){
+                return
+            }
+            checkPhysicsBody(scene.id, info.aid, info.entity, physicsInfo)
         }
-        checkPhysicsBody(scene.id, info.aid, info.entity, physicsInfo)
     }
 }
