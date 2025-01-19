@@ -30,6 +30,7 @@ import { checkPathComponent } from "./Path"
 import { checkQuestComponent } from "./Quests"
 import { checkVirtualCameraComponent } from "./VirtualCamera"
 import { checkRaycastComponent } from "./Raycast"
+import { removePendingBody } from "./Physics"
 
 export function getEntity(scene:any, aid:string){
   return scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
@@ -81,6 +82,11 @@ export async function iwbInfoListener(scene:any){
           await confirmGrabItem(scene, iwbInfo.entity, player.selectedAsset)
       }
     })
+
+    let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(aid)
+    if(physicsInfo && physicsInfo.type === 1){
+      removePendingBody(aid)
+    }
     
     removeItem(iwbInfo.entity)
   })

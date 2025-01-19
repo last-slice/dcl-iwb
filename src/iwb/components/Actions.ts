@@ -1,4 +1,4 @@
-import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, InputModifier, MainCamera, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, TextShape, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VisibilityComponent, engine } from "@dcl/sdk/ecs"
+import { Animator, AudioSource, AudioStream, AvatarAttach, ColliderLayer, EasingFunction, Entity, Font, GltfContainer, InputModifier, MainCamera, MeshCollider, MeshRenderer, Move, PBTween, Rotate, Scale, TextAlignMode, TextShape, Transform, Tween, TweenLoop, TweenSequence, UiText, UiTransform, VideoPlayer, VirtualCamera, VisibilityComponent, engine } from "@dcl/sdk/ecs"
 import { ACCESS_TYPE, Actions, CHAIN_TYPE, COLLIDER_LAYERS, COMPONENT_TYPES, NFT_TYPES, NOTIFICATION_TYPES, PLAYER_GAME_STATUSES, SERVER_MESSAGE_TYPES, Triggers, TWEEN_TYPES } from "../helpers/types"
 import mitt, { Emitter } from "mitt"
 import { colyseusRoom, sendServerMessage } from "./Colyseus"
@@ -83,6 +83,7 @@ export function updateActions(scene:any, info:any, action:any){
 
     actionEvents.on(action.id, ()=>{
         console.log('action received', action)
+        console.log('action type',action.type)
         switch(action.type){
             case Actions.SHOW_TEXT:
                 handleShowText(scene, info, action)
@@ -424,7 +425,11 @@ export function updateActions(scene:any, info:any, action:any){
                 break;
 
             case Actions.RESET_PHYSICS_POSITION:
-                handleSetGravity(scene, info, action)
+                handleResetPhysicsPosition(scene, info, action)
+                break;
+
+            case Actions.RESET_ALL_PHYSICS_POSITION:
+                handleResetAllPhysicsPositions(scene, info, action)
                 break;
         }
     })
@@ -1924,16 +1929,16 @@ function handleSetText(scene:any, info:any, action:any){
 }
 
 export function handleVirtualCameraSet(scene:any, entityInfo:any, action:any){
-    if(!isClient){
-        return
-    }
+    // if(!isClient){
+    //     return
+    // }
     MainCamera.createOrReplace(engine.CameraEntity, {virtualCameraEntity: entityInfo.entity})
 }
 
 export function handleFreezePlayer(scene:any, entityInfo:any, action:any){
-    if(!isClient){
-        return
-    }
+    // if(!isClient){
+    //     return
+    // }
 
     let modifiers:any = {
         disableAll:false,
@@ -1956,16 +1961,25 @@ export function handleFreezePlayer(scene:any, entityInfo:any, action:any){
 }
 
 export function handleunfreezePlayer(scene:any, entityInfo:any, action:any){
-    if(!isClient){
-        return
-    }
+    // if(!isClient){
+    //     return
+    // }
     InputModifier.deleteFrom(engine.PlayerEntity)
 }
 
 export function handleSetVirtualCamera(scene:any, entityInfo:any, action:any){
-    const mainCamera = MainCamera.createOrReplace(engine.CameraEntity, {
-		virtualCameraEntity: entityInfo.entity,
-	})
+    console.log('setting virtual camera')
+    try{
+        let virtualCamera = VirtualCamera.get(entityInfo.aid)
+        console.log('virtual camera is',virtualCamera)
+    
+        const mainCamera = MainCamera.createOrReplace(engine.CameraEntity, {
+            virtualCameraEntity: entityInfo.entity,
+        })
+    }
+    catch(e:any){
+        console.log('error setting virtual camera', e)
+    }
 }
 
 export function handleRemoveVirtualCamera(scene:any, entityInfo:any, action:any){
@@ -1985,6 +1999,14 @@ export function handleResetPhysicsPosition(scene:any, entityInfo:any, action:any
     }
 
     if(physicsData.type === 1){
-        resetCannonBody(scene, physicsData, entityInfo)
+        resetCannonBody(scene, physicsData, entityInfo, true)
     }
+}
+
+export function handleResetAllPhysicsPositions(scene:any, entityInfo:any, action:any){
+   scene[COMPONENT_TYPES.PHYSICS_COMPONENT].forEach((physicsData:any, aid:string)=>{
+    if(physicsData.type === 1){
+        resetCannonBody(scene, physicsData, aid, true)
+    }
+   })
 }

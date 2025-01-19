@@ -504,7 +504,8 @@ export enum Actions {
     FREEZE_PLAYER = 'player_freeze',
     UNFREEZE_PLAYER = 'player_unfreeze',
     SET_GRAVITY = 'phyics_gravity_set',
-    RESET_PHYSICS_POSITION = 'physics_position_reset'
+    RESET_PHYSICS_POSITION = 'physics_position_reset',
+    RESET_ALL_PHYSICS_POSITION = 'physics_position_reset_all'
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 

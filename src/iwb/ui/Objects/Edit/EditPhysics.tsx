@@ -28,7 +28,7 @@ export function updatePhysicsView(view:string){
 }
 
 export function clearAssetPhysicsData(){
-    engine.removeEntity(physicsEntity)
+    // engine.removeEntity(physicsEntity)
     scene = undefined
     physicsView = "main"
     newMaterial = ""
@@ -66,30 +66,30 @@ export function getAssetPhysicsData(){
 
     console.log('physics info is ', physicsInfo)
 
-    engine.removeEntity(physicsEntity)
-    if(physicsInfo.shape !== undefined){
-        physicsEntity = engine.addEntity()
-        Transform.create(physicsEntity, {parent: selectedItem.entity,
-            position: physicsInfo.offset !== undefined ? physicsInfo.offset : Vector3.create(0,0,0),
-            scale: physicsInfo.offset !== undefined ? physicsInfo.size : Vector3.create(1,1,1),
-        })
+    // engine.removeEntity(physicsEntity)
+    // if(physicsInfo.shape !== undefined){
+    //     physicsEntity = engine.addEntity()
+    //     Transform.create(physicsEntity, {parent: selectedItem.entity,
+    //         position: physicsInfo.offset !== undefined ? physicsInfo.offset : Vector3.create(0,0,0),
+    //         scale: physicsInfo.offset !== undefined ? physicsInfo.size : Vector3.create(1,1,1),
+    //     })
 
-        switch(physicsInfo.shape){
-            case 0:
-                MeshRenderer.setBox(physicsEntity)
-                break;
+    //     switch(physicsInfo.shape){
+    //         case 0:
+    //             MeshRenderer.setBox(physicsEntity)
+    //             break;
 
-            case 1:
-                MeshRenderer.setPlane(physicsEntity)
-                break;
+    //         case 1:
+    //             MeshRenderer.setPlane(physicsEntity)
+    //             break;
 
-            case 2:
-                MeshRenderer.setSphere(physicsEntity)
-                break;
-        }
+    //         case 2:
+    //             MeshRenderer.setSphere(physicsEntity)
+    //             break;
+    //     }
 
-        console.log('transform is', Transform.get(physicsEntity))
-    }
+    //     console.log('transform is', Transform.get(physicsEntity))
+    // }
 
     cannonMaterials.forEach((cm:any, material:string)=>{
         console.log('materials', material)
@@ -114,23 +114,23 @@ export function getAssetPhysicsData(){
     materials.unshift("Select Physics Material")
 }
 
-export function updatePositionOffset(direction:string, factor:number, manual?:boolean){
-    let transform:any = Transform.getMutable(physicsEntity).position
-    transform[direction] = manual ? factor : transform[direction] + (factor * selectedItem.pFactor)
+// export function updatePositionOffset(direction:string, factor:number, manual?:boolean){
+//     let transform:any = Transform.getMutable(physicsEntity).position
+//     transform[direction] = manual ? factor : transform[direction] + (factor * selectedItem.pFactor)
 
-    // newActionData.sx = transform.x
-    // newActionData.sy = transform.y
-    // newActionData.sz = transform.z
-}
+//     // newActionData.sx = transform.x
+//     // newActionData.sy = transform.y
+//     // newActionData.sz = transform.z
+// }
 
-export function updateScaleOffset(direction:string, factor:number, manual?:boolean){
-    let transform:any = Transform.getMutable(physicsEntity).scale
-    transform[direction] = manual ? factor : transform[direction] + (factor * selectedItem.sFactor)
+// export function updateScaleOffset(direction:string, factor:number, manual?:boolean){
+//     let transform:any = Transform.getMutable(physicsEntity).scale
+//     transform[direction] = manual ? factor : transform[direction] + (factor * selectedItem.sFactor)
 
-    // newActionData.sx = transform.x
-    // newActionData.sy = transform.y
-    // newActionData.sz = transform.z
-}
+//     // newActionData.sx = transform.x
+//     // newActionData.sy = transform.y
+//     // newActionData.sz = transform.z
+// }
 
 
 export function EditPhysics() {
@@ -274,7 +274,7 @@ uiText={{value:"Please create an entity with a Physics Configuration and add Mat
         alignContent:'center',
         width: '100%',
         height: '10%',
-        display: physicsView === "main" && physicsInfo.shape >= 0 && typeof physicsInfo.material !== "string" ? "flex" : "none"
+        display: physicsView === "main" && physicsInfo.shape >= 0 ? "flex" : "none"
         // display: physicsView === "main" && physicsInfo.shape >= 0 && physicsInfo.type >= 0 && physicsInfo.material && physicsInfo.material.length > 0 && materials.length >= 1 ? "flex" : "none"//
     }}
 >
@@ -322,7 +322,7 @@ uiText={{value:"Please create an entity with a Physics Configuration and add Mat
     }}
 />
 
-<UiEntity
+{/* <UiEntity
     uiTransform={{
         flexDirection: 'column',
         alignItems: 'center',
@@ -342,7 +342,7 @@ uiText={{value:"Please create an entity with a Physics Configuration and add Mat
     onMouseUp={()=>{
         setUIClicked(false)
     }}
-/>
+/> */}
 
 {/* details container */}
 <UiEntity
@@ -801,123 +801,123 @@ uiText={{value:"Please create an entity with a Physics Configuration and add Mat
 
 <Materials/>
 <ContactMaterials/>
-<Sizes/>
+{/* <Sizes/> */}
 <Gravity/>
 
         </UiEntity>
     )
 }
 
-function Sizes(){
-    return(
-<UiEntity
-key={resources.slug + "edit::physics::sizes"}
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        alignContent:'center',
-        width: '100%',
-        height: '90%',
-        display: physicsView === "sizes" ? "flex" : "none"
-    }}
->
+// function Sizes(){
+//     return(
+// <UiEntity
+// key={resources.slug + "edit::physics::sizes"}
+//     uiTransform={{
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'flex-start',
+//         alignContent:'center',
+//         width: '100%',
+//         height: '90%',
+//         display: physicsView === "sizes" ? "flex" : "none"
+//     }}
+// >
 
-<UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '10%',
-        margin:{bottom:"1%"},
-    }}
-uiText={{value:"Physics Sizes && Offset", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
-/>
+// <UiEntity
+//     uiTransform={{
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         width: '100%',
+//         height: '10%',
+//         margin:{bottom:"1%"},
+//     }}
+// uiText={{value:"Physics Sizes && Offset", fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+// />
 
-{Transform.has(physicsEntity) &&
-    <TransformInputModifiers modifier={EDIT_MODIFIERS.POSITION}
-        override={updatePositionOffset}
-        rowHeight={'35%'}
-        entity={physicsEntity}
-        factor={selectedItem && selectedItem.pFactor}
-        valueFn={(type:string)=>{
-            let transform = Transform.get(physicsEntity)
-            switch (type) {
-                case 'x':
-                    return transform.position.x.toFixed(3)
-                case 'y':
-                    return transform.position.y.toFixed(3)
-                case 'z':
-                    return (transform.position.z).toFixed(3)
-            }
-        }}
-    />
-    }
+// {/* {Transform.has(physicsEntity) &&
+//     <TransformInputModifiers modifier={EDIT_MODIFIERS.POSITION}
+//         override={updatePositionOffset}
+//         rowHeight={'35%'}
+//         entity={physicsEntity}
+//         factor={selectedItem && selectedItem.pFactor}
+//         valueFn={(type:string)=>{
+//             let transform = Transform.get(physicsEntity)
+//             switch (type) {
+//                 case 'x':
+//                     return transform.position.x.toFixed(3)
+//                 case 'y':
+//                     return transform.position.y.toFixed(3)
+//                 case 'z':
+//                     return (transform.position.z).toFixed(3)
+//             }
+//         }}
+//     />
+//     } */}
 
-{Transform.has(physicsEntity) &&
-    <TransformInputModifiers modifier={EDIT_MODIFIERS.SCALE}
-        override={updateScaleOffset}
-        rowHeight={'35%'}
-        entity={physicsEntity}
-        factor={selectedItem && selectedItem.sFactor}
-        valueFn={(type:string)=>{
-            let transform = Transform.get(physicsEntity)
-            switch (type) {
-                case 'x':
-                    return transform.scale.x.toFixed(3)
-                case 'y':
-                    return transform.scale.y.toFixed(3)
-                case 'z':
-                    return (transform.scale.z).toFixed(3)
-            }
-        }}
-    />
-    }
+// {/* {Transform.has(physicsEntity) &&
+//     <TransformInputModifiers modifier={EDIT_MODIFIERS.SCALE}
+//         override={updateScaleOffset}
+//         rowHeight={'35%'}
+//         entity={physicsEntity}
+//         factor={selectedItem && selectedItem.sFactor}
+//         valueFn={(type:string)=>{
+//             let transform = Transform.get(physicsEntity)
+//             switch (type) {
+//                 case 'x':
+//                     return transform.scale.x.toFixed(3)
+//                 case 'y':
+//                     return transform.scale.y.toFixed(3)
+//                 case 'z':
+//                     return (transform.scale.z).toFixed(3)
+//             }
+//         }}
+//     />
+//     } */}
 
-<UiEntity
-    uiTransform={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '10%',
-    }}
-    >
-            <UiEntity
-        uiTransform={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '20%',
-            height: '100%',
-        }}
-        uiBackground={{
-            textureMode: 'stretch',
-            texture: {
-                src: 'assets/atlas2.png'
-            },
-            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
-        }}
-        uiText={{value: "Save", fontSize: sizeFont(20, 16)}}
-        onMouseDown={() => {
-            setUIClicked(true)
-            update("size-offset", "size-offset", {transform: Transform.get(physicsEntity)})
-            utils.timers.setTimeout(()=>{
-                getAssetPhysicsData()
-                updatePhysicsView("main")
-            }, 200)
-            setUIClicked(false)
-        }}
-        onMouseUp={()=>{
-            setUIClicked(false)
-        }}
-    />
-        </UiEntity>
+// <UiEntity
+//     uiTransform={{
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         width: '100%',
+//         height: '10%',
+//     }}
+//     >
+//             <UiEntity
+//         uiTransform={{
+//             flexDirection: 'row',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             width: '20%',
+//             height: '100%',
+//         }}
+//         uiBackground={{
+//             textureMode: 'stretch',
+//             texture: {
+//                 src: 'assets/atlas2.png'
+//             },
+//             uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+//         }}
+//         uiText={{value: "Save", fontSize: sizeFont(20, 16)}}
+//         onMouseDown={() => {
+//             setUIClicked(true)
+//             update("size-offset", "size-offset", {transform: Transform.get(physicsEntity)})
+//             utils.timers.setTimeout(()=>{
+//                 getAssetPhysicsData()
+//                 updatePhysicsView("main")
+//             }, 200)
+//             setUIClicked(false)
+//         }}
+//         onMouseUp={()=>{
+//             setUIClicked(false)
+//         }}
+//     />
+//         </UiEntity>
 
-</UiEntity>
-    )
-}
+// </UiEntity>
+//     )
+// }
 
 function Gravity(){
     return(

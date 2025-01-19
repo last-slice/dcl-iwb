@@ -30,14 +30,14 @@ export function PhysicsUpdateSystem(dt: number): void {
       scene[COMPONENT_TYPES.PHYSICS_COMPONENT].forEach((physicsItem:any, aid:string)=>{
         if(physicsItem.type === 0){
             if(localPlayer.activeScene && scene.id === localPlayer.activeScene.id){
-                if(physicsItem.playerReactGravity){
-                    // console.log('need to float player')
-                    // movePlayerTo({newRelativePosition:{x:localPlayer.cannonBody.x, y:localPlayer.cannonBody.y, z:localPlayer.cannonBody.z}})
-                    // Transform.getMutable(engine.PlayerEntity).position = localPlayer.cannonBody.position
-                }else{
+                // if(physicsItem.playerReactGravity){
+                //     // console.log('need to float player')
+                //     // movePlayerTo({newRelativePosition:{x:localPlayer.cannonBody.x, y:localPlayer.cannonBody.y, z:localPlayer.cannonBody.z}})
+                //     // Transform.getMutable(engine.PlayerEntity).position = localPlayer.cannonBody.position
+                // }else{
                     let playerTransform = Transform.get(engine.PlayerEntity).position
                     localPlayer.cannonBody.position.set(playerTransform.x, playerTransform.y + 0.5, playerTransform.z);
-                }
+                // }
             }
         }
 
