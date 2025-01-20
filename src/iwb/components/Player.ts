@@ -246,6 +246,7 @@ export async function getPlayerNames(player:any) {
 }
 
 export async function getPlayerLand(){
+    console.log('getting player lands')
     try{
         let res = await fetch(resources.endpoints.dclLandGraph, {
             headers: {"content-type": "application/json"},
@@ -262,26 +263,23 @@ export async function getPlayerLand(){
         })
     
         let json = await res.json()
-        // console.log("player lands are ", json)
+        console.log("player lands are ", json)
     
         let ownedLand:any[] = []
-        json.data && json.data.ownerParcels.forEach((parcel:any)=>{
-            ownedLand.push({name:parcel.data.name, size:1, type:parcel.type, x:parcel.x, y:parcel.y})
-        })
-    
-        // console.log('owned land is', ownedLand)
+        if(json.data){
+            json.data.ownerParcels.forEach((parcel:any, i:number)=>{
+                ownedLand.push({name:parcel.data ? parcel.data.name : "Land-" + i, size:1, type:"owned", x:parcel.x, y:parcel.y})
+            })
+        }
     
         let deployLand:any[] = []
         json.data && json.data.updateOperatorParcels.forEach((parcel:any)=>{
             if(!ownedLand.find((owned:any)=> owned.x === parcel.x && owned.y === parcel.y)){
-                deployLand.push({name:"Operator Land", size:1, type:parcel.type, x:parcel.x, y:parcel.y})
+                deployLand.push({name:"Operator Land", size:1, type:"operator", x:parcel.x, y:parcel.y})
             }
         })
     
-        // console.log('deployed and is', deployLand)
-    
         localPlayer.landsAvailable = ownedLand.concat(deployLand)
-        // console.log('land ava', localPlayer.landsAvailable)
     }
     catch(e){
         console.log('error getting player land', e)
