@@ -1999,7 +1999,7 @@ export function handleResetPhysicsPosition(scene:any, entityInfo:any, action:any
     }
 
     if(physicsData.type === 1){
-        resetCannonBody(scene, physicsData, entityInfo, true)
+        resetCannonBody(scene, physicsData, entityInfo.aid, true)
     }
 }
 

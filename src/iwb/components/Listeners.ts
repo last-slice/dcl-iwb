@@ -817,7 +817,7 @@ function setSceneListeners(room:any){
             //         scene.ass.forEach((asset:any)=>{
             //             loadSceneAsset(scene.id, asset)
             //         })
-            //     }
+            //     }//
             // }
         })
     })

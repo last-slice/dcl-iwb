@@ -82,12 +82,6 @@ export async function iwbInfoListener(scene:any){
           await confirmGrabItem(scene, iwbInfo.entity, player.selectedAsset)
       }
     })
-
-    let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(aid)
-    if(physicsInfo && physicsInfo.type === 1){
-      removePendingBody(aid)
-    }
-    
     removeItem(iwbInfo.entity)
   })
 }
