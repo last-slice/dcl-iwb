@@ -78,7 +78,8 @@ export function updateDialog(main?:boolean){
     dialogData = {}
     newButton = {}
         newDialogData = {
-            text:""
+            text:"",
+            fontSize:15
         }
 
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
@@ -156,6 +157,105 @@ function MainView(){
             display: dialogView === "main" ? "flex" : "none"
         }}
     >
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'}
+                }}
+                >
+                     <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40%',
+                    height: '100%',
+                }}
+                uiText={{value:"Font Size:" + (dialogData && dialogData.fontSize), fontSize:sizeFont(25,20), textAlign:'middle-left'}}
+                />
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40%',
+                    height: '100%',
+                }}
+                >
+                      <Input
+                onChange={(value) => {
+                    if(isNaN(parseFloat(value.trim()))){
+                        return
+                    }
+                    dialogData.fontSize = parseFloat(value.trim())
+                }}
+                onSubmit={(value) => {
+                    if(isNaN(parseFloat(value.trim()))){
+                        return
+                    }
+                    dialogData.fontSize = parseFloat(value.trim())
+                }}
+                fontSize={sizeFont(20,15)}
+                placeholder={'Enter font size'}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                ></Input>
+                </UiEntity>
+
+<UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '20%',
+                    height: '100%',
+                }}
+                >
+ <UiEntity
+                    uiTransform={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        alignSelf:'flex-start',
+                        width: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).width,
+                        height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+                    }}
+                    uiBackground={{
+                        textureMode: 'stretch',
+                        texture: {
+                            src: 'assets/atlas2.png'
+                        },
+                        uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+                    }}
+                    uiText={{
+                        value: "Update",
+                        fontSize: sizeFont(25, 15),
+                        color: Color4.White(),
+                        textAlign: 'middle-center'
+                    }}
+                    onMouseDown={() => {
+                        setUIClicked(true)
+                        console.log(dialogData)
+                        update("update-font", dialogData.fontSize)
+                        setUIClicked(false)
+                    }}
+                    onMouseUp={()=>{
+                        setUIClicked(false)
+                    }}
+                />
+                </UiEntity>
+            </UiEntity>
+
+
         <UiEntity
                 uiTransform={{
                     flexDirection: 'row',
@@ -1133,3 +1233,6 @@ function getActions(){
     })
     return arr
 }
+
+
+//
