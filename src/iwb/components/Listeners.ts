@@ -32,8 +32,15 @@ import { equipUserWeapon } from "./Weapon";
 import { setGlobalEmitter } from "../modes/Play";
 import { removeLoadingScreen } from "../systems/LoadingSystem";
 import { updateScenePool } from "../ui/Objects/IWBViews/CreateScenePool";
+import { syncPhyicsBody } from "./Physics";
 
 export async function createColyseusListeners(room:Room){
+    room.onMessage(SERVER_MESSAGE_TYPES.PHYSICS_UPDATE, (info: any) => {
+        // log(SERVER_MESSAGE_TYPES.PHYSICS_UPDATE + ' received', info)//
+        // if(info.player === localUserId) return
+        syncPhyicsBody(info.info)
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_GET, (info: any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_POOL_GET + ' received', info)
         updateScenePool(info)

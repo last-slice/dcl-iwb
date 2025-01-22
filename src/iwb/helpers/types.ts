@@ -94,6 +94,8 @@ export enum SERVER_MESSAGE_TYPES {
     FORCE_BACKUP = 'force_backup',
     EXPORT_WORLD = 'export_world',
 
+    PHYSICS_UPDATE = 'physics_update',
+
     CUSTOM = "custom",//
     IWB_VERSION_UPDATE ='iwb_version_update',
 
@@ -501,7 +503,9 @@ export enum Actions {
     UNFREEZE_PLAYER = 'player_unfreeze',
     SET_GRAVITY = 'phyics_gravity_set',
     RESET_PHYSICS_POSITION = 'physics_position_reset',
-    RESET_ALL_PHYSICS_POSITION = 'physics_position_reset_all'
+    RESET_ALL_PHYSICS_POSITION = 'physics_position_reset_all',
+    REMOVE_PHSYICS = 'physics_remove',
+    ADD_PHYSICS = 'phyics_add',
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 

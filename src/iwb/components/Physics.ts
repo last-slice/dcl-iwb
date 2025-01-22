@@ -1,16 +1,17 @@
 import { engine, MeshRenderer, Transform, TransformType } from "@dcl/sdk/ecs"
 import { CANNON } from "../helpers/libraries"
-import { COMPONENT_TYPES, Triggers } from "../helpers/types"
+import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES, Triggers } from "../helpers/types"
 import { world } from "../physics"
 import { getEntity } from "./iwb"
 import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { getWorldPosition } from "@dcl-sdk/utils"
-import { colyseusRoom, connected } from "./Colyseus"
+import { colyseusRoom, connected, sendServerMessage } from "./Colyseus"
 import { localPlayer } from "./Player"
 import { runSingleTrigger } from "./Triggers"
 import { getAssetIdByEntity } from "./Parenting"
 import { scene } from "../ui/Objects/SceneMainDetailPanel"
 import { updateTransform } from "./Transform"
+import { serverPhysicsItems } from "../systems/PhysicsSystem"
 
 export let pendingBodies:any[] = []
 export let cannonMaterials:Map<string,CANNON.Material> = new Map()
@@ -280,7 +281,20 @@ export function ProcessPendingPhysicsBodies(dt:number){
                                     if(!collisionBodyInfo){
                                         return
                                     }
-                                    runSingleTrigger(entityInfo, Triggers.ON_PHYSICS_COLLIDE, {input:0, pointer:0, data:event.body.entity, aid:event.body.aid})
+
+                                    // Gather collision data
+                                    const collisionData = {
+                                        sceneId:body.sceneId,
+                                        bodyA: body.aid || "bodyA",             // Use unique identifiers
+                                        bodyB: event.body.aid || "bodyB",
+                                        contactPoint: event.contact?.ri,       // Local contact point
+                                        impactVelocity: event.contact?.getImpactVelocityAlongNormal(),
+                                        // Add more details as needed
+                                    };
+
+                                    //send to server 
+                                    sendServerMessage(SERVER_MESSAGE_TYPES.PHYSICS_UPDATE, collisionData)
+                                    // runSingleTrigger(entityInfo, Triggers.ON_PHYSICS_COLLIDE, {input:0, pointer:0, data:event.body.entity, aid:event.body.aid})
                                 }
                               })
                               world.addBody(physicsData.cannonBody)
@@ -465,4 +479,45 @@ export function removePhysicsBody(physicsInfo:any){
 
 export function removePendingBody(aid:string){
     pendingBodies = pendingBodies.filter((bodies:any)=> bodies.aid !== aid)
+}
+
+export function syncPhyicsBody(data:any){
+    const { sceneId, bodyA, bodyB, contactPoint, impactVelocity } = data;//
+    let scene = colyseusRoom.state.scenes.get(sceneId)
+    if(!scene) return
+
+
+    let cannonContactPoint: CANNON.Vec3;
+
+    let physicsInfoBodyA = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(bodyA)
+    let physicsInfoBodyB = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(bodyB)
+
+    if(physicsInfoBodyA && physicsInfoBodyA.cannonBody && physicsInfoBodyB && physicsInfoBodyB.cannonBody){
+        cannonContactPoint = new CANNON.Vec3(contactPoint.x, contactPoint.y, contactPoint.z)
+        // Example: Apply impulses to reflect collision force locally
+        const impulseMagnitude = impactVelocity || 0;  // Use impactVelocity if provided//
+        // Direction can be derived from collision normal; here we use an upward example
+        const impulse = new CANNON.Vec3(0, impulseMagnitude, 0);
+        // Optionally use contactPoint if provided to apply force at a specific location
+        // if (cannonContactPoint) {
+        //     physicsInfoBodyA.cannonBody.applyForce(impulse, cannonContactPoint);
+        //     physicsInfoBodyB.cannonBody.applyForce(impulse.negate(), cannonContactPoint);
+        // } else {
+        //     // Apply impulse at the center of mass as a fallback
+        //     physicsInfoBodyA.cannonBody.applyForce(impulse, physicsInfoBodyA.cannonBody.position);
+        //     physicsInfoBodyB.cannonBody.applyForce(impulse.negate(), physicsInfoBodyB.cannonBody.position);
+        // }
+
+          // Apply force to Body A
+        // physicsInfoBodyA.cannonBody.applyForce(impulse, cannonContactPoint);
+        physicsInfoBodyA.cannonBody.applyForce(impulse, physicsInfoBodyA.cannonBody.position);
+
+        // For Body B, apply the opposite force to maintain action-reaction symmetry
+        const oppositeForce = impulse.clone().negate();
+        // physicsInfoBodyB.cannonBody.applyForce(oppositeForce, cannonContactPoint);
+        physicsInfoBodyA.cannonBody.applyForce(oppositeForce, physicsInfoBodyA.cannonBody.position);
+
+        serverPhysicsItems.set(bodyA, {sceneId, body:physicsInfoBodyA.cannonBody, sceneParent:scene.parentEntity, shape:physicsInfoBodyA.shape})
+        serverPhysicsItems.set(bodyB, {sceneId, body:physicsInfoBodyB.cannonBody, sceneParent:scene.parentEntity, shape:physicsInfoBodyB.shape})
+    }
 }
