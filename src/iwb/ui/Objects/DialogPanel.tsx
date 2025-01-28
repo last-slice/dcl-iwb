@@ -10,6 +10,7 @@ import { colyseusRoom } from '../../components/Colyseus'
 import { runDialogAction } from '../../components/Actions'
 
 export let showingDialogPanel = false
+let fontSize = sizeFont(20,15)
 
 let currentDialog:any = {
     index:0,
@@ -26,10 +27,11 @@ export function showDialogPanel(value:boolean, data?:any){
     if(value){
         currentDialog.dialogs = []
         data.dialogs.forEach((dialog:any)=>{
-            currentDialog.dialogs.push(dialog)
+            currentDialog.dialogs.push(dialog)//
         })
         currentDialog.index = 0
         showingDialogPanel = value
+        fontSize = sizeFont(data.fontSize * 1.33, data.fontSize)
 
         // let sceneItem = localPlayer.activeScene?.ass.find((asset:any)=> asset.aid === aid)
         // if(sceneItem && sceneItem.dialComp && sceneItem.dialComp.dialogs.length > 0){
@@ -119,7 +121,7 @@ export function createDialogPanel(){
           flexDirection:'column',
         }}
         // uiBackground={{color:Color4.Green()}}
-            uiText={{value:addLineBreak("" + (currentDialog && currentDialog.dialogs.length > 0 && currentDialog.dialogs[currentDialog.index].text), undefined, 80), fontSize:sizeFont(20,15), color:Color4.White(), textAlign:'top-left'}}
+            uiText={{value:currentDialog && currentDialog.dialogs.length > 0 && currentDialog.dialogs[currentDialog.index].text, fontSize:fontSize, color:Color4.White(), textAlign:'top-left'}}
         />
 
         <UiEntity
@@ -171,13 +173,14 @@ function DialogButton(data:any){
             },
             uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
         }}
-        uiText={{value: "" + (info.label), fontSize: sizeFont(20, 16)}}
+        uiText={{value: "" + (info.label), fontSize: sizeFont(20,15)}}
         onMouseDown={() => {
             setUIClicked(true)
-            console.log('actions are ', info.actions)
-            advanceDialog()
+            // advanceDialog()
             if(info.actions){
+                console.log('actions are ', info.actions)
                 info.actions.forEach((action:string)=>{
+                    console.log('action is', action)
                     runDialogAction(action)
                 })
             }

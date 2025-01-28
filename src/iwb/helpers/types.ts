@@ -505,7 +505,7 @@ export enum Actions {
     RESET_PHYSICS_POSITION = 'physics_position_reset',
     RESET_ALL_PHYSICS_POSITION = 'physics_position_reset_all',
     REMOVE_PHSYICS = 'physics_remove',
-    ADD_PHYSICS = 'phyics_add',
+    ADD_PHYSICS = 'physics_add',
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 
