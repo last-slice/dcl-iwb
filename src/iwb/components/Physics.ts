@@ -77,9 +77,21 @@ export function physicsListener(scene:any){
                 });
 
                  // Listen for material additions from the schema
-                 physicsData.contactMaterials.onAdd((contactMaterial:any, id:string) => {
+                 physicsData.contactMaterials.onAdd((contactMaterial:any, name:string) => {
                     // Attempt to create the contact material, or add it to pending if materials are not available
-                    createContactMaterial(id, contactMaterial);
+                    createContactMaterial(name, contactMaterial);
+
+                    contactMaterial.listen("friction", (current:any, previous:any)=>{
+                        if(previous !== undefined){
+                            updateContactMaterial(name, contactMaterial)
+                        }
+                    })
+
+                    contactMaterial.listen("bounce", (current:any, previous:any)=>{
+                        if(previous !== undefined){
+                            updateContactMaterial(name, contactMaterial)
+                        }
+                    })
                 });
 
                 physicsData.contactMaterials.onRemove((contactMaterial:any, id:string) => {
@@ -147,6 +159,17 @@ export function physicsListener(scene:any){
     })
 }
 
+export function updateContactMaterial(name:string, material:any){
+    let contactMaterial = cannonContactMaterials.get(name)
+    if(!contactMaterial){
+        console.log('cnnot find contact material to update')
+        return
+    }
+    contactMaterial.friction = material.friction
+    contactMaterial.restitution = material.bounce
+    console.log('updated contact material', material)
+}
+
 export function checkPhysicsBody(sceneId:string, aid:string, entity:any, physicsData:any){
     let pendingBody = pendingBodies.find(($:any)=> $.aid === aid)
     if(pendingBody){
@@ -189,6 +212,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
                             physicsData.cannonBody.material = cannonMaterials.get(physicsData.material)
                             physicsData.cannonBody.linearDamping = physicsData.linearDamping
                             physicsData.cannonBody.angularDamping = physicsData.angularDamping
+                            physicsData.cannonBody.fixedRotation = physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false
 
                             while (physicsData.cannonBody.shapes.length > 0) {
                                 physicsData.cannonBody.removeShape(physicsData.cannonBody.shapes[0])
@@ -411,7 +435,7 @@ export function setPhysicsPlayMode(scene:any, entityInfo:any){
     if(physicsData.type === 0){
         world.gravity.set(0, physicsData.gravity, 0)
     }else{
-        resetCannonBody(scene, physicsData, entityInfo.aid)
+        resetCannonBody(scene, physicsData, entityInfo.aid, true)
     }
 }
 
@@ -422,7 +446,13 @@ export function disablePhysicsPlayMode(scene:any, entityInfo:any){
     }
 
     if(physicsData.type === 1){
-        resetCannonBody(scene, physicsData, entityInfo.aid)
+        resetCannonBody(scene, physicsData, entityInfo.aid, true)
+    }
+
+    if(physicsData.type === 0){
+        physicsData.contactMaterials.forEach((material:any, name:string)=>{
+            updateContactMaterial(name, material)
+        })
     }
 }
 

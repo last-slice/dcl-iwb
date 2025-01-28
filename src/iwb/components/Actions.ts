@@ -35,7 +35,7 @@ import resources from "../helpers/resources"
 import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
 import { removePlayingVideo, setPlayingVideo } from "./Videos"
 import { world } from "../physics"
-import { checkPhysicsBody, removePhysicsBody, resetCannonBody } from "./Physics"
+import { checkPhysicsBody, removePhysicsBody, resetCannonBody, updateContactMaterial } from "./Physics"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -438,6 +438,14 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.ADD_PHYSICS:
                 handleAddPhysicsForEntity(scene, info, action)
+                break;
+
+            case Actions.UPDATE_PHSYICS_MATERIAL:
+                handlePhysicsUpdateMaterial(scene, info, action)
+                break;
+
+            case Actions.UPDATE_PHYSICS_MASS:
+                handlePhysicsUpdateMass(scene, info, action)
                 break;
         }
     })
@@ -2044,3 +2052,28 @@ export function handleResetAllPhysicsPositions(scene:any, entityInfo:any, action
     }
    })
 }
+
+export function handlePhysicsUpdateMaterial(scene:any, entityInfo:any, action:any){
+    let physicsConfig:any
+
+    scene[COMPONENT_TYPES.PHYSICS_COMPONENT].forEach((physicsData:any, aid:string)=>{
+     if(physicsData.type === 0){
+        physicsConfig = physicsData
+     }
+    })
+
+    if(!physicsConfig){
+        return
+    }
+    updateContactMaterial(action.state, {bounce:action.vMask, friction:action.iMask})
+ }
+
+ export function handlePhysicsUpdateMass(scene:any, entityInfo:any, action:any){
+    let physicsConfig:any = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsConfig || physicsConfig.type !== 1 || !physicsConfig.cannonBody || physicsConfig.cannonBody === undefined){
+        return
+    }
+
+    physicsConfig.cannonBody.mass = action.value
+    physicsConfig.cannonBody.updateMassProperties()
+ }

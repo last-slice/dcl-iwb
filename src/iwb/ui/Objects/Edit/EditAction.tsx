@@ -47,6 +47,8 @@ import { AddVerifyAccessPanel, resetVerify } from './ActionPanels/AddVerifyPanel
 import { AddSetText, resetAddSetText } from './ActionPanels/AddSetText'
 import { AddInputModifierActionPanel, resetInputModifierActionPanel } from './ActionPanels/AddInputFreezePanel'
 import { AddSetGravityPanel } from './ActionPanels/AddSetGravityPanel'
+import { AddUpdatePhysicsMaterial, updateAllContactMaterials } from './ActionPanels/AddUpdatePhysicsMaterial'
+import { AddUpdatePhysicsMass } from './ActionPanels/AddUpdatePhysicsMass'
 
 export let actionView = "main"
 export let currentAddActionPanel:string = ""
@@ -210,7 +212,7 @@ export function EditAction(){
 
                 <Dropdown
                     options={getActionList()}
-                    // selectedIndex={0}    x//
+                    selectedIndex={0}
                     onChange={selectNewActionIndex}
                     uiTransform={{
                         width: '100%',
@@ -581,6 +583,12 @@ function getActionDataPanel(){
 
         case Actions.SET_GRAVITY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddSetGravityPanel/>
+
+        case Actions.UPDATE_PHSYICS_MATERIAL.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddUpdatePhysicsMaterial/>
+
+        case Actions.UPDATE_PHYSICS_MASS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddUpdatePhysicsMass/>
     }
 }
 
@@ -798,5 +806,15 @@ const ActionDefaults:any = {
         fn:()=>{
             resetInputModifierActionPanel()
         }
+    },
+    [Actions.UPDATE_PHSYICS_MATERIAL]:{
+        fn:()=>{
+            updateAllContactMaterials()
+        },
+        vMask:0,
+        iMask:0
+    },
+    [Actions.UPDATE_PHYSICS_MASS]:{
+        value:0,
     },
 }
