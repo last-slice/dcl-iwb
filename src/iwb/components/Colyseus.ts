@@ -7,7 +7,7 @@ import { createColyseusListeners } from "./Listeners";
 import { createTimerSystem } from "./Timer";
 import { engine } from "@dcl/sdk/ecs";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
-import { isGCScene, island, localConfig } from "./Config";
+import { isGCScene, island, loadGCTempItems, localConfig } from "./Config";
 import { addLoadingScreen } from "../systems/LoadingSystem";
 import { banPlayer } from "./Player";
 
@@ -21,7 +21,7 @@ export const iwbEvents = mitt()
 export function setLocalColyseus(){
     colyseusRoom = {
         state:{
-            scenes:{}
+            scenes:new Map()
         }
     }
 }
@@ -56,6 +56,11 @@ export async function colyseusConnect(data:any, token:string, world?:any, island
 export async function joinWorld(world?: any, retries?:number) {
     if(!isPreview && !isGCScene()){
         addLoadingScreen()
+    }
+
+    if(isGCScene()){
+        loadGCTempItems()
+        return
     }
 
     if (connected) {

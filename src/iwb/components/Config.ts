@@ -65,6 +65,7 @@ export function initOfflineScene(){
     console.log('running offline scene')
     setLocalColyseus()
     engine.addSystem(createTimerSystem())
+
     setPlayerMode(SCENE_MODES.PLAYMODE)
     removeLoadingScreen()
     setGlobalEmitter()
@@ -390,4 +391,15 @@ export function removeSceneRoofs(){
         engine.removeEntity(entity)
     })
     sceneRoofAssets.length = 0
+}
+
+let sceneData:any
+export async function loadGCTempItems(){
+    try {
+        sceneData = await import("../scene2.json");
+      console.log("File loaded:", sceneData);
+    } catch (error) {
+      console.error("File not found or failed to load:", error);
+      sceneData = null; // Fallback value//
+    }
 }

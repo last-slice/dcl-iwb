@@ -107,7 +107,7 @@ export function updateTransform(scene:any, aid:string, transform:any, reset?:boo
 
         let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(info.aid)
         if(triggerInfo){
-            console.log('entity has trigger component, need to update')
+            console.log('entity has trigger component, need to update')//
             updateTriggerArea(scene, info, transform)
         }
 

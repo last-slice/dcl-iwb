@@ -1,7 +1,7 @@
 
 import { Entity, Transform, engine } from '@dcl/sdk/ecs';
 import { Vector3 } from '@dcl/sdk/math';
-import { world } from '../physics';
+import { world, WORLD_UP } from '../physics';
 import { playerMode } from '../components/Config';
 import { COMPONENT_TYPES, SCENE_MODES } from '../helpers/types';
 import { physicsObjects, testVehicles } from '../components/Vehicle';
@@ -10,6 +10,7 @@ import { colyseusRoom, connected } from '../components/Colyseus';
 import { getEntity } from '../components/iwb';
 import { testEntities } from '../components/Physics';
 import { movePlayerTo } from '~system/RestrictedActions';
+import { CANNON } from '../helpers/libraries';
 
 const fixedTimeStep: number = 1.0 / 60.0//
 const maxSubSteps: number = 10
@@ -120,7 +121,26 @@ export function PhysicsUpdateSystem(dt: number): void {
                 objectTransform.rotation = physicsData.body.quaternion
             }
     })
-
-
-    world.step(fixedTimeStep, dt, maxSubSteps)
   }
+
+function hasFallen(body:any){
+  // 1. Compute the pin's up vector in world space
+  const pinUp = new CANNON.Vec3(0, 1, 0);
+  body.quaternion.vmult(pinUp, pinUp);
+
+  // 2. Compare dot product of pinUp with the global world up
+  const dot = pinUp.dot(WORLD_UP); 
+  // If the pin is perfectly upright, dot ~ 1.0
+  // If the pin is lying sideways, dot ~ 0.0 or negative
+
+  // 3. Decide a threshold for "fallen."
+  // For instance, if the pin’s angle from upright is more than ~45°, 
+  // the dot product will be less than cos(45°) = 0.707.
+  const threshold = Math.cos(Math.PI / 4); // ~0.707
+
+    // Check if it's not spinning too much
+  const angularSpeed = body.angularVelocity.length();
+  const isSettled = angularSpeed < 0.5; // tweak threshold as needed
+
+  return dot < threshold && isSettled;
+}

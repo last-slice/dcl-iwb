@@ -17,16 +17,7 @@ export let pendingBodies:any[] = []
 export let cannonMaterials:Map<string,CANNON.Material> = new Map()
 export let cannonContactMaterials:Map<string,CANNON.ContactMaterial> = new Map()
 
-// Store pending contact materials to retry when materials are available
 const pendingContactMaterials: Array<{ from: string, to: string, contactData: any }> = [];
-
-
-//    // Ball-Ground contact (bouncy)
-//    const playerBallContactMaterial = new CANNON.ContactMaterial(playerMaterial, ballMaterial, {
-//     friction: 0.3,    // Friction when ball touches ground
-//     restitution: 0.5  // High bounciness for the ball
-//   }
-// );//
 
 export let testEntities:Map<string, any> = new Map()
 
@@ -173,7 +164,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
                 console.log('passed all physics requirements')
                 let index = pendingBodies.findIndex(($:any)=> $.aid === body.aid)
                 if(index >= 0){
-                    pendingBodies.splice(index,1)
+                    pendingBodies.splice(index,1)//
                 }
 
                 let scene = colyseusRoom.state.scenes.get(body.sceneId)
@@ -211,8 +202,8 @@ export function ProcessPendingPhysicsBodies(dt:number){
                             physicsData.cannonBody.updateMassProperties()
                             // physicsData.cannonBody.collisionFilterMask = 0
 
-                            console.log('new physics body position', physicsData.cannonBody.position)
-                            console.log('new physics body shape', physicsData.cannonBody.shapes.length)
+                            // console.log('new physics body position', physicsData.cannonBody.position)
+                            // console.log('new physics body shape', physicsData.cannonBody.shapes.length)
                             for (const shape of physicsData.cannonBody.shapes) {
                                 // Check if the shape is a Box
                                 if (shape.type === CANNON.Shape.types.BOX) {
@@ -223,7 +214,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
                                   const height = box.halfExtents.y * 2
                                   const depth  = box.halfExtents.z * 2
                             
-                                  console.log(`Box shape size: width=${width}, height=${height}, depth=${depth}`)
+                                //   console.log(`Box shape size: width=${width}, height=${height}, depth=${depth}`)
                                 }
                               }
 
@@ -253,7 +244,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
                             //         break;
                             // }
 
-                            console.log('creating new physics body')
+                            //console.log('creating new physics body')
                             let shape = await createCannonShape(transform, physicsData)
                             let position = await getCannonPosition(physicsData, worldPosition)
 
@@ -267,11 +258,12 @@ export function ProcessPendingPhysicsBodies(dt:number){
                             })
                             physicsData.cannonBody.entity = body.entity
                             physicsData.cannonBody.aid = body.aid
+                            physicsData.cannonBody.updateMassProperties()//
 
                             //   let cannonBody = 
                             //   cannonBody.fixedRotation = rotation
                             //   cannonBody.collisionFilterGroup = 1
-                            //   cannonBody.collisionFilterMask = 1//
+                            //   cannonBody.collisionFilterMask = 1
                             
                               physicsData.cannonBody.addEventListener("collide", (event: any)=>{// CANNON.ICollisionEvent)=>{
                                 let scene = colyseusRoom.state.scenes.get(body.sceneId)
@@ -282,23 +274,23 @@ export function ProcessPendingPhysicsBodies(dt:number){
                                         return
                                     }
 
-                                    // Gather collision data
                                     const collisionData = {
-                                        sceneId:body.sceneId,
-                                        bodyA: body.aid || "bodyA",             // Use unique identifiers
-                                        bodyB: event.body.aid || "bodyB",
+                                        bodyA: body.id || "bodyA",             // Use unique identifiers
+                                        bodyB: event.body.id || "bodyB",
                                         contactPoint: event.contact?.ri,       // Local contact point
                                         impactVelocity: event.contact?.getImpactVelocityAlongNormal(),
-                                        // Add more details as needed
-                                    };
+                                        // Add more details as needed//
+                                      };
+                                    
+                                      // Send collision event to server
+                                    //   colyseusRoom.send(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE, collisionData);
 
-                                    //send to server 
-                                    sendServerMessage(SERVER_MESSAGE_TYPES.PHYSICS_UPDATE, collisionData)
-                                    // runSingleTrigger(entityInfo, Triggers.ON_PHYSICS_COLLIDE, {input:0, pointer:0, data:event.body.entity, aid:event.body.aid})
+                                    // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE, collisionData)
+                                    runSingleTrigger(entityInfo, Triggers.ON_PHYSICS_COLLIDE, {input:0, pointer:0, data:event.body.entity, aid:event.body.aid})
                                 }
                               })
                               world.addBody(physicsData.cannonBody)
-                              console.log('physics body created', physicsData.cannonBody.position, physicsData.cannonBody.shape)
+                              //console.log('physics body created', physicsData.cannonBody.position, physicsData.cannonBody.shape)
 
 
                         }
@@ -441,7 +433,7 @@ export function disablePhysicsPlayMode(scene:any, entityInfo:any){
 }
 
 export async function resetCannonBody(scene:any, physicsData:any, aid:string, action?:boolean){
-    console.log('resetting physics for aid', aid)
+    //console.log('resetting physics for aid', aid)//
     if(!physicsData.cannonBody){
        return
     }
@@ -449,14 +441,14 @@ export async function resetCannonBody(scene:any, physicsData:any, aid:string, ac
        removePhysicsBody(physicsData)
     
        let transform:any = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(aid)
-       console.log('transform is', transform)
+       //console.log('transform is', transform)
        await updateTransform(scene, aid, transform)
     }else{
        let entityInfo = getEntity(scene, aid)
        physicsData.cannonBody.velocity.set(0, 0, 0)
        physicsData.cannonBody.angularVelocity.set(0, 0, 0)
 
-       console.log('resetting physics for entity info', entityInfo)
+      // console.log('resetting physics for entity info', entityInfo)
   
        physicsData.cannonBody.position = await getCannonPosition(physicsData, getWorldPosition(entityInfo.entity))
   
@@ -470,7 +462,7 @@ export function removePhysicsBody(physicsInfo:any){
     try{    
         world.removeBody(physicsInfo.cannonBody)
         physicsInfo.cannonBody = undefined
-        console.log('removed physics body')
+      //  console.log('removed physics body')
     }
     catch(e:any){
         console.log('error removing cannon body from world', e)

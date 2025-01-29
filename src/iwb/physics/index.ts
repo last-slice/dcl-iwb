@@ -8,6 +8,7 @@ import { ProcessPendingPhysicsBodies } from '../components/Physics';
 import { CANNON } from '../helpers/libraries';
 
 export let world:CANNON.World 
+export const WORLD_UP = new CANNON.Vec3(0, 1, 0);
 
 export async function createPhysics(){
     world = new CANNON.World()

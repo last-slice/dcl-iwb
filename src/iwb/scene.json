@@ -1,41 +1,56 @@
 {
-  "id": "Hsa3D",
+  "id": "sVPfy",
   "metadata": {
-    "n": "testDownload",
-    "d": "",
-    "o": "0xaabe0ecfaf9e028d63cf7ea7e772cf52d662691a",
-    "ona": "Lastraum",
-    "cat": "art",
-    "im": ""
+      "n": "Video Scene",
+      "d": "",
+      "o": "0xaabe0ecfaf9e028d63cf7ea7e772cf52d662691a",
+      "ona": "Lastraum",
+      "cat": "art",
+      "im": "",
+      "direction": 0,
+      "offsets": [
+          0,
+          0
+      ],
+      "dv": false,
+      "dpx": false
   },
-  "bpcl": "0,0",
+  "bpcl": "-1,-2",
   "w": "Lastraum.dcl.eth",
   "bps": [],
   "pcls": [
-    "0,0"
+      "-1,-2"
   ],
   "sp": [
-    "0,0,0"
+      "0,0,0"
   ],
   "cp": [
-    "0,0,0"
+      "0,0,0"
   ],
-  "cd": 1735319235,
-  "upd": 1735319235,
-  "si": 45572,
-  "pc": 332,
+  "cd": 1737569053,
+  "upd": 1737569053,
+  "si": 0,
+  "pc": 0,
   "pcnt": 1,
-  "direction": 0,
-  "offsets": [
-    0,
-    0
-  ],
   "isdl": false,
   "e": true,
   "priv": false,
-  "dv": false,
-  "dpx": false,
-  "Actions": {},
+  "Actions": {
+      "Uwv8a8": {
+          "actions": [
+              {
+                  "id": "92Arzm",
+                  "name": "Play Video",
+                  "type": "video_play"
+              },
+              {
+                  "id": "r6jCx0",
+                  "name": "Stop Video",
+                  "type": "video_stop"
+              }
+          ]
+      }
+  },
   "Animator": {},
   "Avatar_Shape": {},
   "Audio": {},
@@ -45,96 +60,254 @@
   "Dialog": {},
   "Game": {},
   "GameItem": {},
-  "Gltf": {
-    "PpKKOL": {
-      "src": "fc7cfc62-c497-4d10-aad4-b61975e603a0",
-      "visibleCollision": 1,
-      "invisibleCollision": 2
-    }
-  },
+  "Gltf": {},
   "IWB": {
-    "PpKKOL": {
-      "id": "fc7cfc62-c497-4d10-aad4-b61975e603a0",
-      "ugc": false,
-      "locked": false,
-      "buildVis": true,
-      "editing": false,
-      "priv": false,
-      "editor": "",
-      "type": "3D"
-    }
+      "Uwv8a8": {
+          "id": "bb3b0edf-377b-438b-80af-bd199455a9bb",
+          "ugc": false,
+          "locked": false,
+          "buildVis": true,
+          "editing": false,
+          "priv": false,
+          "editor": "",
+          "type": "Video"
+      },
+      "PqyfzG": {
+          "id": "bb3b0edf-377b-438b-80af-bd199455a9bb",
+          "ugc": false,
+          "locked": false,
+          "buildVis": true,
+          "editing": false,
+          "priv": false,
+          "editor": "",
+          "type": "Video"
+      }
   },
   "Leaderboard": {},
   "Levels": {},
   "Live": {},
-  "Material": {},
-  "Mesh_Collider": {},
-  "Mesh_Renderer": {},
+  "Material": {
+      "Uwv8a8": {
+          "type": 0,
+          "intensity": 0,
+          "roughness": 1,
+          "metallic": 0,
+          "emissiveIntensity": 0,
+          "textureType": "COLOR",
+          "emissiveType": "NONE",
+          "emissiveTexture": "",
+          "albedoColor": {
+              "r": 0.78,
+              "g": 0.72,
+              "b": 0.6,
+              "a": 0.5
+          },
+          "emissiveColor": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+          },
+          "onPlay": false
+      },
+      "PqyfzG": {
+          "type": 0,
+          "intensity": 0,
+          "roughness": 1,
+          "metallic": 0,
+          "emissiveIntensity": 0,
+          "textureType": "VIDEO",
+          "texture": "Uwv8a8",
+          "emissiveType": "NONE",
+          "emissiveTexture": "",
+          "albedoColor": {
+              "r": 0.78,
+              "g": 0.72,
+              "b": 0.6,
+              "a": 0.5
+          },
+          "emissiveColor": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+          },
+          "onPlay": false
+      }
+  },
+  "Mesh_Collider": {
+      "Uwv8a8": {
+          "shape": 1,
+          "layer": 3,
+          "onPlay": false
+      },
+      "PqyfzG": {
+          "shape": 0,
+          "layer": 3,
+          "onPlay": false
+      }
+  },
+  "Mesh_Renderer": {
+      "Uwv8a8": {
+          "shape": 1
+      },
+      "PqyfzG": {
+          "shape": 0
+      }
+  },
   "Name": {
-    "PpKKOL": {
-      "value": "AcousticPanelWall - PpKKOL"
-    }
+      "Uwv8a8": {
+          "value": "Video - Uwv8a8"
+      },
+      "PqyfzG": {
+          "value": "Video - PqyfzG"
+      }
   },
   "NFT_Shape": {},
   "Path": {},
   "Physics": {},
   "Playlist": {},
   "Pointers": {},
+  "Raycast": {},
   "Reward": {},
   "States": {},
-  "Text": {},
+  "Text": {
+      "Uwv8a8": {
+          "text": "Video",
+          "font": 2,
+          "fontSize": 3,
+          "textAlign": 4,
+          "dataType": 0,
+          "onPlay": false,
+          "isText": false,
+          "outlineColor": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+          },
+          "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+          }
+      },
+      "PqyfzG": {
+          "text": "Video",
+          "font": 2,
+          "fontSize": 3,
+          "textAlign": 4,
+          "dataType": 0,
+          "onPlay": false,
+          "isText": false,
+          "outlineColor": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+          },
+          "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+          }
+      }
+  },
   "Texture": {},
   "Transform": {
-    "PpKKOL": {
-      "p": {
-        "x": 7.29,
-        "y": 0,
-        "z": 5.77
+      "Uwv8a8": {
+          "p": {
+              "x": 8.6,
+              "y": 0.8400000000000001,
+              "z": 8.719999999999999
+          },
+          "r": {
+              "x": 0,
+              "y": 181.68,
+              "z": 0
+          },
+          "s": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+          },
+          "delta": 0
       },
-      "r": {
-        "x": 0,
-        "y": 202.32,
-        "z": 0
-      },
-      "s": {
-        "x": 1,
-        "y": 1,
-        "z": 1
-      },
-      "delta": 0
-    }
+      "PqyfzG": {
+          "p": {
+              "x": 8.6,
+              "y": 5.84,
+              "z": 5.72
+          },
+          "r": {
+              "x": 0,
+              "y": 181.68,
+              "z": 0
+          },
+          "s": {
+              "x": 9,
+              "y": 4.499999999999998,
+              "z": 1
+          },
+          "delta": 0
+      }
   },
   "Triggers": {},
   "UI_Text": {},
   "UI_Image": {},
   "Visibility": {
-    "PpKKOL": {
-      "visible": true
-    }
+      "Uwv8a8": {
+          "visible": true
+      },
+      "PqyfzG": {
+          "visible": true
+      }
   },
-  "Video": {},
+  "Video": {
+      "Uwv8a8": {
+          "type": 0,
+          "autostart": false,
+          "loop": false,
+          "synced": false,
+          "link": "https://dclstreams.com/media/videos/play/8091c67c-2d61-411f-b440-424efb2fbfbb.m3u8"
+      },
+      "PqyfzG": {
+          "type": 1,
+          "autostart": false,
+          "loop": false,
+          "synced": false,
+          "link": ""
+      }
+  },
   "Vehicle": {},
   "Weapon": {},
   "Quest": {},
   "Parenting": [
-    {
-      "aid": "0",
-      "children": [
-        "PpKKOL"
-      ]
-    },
-    {
-      "aid": "1",
-      "children": []
-    },
-    {
-      "aid": "2",
-      "children": []
-    },
-    {
-      "aid": "PpKKOL",
-      "children": []
-    }
+      {
+          "aid": "0",
+          "children": [
+              "Uwv8a8",
+              "PqyfzG"
+          ]
+      },
+      {
+          "aid": "1",
+          "children": []
+      },
+      {
+          "aid": "2",
+          "children": []
+      },
+      {
+          "aid": "Uwv8a8",
+          "children": []
+      },
+      {
+          "aid": "PqyfzG",
+          "children": []
+      }
   ],
   "Multiplayer": {}
 }
