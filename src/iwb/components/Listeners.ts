@@ -34,6 +34,13 @@ import { removeLoadingScreen } from "../systems/LoadingSystem";
 import { updateScenePool } from "../ui/Objects/IWBViews/CreateScenePool";
 
 export async function createColyseusListeners(room:Room){
+    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE, (info: any) => {
+        log(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE + ' received', info)
+        if(info.player === localUserId) return
+        // syncPhyicsBody(info.info)
+        console.log('need to update physics', info)
+    })
+
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_GET, (info: any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_POOL_GET + ' received', info)
         updateScenePool(info)
@@ -560,7 +567,7 @@ export async function createColyseusListeners(room:Room){
         log(SERVER_MESSAGE_TYPES.SCENE_DEPLOY_READY + ' received', info)
         if(info && info.link){
             // displaySkinnyVerticalPanel(true, getView("Deployment_Ready"), undefined, ()=>{
-            //     openExternalUrl({url:info.link.replace(" ", "%20")})
+                openExternalUrl({url:info.link.replace(" ", "%20")})
             // })
         }
     })
@@ -755,9 +762,9 @@ export async function createColyseusListeners(room:Room){
     })
 
     room.state.listen("sceneCount", (c:any, p:any)=>{
-        if(!isGCScene()){
+        // if(!isGCScene()){
             checkSceneCount(c)
-        }
+        // }
     })
 
     room.state.temporaryParcels.onAdd(async(parcel:any, key:string)=>{
