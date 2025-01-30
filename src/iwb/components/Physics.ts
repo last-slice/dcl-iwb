@@ -3,7 +3,7 @@ import { CANNON } from "../helpers/libraries"
 import { COMPONENT_TYPES, Triggers } from "../helpers/types"
 import { world } from "../physics"
 import { getEntity } from "./iwb"
-import { Vector3 } from "@dcl/sdk/math"
+import { Quaternion, Vector3 } from "@dcl/sdk/math"
 import { getWorldPosition } from "@dcl-sdk/utils"
 import { colyseusRoom, connected } from "./Colyseus"
 import { localPlayer } from "./Player"
@@ -14,7 +14,7 @@ import { updateTransform } from "./Transform"
 
 export let pendingBodies:any[] = []
 export let cannonMaterials:Map<string,CANNON.Material> = new Map()
-// export let cannonContactMaterials:Map<string,CANNON.ContactMaterial> = new Map()
+export let cannonContactMaterials:Map<string,CANNON.ContactMaterial> = new Map()
 
 // Store pending contact materials to retry when materials are available
 const pendingContactMaterials: Array<{ from: string, to: string, contactData: any }> = [];
@@ -49,7 +49,7 @@ export function physicsListener(scene:any){
             return
         }
 
-        physicsData.cannonContactMaterials = new Map()
+        // physicsData.cannonContactMaterials = new Map()
 
         // switch(physicsData.type){
         //     case 0: //configuration
@@ -77,19 +77,31 @@ export function physicsListener(scene:any){
                 });
 
                  // Listen for material additions from the schema
-                 physicsData.contactMaterials.onAdd((contactMaterial:any, id:string) => {
+                 physicsData.contactMaterials.onAdd((contactMaterial:any, name:string) => {
                     // Attempt to create the contact material, or add it to pending if materials are not available
-                    createContactMaterial(physicsData, id, contactMaterial);
+                    createContactMaterial(name, contactMaterial);
+
+                    contactMaterial.listen("friction", (current:any, previous:any)=>{
+                        if(previous !== undefined){
+                            updateContactMaterial(name, contactMaterial)
+                        }
+                    })
+
+                    contactMaterial.listen("bounce", (current:any, previous:any)=>{
+                        if(previous !== undefined){
+                            updateContactMaterial(name, contactMaterial)
+                        }
+                    })
                 });
 
                 physicsData.contactMaterials.onRemove((contactMaterial:any, id:string) => {
                     console.log("removed contact material", id)
-                    let cm = physicsData.cannonContactMaterials.get(id)
+                    let cm = cannonContactMaterials.get(id)
                     if(cm){
                         // Nullify the contact material's effect by setting friction and restitution to zero
                         cm.friction = 0;
                         cm.restitution = 0;
-                        physicsData.cannonContactMaterials.delete(id)
+                        cannonContactMaterials.delete(id)
                         //remove world contact material
                     }
                 });
@@ -133,25 +145,30 @@ export function physicsListener(scene:any){
                 // break;
         // }
     })
+
+    scene[COMPONENT_TYPES.PHYSICS_COMPONENT].onRemove((physicsData:any, aid:any)=>{
+        let physicsInfo = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(aid)
+        if(physicsData.type < 1){
+            cannonContactMaterials.clear()
+            cannonMaterials.forEach((data:any, material:string)=>{
+                if(!["player", "vehicle", "ground"].includes(material)){
+                    cannonMaterials.delete(material)
+                }
+            })
+        }
+    })
 }
 
-// if(world.bodies.includes(physicsData.cannonBody)){
-//     console.log('world already has physics body, need to remove')
-//     physicsData.cannonBody.material = getCannonMaterial(physicsData.material)
-// }
-// else if(physicsData.mass){
-//     console.log('creating physics body')
-//     physicsData.cannonBody = createCannonBody({
-//         mass:physicsData.mass,
-//         material: getCannonMaterial(physicsData.material),
-//         shape:new CANNON.Sphere(1),
-//         position: new CANNON.Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
-//         quaternion: new CANNON.Quaternion(),
-//     }, false, 4)
-// }
-// else{
-//     console.log('not all physics properties set to be added to world')
-// }//
+export function updateContactMaterial(name:string, material:any){
+    let contactMaterial = cannonContactMaterials.get(name)
+    if(!contactMaterial){
+        console.log('cnnot find contact material to update')
+        return
+    }
+    contactMaterial.friction = material.friction
+    contactMaterial.restitution = material.bounce
+    console.log('updated contact material', material)
+}
 
 export function checkPhysicsBody(sceneId:string, aid:string, entity:any, physicsData:any){
     let pendingBody = pendingBodies.find(($:any)=> $.aid === aid)
@@ -195,6 +212,7 @@ export function ProcessPendingPhysicsBodies(dt:number){
                             physicsData.cannonBody.material = cannonMaterials.get(physicsData.material)
                             physicsData.cannonBody.linearDamping = physicsData.linearDamping
                             physicsData.cannonBody.angularDamping = physicsData.angularDamping
+                            physicsData.cannonBody.fixedRotation = physicsData.fixedRotation !== undefined ? physicsData.fixedRotation : false
 
                             while (physicsData.cannonBody.shapes.length > 0) {
                                 physicsData.cannonBody.removeShape(physicsData.cannonBody.shapes[0])
@@ -321,18 +339,17 @@ function createCannonShape(transform:TransformType, physicsData:any){
 }
 
 function getCannonPosition(physicsData:any, worldPosition:any){
-    if(physicsData.offset === undefined){
+    // if(physicsData.offset === undefined){
         return new CANNON.Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
-    }
-    console.log('world position', worldPosition)
-    console.log('actual position',  Vector3.add(worldPosition, Vector3.create(physicsData.offset.x, physicsData.offset.y, physicsData.offset.z)))
-    let position = Vector3.add(worldPosition, Vector3.create(physicsData.offset.x, physicsData.offset.y, physicsData.offset.z))
-    return new CANNON.Vec3(position.x, position.y, position.z)
+    // }
+    // console.log('world position', worldPosition)
+    // console.log('actual position',  Vector3.add(worldPosition, Vector3.create(physicsData.offset.x, physicsData.offset.y, physicsData.offset.z)))
+    // let position = Vector3.add(worldPosition, Vector3.create(physicsData.offset.x, physicsData.offset.y, physicsData.offset.z))
+    // return new CANNON.Vec3(position.x, position.y, position.z)
 }
 
 function checkPhysicsRequirements(physicsData:any){
-    console.log('data is', physicsData)
-
+    // console.log('data is', physicsData)
     return physicsData.material && cannonMaterials.has(physicsData.material) &&
             physicsData.mass !== undefined && 
             physicsData.shape !== undefined
@@ -343,10 +360,6 @@ export function addCannonMaterial(material:string){
     cannonMaterials.set(material, cannonMaterial)
     retryPendingContactMaterials();
     return cannonMaterial
-}
-
-function addCannonBody(){
-    
 }
 
 // Retry pending contact materials whenever a new material is added
@@ -371,7 +384,7 @@ function retryPendingContactMaterials() {
   }
 
 // Function to create a contact material when both materials are available
-function createContactMaterial(physicsData:any, id:string, contactData: any) {
+function createContactMaterial(id:string, contactData: any) {
     const from = contactData.from
     const to = contactData.to
 
@@ -385,7 +398,7 @@ function createContactMaterial(physicsData:any, id:string, contactData: any) {
       });
       world.addContactMaterial(contactMaterial);
       console.log(`Contact material added between ${from} and ${to}`);
-      physicsData.cannonContactMaterials.set(id, contactMaterial)
+      cannonContactMaterials.set(id, contactMaterial)
     } else {
         const existsInPending = pendingContactMaterials.some(
             (pending) => pending.from === from && pending.to === to
@@ -422,7 +435,7 @@ export function setPhysicsPlayMode(scene:any, entityInfo:any){
     if(physicsData.type === 0){
         world.gravity.set(0, physicsData.gravity, 0)
     }else{
-        resetCannonBody(scene, physicsData, entityInfo)
+        resetCannonBody(scene, physicsData, entityInfo.aid, true)
     }
 }
 
@@ -433,11 +446,18 @@ export function disablePhysicsPlayMode(scene:any, entityInfo:any){
     }
 
     if(physicsData.type === 1){
-        resetCannonBody(scene, physicsData, entityInfo)
+        resetCannonBody(scene, physicsData, entityInfo.aid, true)
+    }
+
+    if(physicsData.type === 0){
+        physicsData.contactMaterials.forEach((material:any, name:string)=>{
+            updateContactMaterial(name, material)
+        })
     }
 }
 
 export async function resetCannonBody(scene:any, physicsData:any, aid:string, action?:boolean){
+    console.log('resetting physics for aid', aid)
     if(!physicsData.cannonBody){
        return
     }
@@ -451,13 +471,14 @@ export async function resetCannonBody(scene:any, physicsData:any, aid:string, ac
        let entityInfo = getEntity(scene, aid)
        physicsData.cannonBody.velocity.set(0, 0, 0)
        physicsData.cannonBody.angularVelocity.set(0, 0, 0)
+
+       console.log('resetting physics for entity info', entityInfo)
   
        physicsData.cannonBody.position = await getCannonPosition(physicsData, getWorldPosition(entityInfo.entity))
   
        let transform:any = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
-       if(transform){
-          physicsData.cannonBody.rotation =new CANNON.Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w)
-       }
+       let rotationQ = Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)
+        physicsData.cannonBody.rotation =new CANNON.Quaternion(rotationQ.x, rotationQ.y, rotationQ.z, rotationQ.w)
     }
 }
 

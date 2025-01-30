@@ -2,7 +2,7 @@
 import { Entity, Transform, engine } from '@dcl/sdk/ecs';
 import { Vector3 } from '@dcl/sdk/math';
 import { world } from '../physics';
-import { playerMode } from '../components/Config';
+import { isGCScene, playerMode } from '../components/Config';
 import { COMPONENT_TYPES, SCENE_MODES } from '../helpers/types';
 import { physicsObjects, testVehicles } from '../components/Vehicle';
 import { localPlayer } from '../components/Player';
@@ -29,7 +29,7 @@ export function PhysicsUpdateSystem(dt: number): void {
     colyseusRoom.state.scenes.forEach((scene:any)=>{
       scene[COMPONENT_TYPES.PHYSICS_COMPONENT].forEach((physicsItem:any, aid:string)=>{
         if(physicsItem.type === 0){
-            if(localPlayer.activeScene && scene.id === localPlayer.activeScene.id){
+            if(isGCScene() || localPlayer.activeScene && scene.id === localPlayer.activeScene.id){
                 // if(physicsItem.playerReactGravity){
                 //     // console.log('need to float player')
                 //     // movePlayerTo({newRelativePosition:{x:localPlayer.cannonBody.x, y:localPlayer.cannonBody.y, z:localPlayer.cannonBody.z}})

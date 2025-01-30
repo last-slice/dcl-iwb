@@ -17,8 +17,8 @@ import { cannonMaterials } from '../../../components/Physics'
 export let physicsView = "main"
 let newMaterial = ""
 let newContactMaterial:any = {}
+let editContactMaterial:any = {}
 let physicsInfo:any = {}
-let physicsEntity:Entity
 let scene:any
 let materials:any[] = []
 let contactMaterials:any[] = []
@@ -106,7 +106,7 @@ export function getAssetPhysicsData(){
         if(component.contactMaterials){
             component.contactMaterials.forEach((cm:any, name:string)=>{
                 console.log('contact material is', name, cm)
-                contactMaterials.push({name:name, from:cm.from, to:cm.to, friction:cm.friction, bounce:cm.restitution})
+                contactMaterials.push({name:name, from:cm.from, to:cm.to, friction:cm.friction, bounce:cm.bounce})
             })
         }
     })
@@ -803,6 +803,7 @@ uiText={{value:"Please create an entity with a Physics Configuration and add Mat
 <ContactMaterials/>
 {/* <Sizes/> */}
 <Gravity/>
+<EditContactMaterials/>
 
         </UiEntity>
     )
@@ -1031,7 +1032,8 @@ uiText={{value:"Scene Gravity: " + (physicsInfo.gravity), fontSize:sizeFont(25, 
 
     </UiEntity>
 
- <UiEntity
+{/* phyics effects player */}
+ {/* <UiEntity
             uiTransform={{
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -1040,8 +1042,6 @@ uiText={{value:"Scene Gravity: " + (physicsInfo.gravity), fontSize:sizeFont(25, 
                 margin:{top:"5%"}
             }}
         >
-
-                    {/* url label */}
         <UiEntity
             uiTransform={{
                 flexDirection: 'column',
@@ -1093,7 +1093,7 @@ uiText={{value:"Scene Gravity: " + (physicsInfo.gravity), fontSize:sizeFont(25, 
         </UiEntity>
 
 
-        </UiEntity>
+        </UiEntity> */}
 
 </UiEntity>
     )
@@ -1423,7 +1423,7 @@ uiText={{value:"To", fontSize:sizeFont(20, 15), color:Color4.White(), textAlign:
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        height: '10%',
+        height: '15%',
         margin:{top:'3%'}
     }}
     >
@@ -1443,7 +1443,7 @@ uiText={{value:"To", fontSize:sizeFont(20, 15), color:Color4.White(), textAlign:
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        height: '10%',
+        height: '15%',
         margin:{bottom:"5%"},
     }}
 uiText={{value:'Friction', fontSize:sizeFont(20, 12), color:Color4.White(), textAlign:'middle-left'}}
@@ -1468,7 +1468,7 @@ uiText={{value:'Friction', fontSize:sizeFont(20, 12), color:Color4.White(), text
         color={Color4.White()}
         uiTransform={{
             width: '100%',
-            height: '100%',
+            height: '50%',
         }}
         />
 
@@ -1490,7 +1490,7 @@ uiText={{value:'Friction', fontSize:sizeFont(20, 12), color:Color4.White(), text
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        height: '10%',
+        height: '15%',
         margin:{bottom:"5%"},
     }}
 uiText={{value:'Bounce', fontSize:sizeFont(20, 12), color:Color4.White(), textAlign:'middle-left'}}
@@ -1515,7 +1515,7 @@ uiText={{value:'Bounce', fontSize:sizeFont(20, 12), color:Color4.White(), textAl
         color={Color4.White()}
         uiTransform={{
             width: '100%',
-            height: '100%',
+            height: '50%',
         }}
         />
 
@@ -1567,6 +1567,183 @@ uiText={{value:'Bounce', fontSize:sizeFont(20, 12), color:Color4.White(), textAl
         physicsView === "contacts" && 
         generateContactMaterialRows()
     }
+
+</UiEntity>
+    )
+}
+
+function EditContactMaterials(){
+    return(
+        <UiEntity
+        key={resources.slug + "edit::physics::edit::contact::materials"}
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        alignContent:'center',
+        width: '100%',
+        height: '90%',
+        display: physicsView === "edit-contact" ? "flex" : "none"
+    }}
+>
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+uiText={{value:"Edit Contact Material: " + (editContactMaterial.name), fontSize:sizeFont(25, 15), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '20%',
+        margin:{top:'3%'}
+    }}
+    >
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '33%',
+        height: '100%',
+    }}
+    >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '15%',
+        margin:{bottom:"5%"},
+    }}
+uiText={{value:'Friction: ' + (editContactMaterial.friction), fontSize:sizeFont(20, 12), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+    <Input
+        onChange={(value) => {
+            let temp = parseFloat(value.trim().replace(/ /g, ""))
+            if(!isNaN(temp) || (temp >=0 && temp <=1)){
+                editContactMaterial.friction = temp
+            }
+        }}
+        onSubmit={(value) => {
+            let temp = parseFloat(value.trim().replace(/ /g, ""))
+            if(!isNaN(temp) || (temp >=0 && temp <=1)){
+                editContactMaterial.friction = temp
+            }
+        }}
+        fontSize={sizeFont(20,15)}
+        placeholder={'Enter 0-1'}
+        placeholderColor={Color4.White()}
+        color={Color4.White()}
+        uiTransform={{
+            width: '100%',
+            height: '50%',
+        }}
+        />
+
+    </UiEntity>
+
+    <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '33%',
+        height: '100%',
+    }}
+    >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '15%',
+        margin:{bottom:"5%"},
+    }}
+uiText={{value:'Bounce: ' + (editContactMaterial.bounce), fontSize:sizeFont(20, 12), color:Color4.White(), textAlign:'middle-left'}}
+/>
+
+    <Input
+        onChange={(value) => {
+            let temp = parseFloat(value.trim().replace(/ /g, ""))
+            if(!isNaN(temp) || (temp >=0 && temp <=1)){
+                editContactMaterial.bounce = temp
+            }
+        }}
+        onSubmit={(value) => {
+            let temp = parseFloat(value.trim().replace(/ /g, ""))
+            if(!isNaN(temp) || (temp >=0 && temp <=1)){
+                editContactMaterial.bounce = temp
+            }
+        }}
+        fontSize={sizeFont(20,15)}
+        placeholder={'Enter 0-1'}
+        placeholderColor={Color4.White()}
+        color={Color4.White()}
+        uiTransform={{
+            width: '100%',
+            height: '50%',
+        }}
+        />
+
+    </UiEntity>
+
+    <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '33%',
+        height: '100%',
+    }}
+    >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '75%',
+            height: '50%',
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+        }}
+        uiText={{value: "Update", fontSize: sizeFont(20, 16)}}
+        onMouseDown={() => {
+            setUIClicked(true)
+            update("edit-contact-material", "contactMaterial", editContactMaterial)
+            utils.timers.setTimeout(()=>{
+                getAssetPhysicsData()
+            }, 200)
+            setUIClicked(false)
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+    />
+        </UiEntity>
+
+
+    </UiEntity>
+
+
 
 </UiEntity>
     )
@@ -1736,22 +1913,12 @@ function CRow(data:any){
                     height: '100%',
                     margin:{left:'5%'}
                 }}
-                >
-                    <UiEntity
-                        uiTransform={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        width: '100%',
-                        height: '100%',
-                    }}
-                    uiText={{value:"" + data.cm.name, fontSize:sizeFont(20,15), textAlign:'middle-left'}}
-                    />
-
-                </UiEntity>
+                uiText={{value:"" + data.cm.name, fontSize:sizeFont(20,15), textAlign:'middle-left'}}
+                />
 
             <UiEntity
                 uiTransform={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent:'center',
                     width: '20%',
@@ -1764,9 +1931,35 @@ function CRow(data:any){
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.pencilEditIcon)).height,
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.pencilEditIcon)
+                }}
+                onMouseDown={() => {
+                    setUIClicked(true)
+                    editContactMaterial = data.cm
+                    console.log('editing contact material', editContactMaterial)
+                    physicsView = "edit-contact"
+                    setUIClicked(false)
+                }}
+                onMouseUp={()=>{
+                    setUIClicked(false)
+                }}
+                />  
+
+                 <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
                     height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
-                    positionType:'absolute',
                 }}
                 uiBackground={{
                     textureMode: 'stretch',

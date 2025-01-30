@@ -35,7 +35,7 @@ import resources from "../helpers/resources"
 import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
 import { removePlayingVideo, setPlayingVideo } from "./Videos"
 import { world } from "../physics"
-import { checkPhysicsBody, removePhysicsBody, resetCannonBody } from "./Physics"
+import { checkPhysicsBody, removePhysicsBody, resetCannonBody, updateContactMaterial } from "./Physics"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -430,6 +430,22 @@ export function updateActions(scene:any, info:any, action:any){
 
             case Actions.RESET_ALL_PHYSICS_POSITION:
                 handleResetAllPhysicsPositions(scene, info, action)
+                break;
+
+            case Actions.REMOVE_PHSYICS:
+                handleRemovePhysicsForEntity(scene, info, action)
+                break;
+
+            case Actions.ADD_PHYSICS:
+                handleAddPhysicsForEntity(scene, info, action)
+                break;
+
+            case Actions.UPDATE_PHSYICS_MATERIAL:
+                handlePhysicsUpdateMaterial(scene, info, action)
+                break;
+
+            case Actions.UPDATE_PHYSICS_MASS:
+                handlePhysicsUpdateMass(scene, info, action)
                 break;
         }
     })
@@ -1460,9 +1476,12 @@ function handleHideDialog(scene:any, info:any, action:any){
 
 export function runDialogAction(id:string){
     let scene = localPlayer.activeScene
+    console.log('scene is', scene)
     if(!scene){
-        return//
+        return
     }
+
+    console.log('running dialog actions')
 
     scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
         if(actionComponent.actions && actionComponent.actions.length > 0){
@@ -1470,7 +1489,7 @@ export function runDialogAction(id:string){
             if(found){
                 let entityInfo = getEntity(scene, aid)
                 if(entityInfo){
-                    actionQueue.push({aid:aid, action:found, entity:entityInfo.entity})
+                    actionQueue.push({aid:aid, action:found, entity:entityInfo.entity, force:true})
                 }
             }
         }
@@ -1992,6 +2011,29 @@ export function handleSetGravity(scene:any, entityInfo:any, action:any){
     world.gravity.set(0,action.value,0)
 }
 
+export function handleRemovePhysicsForEntity(scene:any, entityInfo:any, action:any){
+    let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsData){
+        return
+    }
+
+    if(physicsData.type === 1){
+        removePhysicsBody(physicsData)
+    }
+}
+
+export function handleAddPhysicsForEntity(scene:any, entityInfo:any, action:any){
+    let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsData){
+        return
+    }
+
+    if(physicsData.type === 1){
+        resetCannonBody(scene, physicsData, entityInfo.aid, true)
+    }
+}
+
+
 export function handleResetPhysicsPosition(scene:any, entityInfo:any, action:any){
     let physicsData = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
     if(!physicsData){
@@ -1999,7 +2041,7 @@ export function handleResetPhysicsPosition(scene:any, entityInfo:any, action:any
     }
 
     if(physicsData.type === 1){
-        resetCannonBody(scene, physicsData, entityInfo, true)
+        resetCannonBody(scene, physicsData, entityInfo.aid, true)
     }
 }
 
@@ -2010,3 +2052,28 @@ export function handleResetAllPhysicsPositions(scene:any, entityInfo:any, action
     }
    })
 }
+
+export function handlePhysicsUpdateMaterial(scene:any, entityInfo:any, action:any){
+    let physicsConfig:any
+
+    scene[COMPONENT_TYPES.PHYSICS_COMPONENT].forEach((physicsData:any, aid:string)=>{
+     if(physicsData.type === 0){
+        physicsConfig = physicsData
+     }
+    })
+
+    if(!physicsConfig){
+        return
+    }
+    updateContactMaterial(action.state, {bounce:action.vMask, friction:action.iMask})
+ }
+
+ export function handlePhysicsUpdateMass(scene:any, entityInfo:any, action:any){
+    let physicsConfig:any = scene[COMPONENT_TYPES.PHYSICS_COMPONENT].get(entityInfo.aid)
+    if(!physicsConfig || physicsConfig.type !== 1 || !physicsConfig.cannonBody || physicsConfig.cannonBody === undefined){
+        return
+    }
+
+    physicsConfig.cannonBody.mass = action.value
+    physicsConfig.cannonBody.updateMassProperties()
+ }

@@ -543,7 +543,10 @@ function getBackButtonLogic(){
             }
             break;
         case COMPONENT_TYPES.PHYSICS_COMPONENT:
-            if(physicsView !== "main"){
+            if(physicsView === "edit-contact"){
+                updatePhysicsView("contacts")
+            }
+            else if(physicsView !== "main"){
                 updatePhysicsView("main")
             }
             else{
