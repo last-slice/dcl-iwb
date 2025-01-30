@@ -68,6 +68,8 @@ export let audiusMoodEndpoints:any = {
     ],
 }
 
+
+
 export default {
     DEBUG: false,
     allowNoWeb3:false,

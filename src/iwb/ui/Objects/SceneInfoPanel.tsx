@@ -322,7 +322,7 @@ export function createSceneInfoPanel() {
                             }}
                         />
         
-                        {/* <UiEntity
+                        <UiEntity
                             uiTransform={{
                                 flexDirection: 'column',
                                 width: calculateSquareImageDimensions(3.5).width,
@@ -350,9 +350,9 @@ export function createSceneInfoPanel() {
                                 sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DOWNLOAD, {sceneId: localPlayer.activeScene!.id})
                             }}
                             onMouseUp={()=>{
-                                setUIClicked(false)
+                                setUIClicked(false)//
                             }}
-                        /> */}
+                        />
         
                         <UiEntity
                             uiTransform={{

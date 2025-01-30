@@ -34,12 +34,12 @@ import { removeLoadingScreen } from "../systems/LoadingSystem";
 import { updateScenePool } from "../ui/Objects/IWBViews/CreateScenePool";
 
 export async function createColyseusListeners(room:Room){
-    room.onMessage(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE, (info: any) => {
-        log(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE + ' received', info)
-        if(info.player === localUserId) return
-        // syncPhyicsBody(info.info)
-        console.log('need to update physics', info)
-    })
+    // room.onMessage(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE, (info: any) => {
+    //     log(SERVER_MESSAGE_TYPES.SCENE_PHYSICS_UPDATE + ' received', info)
+    //     if(info.player === localUserId) return
+    //     // syncPhyicsBody(info.info)
+    //     console.log('need to update physics', info)
+    // })//
 
     room.onMessage(SERVER_MESSAGE_TYPES.SCENE_POOL_GET, (info: any) => {
         log(SERVER_MESSAGE_TYPES.SCENE_POOL_GET + ' received', info)
