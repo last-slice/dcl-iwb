@@ -14,7 +14,7 @@ export function PlayerTrackingSystem(dt: number) {
     localPlayer.rotation = Quaternion.toEulerAngles(Transform.get(engine.CameraEntity).rotation).y
     localPlayer.previousParcel = localPlayer.currentParcel
     localPlayer.currentParcel = "" + Math.floor(playerPos.x / 16).toFixed(0) + "," + "" + Math.floor(playerPos.z / 16).toFixed(0)
-    // console.log('local player parcel is', localPlayer.currentParcel)
+    console.log('local player parcel is', localPlayer.currentParcel)
     checkScenePermissions()
 
     if(localPlayer.previousParcel && localPlayer.previousParcel !== localPlayer.currentParcel){

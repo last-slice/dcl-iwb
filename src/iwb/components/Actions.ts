@@ -18,7 +18,7 @@ import { displayGameStartUI, displayLoadingScreen } from "../ui/Objects/GameStar
 import { attemptLoadLevel, disableLevelAssets, loadLevelAssets, startLevelCountdown } from "./Level"
 import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
-import { isClient, island } from "./Config"
+import { isClient, isGCScene, island, localConfig } from "./Config"
 import { createBlockchainContract, getRandomIntInclusive } from "../helpers/functions"
 import { removedEntities, sceneAttachedParents } from "./Scene"
 import { showDialogPanel } from "../ui/Objects/DialogPanel"
@@ -913,7 +913,7 @@ function handleGiveReward(scene:any, info:any, action:any){
     }
 
     sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_ACTION, {
-        sceneId:"" + localPlayer.activeScene?.id, 
+        sceneId:"" + isGCScene() ? localConfig.scene : localPlayer.activeScene?.id, 
         aid:info.aid, 
         type:action.type
     })
