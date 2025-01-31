@@ -25,7 +25,7 @@ import { actionListener } from "./Actions"
 import { runGlobalTrigger, triggerListener } from "./Triggers"
 import { pointerListener } from "./Pointers"
 import { stateListener } from "./States"
-import { isGCScene, realm, worlds } from "./Config"
+import { isGCScene, localConfig, realm, worlds } from "./Config"
 import { soundsListener } from "./Sounds"
 import { uiTextListener } from "./UIText"
 import { billboardListener } from "./Billboard"
@@ -43,6 +43,7 @@ import { leaderboardListener } from "./Leaderboard"
 import { vehicleListener } from "./Vehicle"
 import { physicsListener } from "./Physics"
 import { questListener } from "./Quests"
+import { onEnterScene, onLeaveScene } from "@dcl/sdk/players"
 
 export let realmActions: any[] = []
 
@@ -380,6 +381,7 @@ export async function checkScenePermissions() {
     })
 
     localPlayer.activeScene = activeScene
+    console
 
     if (canbuild) {
         localPlayer.canBuild = true
@@ -390,20 +392,25 @@ export async function checkScenePermissions() {
     // console.log('active scene', activeScene)
 
     if (localPlayer.mode === SCENE_MODES.PLAYMODE) {
-        if (activeScene) {
-            if (lastScene) {
-                if (lastScene !== activeScene.id) {
-                    await handleSceneEntitiesOnLeave(lastScene)
+        if(isGCScene()){
+            console.log('in genesis city', localPlayer.activeScene)
+            // await handleSceneEntitiesOnEnter(activeScene.id)
+        }else{
+            if (activeScene) {
+                if (lastScene) {
+                    if (lastScene !== activeScene.id) {
+                        await handleSceneEntitiesOnLeave(lastScene)
+                        await handleSceneEntitiesOnEnter(activeScene.id)
+                    }
+                } else {
+                    console.log('last scene is undefined, enable current active scene')
                     await handleSceneEntitiesOnEnter(activeScene.id)
                 }
-            } else {//
-                console.log('last scene is undefined, enable current active scene')//
-                await handleSceneEntitiesOnEnter(activeScene.id)
+            } else {
+                await handleSceneEntitiesOnLeave(lastScene)
             }
-        } else {
-            await handleSceneEntitiesOnLeave(lastScene)
+            lastScene = activeScene ? activeScene.id : undefined
         }
-        lastScene = activeScene ? activeScene.id : undefined
     }
 }
 
@@ -411,21 +418,42 @@ export function updateSceneCount(count: number) {
     sceneCount = count
 }
 
-export function checkAllScenesLoaded() {
+export async function checkAllScenesLoaded() {
     console.log('chekck all scenes loaded', scenesLoadedCount, sceneCount, scenesLoaded)
-    if (scenesLoadedCount >= sceneCount && !scenesLoaded) {
-        scenesLoaded = true
+    if(!scenesLoaded){
+        if((isGCScene() && scenesLoadedCount === 1) || scenesLoadedCount >= sceneCount && !scenesLoaded){
+            scenesLoaded = true
+            console.log('all scenes loaded, check video textures')
+            loadPendingVideoScreens()
+            
+            if(!isGCScene()){
+                loadBlankParcels()
+                colyseusRoom.state.scenes.forEach(async (scene:any) => {
+                    await addSceneLoadTrigger(scene)
+                });
+            }
+            engine.addSystem(PlayerTrackingSystem)
 
-        console.log('all scenes loaded, check video textures')
-        loadPendingVideoScreens()
-        
-        if(!isGCScene()){
-            loadBlankParcels()
-            colyseusRoom.state.scenes.forEach(async (scene:any) => {
-                await addSceneLoadTrigger(scene)
-            });
+            if(isGCScene()){
+                await handleSceneEntitiesOnEnter(localConfig.scene)
+                
+                onEnterScene(async (player) => {
+                    if (!player) return
+                    console.log('ENTERED SCENE', player)
+                    if(player.userId === localUserId){
+                        await handleSceneEntitiesOnEnter(localConfig.scene)
+                    }
+                })
+            
+                onLeaveScene(async (userId) => {
+                    if (!userId) return
+                    console.log('LEFT SCENE', userId)
+                    if(userId === localUserId){
+                        await handleSceneEntitiesOnLeave(localConfig.scene)
+                    }
+                })
+            }
         }
-        engine.addSystem(PlayerTrackingSystem)
     }
 }
 
