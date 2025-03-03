@@ -211,6 +211,10 @@ export function triggerListener(scene:any){
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.off("*")
       }
+
+      if(trigger.type === Triggers.ON_CLOCK_TICK){
+        tickSet.delete(info.entity)
+      }
     })
 
 
@@ -412,6 +416,27 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               if(!counter){
                 return false
               }
+
+              if(counter.currentValue){
+                if(condition.hasOwnProperty("value")){
+                  console.log('need to compare counter against another counter')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return counter.currentValue === numeric
+                  }
+                }
+                const numeric = Number(condition.counter)
+                if (!isNaN(numeric)) {
+                  return counter.currentValue === numeric
+                }
+              }
   
               if(counter.currentValue){
                 const numeric = Number(condition.counter)
@@ -429,6 +454,20 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               }
   
               if(counter.currentValue){
+                if(condition.hasOwnProperty("value")){
+                  console.log('need to compare counter against another counter')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return counter.currentValue > numeric
+                  }
+                }
                 const numeric = Number(condition.counter)
                 if (!isNaN(numeric)) {
                   return counter.currentValue > numeric
@@ -441,6 +480,28 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               if(!counter){
                 return false
               }
+
+              if(counter.currentValue){
+                if(condition.hasOwnProperty("value")){
+                  console.log('need to compare counter against another counter')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return counter.currentValue < numeric
+                  }
+                }
+                const numeric = Number(condition.counter)
+                if (!isNaN(numeric)) {
+                  return counter.currentValue < numeric
+                }
+              }
+
 
               if(counter.currentValue){
                 const numeric = Number(condition.counter)

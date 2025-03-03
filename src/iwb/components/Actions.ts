@@ -36,6 +36,7 @@ import { attemptVehicleEntry, attemptVehicleExit } from "./Vehicle"
 import { removePlayingVideo, setPlayingVideo } from "./Videos"
 import { world } from "../physics"
 import { checkPhysicsBody, removePhysicsBody, resetCannonBody, updateContactMaterial } from "./Physics"
+import { getPlayer } from "@dcl/sdk/players"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -447,6 +448,10 @@ export function updateActions(scene:any, info:any, action:any){
             case Actions.UPDATE_PHYSICS_MASS:
                 handlePhysicsUpdateMass(scene, info, action)
                 break;
+
+            case Actions.SET_STATE_USERNAME:
+                handleSetStateUsername(scene, info, action)
+                break;
         }
     })
 }
@@ -547,13 +552,23 @@ function handleSetState(scene:any, info:any, action:any){
     console.log('handling set state action', action)
     let state = getStateComponentByAssetId(scene, info.aid)
     if(state){
-        setState(state, action.state)
+        let newStateValue = action.state
+
+        if(action.hasOwnProperty("message")){
+            console.log('need to set state from another variable')
+            let otherState = getStateComponentByAssetId(scene, action.message)
+            if(otherState){
+                console.log('other state value is', otherState)
+                newStateValue = otherState.currentValue || ""
+            }
+        }
+
+        setState(state, newStateValue)
         uiDataUpdate(scene, info)
         runGlobalTrigger(scene, Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
         // const triggerEvents = getTriggerEvents(info.entity)
         // triggerEvents.emit(Triggers.ON_STATE_CHANGE, {entity:info.entity, input:0, pointer:0})
 
-        //
     }
 }
 
@@ -561,7 +576,17 @@ function handleAddNumber(scene:any, info:any, action:any){
     console.log('adding number action', info, action)//
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
-        updateCounter(counter, action.value)
+        let newCounterValue = action.value
+
+        if(action.counter){
+            console.log('need to set counter from another variable')
+            let otherCounter = getCounterComponentByAssetId(scene, action.counter, action.counter)
+            if(!otherCounter)   return;
+
+            newCounterValue = otherCounter.currentValue
+        }
+
+        updateCounter(counter, newCounterValue)
         uiDataUpdate(scene, info)
         //single player
         const triggerEvents = getTriggerEvents(info.entity)
@@ -581,7 +606,16 @@ export function handleSetNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     console.log('counter is', counter)
     if(counter){
-        setCounter(counter, action.value)
+        let newCounterValue = action.value
+
+        if(action.counter){
+            console.log('need to set counter from another variable')
+            let otherCounter = getCounterComponentByAssetId(scene, action.counter, action.counter)
+            if(!otherCounter)   return;
+
+            newCounterValue = otherCounter.currentValue
+        }
+        setCounter(counter, newCounterValue)
         uiDataUpdate(scene, info)
 
         runGlobalTrigger(scene, Triggers.ON_COUNTER_CHANGE, {entity:info.entity, input:0, pointer:0})
@@ -597,7 +631,17 @@ export function handleSetNumber(scene:any, info:any, action:any){
 function handleSubtractNumber(scene:any, info:any, action:any){
     let counter = getCounterComponentByAssetId(scene, info.aid, action.counter)
     if(counter){
-        updateCounter(counter, (-1 * action.value))
+        let newCounterValue = action.value
+
+        if(action.counter){
+            console.log('need to set counter from another variable')
+            let otherCounter = getCounterComponentByAssetId(scene, action.counter, action.counter)
+            if(!otherCounter)   return;
+
+            newCounterValue = otherCounter.currentValue
+        }
+
+        updateCounter(counter, (-1 * newCounterValue))
         uiDataUpdate(scene, info)
 
         runGlobalTrigger(scene, Triggers.ON_COUNTER_CHANGE, {entity:info.entity, input:0, pointer:0})
@@ -2077,3 +2121,21 @@ export function handlePhysicsUpdateMaterial(scene:any, entityInfo:any, action:an
     physicsConfig.cannonBody.mass = action.value
     physicsConfig.cannonBody.updateMassProperties()
  }
+
+function handleSetStateUsername(scene:any, entityInfo:any, action:any){
+    console.log('handling set state user name  action', action)
+    try{
+        let player = getPlayer()
+        if(!player) return;
+
+        let state = getStateComponentByAssetId(scene, entityInfo.aid)
+        if(state){
+            setState(state, player.name)
+            uiDataUpdate(scene, entityInfo)
+            runGlobalTrigger(scene, Triggers.ON_STATE_CHANGE, {entity:entityInfo.entity, input:0, pointer:0})
+        }
+    }
+    catch(e:any){
+        console.log('error getting player info to set state to user display name', e)
+    }
+}

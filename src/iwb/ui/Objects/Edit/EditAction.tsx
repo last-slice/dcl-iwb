@@ -10,7 +10,7 @@ import { resetAdditionalAssetFeatures, selectedItem } from '../../../modes/Build
 import { visibleComponent } from '../EditAssetPanel'
 import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
-import { AddNumberActionPanel } from './ActionPanels/AddNumberPanel'
+import { AddNumberActionPanel, updateAddNumberPanel } from './ActionPanels/AddNumberPanel'
 import { AddLinkActionPanel } from './ActionPanels/AddLinkPanel'
 import { AddEmoteActionPanel } from './ActionPanels/AddEmotePanel'
 import { AddVisibilityActionPanel } from './ActionPanels/AddVisibilityPanel'
@@ -23,8 +23,8 @@ import { AddSetPositionPanel, addSetPositionEntity, resetSetPositionEntity } fro
 import { AddSetScalePanel, addSetScaleEntity, resetSetScaleEntity } from './ActionPanels/AddSetScalePanel'
 import { AddSetRotationPanel, addsetRotationEntity, resetSetRotationEntity } from './ActionPanels/AddSetRotationPanel'
 import { AddSetStatePanel, updateEntityStates } from './ActionPanels/AddStatePanel'
-import { AddSetNumberActionPanel } from './ActionPanels/AddSetNumberPanel'
-import { AddSubtractNumberActionPanel } from './ActionPanels/AddSubtractNumberPanel'
+import { AddSetNumberActionPanel, updateAddSetNumberPanel } from './ActionPanels/AddSetNumberPanel'
+import { AddSubtractNumberActionPanel, updateSubractNumberPanel } from './ActionPanels/AddSubtractNumberPanel'
 import { AddShowNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
 import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
@@ -645,13 +645,16 @@ function resetActionData(){
 
 const ActionDefaults:any = {
     [Actions.ADD_NUMBER]:{
-        value:0
+        value:0,
+        fn:()=>{updateAddNumberPanel()}
     },
     [Actions.SET_NUMBER]:{
-        value:0
+        value:0,
+        fn:()=>{updateAddSetNumberPanel()}
     },
     [Actions.SUBTRACT_NUMBER]:{
-        value:0
+        value:0,
+        fn:()=>{updateSubractNumberPanel()}
     },
     [Actions.OPEN_LINK]:{
         url:""

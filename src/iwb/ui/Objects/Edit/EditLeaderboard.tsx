@@ -8,7 +8,7 @@ import { selectedItem } from '../../../modes/Build'
 import { sizeFont } from '../../helpers'
 import { Color4, Vector3 } from '@dcl/sdk/math'
 import { utils } from '../../../helpers/libraries'
-import { engine, TextAlignMode, TextShape, Transform } from '@dcl/sdk/ecs'
+import { ComponentType, engine, TextAlignMode, TextShape, Transform } from '@dcl/sdk/ecs'
 import { addLeaderboardEntities, updateLeadboardRowEnabled, updateLeaderboardInfo } from '../../../components/Leaderboard'
 
 export let leaderboardView = "main"
@@ -71,14 +71,14 @@ export function refreshLeaderboardInfo(){
     console.log('leaderboard info is', leaderboardInfo)
 
     if(leaderboardInfo.type >= 0 && leaderboardInfo.variableType >= 0){
+        let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(!scene){
+            return []
+        }
+
         switch(leaderboardInfo.variableType){
             case 0: //game variable
             default:
-                let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-                if(!scene){
-                    return []
-                }
-
                 scene[COMPONENT_TYPES.GAME_COMPONENT].forEach((gameComponent:any, aid:string)=>{
                     gameComponent.pvariables.forEach((data:any, variable:string)=>{
                         console.log('pvariable is', variable, data)
@@ -88,6 +88,14 @@ export function refreshLeaderboardInfo(){
 
                 variables.unshift("SELECT VARIABLE")
                 break;
+
+            case 1: //scene variable
+            scene[COMPONENT_TYPES.COUNTER_COMPONENT].forEach((counterComponent:any, aid:string)=>{
+                variables.push(scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value)
+            })
+
+            variables.unshift("SELECT VARIABLE")
+            break;
         }
         populateLeaderboard()
     }
@@ -160,7 +168,7 @@ export function EditLeaderboard() {
         width: '100%',
         height: '10%',
     }}
-    uiText={{textWrap:'nowrap', value:"Leaderboard Variable Type: " + getType(), fontSize:sizeFont(25,15), textAlign:'middle-left'}}
+    uiText={{textWrap:'nowrap', value:"Leaderboard Type: " + getType(), fontSize:sizeFont(25,15), textAlign:'middle-left'}}
     />
 
 <UiEntity
@@ -170,8 +178,9 @@ export function EditLeaderboard() {
         justifyContent: 'center',
         width: '100%',
         height: '10%',
+        display: leaderboardInfo && leaderboardInfo.variable >= 0 ? "flex" : "none"
     }}
-    uiText={{textWrap:'nowrap', value:"Leaderboard Variable: GAME", fontSize:sizeFont(25,15), textAlign:'middle-left'}}
+    uiText={{textWrap:'nowrap', value:"Leaderboard Variable: ", fontSize:sizeFont(25,15), textAlign:'middle-left'}}
     />
 
 <UiEntity
@@ -185,7 +194,7 @@ export function EditLeaderboard() {
     }}
     >
         <Dropdown
-            options={["SELECT VARIABLE TYPE", "GAME"]}
+            options={["SELECT VARIABLE TYPE", "GAME", "SCENE"]}
             selectedIndex={getVariableTypeIndex()}
             onChange={(index:number)=>{
                 update("edit", "variableType", index - 1)

@@ -436,7 +436,7 @@ export enum Actions {
     CLONE = 'entity_clone',
     REMOVE = 'entity_remove',
     // SHOW_IMAGE = 'show_image',
-    // HIDE_IMAGE = 'hide_image',
+    // HIDE_IMAGE = 'hide_image',//
     PLAY_ANIMATION = 'animation_start',
     STOP_ANIMATION = 'animation_stop',
     SHOW_DIALOG ='dialog_show',
@@ -506,6 +506,8 @@ export enum Actions {
     ADD_PHYSICS = 'physics_add',
     UPDATE_PHSYICS_MATERIAL = 'physics_material_update',
     UPDATE_PHYSICS_MASS = 'physics_mass_update',
+    SET_STATE_USERID = 'set_state_user_id',
+    SET_STATE_USERNAME = 'set_state_user_name',
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 

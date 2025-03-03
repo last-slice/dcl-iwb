@@ -24,7 +24,9 @@ let selectedEntityIndex:number = 0
 let selectedConditionIndex:number = 0
 let selectedOperatorIndex:number = 0
 
-let newCondition:any = {}
+let newCondition:any = {
+    variable:false
+}
 
 export function updateTriggerConditionPanel(){
     entities.length = 0
@@ -71,7 +73,9 @@ export function resetTriggerConditionsPanel(){
     entityQuests.length = 0 
     selectedEntityIndex = 0
     selectedConditionIndex = 0
-    newCondition = {}
+    newCondition = {
+        variable:false
+    }
 }
 
 export function TriggerConditionsPanel(){
@@ -220,7 +224,7 @@ export function TriggerConditionsPanel(){
      {/* condition counter value dropdown */}
      <UiEntity
             uiTransform={{
-                flexDirection: 'row',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignContent:'center',
@@ -230,6 +234,71 @@ export function TriggerConditionsPanel(){
                 display: newCondition.condition && newCondition.condition.type === COMPONENT_TYPES.COUNTER_COMPONENT ? "flex" : "none"
             }}
             >
+
+<UiEntity
+            uiTransform={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: '100%',
+                height: '100%',
+                margin:{top:"1%", bottom:"1%"},
+            }}
+            >
+                <Dropdown
+    options={["Select Condition Type", "Custom", "Variable"]}
+    selectedIndex={0}
+    onChange={(index:number)=>{
+            if(index == 1){
+            newCondition.variable = false
+        }
+
+        if(index === 2){
+            newCondition.variable = true
+        }
+    }}
+    uiTransform={{
+        width: '100%',
+        height: '100%',
+    }}
+    color={Color4.White()}
+    fontSize={sizeFont(20, 15)}
+/>
+
+                </UiEntity>
+
+
+<UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent:'center',
+                width: '100%',
+                height: '100%',
+                margin:{top:"1%"},
+                display: newCondition.variable ? "flex" : "none"
+            }}
+            >
+
+            <Dropdown
+                options={[...["Select Entity"], ...entities.map($=> $.name)]}
+                selectedIndex={0}
+                onChange={(index:number)=>{
+                    if(index > 0){
+                        newCondition.value = entities[index-1].aid
+                    }
+                }}
+                uiTransform={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
+
+            </UiEntity>
 
                 <Input
             onChange={(value) => {
@@ -242,6 +311,7 @@ export function TriggerConditionsPanel(){
             uiTransform={{
                 width: '100%',
                 height: '100%',
+                display: !newCondition.variable ? "flex" : "none"
             }}
             ></Input>
 
@@ -338,6 +408,7 @@ uiTransform={{
     alignContent:'center',
     width: '100%',
     height: '45%',
+    display: currentConditions.length > 0 ? "flex" : "none"
 }}
 >
 
