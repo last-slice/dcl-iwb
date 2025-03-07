@@ -1,7 +1,10 @@
-import { VirtualCamera } from "@dcl/sdk/ecs"
+import { engine, Entity, MeshRenderer, Transform, VirtualCamera } from "@dcl/sdk/ecs"
 import { getEntity } from "./iwb"
 import { COMPONENT_TYPES } from "../helpers/types"
 import { isClient } from "./Config"
+import { Quaternion, Vector3 } from "@dcl/sdk/math"
+
+let cameraParentMapping:Map<Entity, Entity> = new Map()
 
 export function checkVirtualCameraComponent(scene:any, entityInfo:any){
     let cameraInfo = scene[COMPONENT_TYPES.VIRTUAL_CAMERA].get(entityInfo.aid)
@@ -18,6 +21,24 @@ export function checkVirtualCameraComponent(scene:any, entityInfo:any){
             }
         })
     }
+}
+
+export function setVirtualCameraBuildMode(scene:any, entityInfo:any){
+    let cameraInfo = scene[COMPONENT_TYPES.VIRTUAL_CAMERA].get(entityInfo.aid)
+    if(!cameraInfo) return
+
+    let cameraArrow = engine.addEntity()
+    Transform.create(cameraArrow, {parent:entityInfo.entity, position:Vector3.create(0,0,1), rotation: Quaternion.fromEulerDegrees(90,0,0), scale:Vector3.create(0.1, 1, 0.1)})
+    MeshRenderer.setCylinder(cameraArrow)
+    cameraParentMapping.set(entityInfo.entity, cameraArrow)
+}
+
+export function setVirtualCameraPlayMode(scene:any, entityInfo:any){
+    let child = cameraParentMapping.get(entityInfo.entity)
+    if(!child)  return;
+
+    engine.removeEntity(child)
+    cameraParentMapping.delete(entityInfo.entity)
 }
 
 export function virtualCameraListener(scene:any){

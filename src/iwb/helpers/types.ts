@@ -508,6 +508,7 @@ export enum Actions {
     UPDATE_PHYSICS_MASS = 'physics_mass_update',
     SET_STATE_USERID = 'set_state_user_id',
     SET_STATE_USERNAME = 'set_state_user_name',
+    ADD_USERNAME_STATE = 'add_state_user_name'
     // CUSTOM_TRIGGER_EVENT = 'custom_trigger_event'
 }
 
@@ -569,6 +570,8 @@ export enum Pointers {
 export enum TriggerConditionType {
     WHEN_STATE_IS = 'when_state_is',
     WHEN_STATE_IS_NOT = 'when_state_is_not',
+    WHEN_STATE_CONTAINS = 'when_state_contains',
+    WHEN_STATE_NO_CONTAIN = 'when_state_doesnt_contain',
     WHEN_COUNTER_EQUALS = 'when_counter_equals',
     WHEN_COUNTER_IS_GREATER_THAN = 'when_counter_is_greater_than',
     WHEN_COUNTER_IS_LESS_THAN = 'when_counter_is_less_than',

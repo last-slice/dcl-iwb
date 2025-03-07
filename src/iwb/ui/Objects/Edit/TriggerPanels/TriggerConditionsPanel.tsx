@@ -561,6 +561,8 @@ function updateEntityConditions(aid:string){
         entityConditions.push({type:COMPONENT_TYPES.STATE_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_STATE_IS_NOT)})
         entityConditions.push({type:COMPONENT_TYPES.STATE_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_PREVIOUS_STATE_IS)})
         entityConditions.push({type:COMPONENT_TYPES.STATE_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_PREVIOUS_STATE_IS_NOT)})//
+        entityConditions.push({type:COMPONENT_TYPES.STATE_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_STATE_CONTAINS)})//
+        entityConditions.push({type:COMPONENT_TYPES.STATE_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_STATE_NO_CONTAIN)})//
     }
 
     let counters = scene[COMPONENT_TYPES.COUNTER_COMPONENT].get(aid)
@@ -598,6 +600,8 @@ function updateEntityStates(aid:string){
     states.values.forEach((state:any)=>{
         entityStates.push(state)
     })
+
+    entityStates.push("player-user")
 }
 
 function selectConditionEntityIndex(index:number){

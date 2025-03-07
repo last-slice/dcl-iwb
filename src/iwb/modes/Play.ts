@@ -28,7 +28,7 @@ import { showNotification } from "../ui/Objects/NotificationPanel"
 import { disableLivePanel, setLivePanel } from "../components/Live"
 import { lastScene, removedEntities, sceneAttachedParents } from "../components/Scene"
 import { removeItem } from "./Build"
-import { getActionEvents, handleUnlockPlayer, updateActions } from "../components/Actions"
+import { getActionEvents, handleRemoveVirtualCamera, handleUnlockPlayer, updateActions } from "../components/Actions"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { disablePlaylistForPlayMode, stopAllPlaylists } from "../components/Playlist"
@@ -41,6 +41,7 @@ import mitt from "mitt"
 import { isGCScene } from "../components/Config"
 import { isGameAsset, isLevelAsset } from "../components/Level"
 import { disablePhysicsPlayMode, setPhysicsPlayMode } from "../components/Physics"
+import { setVirtualCameraPlayMode } from "../components/VirtualCamera"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity
@@ -59,6 +60,8 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
 
         localPlayer.cannonBody.mass = 0
         localPlayer.cannonBody.updateMassProperties()
+
+        handleRemoveVirtualCamera()
 
         scene[COMPONENT_TYPES.PARENTING_COMPONENT].forEach((item:any, index:number)=>{
             if(index > 2){
@@ -96,6 +99,7 @@ export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
         disableMeshColliderPlayMode(scene, entityInfo)
         disablePhysicsPlayMode(scene, entityInfo)
         PointerEvents.deleteFrom(entityInfo.entity)
+        setVirtualCameraPlayMode(scene, entityInfo)
     }
 
     checkGameplay(scene)

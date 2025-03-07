@@ -418,7 +418,7 @@ export function updateActions(scene:any, info:any, action:any){
                 break;
 
             case Actions.REMOVE_VIRTUAL_CAMERA:
-                handleRemoveVirtualCamera(scene, info, action)
+                handleRemoveVirtualCamera()
                 break;
 
             case Actions.SET_GRAVITY:
@@ -2045,7 +2045,7 @@ export function handleSetVirtualCamera(scene:any, entityInfo:any, action:any){
     }
 }
 
-export function handleRemoveVirtualCamera(scene:any, entityInfo:any, action:any){
+export function handleRemoveVirtualCamera(){
     const mainCamera = MainCamera.createOrReplace(engine.CameraEntity, {
 		virtualCameraEntity: undefined
 	})

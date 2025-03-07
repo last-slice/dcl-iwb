@@ -12,6 +12,7 @@ import { Color3, Vector3 } from "@dcl/sdk/math";
 import { getAssetIdByEntity } from "./Parenting";
 import { colyseusRoom, connected, sendServerMessage } from "./Colyseus";
 import { items } from "./Catalog";
+import { localUserId } from "./Player";
 
 export const actionQueue:any[] = []
 export let decisionQueue:any[] = []
@@ -407,6 +408,32 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               if (states !== null) {
                 const previousValue = getPreviousValue(states)
                 return previousValue !== condition.value
+              }
+              break
+            }
+            case TriggerConditionType.WHEN_STATE_CONTAINS: {
+              const states = States.getOrNull(entity)
+              if (states === null) {
+                return false
+              }else{
+                if(condition.value === "player-user"){
+                  return states.values.includes(localUserId)
+                }else{
+                  return states.values.includes(condition.value)
+                }
+              }
+              break
+            }
+            case TriggerConditionType.WHEN_STATE_NO_CONTAIN: {
+              const states = States.getOrNull(entity)
+              if (states === null) {
+                return false
+              }else{
+                if(condition.value === "player-user"){
+                  return !states.values.includes(localUserId)
+                }else{
+                  return !states.values.includes(condition.value)
+                }
               }
               break
             }

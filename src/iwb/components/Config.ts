@@ -20,7 +20,7 @@ import { displayLiveControl, displayLivePanel } from "../ui/Objects/LiveShowPane
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./Game"
-import { handleUnlockPlayer } from "./Actions"
+import { handleRemoveVirtualCamera, handleUnlockPlayer } from "./Actions"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { stopAllPlaylists } from "./Playlist"
 import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload, removeForceCamera, setGlobalEmitter } from "../modes/Play"
@@ -265,6 +265,8 @@ export async function setPlayerMode(mode:SCENE_MODES){
             scenes = [localConfig.scene]
             colyseusRoom.state.scenes[localConfig.scene.id] = localConfig.scene
         }
+
+        handleRemoveVirtualCamera()
 
         scenes.forEach(async (scene:any)=>{
             scene.checkedLeave = false

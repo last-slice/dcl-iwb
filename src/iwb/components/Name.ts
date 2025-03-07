@@ -57,6 +57,20 @@ export function getAllAssetNames(sceneId:string, sort?:boolean, includeQuests?:b
         names.push({name:name.value, aid:aid})
     });
 
+    scene[COMPONENT_TYPES.COUNTER_COMPONENT].forEach((actionComponent:any, aid:string) => {
+        let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
+        if(!names.find((n:any)=>n.name === name.value)){
+            names.push({name:name.value, aid:aid})
+        }
+    });
+
+    scene[COMPONENT_TYPES.STATE_COMPONENT].forEach((actionComponent:any, aid:string) => {
+        let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)
+        if(!names.find((n:any)=>n.name === name.value)){
+            names.push({name:name.value, aid:aid})
+        }
+    });
+
     if(physics){
         scene[COMPONENT_TYPES.PHYSICS_COMPONENT].forEach((actionComponent:any, aid:string) => {
             let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)

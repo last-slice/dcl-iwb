@@ -38,7 +38,7 @@ export function getCurrentValue(states:any) {
     }
     return null
   }
-
+  
 // export function addStateComponent(scene:any){
 //     scene[COMPONENT_TYPES.STATE_COMPONENT].forEach((state:any, aid:string)=>{
 //         let info = scene[COMPONENT_TYPES.PARENTING_COMPONENT].find((entity:any)=> entity.aid === aid)
@@ -67,6 +67,10 @@ export function setState(state:any, value:any){
     state.previousValue = previousValue
     state.currentValue = nextState
     console.log('state component is now', state)
+}
+
+export function addState(state:any, value:any){
+  state.values.push(value)
 }
 
 export function stateListener(scene:any){

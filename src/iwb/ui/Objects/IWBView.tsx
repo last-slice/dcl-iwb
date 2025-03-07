@@ -16,6 +16,7 @@ import { engine } from '@dcl/sdk/ecs'
 import { displayCatalogPanel } from './CatalogPanel'
 import { displayQuestCreatorPanel } from './QuestCreatorPanel'
 import { CreateScenePoolView, updateCreatorPoolView } from './IWBViews/CreateScenePool'
+import { isPreview } from '../../helpers/functions'
 
 export let mainIWBPanelShow = false
 
@@ -36,7 +37,7 @@ let buttons:any[] = [
         // updateMainView("Create")
         },
         displayCondition:()=>{
-            return island === "world"
+            return island === "world" || isPreview
         }
     },
     {label:"Settings", pressed:false, func:()=>{
