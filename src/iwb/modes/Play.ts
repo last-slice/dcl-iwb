@@ -91,7 +91,7 @@ export function removeForceCamera(){
 export function handleSceneEntityOnLeave(scene:any, entityInfo:any){
     if(localPlayer.gameStatus !== PLAYER_GAME_STATUSES.PLAYING){
         disableTriggers(scene, entityInfo)
-        disableLivePanel(scene, entityInfo)
+        // disableLivePanel(scene, entityInfo)
         resetAttachedEntity(scene, entityInfo)
         disableAudioPlayMode(scene, entityInfo)
         disableCounterForPlayMode(scene, entityInfo)
@@ -139,7 +139,7 @@ export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     setAudioPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
     setVideoPlayMode(scene, entityInfo)
-    setLivePanel(scene, entityInfo)   
+    // setLivePanel(scene, entityInfo)   
     setTextShapeForPlayMode(scene, entityInfo)
     setTriggersForPlayMode(scene, entityInfo)
     setPhysicsPlayMode(scene, entityInfo)

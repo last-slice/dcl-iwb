@@ -1521,6 +1521,14 @@ export let uiSizes: any = {
         sourceWidth: 128,
         sourceHeight: 128
     },
+    pencilEditIconTrans: {
+        atlasHeight: 1024,
+        atlasWidth: 1024,
+        sourceTop: 128 * 5,
+        sourceLeft: 128 * 6,
+        sourceWidth: 128,
+        sourceHeight: 128
+    },
     menuBox1: {
         atlasHeight: 1024,
         atlasWidth: 1024,
