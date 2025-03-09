@@ -38,6 +38,9 @@ import { createQuestCreatorPanel } from './Objects/QuestCreatorPanel'
 import { createBannedScreen } from './Objects/BannedScreen'
 import { createCooldownUI } from './Objects/GameCooldownUI'
 import { createAdminPanel } from './Objects/SceneAdminPanel'
+import { createWarehouseUI } from './Objects/WarehouseUI'
+import { createWarehouseItemDetailsPanel } from './Objects/WarehouseItemDetails'
+import { createBuilderHUDPanel } from '../../dcl-builder-hud/ui/builderpanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
