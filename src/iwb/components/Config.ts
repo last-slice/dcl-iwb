@@ -1,8 +1,8 @@
 import { getRealm } from "~system/Runtime"
 import { colyseusRoom, connected, sendServerMessage, setLocalColyseus } from "./Colyseus"
 import { localPlayer, localUserId, setPlayMode, settings } from "./Player"
-import { COMPONENT_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES } from "../helpers/types"
-import { AvatarModifierArea, AvatarModifierType, Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
+import { COLLIDER_LAYERS, COMPONENT_TYPES, PLAYER_GAME_STATUSES, SCENE_MODES, SERVER_MESSAGE_TYPES, VIEW_MODES } from "../helpers/types"
+import { AvatarModifierArea, AvatarModifierType, ColliderLayer, Entity, GltfContainer, Material, MeshRenderer, Transform, engine } from "@dcl/sdk/ecs"
 import { Color4, Quaternion, Vector3 } from "@dcl/sdk/math"
 import { utils } from "../helpers/libraries"
 import { resetEntityForBuildMode, addAllBuildModePointers, resetEntitiesForBuildMode } from "../modes/Build"
@@ -20,7 +20,7 @@ import { displayLiveControl, displayLivePanel } from "../ui/Objects/LiveShowPane
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./Game"
-import { handleUnlockPlayer } from "./Actions"
+import { handleRemoveVirtualCamera, handleUnlockPlayer } from "./Actions"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
 import { stopAllPlaylists } from "./Playlist"
 import { handleSceneEntitiesOnLeave, handleSceneEntitiesOnUnload, removeForceCamera, setGlobalEmitter } from "../modes/Play"
@@ -28,6 +28,9 @@ import { disableLevelAssets } from "./Level"
 import { displayQuestPanel } from "../ui/Objects/QuestPanel"
 import { removeLocaPlayerWeapons, unequipUserWeapon } from "./Weapon"
 import { removeLoadingScreen } from "../systems/LoadingSystem"
+import { iwbScene } from "../scene"
+import { checkGLTFComponent } from "./Gltf"
+import { findAssetParent } from "./Parenting"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -266,6 +269,8 @@ export async function setPlayerMode(mode:SCENE_MODES){
             colyseusRoom.state.scenes[localConfig.scene.id] = localConfig.scene
         }
 
+        handleRemoveVirtualCamera()
+
         scenes.forEach(async (scene:any)=>{
             scene.checkedLeave = false
             scene.checkedUnloaded = false
@@ -390,4 +395,51 @@ export function removeSceneRoofs(){
         engine.removeEntity(entity)
     })
     sceneRoofAssets.length = 0
+}
+
+
+export let initialSceneEntities:Map<string, Entity> = new Map()
+export async function showInitialScene(){
+
+    let scene = {...iwbScene}
+    const [x1, y1] = scene.bpcl.split(",")
+    let x = parseInt(x1)
+    let y = parseInt(y1)
+
+    const sceneParent = engine.addEntity()
+    Transform.createOrReplace(sceneParent, {
+        position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16),
+        // rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
+    })
+
+    initialSceneEntities.set(scene.id, sceneParent)
+
+    for(let aid in scene.Gltf){
+        let entity = engine.addEntity()
+        initialSceneEntities.set(aid, entity)
+    }
+
+    for(let aid in scene.Gltf){
+        let gltf = scene.Gltf[aid]
+
+        let entity = initialSceneEntities.get(aid)
+        if(entity){
+            let transform = scene.Transform[aid]
+            GltfContainer.createOrReplace(entity, {
+                src:"assets/" + gltf.src + ".glb", 
+                visibleMeshesCollisionMask: (gltf.visibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltf.visibleCollision].toString())), 
+                invisibleMeshesCollisionMask: (gltf.invisibleCollision === 3 ? ColliderLayer.CL_PHYSICS | ColliderLayer.CL_POINTER : parseInt(Object.values(COLLIDER_LAYERS).filter(value => typeof value === 'number')[gltf.invisibleCollision].toString()))
+            })
+            Transform.createOrReplace(entity, 
+                {
+                    parent:findAssetParent(scene,aid), 
+                    position:transform.p, 
+                    scale:transform.s, 
+                    rotation:Quaternion.fromEulerDegrees(transform.r.x, transform.r.y, transform.r.z)
+                })
+        
+        }
+        
+
+    }
 }

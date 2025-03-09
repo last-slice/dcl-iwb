@@ -37,9 +37,7 @@ import { createUITests } from './tests'
 import { createQuestCreatorPanel } from './Objects/QuestCreatorPanel'
 import { createBannedScreen } from './Objects/BannedScreen'
 import { createCooldownUI } from './Objects/GameCooldownUI'
-import { createBuilderHUDPanel } from '../../dcl-builder-hud/ui/builderpanel'
-import { createWarehouseItemDetailsPanel } from './Objects/WarehouseItemDetails'
-import { createWarehouseUI } from './Objects/WarehouseUI'
+import { createAdminPanel } from './Objects/SceneAdminPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -75,11 +73,12 @@ const uiComponent:any = () => [
   createGameStartUI(),
   createEndGameButton(),
   createLoadingScreen(),
-  createLiveUI(),
+  // createLiveUI(),
   createGameLobbyPanel(),
   createDialogPanel(),
   createTutorialVideoButton(),
   createMainLoadingScreen(),
+  createAdminPanel(),
   // createQuestPanel(),
   // createQuestCreatorPanel(),
   createCooldownUI(),

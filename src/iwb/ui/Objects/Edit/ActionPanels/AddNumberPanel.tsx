@@ -3,6 +3,28 @@ import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgr
 import { sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
+import { colyseusRoom } from '../../../../components/Colyseus'
+import { selectedItem } from '../../StoreView'
+import { COMPONENT_TYPES } from '../../../../helpers/types'
+
+
+let counterVariables:any[] = [] 
+let isVar:boolean = false
+let counterVariable:string = ""
+
+export function updateAddNumberPanel(){
+    counterVariables.length = 0
+    isVar = false
+
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+        if(!scene)  return;
+
+    scene[COMPONENT_TYPES.COUNTER_COMPONENT].forEach((number:any, aid:string)=>{
+        counterVariables.push({aid:aid, name: scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value})
+    })
+
+    counterVariables.unshift({name:"SELECT VARIABLE", aid:""})
+}
 
 export function AddNumberActionPanel(){
     return(
@@ -18,13 +40,88 @@ export function AddNumberActionPanel(){
     >
 
         <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                }}
+                uiText={{value:"Number Type", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+                />
+        
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '15%',
+                    margin:{bottom:'2%'}
+                }}
+                >
+        
+                     <Dropdown
+                            options={["SELECT NUMBER TYPE", "CUSTOM", "VARIABLE"]}
+                            selectedIndex={0}
+                            onChange={(index:number)=>{
+                                if(index == 1){
+                                    isVar = false
+                                    delete newActionData.counter
+                                }
+        
+                                if(index === 2){
+                                    isVar = true
+                                    updateActionData({counter:counterVariable})
+                                }
+                            }}
+                            uiTransform={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            color={Color4.White()}
+                            fontSize={sizeFont(20, 15)}
+                                />
+        </UiEntity>
+        
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '15%',
+                    display: isVar ? "flex" : "none"
+                }}
+                >
+        
+                     <Dropdown
+                            options={[...counterVariables.map((counter:any)=> counter.name)]}
+                            selectedIndex={0}
+                            onChange={(index:number)=>{
+                                if(index !== 0){
+                                    counterVariable = counterVariables[index].aid
+                                    updateActionData({counter:counterVariables[index].aid})
+                                }
+                            }}
+                            uiTransform={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            color={Color4.White()}
+                            fontSize={sizeFont(20, 15)}
+                                />
+        </UiEntity>
+
+        <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
             height: '10%',
-            margin:{bottom:'5%'}
+            margin:{bottom:'5%'},
+              display: isVar ? "none" : "flex"
         }}
         uiText={{value:"Amount", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
         />
@@ -36,6 +133,7 @@ export function AddNumberActionPanel(){
             justifyContent: 'center',
             width: '100%',
             height: '50%',
+              display: isVar ? "none" : "flex"
         }}
     >
         <Input

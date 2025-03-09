@@ -63,6 +63,7 @@ import { removeEditWeapon } from "../ui/Objects/Edit/EditWeapon"
 import { isGameAsset, isLevelAsset } from "../components/Level"
 import { disableRaycast } from "../components/Raycast"
 import { resetPhysicsBuildMode } from "../components/Physics"
+import { setVirtualCameraBuildMode } from "../components/VirtualCamera"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -1454,13 +1455,19 @@ function addUseItemPointers(ent: Entity) {
 export function addBuildModePointers(ent: Entity) {
      //check vehicle pointers
 
-     let aid = getAssetIdByEntity(localPlayer.activeScene, ent)
-     if(localPlayer.activeScene[COMPONENT_TYPES.VEHICLE_COMPONENT].has(aid)){
-        console.log('need to add build mode pointer for vehicle', ent)
-        
-        let vehicleInfo = localPlayer.activeScene[COMPONENT_TYPES.VEHICLE_COMPONENT].get(aid)
-        ent = vehicleInfo.entityRot
-    }
+     try{
+        let aid = getAssetIdByEntity(localPlayer.activeScene, ent)
+        if(localPlayer.activeScene[COMPONENT_TYPES.VEHICLE_COMPONENT].has(aid)){
+           console.log('need to add build mode pointer for vehicle', ent)
+           
+           let vehicleInfo = localPlayer.activeScene[COMPONENT_TYPES.VEHICLE_COMPONENT].get(aid)
+           ent = vehicleInfo.entityRot
+       }
+     }
+     catch(e:any){
+        console.log('error getting asset id by entity', e)
+     }
+
     PointerEvents.deleteFrom(ent)
     PointerEvents.createOrReplace(ent, {
         pointerEvents: [
@@ -1614,6 +1621,7 @@ export function resetEntityForBuildMode(scene:any, entityInfo:any) {
         disablePathingForEntity(scene, entityInfo)
         disableRaycast(scene,entityInfo)
         resetPhysicsBuildMode(scene, entityInfo)
+        setVirtualCameraBuildMode(scene, entityInfo)
     }
     //         resetTweenPositions(entity, sceneItem, scene)//
 }

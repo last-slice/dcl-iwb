@@ -12,6 +12,7 @@ import { Color3, Vector3 } from "@dcl/sdk/math";
 import { getAssetIdByEntity } from "./Parenting";
 import { colyseusRoom, connected, sendServerMessage } from "./Colyseus";
 import { items } from "./Catalog";
+import { localUserId } from "./Player";
 
 export const actionQueue:any[] = []
 export let decisionQueue:any[] = []
@@ -211,6 +212,10 @@ export function triggerListener(scene:any){
         const triggerEvents = getTriggerEvents(info.entity)
         triggerEvents.off("*")
       }
+
+      if(trigger.type === Triggers.ON_CLOCK_TICK){
+        tickSet.delete(info.entity)
+      }
     })
 
 
@@ -406,11 +411,58 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               }
               break
             }
+            case TriggerConditionType.WHEN_STATE_CONTAINS: {
+              const states = States.getOrNull(entity)
+              if (states === null) {
+                return false
+              }else{
+                if(condition.value === "player-user"){
+                  return states.values.includes(localUserId)
+                }else{
+                  return states.values.includes(condition.value)
+                }
+              }
+              break
+            }
+            case TriggerConditionType.WHEN_STATE_NO_CONTAIN: {
+              const states = States.getOrNull(entity)
+              if (states === null) {
+                return false
+              }else{
+                if(condition.value === "player-user"){
+                  return !states.values.includes(localUserId)
+                }else{
+                  return !states.values.includes(condition.value)
+                }
+              }
+              break
+            }
             case TriggerConditionType.WHEN_COUNTER_EQUALS: {
               let counter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
               // console.log('condition counter is', counter)
               if(!counter){
                 return false
+              }
+
+              if(counter.currentValue){
+                if(condition.hasOwnProperty("value")){
+                  console.log('need to compare counter against another counter')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return counter.currentValue === numeric
+                  }
+                }
+                const numeric = Number(condition.counter)
+                if (!isNaN(numeric)) {
+                  return counter.currentValue === numeric
+                }
               }
   
               if(counter.currentValue){
@@ -429,6 +481,20 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               }
   
               if(counter.currentValue){
+                if(condition.hasOwnProperty("value")){
+                  console.log('need to compare counter against another counter')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return counter.currentValue > numeric
+                  }
+                }
                 const numeric = Number(condition.counter)
                 if (!isNaN(numeric)) {
                   return counter.currentValue > numeric
@@ -441,6 +507,28 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               if(!counter){
                 return false
               }
+
+              if(counter.currentValue){
+                if(condition.hasOwnProperty("value")){
+                  console.log('need to compare counter against another counter')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return counter.currentValue < numeric
+                  }
+                }
+                const numeric = Number(condition.counter)
+                if (!isNaN(numeric)) {
+                  return counter.currentValue < numeric
+                }
+              }
+
 
               if(counter.currentValue){
                 const numeric = Number(condition.counter)

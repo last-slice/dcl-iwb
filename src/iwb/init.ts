@@ -2,7 +2,7 @@ import {getPlayer} from "@dcl/sdk/players";
 import { executeTask} from "@dcl/sdk/ecs";
 import { getSceneInformation } from '~system/Runtime'
 import { joinWorld } from "./components/Colyseus";
-import { initOfflineScene, realm, setRealm } from "./components/Config";
+import { initOfflineScene, isGCScene, realm, setRealm, showInitialScene } from "./components/Config";
 import { setupUI } from "./ui/ui";
 import { getPreview } from "./helpers/functions";
 import { setLocalUserId } from "./components/Player";
@@ -56,6 +56,10 @@ function createPlayer(hardwareData:any, player:any){
             if(!sceneJson.iwb) return
             await setRealm(sceneJson, hardwareData.clientUri)
 
+            if(isGCScene()){
+                await showInitialScene()
+            }
+           
             if(sceneJson.iwb.online){
                 joinWorld(realm)
             }else{
