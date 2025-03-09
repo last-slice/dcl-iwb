@@ -5,7 +5,7 @@ import { RealmEntityComponent } from "../helpers/Components"
 import { COMPONENT_TYPES, SCENE_MODES } from "../helpers/types"
 import { addBuildModePointers, confirmGrabItem, removeItem, resetEntityForBuildMode } from "../modes/Build"
 import { checkBillboardComponent } from "./Billboard"
-import { playerMode } from "./Config"
+import { initialSceneEntities, playerMode } from "./Config"
 import { checkCounterComponent } from "./Counter"
 import { checkGLTFComponent } from "./Gltf"
 import { checkMaterialComponent } from "./Materials"
@@ -37,14 +37,24 @@ export function getEntity(scene:any, aid:string){
 }
 
 export function createEntity(item:any){
-  let ent = engine.addEntity()
-  item.entity = ent
+  // let ent = engine.addEntity()
+  // item.entity = ent
 
-  console.log('creating entity', ent)
-  RealmEntityComponent.create(ent)
+  let entity = initialSceneEntities.get(item.aid)
+  if(entity){
+    item.entity = entity
+  }else{
+    entity = engine.addEntity()
+    item.entity = entity
+  }
+
+  
+
+  console.log('creating entity', entity)
+  RealmEntityComponent.create(entity)
 
   if (playerMode === SCENE_MODES.BUILD_MODE) {
-      addBuildModePointers(ent)
+      addBuildModePointers(entity)
   }
 }
 

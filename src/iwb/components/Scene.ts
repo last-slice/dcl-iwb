@@ -25,7 +25,7 @@ import { actionListener } from "./Actions"
 import { runGlobalTrigger, triggerListener } from "./Triggers"
 import { pointerListener } from "./Pointers"
 import { stateListener } from "./States"
-import { isGCScene, localConfig, realm, worlds } from "./Config"
+import { initialSceneEntities, isGCScene, localConfig, realm, worlds } from "./Config"
 import { soundsListener } from "./Sounds"
 import { uiTextListener } from "./UIText"
 import { billboardListener } from "./Billboard"
@@ -185,34 +185,18 @@ async function loadSceneBoundaries(scene:any) {
     console.log('loading scene boundaries', scene)
     scene.entities = []
 
-    // scene.pcls.forEach((parcel: string) => {
-    //     addBoundariesForParcel(parcel, true, scene.n === "Realm Lobby", true)
-    // })
-
-    // create parent entity for scene
-    const [x1, y1] = scene.bpcl.split(",")
-    let x = parseInt(x1)
-    let y = parseInt(y1)
-
-    const sceneParent = engine.addEntity()
-    Transform.createOrReplace(sceneParent, {
-        position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16),
-        // rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
-    })
-
-    // console.log('scene.offsets is', scene.offsets)
-    // let xOffset = scene.offsets[0]
-    // if(xOffset !== 0){
-    //     console.log("scene has offset", scene.offsets)
-    // }
-
-    // let transform = Transform.getMutable(sceneParent).position
-    // transform.x = scene.offsets[0]
-    // transform.z = scene.offsets[1]
-
-    // console.log('scene parent is', Transform.get(sceneParent))
-
-    scene.parentEntity = sceneParent
+    let tempSceneEntity = initialSceneEntities.get(scene.id)
+    if(!tempSceneEntity){
+        const [x1, y1] = scene.bpcl.split(",")
+        let x = parseInt(x1)
+        let y = parseInt(y1)
+    
+        scene.parentEntity = engine.addEntity()
+        Transform.createOrReplace(scene.parentEntity, {
+            position: isGCScene() ? Vector3.Zero() : Vector3.create(x * 16, 0, y * 16),
+            // rotation: Quaternion.fromEulerDegrees(0,scene.direction, 0)
+        })
+    }
 
     // change floor color
     for (const [entity] of engine.getEntitiesWith(Material, SelectedFloor)) {
@@ -220,7 +204,6 @@ async function loadSceneBoundaries(scene:any) {
             albedoColor: Color4.create(.2, .9, .1, 1)
         })
     }
-    // loadSceneAssets(id)
 }
 
 async function addSceneLoadTrigger(scene:any){
@@ -393,7 +376,7 @@ export async function checkScenePermissions() {
 
     if (localPlayer.mode === SCENE_MODES.PLAYMODE) {
         if(isGCScene()){
-            console.log('in genesis city', localPlayer.activeScene)
+            // console.log('in genesis city', localPlayer.activeScene)
             // await handleSceneEntitiesOnEnter(activeScene.id)
         }else{
             if (activeScene) {
