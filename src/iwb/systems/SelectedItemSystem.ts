@@ -6,8 +6,9 @@ import { sendServerMessage } from "../components/Colyseus"
 import { localPlayer } from "../components/Player"
 import { isEntityInScene, createBBForEntity, bbE } from "../helpers/build"
 import { log } from "../helpers/functions"
-import { SCENE_MODES, EDIT_MODES, SERVER_MESSAGE_TYPES } from "../helpers/types"
+import { SCENE_MODES, EDIT_MODES, SERVER_MESSAGE_TYPES, EDIT_MODIFIERS } from "../helpers/types"
 import { grabbedItemDistances, selectedItem } from "../modes/Build"
+import { grabbedModifierType, negativeSystemAdded, positiveSystemAdded } from "./GrabChangeSystems"
 
 let lastPlayerPos: Vector3 | undefined = undefined
 let time = 1
@@ -119,8 +120,15 @@ export function SelectedItemSystem(dt: number) {
             rotation.y = selectedItem.rotation
             selEntityTransform.rotation = Quaternion.fromEulerDegrees(rotation.x, rotation.y, rotation.z)
 
-            selEntityTransform.scale = Vector3.multiply(selEntityTransform.scale, Vector3.create(selectedItem.scale, selectedItem.scale, selectedItem.scale))
-
+            if(selectedItem.mode === EDIT_MODES.GRAB){
+                if(grabbedModifierType === EDIT_MODIFIERS.SCALE){
+                    if(positiveSystemAdded || negativeSystemAdded){
+                        selEntityTransform.scale = Vector3.create(selectedItem.scale, selectedItem.scale, selectedItem.scale)
+                    }
+                }
+            }else{
+                selEntityTransform.scale = Vector3.multiply(selEntityTransform.scale, Vector3.create(selectedItem.scale, selectedItem.scale, selectedItem.scale))
+            }
             selEntityTransform.parent = engine.PlayerEntity
         }
 

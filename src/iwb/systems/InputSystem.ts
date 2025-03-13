@@ -141,7 +141,7 @@ export function InputListenSystem(dt:number){
         }
     }
 
-        //#2//
+        //#2
         if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)) {
             const result = inputSystem.getInputCommand(InputAction.IA_ACTION_4, PointerEventType.PET_DOWN)
             if (result) {
@@ -163,6 +163,7 @@ export function InputListenSystem(dt:number){
             }
         }
         if (inputSystem.isTriggered(InputAction.IA_ACTION_4, PointerEventType.PET_UP)) {
+            console.log('#2 pressed up')
             removePositiveGrabSystem()
         }
     

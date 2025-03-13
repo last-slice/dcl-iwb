@@ -786,9 +786,11 @@ export function dropGrabbedItems(){
 
         // set parent to scene parent
         t.parent = curSceneParent;
-        t.scale = Vector3.One()
-        selectedItem.grabbedTransform ? t.scale = selectedItem.grabbedTransform.s : null
+        t.scale = Vector3.create(selectedItem.scale, selectedItem.scale, selectedItem.scale)
 
+        if(selectedItem.grabbedTransform){
+            t.scale = selectedItem.grabbedTransform.s
+        }
 
         console.log('t is', t)
 

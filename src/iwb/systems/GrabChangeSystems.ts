@@ -2,8 +2,8 @@ import { engine } from "@dcl/sdk/ecs"
 import { EDIT_MODES, EDIT_MODIFIERS } from "../helpers/types"
 import { selectedItem } from "../modes/Build"
 
-let positiveSystemAdded = false
-let negativeSystemAdded = false
+export let positiveSystemAdded = false
+export let negativeSystemAdded = false
 let time = 0
 
 export let grabbedModifierType = EDIT_MODIFIERS.POSITION
@@ -22,14 +22,14 @@ export function addPositiveGrabSystem(){
     if(!positiveSystemAdded){
         positiveSystemAdded = true
         engine.addSystem(GrabChangePositiveSystem)
+        time = 0
     }
 }
 
 export function removePositiveGrabSystem(){
     engine.removeSystem(GrabChangePositiveSystem)
     positiveSystemAdded = false
-    time = 0
-    console.log('removing positive grab system')
+    time = 500
 }
 
 export function GrabChangePositiveSystem(dt:number){
@@ -48,7 +48,7 @@ export function GrabChangePositiveSystem(dt:number){
                     break;
 
                 case EDIT_MODIFIERS.SCALE:
-                    selectedItem.scale += 0.1
+                    selectedItem.scale += 0.05
                     break;
             }
         }
@@ -59,13 +59,14 @@ export function addNegativeGrabSystem(){
     if(!negativeSystemAdded){
         negativeSystemAdded = true
         engine.addSystem(GrabChangeNegativeSystem)
+        time = 0
     }
 }
 
 export function removeNegativeGrabSystem(){
     engine.removeSystem(GrabChangeNegativeSystem)
     negativeSystemAdded = false
-    time = 0
+    time = 500
 }
 
 export function GrabChangeNegativeSystem(dt:number){
@@ -84,7 +85,7 @@ export function GrabChangeNegativeSystem(dt:number){
                     break;
 
                 case EDIT_MODIFIERS.SCALE:
-                    selectedItem.scale -= 0.1
+                    selectedItem.scale -= 0.05
                     break;
             }
         }
