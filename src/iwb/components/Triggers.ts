@@ -372,9 +372,17 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
-          // console.log('checking condition', condition)
-          // console.log('checking trigger event', triggerEvent)
+          console.log('checking condition', condition)
+          console.log('checking trigger event', triggerEvent)
           switch (condition.condition) {
+            case TriggerConditionType.WHEN_QUEST_ID_IS: {
+              return triggerEvent.questId === condition.value
+            }
+
+            case TriggerConditionType.WHEN_TASK_ID_IS: {
+              return triggerEvent.taskId === condition.value
+            }
+
             case TriggerConditionType.WHEN_ENTITY_IS: {
               return triggerEvent.aid === condition.aid
             }

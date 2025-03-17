@@ -20,6 +20,8 @@ let batchActions:any[] = []
 
 let updated = false
 
+let editData:any
+
 export function releaseBatchActions(){
     updated = false
 }
@@ -40,13 +42,31 @@ export function updateEntityActions(aid:string){
     console.log('entity actions are ', entitiesWithActions,batchActions)
 }
 
-export function updateEntitiesWithActions(){
+export function updateEntitiesWithActions(data?:any){
     if(!updated){
+        editData = undefined
         updated = true
         entities.length = 0
         entities = getAllAssetNames(selectedItem.sceneId)
         batchActions.length = 0
         console.log('updatnig entites wit hactions')
+
+        if(data){
+            editData = data
+            let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+            if(!scene) return
+
+            data.actions.forEach((actionId:string)=>{
+                scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+                    if(actionComponent && actionComponent.actions.length > 0){
+                        let action = actionComponent.actions.find((action:any)=> action.id === actionId)
+                        if(action){
+                            batchActions.push(action)
+                        }
+                    }
+                })
+            })
+        }
     }
 }
 
@@ -225,7 +245,6 @@ function setData(value:any){
 function getBatchActionList(){
     let arr:any[] = []
     let count = 0
-    console.log('batch actions are a', batchActions)
     for(let i = 0; i < batchActions.length; i++){
         let action = batchActions[i]
         if(action){

@@ -4,6 +4,17 @@ import { getImageAtlasMapping, sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
 
+
+let editData:any = undefined
+
+
+export function updateActionRandomNumber(data?:any){
+    if(data){
+        editData = data
+    }
+}
+
+
 export function AddRandomNumberPanel(){
     return(
         <UiEntity
@@ -49,10 +60,17 @@ export function AddRandomNumberPanel(){
     >
         <Input
             onChange={(value) => {
-                updateActionData({min: parseFloat(value.trim())}, true)
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum)) return
+                updateActionData({min:editNum}, true)
+            }}
+            onSubmit={(value) => {
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum)) return
+                updateActionData({min:editNum}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'1'}
+            placeholder={editData ? "" + editData.min : '1'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -95,10 +113,17 @@ export function AddRandomNumberPanel(){
     >
         <Input
             onChange={(value) => {
-                updateActionData({max: parseFloat(value.trim())}, true)
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum)) return
+                updateActionData({max:editNum}, true)
+            }}
+            onSubmit={(value) => {
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum)) return
+                updateActionData({max:editNum}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'10'}
+            placeholder={editData ? "" + editData.max : '10'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{

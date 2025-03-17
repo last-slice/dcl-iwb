@@ -11,6 +11,15 @@ let selectedQuestIndex:number = 0
 let updated = false
 let quests:any[] = []
 
+let editData:any = undefined
+export function updateQuestStartPanel(data?:any){
+    editData = undefined
+    
+    if(data){
+        editData = data
+    }
+}
+
 export function releaseQuestAction(){
     updated = false
     selectedQuestIndex = 0
@@ -50,7 +59,7 @@ export function AddQuestStartPanel(){
         // uiBackground={{color:Color4.Green()}}//
     >
 
-        <UiEntity
+        {/* <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -87,7 +96,37 @@ export function AddQuestStartPanel(){
         color={Color4.White()}
         fontSize={sizeFont(20, 15)}
             />
-        </UiEntity>
+        </UiEntity> */}
+
+
+        <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '10%',
+                    margin:{bottom:'1%'},
+                }}
+                uiText={{value:"Enter Quest Id", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+                />
+        
+          <Input
+                    onChange={(value) => {
+                        updateActionData({actionId:value.trim()})
+                    }}
+                    onSubmit={(value) => {
+                        updateActionData({actionId:value.trim()})
+                    }}
+                    fontSize={sizeFont(20,15)}
+                    placeholder={editData ? "" + editData.actionId : 'Enter Quest Id'}
+                    placeholderColor={Color4.White()}
+                    color={Color4.White()}
+                    uiTransform={{
+                        width: '100%',
+                        height: '15%',
+                    }}
+                    ></Input>        
     </UiEntity>
     )
 }

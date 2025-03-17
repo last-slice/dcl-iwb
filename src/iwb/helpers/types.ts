@@ -554,7 +554,8 @@ export enum Triggers {
     ON_PHYSICS_ENABLED = 'on_physics_enabled',
     ON_PHYSICS_DISABLED = 'on_physics_disabled',
     ON_QUEST_START = 'on_quest_start',
-    ON_QUEST_STEP = 'on_quest_step',
+    ON_QUEST_UPDATE = 'on_quest_update',
+    ON_QUEST_ENDED  = 'on_quest_end',
     ON_QUEST_COMPLETE = 'on_quest_complete',
     ON_VEHICLE_ACCELERATE = 'on_vehicle_accelerate',
     ON_VEHICLE_DECELERATE = 'on_vehicle_decelerate',
@@ -585,7 +586,10 @@ export enum TriggerConditionType {
     WHEN_TIME_EQUALS = 'when_utc_time_equals',
     WHEN_TIME_IS_GREATER_THAN = 'when_utc_time_is_greater_than',
     WHEN_TIME_IS_LESS_THAN = 'when_utc_time_is_less_than',
-    WHEN_ENTITY_IS = 'when_entity_is'
+    WHEN_ENTITY_IS = 'when_entity_is',
+    WHEN_QUEST_ID_IS = "when_quest_id_is",
+    WHEN_TASK_ID_IS = "when_task_id_is",
+    
   }
 
 export enum TriggerConditionOperation {

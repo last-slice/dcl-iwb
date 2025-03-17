@@ -12,6 +12,13 @@ let counterVariables:any[] = []
 let isVar:boolean = false
 let counterVariable:string = ""
 
+let editData:any = undefined
+export function updateActionAddNumber(data?:any){
+    if(data){
+        editData = data
+    }
+}
+
 export function updateAddNumberPanel(){
     counterVariables.length = 0
     isVar = false
@@ -33,9 +40,9 @@ export function AddNumberActionPanel(){
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             width: '100%',
-            height: 'auto',
+            height: '100%',
         }}
     >
 
@@ -45,7 +52,7 @@ export function AddNumberActionPanel(){
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    height: '10%',
+                    height: '15%',
                 }}
                 uiText={{value:"Number Type", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
                 />
@@ -138,6 +145,9 @@ export function AddNumberActionPanel(){
     >
         <Input
             onChange={(value) => {
+                updateActionData({value:  parseFloat(value.trim())}, true)
+            }}
+            onSubmit={(value) => {
                 updateActionData({value:  parseFloat(value.trim())}, true)
             }}
             fontSize={sizeFont(20,15)}

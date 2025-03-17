@@ -4,6 +4,15 @@ import { sizeFont } from '../../../helpers'
 import { newActionData, updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
 
+let editData:any = undefined
+
+
+export function updateActionVolumeSet(data?:any){
+    if(data){
+        editData = data
+    }
+}
+
 export function AddVolumeSetPanel(){
     return(
         <UiEntity
@@ -23,7 +32,7 @@ export function AddVolumeSetPanel(){
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            height: '10%',
+            height: '12%',
             margin:{bottom:'5%'}
         }}
         uiText={{value:"Set Volume (must be between 0 - 1)", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
@@ -40,10 +49,17 @@ export function AddVolumeSetPanel(){
     >
         <Input
             onChange={(value) => {
-                updateActionData({value:  parseFloat(value.trim())}, true)
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum)) return
+                updateActionData({value:editNum}, true)
+            }}
+            onSubmit={(value) => {
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum)) return
+                updateActionData({value:editNum}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'0'}
+            placeholder={editData ? "" + editData.value : '0'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{

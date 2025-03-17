@@ -12,6 +12,15 @@ let selectedQuestActions:any[] = []
 let displayQuestActions = false
 let updated = false
 
+let editData:any = undefined
+export function updateQuestActionPanel(data?:any){
+    editData = undefined
+    
+    if(data){
+        editData = data
+    }
+}
+
 export function releaseQuestAction(){
     updated = false
     selectedQuestIndex = 0
@@ -62,7 +71,95 @@ export function AddQuestActionPanel(){
         // uiBackground={{color:Color4.Green()}}//
     >
 
-        <UiEntity
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%'},
+        }}
+        uiText={{value:"Enter Quest Id", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+  <Input
+            onChange={(value) => {
+                updateActionData({actionId:value.trim()})
+            }}
+            onSubmit={(value) => {
+                updateActionData({actionId:value.trim()})
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={editData ? editData.actionId : 'Enter Quest Id'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '15%',
+            }}
+            ></Input>
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%'},
+        }}
+        uiText={{value:"Enter Step Id", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+  <Input
+            onChange={(value) => {
+                updateActionData({game:value.trim()})
+            }}
+            onSubmit={(value) => {
+                updateActionData({game:value.trim()})
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={editData ? editData.game : 'Enter Step Id'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '15%',
+            }}
+            ></Input>
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'1%', top:'3%'},
+        }}
+        uiText={{value:"Enter Task Id", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
+
+  <Input
+            onChange={(value) => {
+                updateActionData({message:value.trim()})
+            }}
+            onSubmit={(value) => {
+                updateActionData({message:value.trim()})
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={editData ? editData.message : 'Enter Task Id'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '100%',
+                height: '15%',
+            }}
+            ></Input>
+
+
+        {/* <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -72,9 +169,9 @@ export function AddQuestActionPanel(){
             margin:{bottom:'1%'}
         }}
         uiText={{value:"Choose Quest", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
-        />
+        /> */}
 
-        <UiEntity
+        {/* <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -99,10 +196,10 @@ export function AddQuestActionPanel(){
         color={Color4.White()}
         fontSize={sizeFont(20, 15)}
             />
-        </UiEntity>
+        </UiEntity> */}
 
 
-        <UiEntity
+        {/* <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -113,9 +210,9 @@ export function AddQuestActionPanel(){
             display: displayQuestActions ? "flex" : "none"
         }}
         uiText={{value:"Choose Quest Action", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
-        />
+        /> */}
 
-        <UiEntity
+        {/* <UiEntity
         uiTransform={{
             flexDirection: 'column',
             alignItems: 'center',
@@ -140,7 +237,7 @@ export function AddQuestActionPanel(){
         color={Color4.White()}
         fontSize={sizeFont(20, 15)}
             />
-        </UiEntity>
+        </UiEntity> */}
     </UiEntity>
     )
 }

@@ -42,6 +42,7 @@ import { isGCScene } from "../components/Config"
 import { isGameAsset, isLevelAsset } from "../components/Level"
 import { disablePhysicsPlayMode, setPhysicsPlayMode } from "../components/Physics"
 import { setVirtualCameraPlayMode } from "../components/VirtualCamera"
+import { checkForQuests, closeSceneQuests } from "../components/Quests"
 
 export let entitiesWithPathingEnabled:Map<Entity, any> = new Map()
 export let cameraForce:Entity
@@ -71,6 +72,7 @@ export async function handleSceneEntitiesOnLeave(sceneId:string){
                 }
             }
         })
+        closeSceneQuests(scene)
         globalEmitter.emit(Triggers.ON_LEAVE_SCENE, {input:0, pointer:0,sceneId:scene.id})
     }
 }
@@ -128,6 +130,7 @@ export async function handleSceneEntitiesOnEnter(sceneId:string){
                 }
             }
         })
+        checkForQuests(scene)
         globalEmitter.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, sceneId:scene.id})
     }
 }

@@ -98,7 +98,7 @@ export async function createPlayer(player:any){
     await checkWorldPermissions()
    
     await addPlayerTrigger()
-    await initQuestClients()
+    // await initQuestClients()
 
     // addTestVehicle()
     

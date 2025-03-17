@@ -8,18 +8,16 @@ import { colyseusRoom } from '../../../../components/Colyseus'
 import { items } from '../../../../components/Catalog'
 
 let animations:any[] = []
+let loopTypes:string[] = ["Select Loop", "Play Once", "Loop"]
 let animation:string = ""
 let selectedIndex = 0
+let loopIndex = 0
 
 let updated = false
 
-export function updateAssetAnimations(reset?:boolean){
-    if(reset){
-        selectedIndex = 0
-        updated = false
-        return
-    }
+let editData:any
 
+export function updateAssetAnimations(data?:any){
     if(updated){
         return
     }
@@ -30,6 +28,7 @@ export function updateAssetAnimations(reset?:boolean){
     }
 
     selectedIndex = 0
+    loopIndex = 0
 
     let catalogItem = items.get(selectedItem.catalogId)
     if(catalogItem && catalogItem.anim){
@@ -39,6 +38,15 @@ export function updateAssetAnimations(reset?:boolean){
         // console.log('item has animations', animations)
         animation = animations[selectedIndex]
     }
+
+    if(data){
+        editData = data
+        selectedIndex = animations.findIndex((anim:any)=> anim === data.anim)
+        loopIndex = data.hasOwnProperty('loop') ? 2 : 1
+    }else{
+        editData = undefined
+    }
+
     return
 }
 
@@ -133,8 +141,8 @@ export function AddAnimationActionPanel(){
         }}
     >
         <Dropdown
-        options={["Select Loop", "Play Once", "Loop"]}
-        selectedIndex={0}
+        options={loopTypes}
+        selectedIndex={loopIndex}
         onChange={selectLoop}
         uiTransform={{
             width: '100%',
@@ -196,7 +204,7 @@ export function AddAnimationActionPanel(){
                 updateActionData({speed:isNaN(speed) ? 1 : speed})
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'Enter Speed (number > 0)'}
+            placeholder={editData ? '' + editData.speed : 'Enter Speed (number > 0)'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -223,5 +231,8 @@ function selectAnimation(index:number){
 }
 
 function selectLoop(index:number){
-    updateActionData({loop:index <= 1 ? false : true, anim:animation, name:newActionData.name, type:newActionData.type}, true)
+    loopIndex = index
+    if(loopIndex > 0){
+        updateActionData({loop:index <= 1 ? false : true, anim:animation, name:newActionData.name, speed:newActionData.speed, type:newActionData.type}, true)
+    }
 }

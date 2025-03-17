@@ -64,6 +64,7 @@ import { isGameAsset, isLevelAsset } from "../components/Level"
 import { disableRaycast } from "../components/Raycast"
 import { resetPhysicsBuildMode } from "../components/Physics"
 import { setVirtualCameraBuildMode } from "../components/VirtualCamera"
+import { resetEditActionPanel } from "../ui/Objects/Edit/EditAction"
 
 export let editAssets: Map<string, Entity> = new Map()
 export let grabbedAssets: Map<string, Entity> = new Map()
@@ -742,6 +743,7 @@ export function resetAdditionalAssetFeatures(){
     clearAssetPhysicsData()
     clearEditVehicleData()
     removeEditWeapon()
+    resetEditActionPanel()
 }
 
 export function dropGrabbedItems(){

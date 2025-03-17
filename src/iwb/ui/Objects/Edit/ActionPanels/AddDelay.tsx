@@ -19,6 +19,7 @@ let selectedActionIndex:number = 0
 let batchActions:any[] = []
 
 let updated = false
+let editData:any = undefined
 
 export function releaseRandomActions(){
     updated = false
@@ -41,13 +42,32 @@ export function updateRandomEntityActions(aid:string){
     // console.log('entity actions are ', entitiesWithActions,batchActions)
 }
 
-export function updateDelayEntitiesWithActions(){
+export function updateDelayEntitiesWithActions(data?:any){
     if(!updated){
+        editData = undefined
         updated = true
         entities.length = 0
         entities = getAllAssetNames(selectedItem.sceneId)
         batchActions.length = 0
         console.log('updatnig entites wit hactions')
+
+        if(data){
+            editData = data
+
+            let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+            if(!scene) return
+
+            data.actions.forEach((actionId:string)=>{
+                scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+                    if(actionComponent && actionComponent.actions.length > 0){
+                        let action = actionComponent.actions.find((action:any)=> action.id === actionId)
+                        if(action){
+                            batchActions.push(action)
+                        }
+                    }
+                })
+            })
+        }
     }
 }
 
@@ -89,10 +109,18 @@ export function AddDelayActionPanel(){
     >
         <Input
             onChange={(value) => {
-                updateActionData({timer: parseFloat(value.trim())}, true)
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum))  return
+                updateActionData({timer: editNum}, true)
+            }}
+
+            onSubmit={(value) => {
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum))  return
+                updateActionData({timer: editNum}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'' + newActionData.timer}
+            placeholder={editData ? "" + editData.timer : '' + newActionData.timer}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -250,7 +278,6 @@ function setData(value:any){
 function getBatchActionList(){
     let arr:any[] = []
     let count = 0
-    console.log('random actions are a', batchActions)
     for(let i = 0; i < batchActions.length; i++){
         let action = batchActions[i]
         if(action){

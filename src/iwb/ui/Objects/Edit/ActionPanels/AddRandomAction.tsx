@@ -20,6 +20,8 @@ let batchActions:any[] = []
 
 let updated = false
 
+let editData:any
+
 export function releaseRandomActions(){
     updated = false
 }
@@ -40,13 +42,32 @@ export function updateRandomEntityActions(aid:string){
     console.log('entity actions are ', entitiesWithActions,batchActions)
 }
 
-export function updateEntitiesWithRandomActions(){
+export function updateEntitiesWithRandomActions(data?:any){
     if(!updated){
         updated = true
+        selectedEntityIndex = 0
         entities.length = 0
         entities = getAllAssetNames(selectedItem.sceneId)
         batchActions.length = 0
         console.log('updatnig entites wit hactions')
+        editData = undefined
+
+        if(data){
+            editData = data
+            let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+            if(!scene) return
+
+            data.actions.forEach((actionId:string)=>{
+                scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+                    if(actionComponent && actionComponent.actions.length > 0){
+                        let action = actionComponent.actions.find((action:any)=> action.id === actionId)
+                        if(action){
+                            batchActions.push(action)
+                        }
+                    }
+                })
+            })
+        }
     }
 }
 
@@ -91,7 +112,7 @@ export function AddRandomActionPanel(){
     <Dropdown
         // options={[...["Select Entity"], ...getEntityList()]}
         options={[...["Select Entity"], ...entities.map($=> $.name)]}
-        selectedIndex={0}
+        selectedIndex={selectedEntityIndex}
         onChange={selectEntityIndex}
         uiTransform={{
             width: '100%',

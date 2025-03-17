@@ -37,6 +37,8 @@ import { removePlayingVideo, setPlayingVideo } from "./Videos"
 import { world } from "../physics"
 import { checkPhysicsBody, removePhysicsBody, resetCannonBody, updateContactMaterial } from "./Physics"
 import { getPlayer } from "@dcl/sdk/players"
+import { questConnections } from "./Quests"
+import { Room } from "colyseus.js"
 
 const actions =  new Map<Entity, Emitter<Record<Actions, void>>>()
 
@@ -1939,12 +1941,32 @@ function handleEnablePhysics(scene:any, info:any, action:any){
 
 function handleQuestStart(scene:any, info:any, action:any){
     console.log('handling start quest', action)
-    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_START, quest:{id:action.text}, sceneId:scene.id})
+    // sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_START, quest:{id:action.text}, sceneId:scene.id})
+
+    let questConnection:any = questConnections.get(action.actionId)
+    if(!questConnection) return;
+
+    try{
+        questConnection.send(Actions.QUEST_START.toUpperCase(), {questId:action.actionId})
+    }
+    catch(e:any){
+        console.log('error sending quest action ', e)
+    }
 }
 
 function handleQuestAction(scene:any, info:any, action:any){
     console.log('handling quest action', action)
-    sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_ACTION, quest:{id:action.text, stepId:action.actionId}, sceneId:scene.id})
+    // sendServerMessage(SERVER_MESSAGE_TYPES.QUEST_ACTION, {action:Actions.QUEST_ACTION, quest:{id:action.text, stepId:action.actionId}, sceneId:scene.id})
+
+    let questConnection:any = questConnections.get(action.actionId)
+    if(!questConnection) return;
+
+    try{
+        questConnection.send(Actions.QUEST_ACTION.toUpperCase(), {metaverse:'DECENTRALAND', taskId:action.message, stepId:action.game, questId:action.actionId})
+    }
+    catch(e:any){
+        console.log('error sending quest action ', e)
+    }
 }
 
 function handleVehicleEntry(scene:any, info:any, action:any){

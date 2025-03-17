@@ -3,12 +3,16 @@ import { createQuestsClient, QuestInstance } from '@dcl/quests-client'
 import { createQuestHUD } from '@dcl/quests-client/dist/hud'
 import { localPlayer } from './Player'
 import { showNotification } from '../ui/Objects/NotificationPanel'
-import { COMPONENT_TYPES, NOTIFICATION_TYPES, PlayerQuest, PrerequisiteType, Quest, QUEST_PREREQUISITES, QuestStep, SERVER_MESSAGE_TYPES, StepCompletionPrerequisite, Triggers } from '../helpers/types'
+import { Actions, COMPONENT_TYPES, NOTIFICATION_TYPES, PlayerQuest, PrerequisiteType, Quest, QUEST_PREREQUISITES, QuestStep, SERVER_MESSAGE_TYPES, StepCompletionPrerequisite, Triggers } from '../helpers/types'
 import { Player } from '~system/Players'
 import { updateQuestPanel } from '../ui/Objects/QuestPanel'
 import { colyseusRoom, sendServerMessage } from './Colyseus'
 import { runGlobalTrigger, runSingleTrigger } from './Triggers'
 import { getEntity } from './iwb'
+import { Client, Room } from 'colyseus.js'
+import resources from '../helpers/resources'
+import { getRealm } from '~system/Runtime'
+import { engine } from '@dcl/sdk/ecs'
 
 // const serviceUrl = 'wss://quests-rpc.decentraland.zone'//
 const serviceUrl = 'wss://quests-rpc.decentraland.org'
@@ -318,4 +322,113 @@ export function handlePlayerCompleteQuest(questId:string){
     return
   }
   runSingleTrigger(entityInfo, Triggers.ON_QUEST_COMPLETE, {input:0, pointer:0, quest:localQuest.aid})
+}
+
+
+export let questConnections:Map<string, Room> = new Map()
+
+export function checkForQuests(scene:any){
+  console.log('checking for quests')
+
+  scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((action:any, aid:string)=>{
+    console.log('scene action is', action)
+
+    let questActions:any[] = action.actions.filter((action:any)=> action.type === Actions.QUEST_ACTION || action.type === Actions .QUEST_START)
+    console.log('qeust aciont', questActions)
+
+    for(let i = 0; i < questActions.length; i++){
+      let action = questActions[i]
+      if(!pendingQuestConnections.includes(action.actionId)){
+        pendingQuestConnections.push({scene, questId:action.actionId})
+      }
+    }
+  })
+
+  engine.addSystem(CheckPendingQuestConnectionsSystem)
+}
+
+export function closeSceneQuests(scene:any){
+  questConnections.forEach((questConnection:Room, questId:string)=>{
+    questConnection.leave()
+  })  
+  questConnections.clear()
+  engine.removeSystem(CheckPendingQuestConnectionsSystem)
+  pendingQuestConnections.length = 0
+  pendingQuestConnection = false
+}
+
+function setQuestListeners(scene:any, room:Room){
+  room.onMessage("ERROR", (info:any)=>{
+    console.log('quest error ', info)
+  })
+
+  room.onMessage("QUEST_STARTED", (info:any)=>{
+    console.log('started quest ', info)
+    runGlobalTrigger(scene, Triggers.ON_QUEST_START, {input:0, pointer:0, entity:0, questId:info.questId})
+  })
+
+  room.onMessage("QUEST_COMPLETE", (info:any)=>{
+    console.log('complete quest ', info)
+    runGlobalTrigger(scene, Triggers.ON_QUEST_COMPLETE, {input:0, pointer:0, entity:0, questId:info.questId})
+  })
+
+  room.onMessage("QUEST_END", (info:any)=>{
+    console.log('ended quest ', info)
+    runGlobalTrigger(scene, Triggers.ON_QUEST_ENDED, {input:0, pointer:0, entity:0, questId:info.questId})
+  })
+
+  room.onMessage("QUEST_UPDATE", (info:any)=>{
+    console.log('update quest ', info)
+    runGlobalTrigger(scene, Triggers.ON_QUEST_UPDATE, {input:0, pointer:0, entity:0, questId:info.questId, taskId:info.taskId})
+  })
+
+  room.onMessage("QUEST_DATA", (info:any)=>{
+    console.log('quest data', info)
+    // runGlobalTrigger(scene, Triggers.ON_QUEST_UPDATE, {input:0, pointer:0, entity:0, questId:info.questId, taskId:info.taskId})
+  })
+
+  room.onError((code:number, message?:string)=>{
+    console.log('QUEST_ROOM_ERROR', code, message)
+  })
+}
+
+let pendingQuestConnections:any[] = []
+let pendingQuestConnection:boolean = false
+function CheckPendingQuestConnectionsSystem(dt:number){
+  if(pendingQuestConnections.length > 0){
+    if(!pendingQuestConnection){
+      pendingQuestConnection = true
+      let questInfo = pendingQuestConnections.shift()
+      makeQuestConnection(questInfo)
+    }
+  }else{
+    engine.removeSystem(CheckPendingQuestConnectionsSystem)
+  }
+}
+
+async function makeQuestConnection(questInfo:any){
+  const {scene, questId} = questInfo
+
+  if(!questConnections.has(questId)){
+    console.log('need to start a new quest connection for quest id', questId)
+    let realm = await getRealm({})
+
+    let options:any = {
+      userId:localPlayer.dclData.userId,
+      name:localPlayer.dclData.name,
+      realm:realm.realmInfo?.baseUrl,
+      questId:questId
+    }
+    
+    let client = new Client(resources.DEBUG ? resources.endpoints.questSystemTest : resources.endpoints.questSystemProd)
+    try {
+        let room:Room =  await client.joinOrCreate("angzaar_questing", options);
+        questConnections.set(questId, room)
+        setQuestListeners(scene, room)
+        console.log('connected to queset room', questId)
+    } catch (e:any) {
+        console.log('error connecting to quest system', e)
+    }
+    pendingQuestConnection = false
+  }
 }

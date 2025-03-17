@@ -10,8 +10,8 @@ import { resetAdditionalAssetFeatures, selectedItem } from '../../../modes/Build
 import { visibleComponent } from '../EditAssetPanel'
 import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
-import { AddNumberActionPanel, updateAddNumberPanel } from './ActionPanels/AddNumberPanel'
-import { AddLinkActionPanel } from './ActionPanels/AddLinkPanel'
+import { AddNumberActionPanel, updateActionAddNumber, updateAddNumberPanel } from './ActionPanels/AddNumberPanel'
+import { AddLinkActionPanel, updateActionOpenLink } from './ActionPanels/AddLinkPanel'
 import { AddEmoteActionPanel } from './ActionPanels/AddEmotePanel'
 import { AddVisibilityActionPanel } from './ActionPanels/AddVisibilityPanel'
 import { AddAnimationActionPanel, updateAssetAnimations } from './ActionPanels/AddAnimationPanel'
@@ -25,32 +25,34 @@ import { AddSetRotationPanel, addsetRotationEntity, resetSetRotationEntity } fro
 import { AddSetStatePanel, updateEntityStates } from './ActionPanels/AddStatePanel'
 import { AddSetNumberActionPanel, updateAddSetNumberPanel } from './ActionPanels/AddSetNumberPanel'
 import { AddSubtractNumberActionPanel, updateSubractNumberPanel } from './ActionPanels/AddSubtractNumberPanel'
-import { AddShowNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
+import { AddShowNotificationPanel, updateActionNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
 import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
-import { AddRandomActionPanel, updateEntitiesWithRandomActions } from './ActionPanels/AddRandomAction'
+import { AddRandomActionPanel, updateEntitiesWithRandomActions, updateRandomEntityActions } from './ActionPanels/AddRandomAction'
 import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
 import { addTweenActionEntity, AddTweenActionPanel } from './ActionPanels/AddTweenPanel'
-import { AddTeleport } from './ActionPanels/AddTeleportPanel'
+import { AddTeleport, updateActionTeleportPlayer } from './ActionPanels/AddTeleportPanel'
 import { AddDelayActionPanel, updateDelayEntitiesWithActions } from './ActionPanels/AddDelay'
 import { AddPopupPanel, showPopupPanel } from './ActionPanels/AddPopupPanel'
-import { AddRandomNumberPanel } from './ActionPanels/AddRandomNumberPanel'
-import { AddVolumeUpPanel } from './ActionPanels/AddVolumeUpPanel'
+import { AddRandomNumberPanel, updateActionRandomNumber } from './ActionPanels/AddRandomNumberPanel'
+import { AddVolumeUpPanel, updateActionVolumeUp } from './ActionPanels/AddVolumeUpPanel'
 import { AddFollowPathPanel } from './ActionPanels/AddFollowPathPanel'
-import { AddQuestActionPanel, updateQuests } from './ActionPanels/AddQuestAction'
+import { AddQuestActionPanel, updateQuestActionPanel, updateQuests } from './ActionPanels/AddQuestAction'
 import { AddCameraChangelPanel } from './ActionPanels/AddChangeCameraPanel'
 import { AddCameraForcePanel } from './ActionPanels/AddForceCameraPanel'
 import { AddPlayerEquipWeaponPanel } from './ActionPanels/AddPlayerEquipWeaponPanel'
-import { AddQuestStartPanel, updateQuestsList } from './ActionPanels/AddQuestStart'
+import { AddQuestStartPanel, updateQuestsList, updateQuestStartPanel } from './ActionPanels/AddQuestStart'
 import { quests } from '../../../components/Quests'
 import { AddVerifyAccessPanel, resetVerify } from './ActionPanels/AddVerifyPanel'
-import { AddSetText, resetAddSetText } from './ActionPanels/AddSetText'
+import { AddSetText, resetAddSetText, updateActionSetText } from './ActionPanels/AddSetText'
 import { AddInputModifierActionPanel, resetInputModifierActionPanel } from './ActionPanels/AddInputFreezePanel'
 import { AddSetGravityPanel } from './ActionPanels/AddSetGravityPanel'
 import { AddUpdatePhysicsMaterial, updateAllContactMaterials } from './ActionPanels/AddUpdatePhysicsMaterial'
 import { AddUpdatePhysicsMass } from './ActionPanels/AddUpdatePhysicsMass'
+import { updateActionVolumeSet } from './ActionPanels/AddVolumeSetPanel'
 
 export let actionView = "main"
+export let editing = false
 export let currentAddActionPanel:string = ""
 export let newActionData:any = {}
 
@@ -58,6 +60,12 @@ export let newActionIndex:number = 0
 export let newActionPipelineIndex:number = 0
 
 let actionPipelines:any[] = ["Individual", "Everyone"]
+
+export function resetEditActionPanel(){
+    actionView = "main"
+    newActionIndex = 0
+    editing = false
+}
 
 export function updateActionView(value:string){
     actionView = value
@@ -69,6 +77,7 @@ export function updateActionView(value:string){
     if(actionView === "add"){
         newActionIndex = 0
         newActionPipelineIndex = 0
+        editing = false
     }
 }
 
@@ -212,7 +221,7 @@ export function EditAction(){
 
                 <Dropdown
                     options={getActionList()}
-                    selectedIndex={0}
+                    selectedIndex={newActionIndex}
                     onChange={selectNewActionIndex}
                     uiTransform={{
                         width: '100%',
@@ -241,7 +250,7 @@ export function EditAction(){
                 newActionData.name = value.trim()
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'Enter Action Name'}
+            placeholder={editing ? "" + newActionData.name : 'Enter Action Name'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -338,7 +347,7 @@ export function EditAction(){
                 },
                 uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
             }}
-            uiText={{value: "Add Action", fontSize: sizeFont(20, 16)}}
+            uiText={{value: editing ? "Save Edits" : "Add Action", fontSize: sizeFont(20, 16)}}
             onMouseDown={() => {
                 setUIClicked(true)
                 buildAction()
@@ -427,6 +436,36 @@ export function ActionRow(info:any){
                 height: '100%',
             }}
             >
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).width,
+                    height: calculateImageDimensions(1.5, getAspect(uiSizes.trashButton)).height,
+                    margin:{right:"1%"}
+                }}
+                uiBackground={{
+                    textureMode: 'stretch',
+                    texture: {
+                        src: 'assets/atlas1.png'
+                    },
+                    uvs: getImageAtlasMapping(uiSizes.pencilEditIcon)
+                }}
+                onMouseDown={() => {
+                    console.log('editing action data', data)
+                    let editActionIndex = getActionList().findIndex((action:any)=> action === data.type.replace(/_/g, ' ').replace(/\b\w/g, (char:any) => char.toUpperCase()))
+                    if(editActionIndex >=0){
+                        updateActionView("add")
+                        newActionIndex = editActionIndex
+                        editing = true
+
+                        newActionData = {...data}
+                        chooseActionPanelToEdit(data)
+                    }
+                }}
+            />
 
             <UiEntity
                 uiTransform={{
@@ -592,6 +631,143 @@ function getActionDataPanel(){
     }
 }
 
+function chooseActionPanelToEdit(data:any){
+    switch(data.type.replace(/_/g, ' ').replace(/\b\w/g, (char:any) => char.toUpperCase())){
+        case Actions.ADD_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionAddNumber(data)//
+            break;
+
+        case Actions.SET_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetNumberActionPanel/>
+
+        case Actions.SUBTRACT_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSubtractNumberActionPanel/>
+
+        case Actions.OPEN_LINK.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionOpenLink(data)
+            break;
+
+        case Actions.EMOTE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddEmoteActionPanel/>
+
+        case Actions.SET_VISIBILITY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddVisibilityActionPanel/>
+
+        case Actions.SHOW_TEXT.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddShowTextPanel/>
+
+        case Actions.PLAY_ANIMATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            console.log("editing animation panel")
+            updateAssetAnimations(data)
+            return
+
+        case Actions.ATTACH_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddAttachPlayerPanel/>
+
+        case Actions.BATCH_ACTIONS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateEntitiesWithActions(data)
+            break;
+
+        case Actions.SET_POSITION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetPositionPanel/>
+
+        case Actions.SET_ROTATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetRotationPanel/>
+
+        case Actions.SET_SCALE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetScalePanel/>
+
+        case Actions.MOVE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddMovePlayerPanel/>
+
+        case Actions.CLONE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddClonePanel/>
+
+        case Actions.SET_STATE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetStatePanel/>
+
+        case Actions.SHOW_NOTIFICATION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionNotificationPanel(data)
+            break;
+
+        case Actions.RANDOM_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateEntitiesWithRandomActions(data)
+            break;
+
+        case Actions.START_LOOP.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddLoopPanel/>
+
+        case Actions.START_TWEEN.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddTweenActionPanel/>
+
+        case Actions.TELEPORT_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionTeleportPlayer(data)
+            break;
+
+         case Actions.START_DELAY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateDelayEntitiesWithActions(data)//
+            break;
+
+        case Actions.POPUP_SHOW.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddPopupPanel/>
+
+        case Actions.RANDOM_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionRandomNumber(data)
+            break;
+
+        case Actions.VOLUME_UP.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionVolumeUp(data)
+            break;
+
+        case Actions.VOLUME_DOWN.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionVolumeUp(data)
+            break;
+
+        case Actions.VOLUME_SET.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionVolumeUp(data)
+            break;
+
+        case Actions.FOLLOW_PATH.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddFollowPathPanel/>
+
+          case Actions.QUEST_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateQuestActionPanel(data)
+            break;
+
+        case Actions.FORCE_CAMERA.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddCameraForcePanel/>
+
+         case Actions.PLAYER_EQUIP_WEAPON.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddPlayerEquipWeaponPanel/>
+
+        case Actions.QUEST_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddQuestActionPanel/>
+
+         case Actions.QUEST_START.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateQuestStartPanel(data)
+            break
+
+        case Actions.VERIFY_ACCESS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddVerifyAccessPanel/>
+
+        case Actions.SET_TEXT.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            updateActionSetText(data)
+            break;
+
+        case Actions.FREEZE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddInputModifierActionPanel/>
+
+        case Actions.SET_GRAVITY.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddSetGravityPanel/>
+
+        case Actions.UPDATE_PHSYICS_MATERIAL.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddUpdatePhysicsMaterial/>
+
+        case Actions.UPDATE_PHYSICS_MASS.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
+            return <AddUpdatePhysicsMass/>
+    }
+}
+
 async function update(action:string, actionData:any){
     console.log('action daga is', actionData)
     sendServerMessage(SERVER_MESSAGE_TYPES.EDIT_SCENE_ASSET,
@@ -602,13 +778,13 @@ async function update(action:string, actionData:any){
             action:action,
             data:actionData,
         }
-    )
+    )//
 }
 
 async function buildAction(){
     console.log('final action data is', {...newActionData})
     newActionData.channel = newActionPipelineIndex
-    await update("add", newActionData)
+    await update(editing ? "edit" : "add", newActionData)
     updateActionView("main")
     // selectNewActionIndex(0)
 
@@ -712,6 +888,7 @@ const ActionDefaults:any = {
         fn:()=>{addCloneEntity()},
     },
     [Actions.SHOW_NOTIFICATION]:{
+        fn:()=>{updateActionNotificationPanel()},
         message:"",
         return:true,
         time:5
@@ -779,12 +956,14 @@ const ActionDefaults:any = {
         pathAid:""
     },
     [Actions.QUEST_START]:{
-        fn:()=>{updateQuestsList()},
+        fn:()=>{updateQuestStartPanel()},
+        actionId:"",
     },
     [Actions.QUEST_ACTION]:{
-        fn:()=>{updateQuests()},
-        questId:"",
-        actionId:""
+        fn:()=>{updateQuestActionPanel()},
+        actionId:"",
+        game:"",
+        message:""
     },
     [Actions.SET_STATE]:{
         fn:()=>{updateEntityStates()}

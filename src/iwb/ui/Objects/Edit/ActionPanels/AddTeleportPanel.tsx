@@ -7,6 +7,14 @@ import resources from '../../../../helpers/resources'
 
 let selectedType:number = 0
 
+let editData:any = undefined
+export function updateActionTeleportPlayer(data?:any){
+    if(data){
+        editData = data
+        selectedType = data.ttype
+    }
+}
+
 export function resetTeleportPanel(){
     selectedType = 0
     updateActionData({type:"gc"}, true)
@@ -50,7 +58,7 @@ export function AddTeleport(){
 
         <Dropdown
             options={['Genesis City', "DCL World Server", 'Custom World Server']}
-            selectedIndex={0}
+            selectedIndex={selectedType}
             onChange={(index:number)=>{
                 selectedType = index
                 updateActionData({ttype:index}, true)
@@ -72,7 +80,7 @@ export function AddTeleport(){
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    height: '15%',
+                    height: '20%',
                     display :selectedType === 0 ? "flex" : "none"
                 }}
             >
@@ -86,18 +94,33 @@ export function AddTeleport(){
                                 height: '100%',
                             }}
                         >
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'5%'}
+        }}
+        uiText={{value:"X", textAlign:'middle-left', fontSize:sizeFont(20,15)}}
+        />
                     
                     <Input
                         onChange={(value) => {
                             updateActionData({x: parseInt(value.trim())}, true)
                         }}
+                        onSubmit={(value) => {
+                            updateActionData({x: parseInt(value.trim())}, true)
+                        }}
                         fontSize={sizeFont(20,15)}
-                        placeholder={'X Parcel'}
+                        placeholder={editData ? "" + editData.x : 'X Parcel'}
                         placeholderColor={Color4.White()}
                         color={Color4.White()}
                         uiTransform={{
                             width: '100%',
-                            height: '80%',
+                            height: '90%',
                         }}
                         ></Input>
             </UiEntity>
@@ -112,17 +135,33 @@ export function AddTeleport(){
                 }}
             >
 
+
+<UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
+            margin:{bottom:'5%'}
+        }}
+        uiText={{value:"Y", textAlign:'middle-left', fontSize:sizeFont(20,15)}}//
+        />
+
             <Input
             onChange={(value) => {
                 updateActionData({y: parseInt(value.trim())}, true)
             }}
+            onSubmit={(value) => {
+                updateActionData({y: parseInt(value.trim())}, true)
+            }}
             fontSize={sizeFont(20,15)}
-            placeholder={'Y Parcel'}
+            placeholder={editData ? "" + editData.y : 'Y Parcel'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
                 width: '100%',
-                height: '80%',//
+                height: '90%',
             }}
             ></Input>
                 </UiEntity>
@@ -149,8 +188,15 @@ export function AddTeleport(){
             }
             updateActionData({text: input}, true)
         }}
+        onSubmit={(value) => {
+            let input = value.trim()
+            if(!input.includes(".dcl.eth")){
+                input += ".dcl.eth"
+            }
+            updateActionData({text: input}, true)
+        }}
         fontSize={sizeFont(20,15)}
-        placeholder={'DCL ENS'}
+        placeholder={editData ? "" + editData.text : 'DCL ENS'}
         placeholderColor={Color4.White()}
         color={Color4.White()}
         uiTransform={{
@@ -219,7 +265,7 @@ export function AddTeleport(){
                             updateActionData({url: value.trim()}, true)
                         }}
                         fontSize={sizeFont(20,15)}
-                        placeholder={'Custom Server URL'}
+                        placeholder={editData ? "" + editData.url : 'Custom Server URL'}
                         placeholderColor={Color4.White()}
                         color={Color4.White()}
                         uiTransform={{

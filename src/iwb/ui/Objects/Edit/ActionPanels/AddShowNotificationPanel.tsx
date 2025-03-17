@@ -4,6 +4,16 @@ import { sizeFont } from '../../../helpers'
 import { updateActionData } from '../EditAction'
 import resources from '../../../../helpers/resources'
 
+let editData:any
+
+export function updateActionNotificationPanel(data?:any){
+    editData = undefined
+
+    if(data){
+        editData = data
+    }
+}
+
 export function AddShowNotificationPanel(){
     return(
         <UiEntity
@@ -44,7 +54,7 @@ export function AddShowNotificationPanel(){
                 updateActionData({message:value.trim()})
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'0'}
+            placeholder={editData ? editData.message : 'Enter text'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
@@ -77,10 +87,17 @@ export function AddShowNotificationPanel(){
     >
         <Input
             onChange={(value) => {
-                updateActionData({timer:parseInt(value.trim())})
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum))  return;
+                updateActionData({timer:editNum})
+            }}
+            onSubmit={(value) => {
+                let editNum = parseFloat(value.trim())
+                if(isNaN(editNum))  return;
+                updateActionData({timer:editNum})
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'0'}
+            placeholder={editData ? "" + editData.timer : '0'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{

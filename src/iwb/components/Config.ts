@@ -31,6 +31,7 @@ import { removeLoadingScreen } from "../systems/LoadingSystem"
 import { iwbScene } from "../scene"
 import { checkGLTFComponent } from "./Gltf"
 import { findAssetParent } from "./Parenting"
+import { closeSceneQuests } from "./Quests"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -220,6 +221,7 @@ export async function setPlayerMode(mode:SCENE_MODES){
     hideAllPanels()
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
+        closeSceneQuests({})
         settings.triggerDebug ? utils.triggers.enableDebugDraw(true) :null 
         stopAllIntervals(true)
         resetDialog()
@@ -245,7 +247,7 @@ export async function setPlayerMode(mode:SCENE_MODES){
     
             // if(localPlayer.activeScene){
             //     await handleSceneEntitiesOnLeave(localPlayer.activeScene.id)
-            //     await handleSceneEntitiesOnUnload(localPlayer.activeScene.id)
+            //     await handleSceneEntitiesOnUnload(localPlayer.activeScene.id)//
             // }
         }
 

@@ -10,6 +10,15 @@ import { selectedItem } from '../../../../modes/Build'
 let dataEntities:any[] = []
 let type = 0
 
+let editData:any = undefined
+
+export function updateActionSetText(data?:any){
+    if(data){
+        editData = data
+        type = data.ttype
+    }
+}
+
 export function resetAddSetText(){
     type = 0
     dataEntities.length = 0
@@ -85,7 +94,7 @@ export function AddSetText(){
                     updateActionData({text:value.trim()}, true)
                 }}
                 fontSize={sizeFont(20,15)}
-                placeholder={'Enter Text'}
+                placeholder={editData ? "" + editData.text : 'Enter Text'}
                 placeholderColor={Color4.White()}
                 color={Color4.White()}
                 uiTransform={{

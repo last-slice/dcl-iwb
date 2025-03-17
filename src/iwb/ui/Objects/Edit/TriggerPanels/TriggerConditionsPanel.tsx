@@ -330,22 +330,23 @@ export function TriggerConditionsPanel(){
                 display: newCondition.condition && newCondition.condition.type === COMPONENT_TYPES.QUEST_COMPONENT ? "flex" : "none"
             }}
             >
-
-            <Dropdown
-                // options={[...["Select Entity"], ...getEntityList()]}//
-                options={[...["Select Quest"], ...entityQuests.map($ => $.name)]}
-                selectedIndex={0}
-                onChange={(index:number)=>{
-                    newCondition.value = entityQuests[index-1].id
+            <Input
+                onChange={(value) => {
+                    newCondition.value = value.trim()
                 }}
+                onSubmit={(value) => {
+                    newCondition.value = value.trim()
+                }}
+                fontSize={sizeFont(20,15)}
+                placeholder={'Enter Quest Id'}
+                placeholderColor={Color4.White()}
+                color={Color4.White()}
                 uiTransform={{
                     width: '100%',
                     height: '100%',
+                    display: !newCondition.variable ? "flex" : "none"
                 }}
-                color={Color4.White()}
-                fontSize={sizeFont(20, 15)}
-            />
-
+                ></Input>
             </UiEntity>
 
             <UiEntity
@@ -579,11 +580,14 @@ function updateEntityConditions(aid:string){
         entityConditions.push({type:COMPONENT_TYPES.PHYSICS_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_IS)})
     }
 
-    let quests = scene[COMPONENT_TYPES.QUEST_COMPONENT].get(aid)
-    if(quests){
-        let conditions = [...Object.values(TriggerConditionType)]
-        entityConditions.push({type:COMPONENT_TYPES.QUEST_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_QUEST_COMPLETE_IS)})
-    }
+    // let quests = scene[COMPONENT_TYPES.QUEST_COMPONENT].get(aid)
+    // if(quests){
+    //     let conditions = [...Object.values(TriggerConditionType)]
+    //     entityConditions.push({type:COMPONENT_TYPES.QUEST_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_QUEST_COMPLETE_IS)})
+    // }
+
+    let conditions = [...Object.values(TriggerConditionType)]
+    entityConditions.push({type:COMPONENT_TYPES.QUEST_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_QUEST_COMPLETE_IS)})
 }
 
 function updateEntityStates(aid:string){
@@ -664,5 +668,3 @@ function getTriggerConditions(justCount?:boolean){
     // }
 
 }
-
-//
