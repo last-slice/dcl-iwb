@@ -69,7 +69,7 @@ export let audiusMoodEndpoints:any = {
 }
 
 export default {
-    DEBUG: true,
+    DEBUG: false,
     allowNoWeb3:false,
 
     slug:"in::world::builder::",
@@ -90,7 +90,7 @@ export default {
         toolsetProd: "https://dcl-iwb.co/toolset/qa",
 
         questSystemTest: "http://localhost:5335",
-        questSystemProd: "https://dcl-iwb.co/toolset/qa",
+        questSystemProd: "https:/lkdcl.co/questing",//
 
         validateTest: "http://localhost:2751",
 

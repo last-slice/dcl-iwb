@@ -69,6 +69,8 @@ export function displayExpandedMap(value:boolean, current?:boolean, nav?:boolean
         currentSceneParcels.length = 0
         selectedScene = undefined
     }
+
+    console.log('otherparcels', otherTempParcels.size, Array.from(otherTempParcels.values()))
 }
 
 function createCurrentSceneBoundaries(){
@@ -159,8 +161,8 @@ function createMapTiles(){
     let sceneParcels:any[] = []
     colyseusRoom.state.scenes.forEach((scene:any)=>{
       scene.pcls.forEach((parcel:string)=>{
-        // sceneParcels.push(parcel)
         sceneParcels.push({parcel:parcel, color:scene.color})
+        console.log('scene parcels are', sceneParcels)
       })
     })
 
@@ -182,15 +184,17 @@ function createMapTiles(){
             }
             else{
                 if(editCurrentSceneParcels){
-                    if(currentSceneParcels.includes(obj.coords)){
+                    if(currentSceneParcels.includes(obj.coords)){///
                         obj.selected = true
                     }else{
                         obj.selected = false
                     }
                 }
                 else{
-                    if (sceneParcels.includes(obj.coords)) {
-                        obj.scene = true;
+                    let parcel = sceneParcels.find((parcel:any)=> parcel.parcel === obj.coords)
+                    if (parcel) {
+                        obj.scene = true
+                        obj.color = parcel.color
                     }else{
                       obj.scene = false
                     }
