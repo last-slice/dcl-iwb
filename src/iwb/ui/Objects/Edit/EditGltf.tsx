@@ -7,7 +7,8 @@ import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
 import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
-import { ColliderLayer } from '@dcl/sdk/ecs'
+import { ColliderLayer, ComponentType } from '@dcl/sdk/ecs'
+import { items } from '../../../components/Catalog'
 
 let invisibleIndex:number = 2
 let visibleIndex:number = 1
@@ -57,6 +58,32 @@ export function EditGltf() {
                 display: visibleComponent === COMPONENT_TYPES.GLTF_COMPONENT ? 'flex' : 'none',
             }}
         >
+
+<UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                height: '10%',
+                margin:{top:"5%"}
+            }}
+            uiText={{value:"3d Model: " + get3Dmodel(), fontSize:sizeFont(25,20), textAlign:'middle-left', color:Color4.White()}}
+        />
+
+
+<Dropdown
+    options={[...[{name:"Select GLB"}], ...getScene3DModels()].map((item:any)=>item.name)}
+    selectedIndex={0}
+    onChange={(index:number)=>{
+        updateGltf('src', [...[{name:"Select GLB"}], ...getScene3DModels()][index].src)
+    }}
+    uiTransform={{
+        width: '95%',
+        height: '10%',
+    }}
+    color={Color4.White()}
+    fontSize={sizeFont(20, 15)}
+/>
 
         <UiEntity
             uiTransform={{
@@ -187,6 +214,35 @@ export function EditGltf() {
      
         </UiEntity>
     )
+}
+
+function getScene3DModels(){
+    if(!selectedItem || !selectedItem.enabled)  return []
+
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene) return []
+    
+    let sceneModels:any[] = []
+    scene[COMPONENT_TYPES.GLTF_COMPONENT].forEach((gltf:any, aid:string)=>{
+        sceneModels.push({name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value, src:gltf.src})
+    })
+    return sceneModels
+}
+
+
+function get3Dmodel(){
+    if(!selectedItem || !selectedItem.enabled)  return ""
+
+    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
+    if(!scene) return ""
+
+    let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(selectedItem.aid)
+    if(!iwbInfo) return ""
+
+    let item = items.get(iwbInfo.id)
+
+    if(!item) return ""
+    return "" + item.n
 }
 
 function getInvisibleIndex(){

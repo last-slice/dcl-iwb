@@ -74,7 +74,7 @@ export default {
 
     slug:"in::world::builder::",
 
-    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81n-669b6",
+    lobby:"0x3edfae1ce7aeb54ed6e171c4b13e343ba81n-669b6",//
 
     endpoints:{
         wsTest: "ws://localhost:2751",
@@ -89,8 +89,8 @@ export default {
         toolsetTest: "http://localhost:3000",
         toolsetProd: "https://dcl-iwb.co/toolset/qa",
 
-        questSystemTest: "http://localhost:5335",
-        questSystemProd: "https:/lkdcl.co/questing",//
+        questSystemTest: "ws://localhost:5335",
+        questSystemProd:  "wss://angzaar-plaza.dcl-iwb.co/ws",
 
         validateTest: "http://localhost:2751",
 

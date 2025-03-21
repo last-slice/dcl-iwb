@@ -38,6 +38,13 @@ export function gltfListener(scene:any){
             return
         }
 
+        gltf.listen("src", (c:any, p:any)=>{
+            if(p !== undefined){
+                console.log('gltf src', p, c)
+                checkGLTFComponent(scene, entityInfo)
+            }
+        })
+
         gltf.listen("visibleCollision", (c:any, p:any)=>{
             if(p !== undefined){
                 console.log('gltf visible collision change', p, c)

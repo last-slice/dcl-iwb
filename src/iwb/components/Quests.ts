@@ -13,6 +13,7 @@ import { Client, Room } from 'colyseus.js'
 import resources from '../helpers/resources'
 import { getRealm } from '~system/Runtime'
 import { engine } from '@dcl/sdk/ecs'
+import { isGCScene } from './Config'
 
 // const serviceUrl = 'wss://quests-rpc.decentraland.zone'//
 const serviceUrl = 'wss://quests-rpc.decentraland.org'
@@ -416,7 +417,8 @@ async function makeQuestConnection(questInfo:any){
     let options:any = {
       userId:localPlayer.dclData.userId,
       name:localPlayer.dclData.name,
-      realm:realm.realmInfo?.baseUrl,
+      iwb:true,
+      realm: isGCScene() ? realm.realmInfo?.baseUrl : "worlds-server",
       questId:questId
     }
     
