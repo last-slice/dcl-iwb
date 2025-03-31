@@ -5,8 +5,8 @@ import { uiSizes } from '../uiConfig'
 import { setUIClicked } from '../ui'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { colyseusRoom, sendServerMessage } from '../../components/Colyseus'
-import { EDIT_MODIFIERS, IWBScene, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
-import { addBoundariesForParcel, cancelParcelEdits, deleteCreationEntities, deleteParcelEntities, getParcels, greenBeam, otherTempParcels, redBeam, tempParcels, tempPoolSceneParcelCount, tempScene, validateScene } from '../../modes/Create'
+import { COMPONENT_TYPES, EDIT_MODIFIERS, IWBScene, NOTIFICATION_TYPES, SERVER_MESSAGE_TYPES, SOUND_TYPES } from '../../helpers/types'
+import { addBoundariesForParcel, cancelParcelEdits, deleteCreationEntities, deleteParcelEntities, getParcels, greenBeam, isPositionInParcel, otherTempParcels, redBeam, tempParcels, tempPoolSceneParcelCount, tempScene, validateScene } from '../../modes/Create'
 import { localUserId, localPlayer } from '../../components/Player'
 import { formatDollarAmount } from '../../helpers/functions'
 import { addBlankParcels, removeEmptyParcels, updateSceneParentRotation } from '../../components/Scene'
@@ -16,6 +16,9 @@ import { rotateUVs } from '../../../ui_components/utilities'
 import { engine, Entity, GltfContainer, Transform } from '@dcl/sdk/ecs'
 import { teleportToScene } from '../../modes/Play'
 import { TransformInputModifiers } from './Edit/EditTransform'
+import { getEntity } from '../../components/iwb'
+import { getWorldPosition } from '@dcl-sdk/utils'
+import { showNextNotification } from './NotificationPanel'
 
 export let expandedMapshow = false
 let navigation = false
@@ -422,7 +425,8 @@ function MainLeftView(){
             width: calculateImageDimensions(8, getAspect(uiSizes.buttonPillBlue)).width,
             height: calculateImageDimensions(5,getAspect(uiSizes.buttonPillBlue)).height,
             margin:{top:"2%"},
-            display: editCurrentSceneParcels ? "flex" : "none"
+            // display: editCurrentSceneParcels ? "flex" : "none"//
+            display:'none'
         }}
         uiBackground={{
             textureMode: 'stretch',
@@ -949,17 +953,59 @@ function generateMapRow(data:any){
                             addBoundariesForParcel(mapColumn.coords, true, false)
                             currentScenePoolParcels.push(mapColumn.coords)
                         }
+                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                            player: localUserId,
+                            parcel: mapColumn.coords,
+                            scene: 0,
+                            current: editCurrentSceneParcels ? scene?.id : 0
+                        })
                     }
                     else if(navigation){
                         selectScene(mapColumn.coords)
+                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                            player: localUserId,
+                            parcel: mapColumn.coords,
+                            scene: 0,
+                            current: editCurrentSceneParcels ? scene?.id : 0
+                        })
                     }
                     else{
                         if(editCurrentSceneParcels){
                             //check if click is in current scene first
                             if(scene?.pcls.includes(mapColumn.coords)){
                                 console.log('need to remove current scene parcel')
-                                deleteParcelEntities(mapColumn.coords)
-                                addBlankParcels([mapColumn.coords])
+
+                                let isEmptyParcel = true
+                                let calculatingParcelEntities = true
+                                let serverScene = colyseusRoom.state.scenes.get(scene.id)
+
+                                while(calculatingParcelEntities){
+                                    serverScene[COMPONENT_TYPES.TRANSFORM_COMPONENT].forEach((t:any, aid:string)=>{
+                                        let entityInfo = getEntity(serverScene, aid)
+                                        let position = getWorldPosition(entityInfo.entity) 
+                                        // Check if this entity's position is within the parcel to delete
+                                        if (isPositionInParcel(position, mapColumn.coords)) {
+                                            console.log('Entties are still on parcel')
+                                            isEmptyParcel = false
+                                        }
+                                    })
+                                    calculatingParcelEntities = false
+                                }
+
+                                if(isEmptyParcel){
+                                    deleteParcelEntities(mapColumn.coords)
+                                    addBlankParcels([mapColumn.coords])
+                                    sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                                        player: localUserId,
+                                        parcel: mapColumn.coords,
+                                        scene: 0,
+                                        current: editCurrentSceneParcels ? scene?.id : 0
+                                    })
+                                }else{
+                                    showNextNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Remove parcel entities before deleting parcel.", animate:{enabled:true, return:true, time:3}})
+                                }
+
+                                
                             }else{
                                 if(colyseusRoom.state.temporaryParcels.includes(mapColumn.coords)){
                                     console.log('parcel is already selected to be addred, remove from selection')
@@ -970,15 +1016,15 @@ function generateMapRow(data:any){
                                     removeEmptyParcels([mapColumn.coords])
                                     addBoundariesForParcel(mapColumn.coords, true, false)
                                 }
+
+                                sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                                    player: localUserId,
+                                    parcel: mapColumn.coords,
+                                    scene: 0,
+                                    current: editCurrentSceneParcels ? scene?.id : 0
+                                })
                             }
                         }
-    
-                        sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
-                            player: localUserId,
-                            parcel: mapColumn.coords,
-                            scene: 0,
-                            current: editCurrentSceneParcels ? scene?.id : 0
-                        })
                     }
                     
                 }}
@@ -1039,5 +1085,5 @@ function updateSceneOffset(direction:string, factor:number, manual?:boolean){
 
     // newActionData.x = transform.x
     // newActionData.y = transform.y
-    // newActionData.z = transform.z
+    // newActionData.z = transform.z//
 }

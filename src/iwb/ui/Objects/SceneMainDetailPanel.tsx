@@ -25,11 +25,13 @@ export let scene:IWBScene | null
 export let sceneInfoDetailView = "Info"
 export let exportAngzaarStatus:string = "loading"
 export let exportScenePoolStatus:string = "loading"
+export let exportWorldACLStatus:string = "loading"
 export let angzaarReservation:any
 
 export let showSceneDetailPanel = false
 let visibleIndex = 1
-let newSceneBuilderWallet:string = ""//
+let newSceneBuilderWallet:string = ""
+let newWorldACLWallet:string = ""
 
 let selectedGenesisParcels:any[] = []
 let visibleLands:any[] = []
@@ -386,7 +388,7 @@ function MainRightView(){
             <ExportGenesisCityPanel/>
             <ExportAngzaarPanel/>
             <ExportScenePoolPanel/>
-
+            <ExportWorldACLPanel/>
         </UiEntity>
   
     )
@@ -1123,6 +1125,34 @@ export function ExportPanel(){
         },
         uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
     }}
+    uiText={{value: "DCL World", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+    onMouseDown={()=>{
+        setUIClicked(true)
+        playSound(SOUND_TYPES.SELECT_3)
+        sceneInfoDetailView = "Export-WorldACL"
+        checkValidScenePool(localPlayer.activeScene)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+        height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+        margin:{top:"1%"}
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }}
     uiText={{value: "Angzaar Plaza", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
     onMouseDown={()=>{
         setUIClicked(true)
@@ -1520,6 +1550,118 @@ export function ExportScenePoolPanel(){
             </UiEntity>
     )
 }
+
+export function ExportWorldACLPanel(){
+    return (
+        <UiEntity
+            key={resources.slug + "scene::export::world::acl::panel"}
+            uiTransform={{
+                display: sceneInfoDetailView === "Export-WorldACL" ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+    // uiBackground={{color:Color4.Gray()}}
+    uiText={{value:"Export to a DCL World", textAlign:'middle-left', color:Color4.White(), fontSize:sizeFont(25,20)}}
+    />
+
+<UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '10%',
+    }}
+    >
+    <Input
+            onChange={(value) => {
+                newWorldACLWallet = value.trim()
+            }}
+            onSubmit={(value) => {
+                newWorldACLWallet = value.trim()
+            }}
+            fontSize={sizeFont(20,15)}
+            placeholder={'Enter World Name'}
+            placeholderColor={Color4.White()}
+            color={Color4.White()}
+            uiTransform={{
+                width: '60%',
+                height: '100%',
+            }}
+            ></Input>
+        
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '20%',
+        height: '100%',
+    }}
+    >
+        <UiEntity
+    uiTransform={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: calculateImageDimensions(6, getAspect(uiSizes.buttonPillBlue)).width,
+        height: calculateImageDimensions(6,getAspect(uiSizes.buttonPillBlue)).height,
+    }}
+    uiBackground={{
+        textureMode: 'stretch',
+        texture: {
+            src: 'assets/atlas2.png'
+        },
+        uvs: getImageAtlasMapping(uiSizes.buttonPillBlue)
+    }}
+    uiText={{value: "Export", fontSize:sizeFont(25,15), textAlign:'middle-center', color:Color4.White()}}
+    onMouseDown={()=>{
+        setUIClicked(true)
+        playSound(SOUND_TYPES.SELECT_3)
+
+        exportAngzaarStatus = "loading"
+        angzaarReservation = undefined
+        updateIWBTable([])
+        displayMainView(false)
+        
+        displaySceneDetailsPanel(false)
+        updateSceneDetailsView("Info")
+
+        sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY,{
+            sceneId:scene?.id,
+            dest:'worlds',
+            worldName: newWorldACLWallet,
+            tokenId: "",
+        })
+        displayPendingPanel(true, "deployment")
+        newWorldACLWallet = ""
+        setUIClicked(false)
+    }}
+    onMouseUp={()=>{
+        setUIClicked(false)
+    }}
+    />
+    </UiEntity>
+
+    </UiEntity>
+
+            </UiEntity>
+    )
+}
+
 
 function EditBuildersPanel() {
     return (

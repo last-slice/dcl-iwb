@@ -10,7 +10,7 @@ import { resetAdditionalAssetFeatures, selectedItem } from '../../../modes/Build
 import { visibleComponent } from '../EditAssetPanel'
 import { setUIClicked } from '../../ui'
 import { uiSizes } from '../../uiConfig'
-import { AddNumberActionPanel, updateActionAddNumber, updateAddNumberPanel } from './ActionPanels/AddNumberPanel'
+import { AddNumberActionPanel, updateAddNumberPanel } from './ActionPanels/AddNumberPanel'
 import { AddLinkActionPanel, updateActionOpenLink } from './ActionPanels/AddLinkPanel'
 import { AddEmoteActionPanel } from './ActionPanels/AddEmotePanel'
 import { AddVisibilityActionPanel } from './ActionPanels/AddVisibilityPanel'
@@ -26,7 +26,7 @@ import { AddSetStatePanel, updateEntityStates } from './ActionPanels/AddStatePan
 import { AddSetNumberActionPanel, updateAddSetNumberPanel } from './ActionPanels/AddSetNumberPanel'
 import { AddSubtractNumberActionPanel, updateSubractNumberPanel } from './ActionPanels/AddSubtractNumberPanel'
 import { AddShowNotificationPanel, updateActionNotificationPanel } from './ActionPanels/AddShowNotificationPanel'
-import { AddMovePlayerPanel, addMovePlayerEntity, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
+import { AddMovePlayerPanel, addMovePlayerEntity, editActionMovePlayerPanel, resetMovePlayerEntity } from './ActionPanels/AddMovePlayerPanel'
 import { AddClonePanel, addCloneEntity, resetCloneEntity } from './ActionPanels/AddClonePanel'
 import { AddRandomActionPanel, updateEntitiesWithRandomActions, updateRandomEntityActions } from './ActionPanels/AddRandomAction'
 import { AddLoopPanel, updateAssetActionsLoopPanel } from './ActionPanels/AddLoop'
@@ -634,7 +634,7 @@ function getActionDataPanel(){
 function chooseActionPanelToEdit(data:any){
     switch(data.type.replace(/_/g, ' ').replace(/\b\w/g, (char:any) => char.toUpperCase())){
         case Actions.ADD_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            updateActionAddNumber(data)//
+            updateAddNumberPanel(data)
             break;
 
         case Actions.SET_NUMBER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
@@ -678,7 +678,8 @@ function chooseActionPanelToEdit(data:any){
             return <AddSetScalePanel/>
 
         case Actions.MOVE_PLAYER.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            return <AddMovePlayerPanel/>
+            editActionMovePlayerPanel(data)
+            break;
 
         case Actions.CLONE.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             return <AddClonePanel/>
@@ -741,7 +742,8 @@ function chooseActionPanelToEdit(data:any){
             return <AddPlayerEquipWeaponPanel/>
 
         case Actions.QUEST_ACTION.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
-            return <AddQuestActionPanel/>
+            updateQuestActionPanel(data)
+            break;
 
          case Actions.QUEST_START.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()):
             updateQuestStartPanel(data)
@@ -883,6 +885,12 @@ const ActionDefaults:any = {
     },
     [Actions.MOVE_PLAYER]:{
         fn:()=>{addMovePlayerEntity()},
+        x:0,
+        y:0,
+        z:0,
+        xLook:0,
+        yLook:0,
+        zLook:0
     },
     [Actions.CLONE]:{
         fn:()=>{addCloneEntity()},

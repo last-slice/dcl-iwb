@@ -42,10 +42,29 @@ export function setVirtualCameraPlayMode(scene:any, entityInfo:any){
 }
 
 export function virtualCameraListener(scene:any){
-    scene[COMPONENT_TYPES.MATERIAL_COMPONENT].onAdd((material:any, aid:any)=>{
-        let info = getEntity(scene, aid)
-        if(!info){
+    scene[COMPONENT_TYPES.MATERIAL_COMPONENT].onAdd((camera:any, aid:any)=>{
+        let entityInfo = getEntity(scene, aid)
+        if(!entityInfo){
             return
         }
+
+        let virtualCamera = VirtualCamera.getMutableOrNull(entityInfo.entity)
+        if(!virtualCamera)  return
+
+        // camera.listen('fov', (current:number, previous:number)=>{
+        //     if(previous !== undefined){
+        //         virtualCamera.fov = current
+        //     }
+        // })
+
+        camera.listen('lookAt', (current:string, previous:string)=>{
+            if(previous !== undefined){
+                let lookAtEntityInfo = getEntity(scene, current)
+                if(!lookAtEntityInfo)   return
+
+                virtualCamera.lookAtEntity = lookAtEntityInfo.entity
+            }
+        })
+
     })
 }

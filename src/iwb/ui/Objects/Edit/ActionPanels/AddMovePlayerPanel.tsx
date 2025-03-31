@@ -8,9 +8,26 @@ import { TransformInputModifiers } from '../EditTransform'
 // import { getEntity } from '../../../../components/IWB'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { Vector3 } from '@dcl/sdk/math'
+import { getWorldPosition } from '@dcl-sdk/utils'
 
 let setEntity:Entity
 let setLookEntity:Entity
+
+let editData:any = undefined
+export function editActionMovePlayerPanel(data:any){
+    addMovePlayerEntity()
+    editData = data
+
+    let transformPosition:any = Transform.getMutable(setEntity).position
+    transformPosition.x = newActionData.x
+    transformPosition.y = newActionData.y
+    transformPosition.z = newActionData.z
+
+    let transformLook:any = Transform.getMutable(setLookEntity).position 
+    transformLook.x = newActionData.xLook
+    transformLook.y = newActionData.yLook
+    transformLook.z = newActionData.zLook
+}
 
 export function resetMovePlayerEntity(){
     engine.removeEntity(setEntity)
@@ -18,6 +35,7 @@ export function resetMovePlayerEntity(){
 }
 
 export function addMovePlayerEntity(){
+    editData = undefined
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
     if(!scene){
         return
@@ -40,6 +58,15 @@ export function addMovePlayerEntity(){
     })
     Billboard.createOrReplace(setLookEntity, {billboardMode: BillboardMode.BM_Y})
     Transform.createOrReplace(setLookEntity, {position: Vector3.Zero(), parent:scene.parentEntity})
+
+    let playerPos = getWorldPosition(engine.PlayerEntity)
+    let sceneTransform = Transform.get(scene.parentEntity).position
+
+    if(editData !== undefined){
+        newActionData.x = playerPos.x - sceneTransform.x
+        newActionData.y = playerPos.y - sceneTransform.y
+        newActionData.z = playerPos.z - sceneTransform.z
+    }
 }
 
 export function updateMovePlayerPosition(direction:string, factor:number, manual?:boolean){

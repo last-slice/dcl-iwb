@@ -21,7 +21,8 @@ export const ParcelFloor = engine.defineComponent("iwb::floor::component", {})
 export function validateScene(){
     if(tempParcels.size > 0){
         if(editCurrentSceneParcels){
-            // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS, {sceneId: scene!.id})
+            console.log('validating scene for editing parcels')
+            // sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_UPDATE_PARCELS, {sceneId: scene!.id})//
 
             let degrees = parseInt(Math.ceil(Quaternion.toEulerAngles(Transform.get(scene!.parentEntity).rotation).y).toFixed(0))
             let transform = Transform.get(scene!.parentEntity).position
@@ -229,4 +230,32 @@ export function saveNewScene(userId:string) {
 
 export function getParcels() {
     return editCurrentSceneParcels  ? colyseusRoom.state.scenes.get(scene!.id).pcls.length : tempPoolSceneParcelCount > 0 ? tempParcels.size : tempParcels.size
+}
+
+// Helper function to parse parcel string into { x, z } (world parcel coordinates)
+function parseParcel(parcel: string): { x: number; z: number } {
+    const [x, z] = parcel.split(',').map(Number);
+    return { x, z };
+  }
+  
+
+// Convert parcel coordinates to world space meters (each parcel is 16x16 meters)
+function parcelToWorld(parcel: string): { x: number; z: number } {
+    const { x, z } = parseParcel(parcel);
+    return {
+      x: x * 16, // World x in meters
+      z: z * 16, // World z in meters
+    };
+  }
+
+export function isPositionInParcel(position: Vector3, parcel: string): boolean {
+  const { x: worldX, z: worldZ } = parcelToWorld(parcel);
+  const parcelSize = 16; // Each parcel is 16x16 meters
+
+  return (
+    position.x >= worldX &&
+    position.x < worldX + parcelSize &&
+    position.z >= worldZ &&
+    position.z < worldZ + parcelSize
+  );
 }

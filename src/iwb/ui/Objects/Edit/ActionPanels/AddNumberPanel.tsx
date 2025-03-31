@@ -13,15 +13,12 @@ let isVar:boolean = false
 let counterVariable:string = ""
 
 let editData:any = undefined
-export function updateActionAddNumber(data?:any){
-    if(data){
-        editData = data
-    }
-}
 
-export function updateAddNumberPanel(){
-    counterVariables.length = 0
+export function updateAddNumberPanel(data?:any){
     isVar = false
+
+    counterVariables.length = 0
+    
 
     let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
         if(!scene)  return;
@@ -31,6 +28,14 @@ export function updateAddNumberPanel(){
     })
 
     counterVariables.unshift({name:"SELECT VARIABLE", aid:""})
+
+    if(data){
+        editData = data
+        if(!editData.hasOwnProperty("counter")){
+            isVar = true
+        }
+        counterVariable = newActionData.counter
+    }
 }
 
 export function AddNumberActionPanel(){
@@ -70,7 +75,7 @@ export function AddNumberActionPanel(){
         
                      <Dropdown
                             options={["SELECT NUMBER TYPE", "CUSTOM", "VARIABLE"]}
-                            selectedIndex={0}
+                            selectedIndex={editData ? editData.hasOwnProperty("counter") ? 2 : 1 : 0}
                             onChange={(index:number)=>{
                                 if(index == 1){
                                     isVar = false
@@ -104,7 +109,7 @@ export function AddNumberActionPanel(){
         
                      <Dropdown
                             options={[...counterVariables.map((counter:any)=> counter.name)]}
-                            selectedIndex={0}
+                            selectedIndex={editData ?  [...counterVariables.map((counter:any)=> counter.aid)].findIndex((c:any)=> c === counterVariable) : 0}
                             onChange={(index:number)=>{
                                 if(index !== 0){
                                     counterVariable = counterVariables[index].aid
@@ -151,7 +156,7 @@ export function AddNumberActionPanel(){
                 updateActionData({value:  parseFloat(value.trim())}, true)
             }}
             fontSize={sizeFont(20,15)}
-            placeholder={'0'}
+            placeholder={editData ? newActionData.value : '0'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
