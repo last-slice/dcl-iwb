@@ -32,6 +32,7 @@ import { iwbScene } from "../scene"
 import { checkGLTFComponent } from "./Gltf"
 import { findAssetParent } from "./Parenting"
 import { closeSceneQuests } from "./Quests"
+import { displayPlayerPositionPanel } from "../ui/Objects/PlayerPositionPanel"
 
 export let realm: string = ""
 export let island: string = "world"
@@ -221,6 +222,7 @@ export async function setPlayerMode(mode:SCENE_MODES){
     hideAllPanels()
 
     if(playerMode === SCENE_MODES.BUILD_MODE){
+        displayPlayerPositionPanel(true)
         closeSceneQuests({})
         settings.triggerDebug ? utils.triggers.enableDebugDraw(true) :null 
         stopAllIntervals(true)
@@ -256,6 +258,7 @@ export async function setPlayerMode(mode:SCENE_MODES){
 
 
     }else if(playerMode === SCENE_MODES.PLAYMODE){
+        displayPlayerPositionPanel(false)
         // utils.triggers.enableDebugDraw(false)
         hideAllPanels()
         displayHover(false)

@@ -277,7 +277,7 @@ async function evaluateDecision(decisionItem:any){
     return
   }
 
-  console.log('decision is', decisionItem)
+  // console.log('decision is', decisionItem)
 
   if(await checkConditions(scene, decision, aid, entity, triggerEvent)){
     // console.log('passed check conditions')
@@ -372,9 +372,172 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
-          console.log('checking condition', condition)
-          console.log('checking trigger event', triggerEvent)
+          // console.log('checking condition', condition)
+          // console.log('checking trigger event', triggerEvent)
           switch (condition.condition) {
+            case TriggerConditionType.WHEN_ENTITY_POSITION_X_IS:
+              if(parseInt(condition.aid) < 3){
+                // console.log('x entity position greater than is', condition)
+                let xEntity = condition.aid === 1 ? engine.RootEntity : condition.aid === 2 ? engine.PlayerEntity : engine.CameraEntity
+                if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return Transform.get(xEntity).position.x === numeric
+                  }
+                }
+
+                const numeric = Number(condition.counter)
+                if (!isNaN(numeric)) {
+                  console.log('x entity position greater than is custom number', condition)
+                  return Transform.get(engine.PlayerEntity).position.x === numeric
+                }
+              }
+              else{
+                let counter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
+                // console.log('condition counter is', counter)
+                if(!counter){
+                  return false
+                }
+  
+                if(counter.currentValue){
+                  if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
+                    console.log('condition has value', condition.value)
+                    let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                    if(!compareCounter){
+                      return false
+                    }
+  
+                    console.log('compare counter is', compareCounter.currentValue)
+  
+                    const numeric = Number(compareCounter.currentValue)
+                    if (!isNaN(numeric)) {
+                      return counter.currentValue === Transform.get(engine.PlayerEntity).position.x
+                    }
+                  }
+                  const numeric = Number(condition.counter)
+                  if (!isNaN(numeric)) {
+                    return counter.currentValue === Transform.get(engine.PlayerEntity).position.x
+                  }
+                }
+              }
+            break;  
+
+            case TriggerConditionType.WHEN_ENTITY_POSITION_X_IS_GREATER_THAN:
+              // console.log('when x entity position greater than is', condition)
+              if(parseInt(condition.aid) < 3){
+                // console.log('x entity position greater than is', condition)
+                let xGreaterEntity = condition.aid === 1 ? engine.RootEntity : condition.aid === 2 ? engine.PlayerEntity : engine.CameraEntity
+                if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
+                  // console.log('condition has value')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return Transform.get(xGreaterEntity).position.x > numeric
+                  }
+                }
+
+                const numeric = Number(condition.counter)
+                if (!isNaN(numeric)) {
+                  console.log('x entity position greater than is custom number', condition)
+                  return Transform.get(engine.PlayerEntity).position.x > numeric
+                }
+              }else{
+                let xGreaterCounter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
+                // console.log('condition counter is', counter)
+                if(!xGreaterCounter){
+                  return false
+                }
+  
+                if(xGreaterCounter.currentValue){
+                  if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
+                    // console.log('need to compare x player position greater than another counter')
+                    let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                    if(!compareCounter){
+                      return false
+                    }
+  
+                    // console.log('compare counter is', compareCounter.currentValue)
+  
+                    const numeric = Number(compareCounter.currentValue)
+                    if (!isNaN(numeric)) {
+                      return Transform.get(engine.PlayerEntity).position.x > xGreaterCounter.currentValue
+                    }
+                  }
+                  const numeric = Number(condition.counter)
+                  if (!isNaN(numeric)) {
+                    return Transform.get(engine.PlayerEntity).position.x >  xGreaterCounter.currentValue
+                  }
+                }
+              }
+            break;  
+
+            case TriggerConditionType.WHEN_ENTITY_POSITION_X_IS_LESS_THAN:
+              if(parseInt(condition.aid) < 3){
+                let xLessThanEntity = condition.aid === 1 ? engine.RootEntity : condition.aid === 2 ? engine.PlayerEntity : engine.CameraEntity
+                if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
+                  console.log('need to compare x player position greater than another counter')
+                  let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                  if(!compareCounter){
+                    return false
+                  }
+
+                  console.log('compare counter is', compareCounter.currentValue)
+
+                  const numeric = Number(compareCounter.currentValue)
+                  if (!isNaN(numeric)) {
+                    return Transform.get(xLessThanEntity).position.x < numeric
+                  }
+                }
+
+                const numeric = Number(condition.counter)
+                if (!isNaN(numeric)) {
+                  return Transform.get(engine.PlayerEntity).position.x < numeric
+                }
+              }else{
+                let xLessThanCounter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
+                // console.log('condition counter is', counter)
+                if(!xLessThanCounter){
+                  return false
+                }
+
+                if(xLessThanCounter.currentValue){
+                  if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
+                    // console.log('need to compare x player position less than another counter')
+                    let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
+                    if(!compareCounter){
+                      return false
+                    }
+
+                    // console.log('compare counter is', compareCounter.currentValue)
+
+                    const numeric = Number(compareCounter.currentValue)
+                    if (!isNaN(numeric)) {
+                      return Transform.get(engine.PlayerEntity).position.x < numeric
+                    }
+                  }
+                  const numeric = Number(condition.counter)
+                  if (!isNaN(numeric)) {
+                    return Transform.get(engine.PlayerEntity).position.x < numeric
+                  }
+                }
+              }
+            break;  
+
+            
+
             case TriggerConditionType.WHEN_QUEST_ID_IS: {
               return triggerEvent.questId === condition.value
             }
@@ -453,7 +616,7 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               }
 
               if(counter.currentValue){
-                if(condition.hasOwnProperty("value")){
+                if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
                   console.log('need to compare counter against another counter')
                   let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
                   if(!compareCounter){
@@ -473,12 +636,12 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
                 }
               }
   
-              if(counter.currentValue){
-                const numeric = Number(condition.counter)
-                if (!isNaN(numeric)) {
-                  return counter.currentValue === numeric
-                }
-              }
+              // if(counter.currentValue){
+              //   const numeric = Number(condition.counter)
+              //   if (!isNaN(numeric)) {
+              //     return counter.currentValue === numeric
+              //   }
+              // }
               break
             }
   
@@ -489,7 +652,7 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               }
   
               if(counter.currentValue){
-                if(condition.hasOwnProperty("value")){
+                if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
                   console.log('need to compare counter against another counter')
                   let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
                   if(!compareCounter){
@@ -517,7 +680,7 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               }
 
               if(counter.currentValue){
-                if(condition.hasOwnProperty("value")){
+                if(condition.hasOwnProperty("value") && condition.value !== undefined && condition.value !== null){
                   console.log('need to compare counter against another counter')
                   let compareCounter = getCounterComponentByAssetId(scene, condition.value, condition.counter)
                   if(!compareCounter){

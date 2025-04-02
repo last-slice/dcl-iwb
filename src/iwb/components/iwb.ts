@@ -33,6 +33,16 @@ import { checkRaycastComponent } from "./Raycast"
 import { removePendingBody } from "./Physics"
 
 export function getEntity(scene:any, aid:string){
+  if(parseInt(aid) < 3){
+    switch(aid){
+      case '0':
+        return {aid:aid, entity:engine.RootEntity}
+      case '1':
+        return {aid:aid, entity:engine.PlayerEntity}
+      case '2':
+        return {aid:aid, entity:engine.CameraEntity}
+    }
+  }
   return scene[COMPONENT_TYPES.IWB_COMPONENT].get(aid)
 }
 

@@ -87,7 +87,7 @@ export default {
         deploymentProd: "https://deployment.dcl-iwb.co",
 
         toolsetTest: "http://localhost:3000",
-        toolsetProd: "https://dcl-iwb.co/toolset/qa",
+        toolsetProd: "https://dcl-iwb.co/toolset/qa",//
 
         questSystemTest: "ws://localhost:5335",
         questSystemProd:  "wss://angzaar-plaza.dcl-iwb.co/ws",

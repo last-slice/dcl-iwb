@@ -20,7 +20,10 @@ let selectedActionIndex:number = 0
 
 let newAction:any = {}
 
-export let newDecision:any = {}
+export let newDecision:any = {
+    conditions:[],
+    actions:[],
+}
 
 export function updateTriggerDecisionPanel(data?:any, newDecisions?:boolean){
     console.log('decision data now is', data)

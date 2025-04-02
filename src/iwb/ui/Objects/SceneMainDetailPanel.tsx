@@ -1314,15 +1314,107 @@ export function ExportGenesisCityPanel(){
 
                 <UiEntity
                 uiTransform={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
                     width: '100%',
                     height: '90%',
+                    flexWrap: 'wrap-reverse',
                 }}
                 // uiBackground={{color:Color4.Gray()}}
                 >
-                    {sceneInfoDetailView === "Export-Genesis" && generateRows()}
+                    {/* {sceneInfoDetailView === "Export-Genesis" && generateRows()} */}
+                    {sceneInfoDetailView === "Export-Genesis" && generateLandItems()}
+                </UiEntity>
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    width: '100%',
+                    height: '10%',
+                }}
+            >
+
+<UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '10%',
+                    height: '100%',
+                }}
+                // uiBackground={{color:Color4.Gray()}}
+                >
+                      <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            height: '100%',
+                            margin: {left: "1%", right: "1%"},
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.leftArrow)
+                        }}
+                        onMouseDown={() => {
+                            setUIClicked(true)
+                            if(visibleIndex -1 >=0){
+                                visibleIndex--
+                                visibleLands = paginateArray(localPlayer.landsAvailable, visibleIndex, 6)
+                            }
+                            setUIClicked(false)
+                        }}
+                        onMouseUp={()=>{
+                            setUIClicked(false)
+                        }}
+                    />
+                </UiEntity>
+
+            <UiEntity
+                uiTransform={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '10%',
+                    height: '100%',
+                }}
+                // uiBackground={{color:Color4.Gray()}}//
+                >
+                      <UiEntity
+                        uiTransform={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            height: '100%',
+                            margin: {left: "1%", right: "1%"},
+                        }}
+                        uiBackground={{
+                            textureMode: 'stretch',
+                            texture: {
+                                src: 'assets/atlas2.png'
+                            },
+                            uvs: getImageAtlasMapping(uiSizes.rightArrow)
+                        }}
+                        onMouseDown={() => {
+                            setUIClicked(true)
+                                visibleIndex++
+                                visibleLands = paginateArray(localPlayer.landsAvailable, visibleIndex, 6)
+                            setUIClicked(false)
+                        }}
+                        onMouseUp={()=>{
+                            setUIClicked(false)
+                        }}
+                    />
+                </UiEntity>
+
                 </UiEntity>
 
             </UiEntity>
@@ -1778,6 +1870,7 @@ function getSizeWidth():  PositionUnit | undefined {
 
 function generateRows(){
     let arr: any[] = []
+    
     let start = 0
     let end = 3
 
@@ -1787,6 +1880,113 @@ function generateRows(){
         end += 3
     }
     return arr
+}
+
+function generateLandItems(){
+    let arr:any[] = []
+    for(let i = 0; i < visibleLands.length; i++){
+        arr.push(<DeployableLandItem rowCount={i} item={visibleLands[i]}/>)
+    }
+    return arr
+}
+
+function DeployableLandItem(data:any){
+    return(
+        <UiEntity
+        key={resources.slug + "deploy::land::item::" + data.rowCount}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '30%',
+            height: '35%',
+            margin:'1%'
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: isSelected(data.item.x, data.item.y) ? getImageAtlasMapping(uiSizes.buttonPillBlue) : getImageAtlasMapping(uiSizes.horizRectangle)
+        }}
+        onMouseDown={()=>{
+            setUIClicked(true)
+            // if(localPlayer && localPlayer.homeWorld){
+                toggleSelectItem(data.item)
+            // }
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        >
+
+             <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '80%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.Blue()}}
+        >
+         <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(11).width,
+            height: calculateSquareImageDimensions(11).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: '' + resources.endpoints.dclApi + "parcels/" + data.item.x + "/" + data.item.y + "/map.png?width=200&height=200&size=10"
+            },
+        }}
+        />
+        </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            margin:{bottom:'3%'}
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{value:data.item.name.length > 20 ? data.item.name.substring(0, 20) + "..." : data.item.name, fontSize:sizeFont(25,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            margin:{bottom:'3%'}
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{value:"" +(data.item.x + "," + data.item.y), fontSize:sizeFont(25,15)}}
+        />
+
+
+        </UiEntity>
+    )
 }
 
 function Row({row, land}: { row: number, land:any }){

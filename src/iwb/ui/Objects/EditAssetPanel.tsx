@@ -25,7 +25,7 @@ import { EditMaterial, materialView, updateMaterialComponent } from './Edit/Edit
 import { EditTexture } from './Edit/EditTexture'
 import { EditParenting, updateChildrenAssets } from './Edit/EditParenting'
 import { EditCounter } from './Edit/EditCounter'
-import { EditTrigger, enableTriggerEdit, resetTriggerPanels, triggerInfoView, triggerView, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
+import { EditTrigger, enableTriggerEdit, resetTriggerPanels, triggerInfoConditionView, triggerInfoView, triggerView, updateTriggerInfoConditionView, updateTriggerInfoView, updateTriggerView } from './Edit/EditTrigger'
 import { EditAction, actionView, currentAddActionPanel, refreshActionPanel, updateActionView } from './Edit/EditAction'
 import { EditPointer, pointerView, updatePointerView } from './Edit/EditPointer'
 import { resetSetPositionEntity } from './Edit/ActionPanels/AddSetPositionPanel'
@@ -706,8 +706,12 @@ function getBackButtonLogic(){
                         break
 
                     case 'conditions':
-                        resetTriggerPanels()
-                        updateTriggerInfoView("decisions")
+                        if(triggerInfoConditionView === "view"){
+                            updateTriggerInfoConditionView("add")
+                        }else{
+                            resetTriggerPanels()
+                            updateTriggerInfoView("decisions")
+                        }
                         break;
 
                     case 'actions':
@@ -734,6 +738,7 @@ function getBackButtonLogic(){
         case COMPONENT_TYPES.STATE_COMPONENT:
         case COMPONENT_TYPES.COUNTER_COMPONENT:
         case COMPONENT_TYPES.PARENTING_COMPONENT:
+        case COMPONENT_TYPES.VIRTUAL_CAMERA:
             openEditComponent(COMPONENT_TYPES.ADVANCED_COMPONENT)
             break;
 

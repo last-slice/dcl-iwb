@@ -1,4 +1,4 @@
-import { TextShape } from "@dcl/sdk/ecs";
+import { engine, TextShape } from "@dcl/sdk/ecs";
 import { colyseusRoom } from "./Colyseus";
 import { getEntity } from "./iwb";
 // import { updateAudioTextLabel } from "./Sounds";
@@ -50,7 +50,12 @@ export function getAllAssetNames(sceneId:string, sort?:boolean, includeQuests?:b
         return []
     }
 
-    let names:any[] = []
+    let names:any[] = [
+        {name:"Scene Entity", aid:"0"},
+        {name:"Player Entity", aid:"1"},
+        {name:"Camera Entity", aid:"2"},
+    ]
+
 
     scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string) => {
         let name = scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid)

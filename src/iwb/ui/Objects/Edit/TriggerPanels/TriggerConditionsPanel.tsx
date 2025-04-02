@@ -6,7 +6,7 @@ import { selectedItem } from '../../../../modes/Build'
 import { sizeFont, calculateImageDimensions, getAspect, getImageAtlasMapping } from '../../../helpers'
 import { setUIClicked } from '../../../ui'
 import { uiSizes } from '../../../uiConfig'
-import { editingTrigger, triggerInfoView, triggerView, update } from '../EditTrigger'
+import { editingTrigger, triggerInfoConditionView, triggerInfoView, triggerView, update, updateTriggerInfoConditionView } from '../EditTrigger'
 import { getAllAssetNames } from '../../../../components/Name'
 import { colyseusRoom } from '../../../../components/Colyseus'
 import { selectedTrigger } from './TriggerInfoPanel'
@@ -105,6 +105,17 @@ export function TriggerConditionsPanel(){
                 uiText={{value:"Add Condition Operator", textAlign:'middle-left', fontSize:sizeFont(20,15), color:Color4.White()}}
             />
 
+<UiEntity
+            uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            alignContent:'center',
+            width: '100%',
+            height: '90%',
+            display: triggerInfoConditionView === "add" ? "flex" : "none"
+            }}
+        >
              {/* condition operator dropdown */}
         <UiEntity
             uiTransform={{
@@ -114,7 +125,8 @@ export function TriggerConditionsPanel(){
                 alignContent:'center',
                 width: '100%',
                 height: '10%',
-                margin:{top:"1%"}
+                margin:{top:"1%"},
+                display: newDecision && newDecision.conditions && newDecision.conditions.length > 0 ? "flex" : 'none'
             }}
             >
 
@@ -188,7 +200,6 @@ export function TriggerConditionsPanel(){
 
             </UiEntity>
 
-
      {/* condition state value dropdown */}
         <UiEntity
             uiTransform={{
@@ -220,16 +231,15 @@ export function TriggerConditionsPanel(){
 
             </UiEntity>
 
-
      {/* condition counter value dropdown */}
      <UiEntity
             uiTransform={{
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 alignContent:'center',
                 width: '100%',
-                height: '10%',
+                height: '50%',
                 margin:{top:"1%", bottom:"1%"},
                 display: newCondition.condition && newCondition.condition.type === COMPONENT_TYPES.COUNTER_COMPONENT ? "flex" : "none"
             }}
@@ -242,7 +252,7 @@ export function TriggerConditionsPanel(){
                 justifyContent: 'center',
                 alignContent:'center',
                 width: '100%',
-                height: '100%',
+                height: '15%',
                 margin:{top:"1%", bottom:"1%"},
             }}
             >
@@ -266,7 +276,7 @@ export function TriggerConditionsPanel(){
     fontSize={sizeFont(20, 15)}
 />
 
-                </UiEntity>
+</UiEntity>
 
 
 <UiEntity
@@ -276,9 +286,9 @@ export function TriggerConditionsPanel(){
                 justifyContent: 'center',
                 alignContent:'center',
                 width: '100%',
-                height: '100%',
+                height: '15%',
                 margin:{top:"1%"},
-                display: newCondition.variable ? "flex" : "none"
+                display: newCondition && newCondition.variable ? "flex" : "none"
             }}
             >
 
@@ -304,13 +314,16 @@ export function TriggerConditionsPanel(){
             onChange={(value) => {
                 newCondition.counter = parseFloat(value.trim())
             }}
+            onSubmit={(value) => {
+                newCondition.counter = parseFloat(value.trim())
+            }}
             fontSize={sizeFont(20,15)}
             placeholder={'enter counter number'}
             placeholderColor={Color4.White()}
             color={Color4.White()}
             uiTransform={{
                 width: '100%',
-                height: '100%',
+                height: '15%',
                 display: !newCondition.variable ? "flex" : "none"
             }}
             ></Input>
@@ -390,6 +403,52 @@ export function TriggerConditionsPanel(){
         />
 
 <UiEntity
+            uiTransform={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignSelf:'flex-start',
+                margin:{top:"1%"},
+                width: calculateImageDimensions(10, getAspect(uiSizes.buttonPillBlack)).width,
+                height: calculateImageDimensions(5, getAspect(uiSizes.buttonPillBlack)).height,
+            }}
+            uiBackground={{
+                textureMode: 'stretch',
+                texture: {
+                    src: 'assets/atlas2.png'
+                },
+                uvs: getImageAtlasMapping(uiSizes.buttonPillBlack)
+            }}
+            uiText={{
+                value: "View Conditions",
+                fontSize: sizeFont(25, 15),
+                color: Color4.White(),
+                textAlign: 'middle-center'
+            }}
+            onMouseDown={() => {
+                setUIClicked(true)
+                updateTriggerInfoConditionView("view")
+                setUIClicked(false)
+            }}
+            onMouseUp={()=>{
+                setUIClicked(false)
+            }}
+        />
+            </UiEntity>
+
+            <UiEntity
+            uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            alignContent:'center',
+            width: '100%',
+            height: '90%',
+            display: triggerInfoConditionView === "view" ? "flex" : "none"
+            }}
+        >
+
+<UiEntity
 uiTransform={{
     flexDirection: 'column',
     alignItems: 'center',
@@ -408,7 +467,7 @@ uiTransform={{
     justifyContent: 'flex-start',
     alignContent:'center',
     width: '100%',
-    height: '45%',
+    height: '90%',
     display: currentConditions.length > 0 ? "flex" : "none"
 }}
 >
@@ -423,6 +482,7 @@ uiTransform={{
     }
     
 </UiEntity>
+            </UiEntity>
 
             </UiEntity>
     )
@@ -588,6 +648,18 @@ function updateEntityConditions(aid:string){
 
     let conditions = [...Object.values(TriggerConditionType)]
     entityConditions.push({type:COMPONENT_TYPES.QUEST_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_QUEST_COMPLETE_IS)})
+
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_X_IS)})
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_X_IS_GREATER_THAN)})
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_X_IS_LESS_THAN)})
+
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_Y_IS)})
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_Y_IS_GREATER_THAN)})
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_Y_IS_LESS_THAN)})
+
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_Z_IS)})
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_Z_IS_GREATER_THAN)})
+    entityConditions.push({type:COMPONENT_TYPES.COUNTER_COMPONENT, condition:conditions.find($=> $ === TriggerConditionType.WHEN_ENTITY_POSITION_Z_IS_LESS_THAN)})
 }
 
 function updateEntityStates(aid:string){

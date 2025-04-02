@@ -591,6 +591,16 @@ export enum TriggerConditionType {
     WHEN_QUEST_ID_IS = "when_quest_id_is",
     WHEN_TASK_ID_IS = "when_task_id_is",
     
+    WHEN_ENTITY_POSITION_X_IS = 'when_entity_position_x_is',
+    WHEN_ENTITY_POSITION_Y_IS = 'when_entity_position_y_is',
+    WHEN_ENTITY_POSITION_Z_IS = 'when_entity_position_z_is',
+    WHEN_ENTITY_POSITION_X_IS_GREATER_THAN = 'when_entity_position_x_is_greater_than',
+    WHEN_ENTITY_POSITION_Y_IS_GREATER_THAN = 'when_entity_position_y_is_greater_than',
+    WHEN_ENTITY_POSITION_Z_IS_GREATER_THAN = 'when_entity_position_z_is_greater_than',
+    WHEN_ENTITY_POSITION_X_IS_LESS_THAN = 'when_entity_position_x_is_less_than',
+    WHEN_ENTITY_POSITION_Y_IS_LESS_THAN = 'when_entity_position_y_is_less_than',
+    WHEN_ENTITY_POSITION_Z_IS_LESS_THAN = 'when_entity_position_z_is_less_than',
+    
   }
 
 export enum TriggerConditionOperation {

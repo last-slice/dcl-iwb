@@ -294,7 +294,9 @@ export function PlayModeSceneTick(_dt: number) {
     updateUTCTime(Date.now()/ 1000)
 
     colyseusRoom.state.scenes.forEach((scene:any, aid:string)=>{
-      runGlobalTrigger(scene, Triggers.ON_CLOCK_TICK, {input:0, pointer:0})
+        if(localPlayer && localPlayer.activeScene && localPlayer.activeScene.id === aid){
+            runGlobalTrigger(scene, Triggers.ON_CLOCK_TICK, {input:0, pointer:0})
+        }
     })
     // for (const entity of tickSet) {
     //   const triggerEvents = getTriggerEvents(entity)

@@ -38,6 +38,7 @@ import { createQuestCreatorPanel } from './Objects/QuestCreatorPanel'
 import { createBannedScreen } from './Objects/BannedScreen'
 import { createCooldownUI } from './Objects/GameCooldownUI'
 import { createAdminPanel } from './Objects/SceneAdminPanel'
+import { createPlayerPositionPanel } from './Objects/PlayerPositionPanel'
 
 export function setupUI() {
     ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -54,6 +55,7 @@ const uiComponent:any = () => [
   createCustomUIImageComponent(),
   createCustomUITextComponent(),
   createIWBMap(),
+  createPlayerPositionPanel(),
   createToolsPanel(),
   createSkinnyVerticalPanel(),
   createMainView(),

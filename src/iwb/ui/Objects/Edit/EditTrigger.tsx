@@ -14,6 +14,7 @@ import { updateTriggerDecisionPanel } from './TriggerPanels/TriggerDecisionPanel
 
 export let triggerView = "main"
 export let triggerInfoView = "main"
+export let triggerInfoConditionView = "add"
 export let editingTrigger = false
 
 export function enableTriggerEdit(value:boolean){
@@ -27,6 +28,8 @@ export function enableTriggerEdit(value:boolean){
 export function resetTriggerPanels(){
     resetTriggerConditionsPanel()
     resetTriggerActionsPanel()
+
+    triggerInfoConditionView = "add"
 }
 
 export function updateTriggerView(value:string, triggerId?:string){
@@ -38,6 +41,10 @@ export function updateTriggerView(value:string, triggerId?:string){
         resetTriggerPanels()
         selectTriggerDetails(triggerId)
     }
+}
+
+export function updateTriggerInfoConditionView(value:string){
+    triggerInfoConditionView = value
 }
 
 export function updateTriggerInfoView(value:string, data?:any){

@@ -21,7 +21,7 @@ export function checkGLTFComponent(scene:any, entityInfo:any, isLevelAsset?:bool
         // GLTFLoadedComponent.createOrReplace(entityInfo.entity, {init:false, sceneId:scene.id})
 
         if(playerMode === SCENE_MODES.BUILD_MODE){
-            setGLTFCollisionBuildMode(scene, entityInfo)
+            setGLTFCollisionBuildMode(scene, entityInfo)//
         }
     }
 }
