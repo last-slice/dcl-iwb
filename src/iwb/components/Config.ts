@@ -16,7 +16,7 @@ import { updateIWBTable } from "../ui/Reuse/IWBTable"
 import { getWorldBans, getWorldPermissions } from "../ui/Objects/IWBViews/InfoView"
 import { addPlayTriggerSystem, removePlayTriggerSystem } from "./Triggers"
 import { createTimerSystem, stopAllIntervals } from "./Timer"
-import { displayLiveControl, displayLivePanel } from "../ui/Objects/LiveShowPanel"
+// import { displayLiveControl, displayLivePanel } from "../ui/Objects/LiveShowPanel"
 import { displayGrabContextMenu } from "../ui/Objects/GrabContextMenu"
 import { resetDialog, showDialogPanel } from "../ui/Objects/DialogPanel"
 import { disableGameAsset, killAllGameplay, updatePendingGameCleanup } from "./Game"
@@ -232,8 +232,8 @@ export async function setPlayerMode(mode:SCENE_MODES){
         removePlayModSystem()
         addInputSystem()
         removePlayTriggerSystem()
-        displayLiveControl(false)
-        displayLivePanel(false)
+        // displayLiveControl(false)
+        // displayLivePanel(false)
         displaySkinnyVerticalPanel(false)
         displayQuestPanel(false)
         removeForceCamera()

@@ -25,7 +25,6 @@ import { abortGameTermination, checkGameplay, disableGameAsset } from "../compon
 import { setUIClicked } from "../ui/ui"
 import { localPlayer } from "../components/Player"
 import { showNotification } from "../ui/Objects/NotificationPanel"
-import { disableLivePanel, setLivePanel } from "../components/Live"
 import { lastScene, removedEntities, sceneAttachedParents } from "../components/Scene"
 import { removeItem } from "./Build"
 import { getActionEvents, handleRemoveVirtualCamera, handleUnlockPlayer, updateActions } from "../components/Actions"

@@ -22,7 +22,6 @@ import { updateStoreView, updateStoreVisibleItems } from "../ui/Objects/StoreVie
 import { actionQueue, getTriggerEvents, runGlobalTrigger } from "./Triggers";
 import { addGamePlayer, attemptGameEnd, attemptGameStart, playGameShoot, removeGamePlayer } from "./Game";
 import { displayPendingPanel } from "../ui/Objects/PendingInfoPanel";
-import { displayLiveControl, updatePlayers } from "../ui/Objects/LiveShowPanel";
 import { movePlayerTo, openExternalUrl, teleportTo } from "~system/RestrictedActions";
 import { playAudiusTrack } from "./Sounds";
 import { handlePlayerCompleteQuest, handlePlayerQuestAction, removeQuest, setQuestPlayerData, setQuestSteps, setServerConditions, setServerQuests, startQuest, updateQuestsDefinitions } from "./Quests";
@@ -104,7 +103,7 @@ export async function createColyseusListeners(room:Room){
                 break;
 
             case 'live-players-get':
-                updatePlayers(info.players)
+                // updatePlayers(info.players)
                 break;
                 
         }

@@ -994,7 +994,7 @@ function AdminActionsPanel(){
         }}
         >
             <Dropdown
-                options={[...["Select Action"], ...getSceneActions()]}
+                options={isSceneAdmin() ? [...["Select Action"], ...getSceneActions()] : []}
                 // options={entitiesWithActions.length > 0 ? [...["Select Action"], ...entitiesWithActions[entityIndex].actions.map((item:any) => item.name).sort((a:any,b:any)=> a.localeCompare(b))] : []}
                 selectedIndex={sceneActionIndex}
                 onChange={selectActionIndex}

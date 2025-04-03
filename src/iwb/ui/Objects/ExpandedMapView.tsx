@@ -969,61 +969,83 @@ function generateMapRow(data:any){
                             current: editCurrentSceneParcels ? scene?.id : 0
                         })
                     }
-                    else{
-                        if(editCurrentSceneParcels){
+                    else if(editCurrentSceneParcels){
+                        console.log('editing current scene parcels')
                             //check if click is in current scene first
-                            if(scene?.pcls.includes(mapColumn.coords)){
-                                console.log('need to remove current scene parcel')
+                        if(scene?.pcls.includes(mapColumn.coords)){
+                            console.log('need to remove current scene parcel')
 
-                                let isEmptyParcel = true
-                                let calculatingParcelEntities = true
-                                let serverScene = colyseusRoom.state.scenes.get(scene.id)
+                            let isEmptyParcel = true
+                            let calculatingParcelEntities = true
+                            let serverScene = colyseusRoom.state.scenes.get(scene.id)
 
-                                while(calculatingParcelEntities){
-                                    serverScene[COMPONENT_TYPES.TRANSFORM_COMPONENT].forEach((t:any, aid:string)=>{
-                                        let entityInfo = getEntity(serverScene, aid)
-                                        let position = getWorldPosition(entityInfo.entity) 
-                                        // Check if this entity's position is within the parcel to delete
-                                        if (isPositionInParcel(position, mapColumn.coords)) {
-                                            console.log('Entties are still on parcel')
-                                            isEmptyParcel = false
-                                        }
-                                    })
-                                    calculatingParcelEntities = false
-                                }
+                            while(calculatingParcelEntities){
+                                serverScene[COMPONENT_TYPES.TRANSFORM_COMPONENT].forEach((t:any, aid:string)=>{
+                                    let entityInfo = getEntity(serverScene, aid)
+                                    let position = getWorldPosition(entityInfo.entity) 
+                                    // Check if this entity's position is within the parcel to delete
+                                    if (isPositionInParcel(position, mapColumn.coords)) {
+                                        console.log('Entties are still on parcel')
+                                        isEmptyParcel = false
+                                    }
+                                })
+                                calculatingParcelEntities = false
+                            }
 
-                                if(isEmptyParcel){
-                                    deleteParcelEntities(mapColumn.coords)
-                                    addBlankParcels([mapColumn.coords])
-                                    sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
-                                        player: localUserId,
-                                        parcel: mapColumn.coords,
-                                        scene: 0,
-                                        current: editCurrentSceneParcels ? scene?.id : 0
-                                    })
-                                }else{
-                                    showNextNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Remove parcel entities before deleting parcel.", animate:{enabled:true, return:true, time:3}})
-                                }
-
-                                
-                            }else{
-                                if(colyseusRoom.state.temporaryParcels.includes(mapColumn.coords)){
-                                    console.log('parcel is already selected to be addred, remove from selection')
-                                    deleteParcelEntities(mapColumn.coords)
-                                    addBlankParcels([mapColumn.coords])
-                                }else{
-                                    console.log('parcel is added to temp parcel list')
-                                    removeEmptyParcels([mapColumn.coords])
-                                    addBoundariesForParcel(mapColumn.coords, true, false)
-                                }
-
+                            if(isEmptyParcel){
+                                deleteParcelEntities(mapColumn.coords)
+                                addBlankParcels([mapColumn.coords])
                                 sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
                                     player: localUserId,
                                     parcel: mapColumn.coords,
                                     scene: 0,
                                     current: editCurrentSceneParcels ? scene?.id : 0
                                 })
+                            }else{
+                                showNextNotification({type:NOTIFICATION_TYPES.MESSAGE, message:"Remove parcel entities before deleting parcel.", animate:{enabled:true, return:true, time:3}})
                             }
+
+                            
+                        }else{
+                            if(colyseusRoom.state.temporaryParcels.includes(mapColumn.coords)){
+                                console.log('parcel is already selected to be added, remove from selection')
+                                deleteParcelEntities(mapColumn.coords)
+                                addBlankParcels([mapColumn.coords])
+                            }else{
+                                console.log('parcel is added to temp parcel list')
+                                removeEmptyParcels([mapColumn.coords])
+                                addBoundariesForParcel(mapColumn.coords, true, false)
+                            }
+
+                            sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                                player: localUserId,
+                                parcel: mapColumn.coords,
+                                scene: 0,
+                                current: editCurrentSceneParcels ? scene?.id : 0
+                            })
+                        }
+                    }else{
+                        console.log('clicked on parcel to be added to new scene')
+                        if(mapColumn.scene){
+                            console.log('parcel is part of another scene, dont do anything')
+                        }else{
+                            console.log('parcel is not part of another scene, add to new scene')
+                            if(colyseusRoom.state.temporaryParcels.includes(mapColumn.coords)){
+                                console.log('parcel is already selected to be added, remove from selection')
+                                deleteParcelEntities(mapColumn.coords)
+                                addBlankParcels([mapColumn.coords])
+                            }else{
+                                console.log('parcel is added to temp parcel list')
+                                removeEmptyParcels([mapColumn.coords])
+                                addBoundariesForParcel(mapColumn.coords, true, false)
+                            }
+
+                            sendServerMessage(SERVER_MESSAGE_TYPES.SELECT_PARCEL, {
+                                player: localUserId,
+                                parcel: mapColumn.coords,
+                                scene: 0,
+                                current: editCurrentSceneParcels ? scene?.id : 0
+                            })
                         }
                     }
                     
