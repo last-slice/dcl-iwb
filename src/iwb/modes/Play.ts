@@ -130,12 +130,11 @@ export async function handleSceneEntitiesOnEnter(sceneId:string){
             }
         })
         checkForQuests(scene)
-        globalEmitter.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, sceneId:scene.id})
+        globalEmitter.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:1, sceneId:scene.id})
     }
 }
 
 export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
-    console.log('handle on scene enter', scene)
     setPointersPlayMode(scene, entityInfo)
     setMeshColliderPlayMode(scene, entityInfo)
     setAudioPlayMode(scene, entityInfo)
@@ -149,7 +148,7 @@ export function handleSceneEntityOnEnter(scene:any, entityInfo:any){
     checkMultiplayerSyncOnEnter(scene, entityInfo)
 
     let triggerEvents = getTriggerEvents(entityInfo.entity)
-    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:0, entity:entityInfo.entity,sceneId:scene.id})
+    triggerEvents.emit(Triggers.ON_ENTER_SCENE, {input:0, pointer:1, entity:entityInfo.entity,sceneId:scene.id})
 }
 
 export async function handleSceneEntitiesOnUnload(sceneId:string){
@@ -175,7 +174,7 @@ export async function handleSceneEntitiesOnUnload(sceneId:string){
                     }
                 }
             })
-            globalEmitter.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:0,sceneId:scene.id})
+            globalEmitter.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:1,sceneId:scene.id})
 
             disableDelayedActionTimers()
             disablePlayUI()
@@ -211,7 +210,7 @@ export async function handleSceneEntityOnUnload(scene:any, entityInfo:any){
         await disableGameAsset(scene, itemInfo)
 
         let triggerEvents = getTriggerEvents(entityInfo.entity)
-        triggerEvents.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity,sceneId:scene.id})
+        triggerEvents.emit(Triggers.ON_UNLOAD_SCENE, {input:0, pointer:1, entity:entityInfo.entity,sceneId:scene.id})
     }
 }
 
@@ -233,7 +232,7 @@ export async function handleSceneEntitiesOnLoad(sceneId:string){
                 }
             }
         })
-        globalEmitter.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, sceneId:scene.id})
+        globalEmitter.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:1, sceneId:scene.id})
     }
 }
 
@@ -252,7 +251,7 @@ export function handleSceneEntityOnLoad(scene:any, entityInfo:any){
     setTriggersForPlayMode(scene, entityInfo)
     
     let triggerEvents = getTriggerEvents(entityInfo.entity)
-    triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:0, entity:entityInfo.entity, sceneId:scene.id})
+    triggerEvents.emit(Triggers.ON_LOAD_SCENE, {input:0, pointer:1, entity:entityInfo.entity, sceneId:scene.id})
 
     if(isLevelAsset(scene, entityInfo.aid) || isGameAsset(scene, entityInfo.aid)){
         disableGameAsset(scene, entityInfo)

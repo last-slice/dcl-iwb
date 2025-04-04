@@ -4,11 +4,11 @@ import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { calculateSquareImageDimensions, getImageAtlasMapping, sizeFont } from '../../helpers'
 import resources from '../../../helpers/resources'
 import { colyseusRoom, sendServerMessage } from '../../../components/Colyseus'
-import { COMPONENT_TYPES, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
+import { COMPONENT_TYPES, SceneItem, SERVER_MESSAGE_TYPES } from '../../../helpers/types'
 import { selectedItem } from '../../../modes/Build'
 import { visibleComponent } from '../EditAssetPanel'
 import { ColliderLayer, ComponentType } from '@dcl/sdk/ecs'
-import { items } from '../../../components/Catalog'
+import { items, original, Sorted3D } from '../../../components/Catalog'
 
 let invisibleIndex:number = 2
 let visibleIndex:number = 1
@@ -219,13 +219,11 @@ export function EditGltf() {
 function getScene3DModels(){
     if(!selectedItem || !selectedItem.enabled)  return []
 
-    let scene = colyseusRoom.state.scenes.get(selectedItem.sceneId)
-    if(!scene) return []
-    
     let sceneModels:any[] = []
-    scene[COMPONENT_TYPES.GLTF_COMPONENT].forEach((gltf:any, aid:string)=>{
-        sceneModels.push({name:scene[COMPONENT_TYPES.NAMES_COMPONENT].get(aid).value, src:gltf.src})
+    Sorted3D.forEach((item:SceneItem)=>{
+        sceneModels.push({name:item.n, src:item.id})
     })
+
     return sceneModels
 }
 

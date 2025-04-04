@@ -101,8 +101,10 @@ export function AddInputModifierActionPanel(){
                 onMouseDown={() => {
                     setUIClicked(true)
                     if(inputModifiers.includes('disableAll')){
+                        modifiers.disableAll = false
                         inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableAll"),1)
                     }else{
+                        modifiers.disableAll = true
                         inputModifiers.push("disableAll")
                     }
                     updateActionData({actions:[...inputModifiers]})
@@ -164,8 +166,10 @@ export function AddInputModifierActionPanel(){
                 onMouseDown={() => {
                     setUIClicked(true)
                     if(inputModifiers.includes('disableEmote')){
+                        modifiers.disableEmote = false
                         inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableEmote"),1)
                     }else{
+                        modifiers.disableEmote = true
                         inputModifiers.push("disableEmote")
                     }
                     updateActionData({actions:[...inputModifiers]})
@@ -240,8 +244,10 @@ export function AddInputModifierActionPanel(){
                 onMouseDown={() => {
                     setUIClicked(true)
                     if(inputModifiers.includes('disableWalk')){
+                        modifiers.disableWalk = false
                         inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableWalk"),1)
                     }else{
+                        modifiers.disableWalk = true
                         inputModifiers.push("disableWalk")
                     }
                     updateActionData({actions:[...inputModifiers]})
@@ -303,8 +309,10 @@ export function AddInputModifierActionPanel(){
                 onMouseDown={() => {
                     setUIClicked(true)
                     if(inputModifiers.includes('disableRun')){
+                        modifiers.disableRun = false
                         inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableRun"),1)
                     }else{
+                        modifiers.disableRun = true
                         inputModifiers.push("disableRun")
                     }
                     updateActionData({actions:[...inputModifiers]})
@@ -379,12 +387,14 @@ export function AddInputModifierActionPanel(){
                 onMouseDown={() => {
                     setUIClicked(true)
                     if(inputModifiers.includes('disableJog')){
+                        modifiers.disableJog = false
                         inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableJog"),1)
                     }else{
+                        modifiers.disableJog = true
                         inputModifiers.push("disableJog")
                     }
                     updateActionData({actions:[...inputModifiers]})
-                    setUIClicked(false)
+                    setUIClicked(false) 
                 }}
                 onMouseUp={()=>{
                     setUIClicked(false)
@@ -442,8 +452,10 @@ export function AddInputModifierActionPanel(){
                 onMouseDown={() => {
                     setUIClicked(true)
                     if(inputModifiers.includes('disableJump')){
+                        modifiers.disableJump = false
                         inputModifiers.splice(inputModifiers.findIndex($=> $ === "disableJump"),1)
                     }else{
+                        modifiers.disableJump = true
                         inputModifiers.push("disableJump")
                     }
                     updateActionData({actions:[...inputModifiers]})

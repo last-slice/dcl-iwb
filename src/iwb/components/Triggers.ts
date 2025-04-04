@@ -59,7 +59,6 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
     if(hasEnter || hasLeave){
       let transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
       if(transform){
-        
         let bb:any
         if(hasEnter === Triggers.ON_PICKUP){
           let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
@@ -98,6 +97,7 @@ export function checkTriggerComponent(scene:any, entityInfo:any){
 }
 
 function getTriggerScale(itemInfo:any, transform:any, bb:any){
+  console.log('get trigger scale', itemInfo, transform, bb)
   let scale:any 
   if(itemInfo.isArea){
     if(transform.r.y === 90 || transform.r.y === 180){
@@ -109,21 +109,21 @@ function getTriggerScale(itemInfo:any, transform:any, bb:any){
     if(bb){
       scale = Vector3.create(bb.x, bb.y, bb.z)
     }else{
-      scale =  Vector3.create(bb.x, bb.y, bb.z)
+      scale =  transform.s
     }
   }
     console.log('trigger scale is', scale)
-    return scale
+    return scale ? scale : Vector3.One()//
 }
 
 export function updateTriggerArea(scene:any, entityInfo:any, transform:any){
-  // console.log('updating trigger area')
+  console.log('updating trigger area', entityInfo, transform)
   let triggerInfo = scene[COMPONENT_TYPES.TRIGGER_COMPONENT].get(entityInfo.aid)
   if(!triggerInfo){
     return
   }
-  try{
 
+  try{
     let isPickup:any
     triggerInfo.triggers.forEach((trigger:any)=>{
       switch(trigger.type){
@@ -135,7 +135,6 @@ export function updateTriggerArea(scene:any, entityInfo:any, transform:any){
     })
 
     let bb:any
-    let transform:any
     if(isPickup){
       transform = scene[COMPONENT_TYPES.TRANSFORM_COMPONENT].get(entityInfo.aid)
       let iwbInfo = scene[COMPONENT_TYPES.IWB_COMPONENT].get(entityInfo.aid)
@@ -231,10 +230,10 @@ export function updateTriggerEvents(scene:any, entityInfo:any, triggerInfo:any){
   }
 
     triggerEvents.on(triggerInfo.type, (triggerEvent:any)=>{
-      // console.log('trigger event', triggerInfo, triggerEvent)
+      console.log('trigger event', triggerInfo, triggerEvent)
       let trigger = findTrigger(scene, triggerEvent, triggerInfo.type)
       if(!trigger){
-        // console.log('cant find trigger')
+        // console.log('cant find trigger', triggerInfo, triggerEvent)
         return
       }
 
@@ -277,7 +276,7 @@ async function evaluateDecision(decisionItem:any){
     return
   }
 
-  // console.log('decision is', decisionItem)
+  console.log('decision is', decisionItem)
 
   if(await checkConditions(scene, decision, aid, entity, triggerEvent)){
     // console.log('passed check conditions')
@@ -368,7 +367,7 @@ async function checkConditions(scene:any, decision:any, aid:string, entity:Entit
 
 function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:any, triggerEvent:any) {
       try {
-        // console.log('checking condition', condition)
+        console.log('checking condition', condition)
         let actionEntity = getEntity(scene, condition.aid)
         if(actionEntity){
           let entity = actionEntity.entity
@@ -639,13 +638,14 @@ function checkCondition(scene:any, aid:string, triggerEntity:Entity, condition:a
               // if(counter.currentValue){
               //   const numeric = Number(condition.counter)
               //   if (!isNaN(numeric)) {
-              //     return counter.currentValue === numeric
+              //     return counter.currentValue === numeric//
               //   }
               // }
               break
             }
   
             case TriggerConditionType.WHEN_COUNTER_IS_GREATER_THAN: {
+              console.log('when counter is greater than', condition)
               let counter = getCounterComponentByAssetId(scene, condition.aid, condition.counter)
               if(!counter){
                 return false

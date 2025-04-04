@@ -19,7 +19,7 @@ import { attemptLoadLevel, disableLevelAssets, loadLevelAssets, startLevelCountd
 import { attemptGameEnd, movePlayerToLobby } from "./Game"
 import { getEasingFunctionFromInterpolation } from "@dcl-sdk/utils"
 import { isClient, isGCScene, island, localConfig } from "./Config"
-import { createBlockchainContract, getRandomIntInclusive } from "../helpers/functions"
+import { createBlockchainContract, getRandomIntInclusive, isWeb } from "../helpers/functions"
 import { removedEntities, sceneAttachedParents } from "./Scene"
 import { showDialogPanel } from "../ui/Objects/DialogPanel"
 import { displaySkinnyVerticalPanel } from "../ui/Reuse/SkinnyVerticalPanel"
@@ -592,7 +592,7 @@ function handleAddNumber(scene:any, info:any, action:any){
         uiDataUpdate(scene, info)
         //single player
         const triggerEvents = getTriggerEvents(info.entity)
-        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {input:0, pointer:0, entity:info.entity})
+        triggerEvents.emit(Triggers.ON_COUNTER_CHANGE, {input:0, pointer:1, entity:info.entity})
 
         if(scene[COMPONENT_TYPES.GAME_ITEM_COMPONENT].has(info.aid)){
             console.log('send adding number action message to server')
@@ -2017,32 +2017,38 @@ export function handleVirtualCameraSet(scene:any, entityInfo:any, action:any){
     // if(!isClient){
     //     return
     // }
-    MainCamera.createOrReplace(engine.CameraEntity, {virtualCameraEntity: entityInfo.entity})
+    if(isWeb()){
+        console.log('cannot set virtual camera on web')
+    }else{
+        console.log('setting virtual camera on desktop')
+        MainCamera.createOrReplace(engine.CameraEntity, {virtualCameraEntity: entityInfo.entity})
+    }
 }
 
 export function handleFreezePlayer(scene:any, entityInfo:any, action:any){
-    // if(!isClient){
-    //     return
-    // }
+    if(isWeb()){
+        console.log('cannot set player freeze on web')
+    }else{
+        console.log('setting player freezeon desktop')
+        let modifiers:any = {
+            disableAll:false,
+            disableWalk:false,
+            disableRun:false,
+            disableJog:false,
+            disableJump:false,
+            disableEmote:false
+        }
 
-    let modifiers:any = {
-        disableAll:false,
-        disableWalk:false,
-        disableRun:false,
-        disableJog:false,
-        disableJump:false,
-        disableEmote:false
+        action.actions.forEach((modifier:any)=>{
+            modifiers[modifier] = true
+        })
+        InputModifier.createOrReplace(engine.PlayerEntity, {
+            mode: {
+                $case: 'standard',
+                standard: modifiers,
+            },
+        })
     }
-
-    action.actions.forEach((modifier:any)=>{
-        modifiers[modifier] = true
-    })
-    InputModifier.createOrReplace(engine.PlayerEntity, {
-        mode: {
-            $case: 'standard',
-            standard: modifiers,
-        },
-    })
 }
 
 export function handleunfreezePlayer(scene:any, entityInfo:any, action:any){

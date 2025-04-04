@@ -1,3 +1,4 @@
+import { getExplorerInformation } from "~system/Runtime"
 import { getRealm } from "~system/Runtime";
 import {Animator, engine, Entity, Transform} from "@dcl/sdk/ecs";
 import { ReadOnlyVector3 } from "~system/EngineApi";
@@ -284,4 +285,28 @@ export function calculateTimeToTarget(startPos: {x: number, y: number, z: number
     const timeToTarget = distance / velocity;
 
     return timeToTarget;
+}
+
+async function getExplorerInfo() {
+  try {
+    return await getExplorerInformation({})
+  } catch(err) {
+    return {
+      agent: "unity-explorer-2.0",
+      platform: "desktop",
+      configurations: {}
+    }
+  }
+}
+
+export function isWeb(): boolean { 
+  const webToString = `function() {
+    [native code]
+  }`
+  return (console as any).trace.toString() === webToString
+}
+export function isEA(): boolean { 
+  const webToString = `function (...args) { UnityOpsApi.Log("SceneTrace: " + args.join(' ')) }`
+
+  return (console as any).trace.toString() === webToString
 }

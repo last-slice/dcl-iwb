@@ -1065,7 +1065,7 @@ function getBackground(mapColumn:any){
         }else if(mapColumn.scene){
             return mapColumn.color
         }else{
-            return Color4.create(0,0,0,.2)
+            return Color4.create(0,0,0,.2)//
         }
     }
     else{

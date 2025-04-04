@@ -2134,7 +2134,7 @@ function toggleSelectItem(item:any){
 
 async function getAngzaarPlazaReservation(){
     try{
-        let res = await fetch((resources.DEBUG ? resources.endpoints.angzaarPlazaTest : resources.endpoints.angzaarPlazaProd) + "/api/plaza/user-reservation/" + localUserId)
+        let res = await fetch((resources.DEBUG ? resources.endpoints.angzaarPlazaTest : resources.endpoints.angzaarPlazaProd) + "/api/locations/plaza/user-reservation/" + localUserId)
         let json = await res.json()
         console.log('angzaar plaza reservation is', json)
         if(json.valid && json.reservation){
