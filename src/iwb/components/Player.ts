@@ -275,11 +275,30 @@ export async function getPlayerLand(){
         let deployLand:any[] = []
         json.data && json.data.updateOperatorParcels.forEach((parcel:any)=>{
             if(!ownedLand.find((owned:any)=> owned.x === parcel.x && owned.y === parcel.y)){
-                deployLand.push({name:"Operator Land", size:1, type:"operator", x:parcel.x, y:parcel.y})
+                deployLand.push({name:"Operator Land", id:parcel.x + "-" + parcel.y, size:1, type:"operator", land:"parcel", x:parcel.x, y:parcel.y})
             }
         })
+
+        json.data && json.data.updateOperatorEstates.forEach((estate:any)=>{
+            if(!ownedLand.find((owned:any)=> owned.id === estate.id)){
+                deployLand.push({name:estate.data ? estate.data.name : "Estate-" + estate.id, id:estate.id, size:estate.size, type:"operator", land:"estate", parcels:estate.parcels})
+            }
+        })
+
+        //add mock data
+        // deployLand.push({
+        //     name:"Mock Estate",
+        //     "id": "5766",
+        //     "size": 2,
+        //     "land":"estate",
+        //     "parcels":[
+        //     {"x": "-146", "y": "90", "tokenId": "115792089237316195423570985008687907803588759095183548373804891322874970767450"},
+        //     {"x": "-145", "y": "90", "tokenId": "115792089237316195423570985008687907803929041462104486837268265930306738978906"}
+        //     ]
+        // })
     
         localPlayer.landsAvailable = ownedLand.concat(deployLand)
+        console.log('local player lands are ', localPlayer.landsAvailable)
     }
     catch(e){
         console.log('error getting player land', e)

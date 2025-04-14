@@ -1086,11 +1086,18 @@ function handleAttemptGame(scene:any, info:any, action:any){
 }
 
 function handleStartDelay(scene:any, info:any, action:any){
-    // console.log("delay actions are", action)
-    const actionEvents = getActionEvents(info.entity)
+    console.log("delay actions are", action)//
+    
     action.actions && action.actions.forEach((actionId:any)=>{
+        console.log("starting delay for", actionId, action.timer)
         startTimeout(info.entity, actionId, action.timer, () => {
-            actionEvents.emit(actionId, getActionById(scene, info.aid, actionId))
+            scene[COMPONENT_TYPES.ACTION_COMPONENT].forEach((actionComponent:any, aid:string)=>{
+                if(actionComponent.actions && actionComponent.actions.length > 0 && actionComponent.actions.find(($:any)=> $.id === actionId)){
+                    let entityInfo = getEntity(scene, aid)
+                    const actionEvents = getActionEvents(entityInfo.entity)
+                    actionEvents.emit(actionId, getActionById(scene, entityInfo.aid, actionId))
+                }
+            })
           })
     })
 }

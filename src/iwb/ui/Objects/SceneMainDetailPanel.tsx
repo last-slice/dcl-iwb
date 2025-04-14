@@ -1,4 +1,4 @@
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, PositionUnit, Input } from '@dcl/sdk/react-ecs'
+import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity, Position, UiBackgroundProps, PositionUnit, Input, Dropdown } from '@dcl/sdk/react-ecs'
 import resources from '../../helpers/resources'
 import { calculateImageDimensions, getAspect, dimensions, getImageAtlasMapping, sizeFont, calculateSquareImageDimensions } from '../helpers'
 import { uiSizes } from '../uiConfig'
@@ -34,8 +34,10 @@ let newSceneBuilderWallet:string = ""
 let newWorldACLWallet:string = ""
 
 let selectedGenesisParcels:any[] = []
-let visibleLands:any[] = []
+let selectedGenesisEstate:string = ""
 
+let visibleLands:any[] = []
+let exportGenesisView:string = "land"
 let buttons:any[] = [
     {label:"Info", pressed:true, func:()=>{
         updateSceneDetailsView("Info")
@@ -63,7 +65,9 @@ let buttons:any[] = [
     {label:"Export", pressed:false, func:()=>{
         visibleLands.length = 0
         visibleIndex = 1
-        visibleLands = paginateArray(localPlayer.landsAvailable, visibleIndex, 6)
+        exportGenesisView = "land"
+        selectedGenesisEstate = ""
+        visibleLands = paginateArray(localPlayer.landsAvailable.filter((land:any)=> land.land === "parcel"), visibleIndex, 6)
         updateSceneDetailsView("Export")
         console.log('visible lands are ', visibleLands)
         }
@@ -1102,6 +1106,12 @@ export function ExportPanel(){
                 onMouseDown={()=>{
                     setUIClicked(true)
                     playSound(SOUND_TYPES.SELECT_3)
+                    selectedGenesisEstate = ""
+                    selectedGenesisParcels.length = 0
+                    visibleLands.length = 0
+                    visibleIndex = 1
+                    visibleLands = paginateArray(localPlayer.landsAvailable.filter((land:any)=> land.land === "parcel"), visibleIndex, 6)
+                    exportGenesisView = "land"
                     sceneInfoDetailView = "Export-Genesis"
                 }}
                 onMouseUp={()=>{
@@ -1271,8 +1281,8 @@ export function ExportGenesisCityPanel(){
                     width: '40%',
                     height: '100%',
                 }}
-                // uiBackground={{color:Color4.Gray()}}
-                uiText={{value:"Selected Parcels: " + (selectedGenesisParcels.length), color:Color4.White(), fontSize:sizeFont(20,15)}}
+                // uiBackground={{color:Color4.Gray()}}//
+                uiText={{value:"Selected Parcels: " + (selectedGenesisEstate != "" ? getEstateSize(selectedGenesisEstate) : selectedGenesisParcels.length), color:Color4.White(), fontSize:sizeFont(20,15)}}
                 />
 
                     <UiEntity
@@ -1283,7 +1293,7 @@ export function ExportGenesisCityPanel(){
                             width: '30%',
                             height: '100%',
                             margin: {left: "1%", right: "1%"},
-                            display: scene && selectedGenesisParcels.length === scene.pcls.length ? "flex" :"none"
+                            display: scene && selectedGenesisParcels.length === scene.pcls.length ? "flex" : scene && selectedGenesisEstate != "" ? "flex" :"none"
                         }}
                         uiBackground={{
                             textureMode: 'stretch',
@@ -1295,10 +1305,22 @@ export function ExportGenesisCityPanel(){
                         uiText={{value: "Deploy", fontSize: sizeFont(20, 16)}}
                         onMouseDown={() => {
                             setUIClicked(true)
+                            if(selectedGenesisEstate){
+
+                                selectedGenesisParcels = localPlayer.landsAvailable.find((land:any)=> land.id === selectedGenesisEstate)
+                                .parcels
+                                .map((parcel:any)=>{
+                                    return {
+                                        x: parcel.x,
+                                        y: parcel.y
+                                    }
+                                })
+                                console.log('selectedGenesisParcels are', selectedGenesisParcels)
+                            }
                             sendServerMessage(SERVER_MESSAGE_TYPES.SCENE_DEPLOY,{
                                 sceneId:scene?.id,
                                 dest:'gc',
-                                tokenId: "",
+                                tokenId: selectedGenesisEstate,
                                 parcels: [...selectedGenesisParcels]
                             })
                             displaySceneDetailsPanel(false)
@@ -1315,16 +1337,52 @@ export function ExportGenesisCityPanel(){
                 <UiEntity
                 uiTransform={{
                     flexDirection: 'row',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'flex-start',
                     width: '100%',
-                    height: '90%',
+                    height: '10%',
+                }}
+            >
+
+                <Dropdown
+                options={["Viewing Parcels", "Viewing Estates"]}
+                selectedIndex={0}
+                onChange={(index:number)=>{
+                    visibleLands.length = 0
+                    visibleIndex = 1
+
+                    if(index === 0){
+                        exportGenesisView = "land"
+                        visibleLands = paginateArray(localPlayer.landsAvailable.filter((land:any)=> land.land === "parcel"), visibleIndex, 6)
+                    }else{
+                        exportGenesisView = "estate"
+                        visibleLands = paginateArray(localPlayer.landsAvailable.filter((land:any)=> land.land === "estate"), visibleIndex, 6)
+                    }
+                    console.log('visible lands are ', visibleLands)
+                }}
+                uiTransform={{
+                width: '30%',
+                height: '100%',
+                }}
+                color={Color4.White()}
+                fontSize={sizeFont(20, 15)}
+            />
+            </UiEntity>
+
+                <UiEntity
+                uiTransform={{
+                    flexDirection: 'row',
+                    alignItems: 'flex-end',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    height: '75%',
                     flexWrap: 'wrap-reverse',
                 }}
                 // uiBackground={{color:Color4.Gray()}}
                 >
                     {/* {sceneInfoDetailView === "Export-Genesis" && generateRows()} */}
-                    {sceneInfoDetailView === "Export-Genesis" && generateLandItems()}
+                    {sceneInfoDetailView === "Export-Genesis" && exportGenesisView === "land" && generateLandItems()}
+                    {sceneInfoDetailView === "Export-Genesis" && exportGenesisView === "estate" && generateEstateItems()}
                 </UiEntity>
 
                 <UiEntity
@@ -1342,7 +1400,7 @@ export function ExportGenesisCityPanel(){
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '10%',
+                    width: '5%',
                     height: '100%',
                 }}
                 // uiBackground={{color:Color4.Gray()}}
@@ -1382,7 +1440,7 @@ export function ExportGenesisCityPanel(){
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '10%',
+                    width: '5%',
                     height: '100%',
                 }}
                 // uiBackground={{color:Color4.Gray()}}//
@@ -1890,6 +1948,14 @@ function generateLandItems(){
     return arr
 }
 
+function generateEstateItems(){
+    let arr:any[] = []
+    for(let i = 0; i < visibleLands.length; i++){
+        arr.push(<DeployableEstateItem rowCount={i} item={visibleLands[i]}/>)
+    }
+    return arr
+}
+
 function DeployableLandItem(data:any){
     return(
         <UiEntity
@@ -1982,6 +2048,105 @@ function DeployableLandItem(data:any){
         }}
         // uiBackground={{color:Color4.Green()}}
         uiText={{value:"" +(data.item.x + "," + data.item.y), fontSize:sizeFont(25,15)}}
+        />
+
+
+        </UiEntity>
+    )
+}
+
+function DeployableEstateItem(data:any){
+    return(
+        <UiEntity
+        key={resources.slug + "deploy::estate::item::" + data.rowCount}
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '30%',
+            height: '35%',
+            margin:'1%'
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: 'assets/atlas2.png'
+            },
+            uvs: selectedGenesisEstate === data.item.id ? getImageAtlasMapping(uiSizes.buttonPillBlue) : getImageAtlasMapping(uiSizes.horizRectangle)
+        }}
+        onMouseDown={()=>{
+            setUIClicked(true)
+            // if(localPlayer && localPlayer.homeWorld){
+                toggleSelectItem(data.item)
+            // }
+        }}
+        onMouseUp={()=>{
+            setUIClicked(false)
+        }}
+        >
+
+             <UiEntity
+        uiTransform={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '80%',
+        }}
+        >
+            <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+        }}
+        // uiBackground={{color:Color4.Blue()}}
+        >
+         <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: calculateSquareImageDimensions(11).width,
+            height: calculateSquareImageDimensions(11).height,
+        }}
+        uiBackground={{
+            textureMode: 'stretch',
+            texture: {
+                src: '' + resources.endpoints.dclApi + "estates/" + data.item.id + "/map.png?width=200&height=200&size=10"
+            },
+        }}
+        />
+        </UiEntity>
+
+        </UiEntity>
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            margin:{bottom:'3%'}
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{value:data.item.name.length > 20 ? data.item.name.substring(0, 20) + "..." : data.item.name, fontSize:sizeFont(25,15)}}
+        />
+
+        <UiEntity
+        uiTransform={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '15%',
+            margin:{bottom:'3%'}
+        }}
+        // uiBackground={{color:Color4.Green()}}
+        uiText={{value:"Size: " + data.item.size, fontSize:sizeFont(25,15)}}
         />
 
 
@@ -2122,13 +2287,22 @@ function isSelected(x:string, y:string){
 }
 
 function toggleSelectItem(item:any){
-    if(isSelected(item.x, item.y)){
+
+    if(item.land === "estate"){
+        if(selectedGenesisEstate === item.id){
+            selectedGenesisEstate = ""
+        }else{
+            selectedGenesisEstate = item.id
+        }
+    }else{
+        if(isSelected(item.x, item.y)){
         let itemIndex = selectedGenesisParcels.findIndex(($:any)=> $.id === item.id)
         if(itemIndex >= 0){
             selectedGenesisParcels.splice(itemIndex, 1)
         }
     }else{
-        selectedGenesisParcels.push(item)
+            selectedGenesisParcels.push(item)
+        }
     }
 }
 
@@ -2166,5 +2340,16 @@ function checkValidScenePool(scene:any){
         exportScenePoolStatus = "valid"
     }else{
         exportScenePoolStatus = 'contains-ugc'
+    }
+}
+
+function getEstateSize(estateId:string){
+    // console.log('localPlayer.landsAvailable is', localPlayer.landsAvailable)
+    let estate = localPlayer.landsAvailable.find((land:any)=> land.id === estateId)
+    // console.log('estate is', estate)
+    if(estate){
+        return estate.size
+    }else{
+        return 0
     }
 }
